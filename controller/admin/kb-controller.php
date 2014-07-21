@@ -18,7 +18,7 @@ class KbController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        $this->resources->css('kb/kb');
+        $this->resources->css('kb/home');
 
         $article = new KnowledgeBaseArticle();
         $articles = $article->get_by_views( KnowledgeBaseCategory::SECTION_ADMIN );
@@ -56,7 +56,7 @@ class KbController extends BaseController {
         // Get data
         $articles = $article->get_by_page( $article->kb_page_id );
 
-        $this->resources->css('kb/kb');
+        $this->resources->javascript('kb/article');
 
         return $this->get_template_response( 'article' )
             ->add_title( $article->title . ' | ' . _('Article') )
@@ -237,11 +237,6 @@ class KbController extends BaseController {
             $ticket->priority = Ticket::PRIORITY_NORMAL;
             $ticket->create();
         }
-
-        jQuery('#helpful p:visible')->hide();
-        jQuery('#thanks')->show();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

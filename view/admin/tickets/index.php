@@ -1,50 +1,75 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page List Tickets
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var User[] $assigned_to_users
- */
+<?php nonce::field( 'store_session', '_store_session' ); ?>
 
-echo $template->start( _('Tickets'), false );
-?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Narrow your search
+            </header>
 
-<div class="relative">
-    <select id="sStatus">
-        <option value="0"><?php echo _('Open'); ?></option>
-        <option value="1"><?php echo _('Closed'); ?></option>
-    </select>
-    <select id="sAssignedTo">
-		<option value="0"><?php echo _('All'); ?></option>
-		<option value="-1"><?php echo _('Peers'); ?></option>
-		<?php
-        foreach ( $assigned_to_users as $atu ) {
-			$selected = ( $user->has_permission( User::ROLE_ADMIN ) && $atu->id == $user->id ) ? ' selected="selected"' : '';
-			?>
-			<option value="<?php echo $atu->id; ?>"<?php echo $selected; ?>><?php echo $atu->contact_name; ?></option>
-		<?php } ?>
-	</select>
-    <table ajax="/tickets/list-all/" perPage="30,50,100">
-        <thead>
-            <tr>
-                <th width="26%"><?php echo _('Summary'); ?></th>
-                <th width="15%"><?php echo _('Name'); ?></th>
-                <th width="18%" sort="3 asc"><?php echo _('Website'); ?></th>
-                <th width="10%" sort="1 desc"><?php echo _('Priority'); ?></th>
-                <th width="16%"><?php echo _('Assigned To'); ?></th>
-                <th width="15%" sort="2 asc"><?php echo _('Created'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+            <div class="panel-body">
+
+                <form class="form-inline" role="form">
+                    <div class="form-group">
+                        <select class="form-control" id="sStatus">
+                            <option value="0">Open Tickets</option>
+                            <option value="1">Closed Tickets</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="sAssignedTo">
+                            <option value="0">All</option>
+                            <option value="-1">Peers</option>
+                            <?php foreach ( $assigned_to_users as $atu ): ?>
+                                <option value="<?php echo $atu->id; ?>"<?php if ( $user->has_permission( User::ROLE_ADMIN ) && $atu->id == $user->id ) echo ' selected="selected"' ?>><?php echo $atu->contact_name; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
 </div>
 
-<?php
-nonce::field( 'store_session', '_store_session' );
-echo $template->end();
-?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Tickets
+            </header>
+
+            <div class="panel-body">
+
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/tickets/list-all/" perPage="30,50,100">
+                        <thead>
+                            <tr>
+                                <th>Summary</th>
+                                <th>Name</th>
+                                <th sort="3 asc">Website</th>
+                                <th sort="1 desc">Priority</th>
+                                <th>Assigned To</th>
+                                <th sort="2 asc">Created</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Summary</th>
+                                <th>Name</th>
+                                <th>Website</th>
+                                <th>Priority</th>
+                                <th>Assigned To</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- page end-->

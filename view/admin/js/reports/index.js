@@ -1,136 +1,122 @@
-// When the page has loaded
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    criteria = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'package' : {}, 'services' : {} };
-	cache = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'package' : {} };
+var Reports = {
 
-	// Create autocomplete
-	$('#tAutoComplete').autocomplete({
-		minLength: 1
-        , select: function( event, ui ) {
-			var type = $('#type option:selected'), typeValue = type.val();
+    init: function() {
+        $('#services').change( Reports.addService );
 
-			// Update the query
-			criteria[typeValue][ui.item['object_id']] = 1;
+        $('#criteria-list').on( 'click', '.delete-criteria', Reports.deleteCriteria );
 
-            var criterion = $('#criterion-template')
-                .clone()
-                .removeAttr('id');
+        // Autocomplete
+        Reports.setupAutocomplete();
+        // Autcomplete - When change search type, we must reconfigure
+        $('#type').change( Reports.setupAutocomplete );
 
-            var criterionHtml = criterion.html()
-                .replace( '[type-value]', typeValue )
-                .replace( '[type-text]', type.text() )
-                .replace( '[object-id]', ui.item['object_id'] )
-                .replace( '[object-value]', ui.item['value'] );
+        $('#report-form').submit( Reports.run );
+    }
 
-            criterion.html( criterionHtml );
+    , addService: function() {
+        var option = $(this).find( 'option:selected' );
 
-			// Add criterion for viewing pleasures
-			$('#criteria').append( criterion );
-
-			// Update the search to go back to normal
-			$('#tAutoComplete').val('').trigger('blur');
-
-            updateCriteria();
-
-			return false;
-		}
-		, source: function( request, response ) {
-            // Get the cache type
-            var cacheType = $('#type').val();
-
-            // Find out if they are already cached so we don't have to do another ajax called
-            if ( request['term'] in cache[cacheType] ) {
-                response( $.map( cache[cacheType][request['term']], function( item ) {
-                    return {
-                        label : item[cacheType]
-                        , value : item[cacheType]
-                        , object_id : item['object_id']
-                    }
-                }) );
-
-                // If it was cached, return now
-                return false;
-            }
-
-            // It was not cached, get data
-            $.post( '/reports/autocomplete/', { _nonce : $('#_autocomplete').val(), type : cacheType, term : request['term'] }, function( data ) {
-                // Assign global cache the response data
-                cache[cacheType][request['term']] = data['objects'];
-
-                // Return the response data
-                response( $.map( data['objects'], function( item ) {
-                    return {
-                        label : item[cacheType]
-                        , value : item[cacheType]
-                        , object_id : item['object_id']
-                    }
-                }));
-            }, 'json' );
-        }
-	});
-
-    // Make services change something too
-    $('#services').change( function() {
-        var option = $(this).find('option:selected'), optionValue = option.val();
-
-        if ( '' == optionValue )
+        if ( option.val() == '' )
             return;
 
-        // Update the query
-        criteria['services'][option.val()] = 1;
+        $( '<li />' )
+            .text( 'Service - ' + option.text() + ' ' )
+            .append(
+                $( '<input />' )
+                    .attr( 'type', 'hidden' )
+                    .attr( 'name', 'c[services][' + option.val() + ']')
+                    .val( '1' )
+            )
+            .append(
+                $( '<a />' )
+                    .addClass( 'delete-criteria' )
+                    .attr( 'href', 'javascript:; ')
+                    .attr( 'title', 'Delete ' + option.text() )
+                    .html( '<i class="fa fa-trash-o"></i>' )
+            ).appendTo( '#criteria-list' );
 
-        var criterion = $('#criterion-template')
-            .clone()
-            .removeAttr('id');
+        option.prop( 'disabled', true );
+    }
 
-        var criterionHtml = criterion.html()
-            .replace( '[type-value]', 'services' )
-            .replace( '[type-text]', $(this).attr('rel') )
-            .replace( '[object-id]', optionValue )
-            .replace( '[object-value]', option.text() );
+    , addCriteria: function( event, item ) {
+        var typeItem = $('#type option:selected');
+        var type = typeItem.val();
 
-        criterion.html( criterionHtml );
+        $( '<li />' )
+            .text( typeItem.text() + ' - ' + item[type] + ' ' )
+            .append(
+                $( '<input />' )
+                    .attr( 'type', 'hidden' )
+                    .attr( 'name', 'c[' + type +'][' + item.object_id + ']')
+                    .val( '1' )
+            )
+            .append(
+                $('<a />')
+                    .addClass( 'delete-criteria' )
+                    .attr( 'href', 'javascript:; ')
+                    .attr( 'title', 'Delete ' + item[type] )
+                    .html( '<i class="fa fa-trash-o"></i>' )
+            ).appendTo( '#criteria-list' );
 
-        $('#criteria').append(criterion);
+        $('#tAutoComplete').val( '' );
+    }
 
-        option.attr( 'disabled', true );
-        $(this).val('');
-    });
+    , deleteCriteria: function() {
+        var criteriaItem = $(this).parents( 'li:first' );
+        var criteria = criteriaItem.data( 'criteria' );
 
-    // Submit Search - Trigger (Submit)
-	$('#fSearch').submit( function() {
-        $('#aSearch').click();
-        return false;
-    } );
+        // If it's a Service, enable it again from the dropdown
+        if ( criteria.service ) {
+            $('#services [value=' + criteria.service + ']').prop( 'disabled', false );
+        }
 
-    // Handle the search
-    $('#aSearch').click( function() {
-        $('#table tbody:first')
-            .empty()
-            .load( '/reports/search/', { _nonce : $('#_search').val(), c : criteria } );
-    });
+        criteriaItem.remove();
+    }
 
-    // Add the remove criterion feature
-    $('#criteria').on( 'click', '.remove-criterion', function() {
-        var parent = $(this).parent(), type = $('.type:first', parent).attr('rel'), search = $('.search:first', parent).attr('rel');
+    , setupAutocomplete: function() {
+        var searchType = $("#type").val();
+        var nonce = $('#_autocomplete').val();
 
-        // Unset criteria
-        delete criteria[type][search];
+        var autocomplete = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value')
+            , queryTokenizer: Bloodhound.tokenizers.whitespace
+            , remote: {
+                url: '/reports/autocomplete/?_nonce=' + nonce + '&type=' + searchType + '&term=%QUERY'
+                , filter: function( list ) {
+                    return list.objects
+                }
+            }
+        });
 
-        // Readded to services
-        if ( 'services' == type )
-            $('#services option[value=' + search + ']').attr( 'disabled', false );
+        autocomplete.initialize();
+        $("#tAutoComplete")
+            .typeahead('destroy')
+            .typeahead(null, {
+                displayKey: searchType
+                , source: autocomplete.ttAdapter()
+            })
+            .unbind('typeahead:selected')
+            .on('typeahead:selected', Reports.addCriteria );
+    }
 
-        parent.remove();
-    });
-});
+    , run: function(e) {
+        console.log('here');
+        e.preventDefault();
 
-/**
- * Makes the criteria have the right classes
- */
-function updateCriteria() {
-    var criteria = $('#criteria');
+        $('#report-form').find(':submit').text('Running...');
 
-    $('.criterion.odd', criteria).removeClass('even');
-    $('.criterion', criteria).filter(':even').addClass('even');
+        $.post(
+            '/reports/search/'
+            , $(this).serialize()
+            , Reports.runComplete
+        )
+    }
+
+    , runComplete: function( response ) {
+        $('#report-form').find(':submit').text('Run Report');
+        $('#report').html( response );
+    }
+
 }
+
+jQuery( Reports.init );

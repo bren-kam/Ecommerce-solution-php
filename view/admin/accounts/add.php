@@ -9,8 +9,20 @@
  * @var User $user
  * @var string $form
  */
-
-echo $template->start( _('Add Account') );
-echo $form;
-echo $template->end();
 ?>
+
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+
+            <header class="panel-heading">
+                <h3>Create new Account</h3>
+            </header>
+            <div class="panel-body">
+
+                <?php echo $form ?>
+
+            </div>
+        </section>
+    </div>
+</div>

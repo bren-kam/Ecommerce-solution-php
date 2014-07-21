@@ -17,69 +17,84 @@
 $rate_nonce = nonce::create('rate');
 ?>
 
-<div id="content">
-    <div id="kb-search">
-        <form name="fKBSearch" action="/kb/search/">
-            <img src="/images/kb/search.png" width="48" height="35">
-            <input type="text" id="kbs" name="kbs" placeholder="<?php echo _('Enter a question or keyword to search'); ?>">
-            <input type="submit" id="kbs-button" value="<?php echo _('Search'); ?>">
-        </form>
-    </div>
-    <div id="subcontent-wrapper">
-        <div id="breadcrumb">
-            <a href="/kb/" title="<?php echo _('Home'); ?>"><img src="/images/kb/icons/home.png" width="14" height="12" alt="<?php echo _('Home'); ?>"></a> >
-            <?php
-            $category_count = count( $categories );
+<div class="row-fluid">
+  <div class="col-lg-12">
+      <ul class="breadcrumb">
+          <li><a href="/kb/"><i class="fa fa-home"></i></a></li>
 
-            for ( $i = 0; $i < $category_count; $i++ ) {
-                // Set variables
-                $category = $categories[$i];
+          <?php foreach ( $categories as $category ): ?>
+              <li><a href="<?php echo url::add_query_arg( 'cid', $category->id, '/kb/category/' ); ?>" title="<?php echo $category->name; ?>"><?php echo $category->name; ?></a></li>
+          <?php endforeach; ?>
 
-                ?>
-                <a href="<?php echo url::add_query_arg( 'cid', $category->id, '/kb/category/' ); ?>" title="<?php echo $category->name; ?>"><?php echo $category->name; ?></a> >
-            <?php } ?>
+          <?php if ( $page->id ) { ?>
+              <li><a href="<?php echo url::add_query_arg( 'pid', $page->id, '/kb/page/' ); ?>" title="<?php echo $page->name; ?>"><?php echo $page->name; ?></a></li>
+          <?php } ?>
 
-            <?php if ( $page->id ) { ?>
-                <a href="<?php echo url::add_query_arg( 'pid', $page->id, '/kb/page/' ); ?>" title="<?php echo $page->name; ?>"><?php echo $page->name; ?></a> >
-            <?php } ?>
+          <li class="active"><?php echo $article->title; ?></li>
+      </ul>
+  </div>
+</div>
 
-            <span class="last"><?php echo $article->title; ?></span>
-        </div>
-        <div id="subcontent">
-            <h1><?php echo $article->title; ?></h1>
-            <br /><br />
-            <section>
-                <?php echo $article->content; ?>
-            </section>
-            <br /><br />
-            <br /><br />
-            <br /><br />
-            <div id="helpful">
-                <p><?php echo _('Was this article helpful?'); ?></p>
-                <p>
-                    <a href="<?php echo url::add_query_arg( array( '_nonce' => $rate_nonce, 'aid' => $article->id, 'r' => KnowledgeBaseArticleRating::POSITIVE ), '/kb/rate/' ); ?>" title="<?php echo _('Yes'); ?>" ajax="1"><?php echo _('Yes'); ?></a>
-                    <?php echo _('or'); ?>
-                    <a href="<?php echo url::add_query_arg( array( '_nonce' => $rate_nonce, 'aid' => $article->id, 'r' => KnowledgeBaseArticleRating::NEGATIVE ), '/kb/rate/' ); ?>" title="<?php echo _('No'); ?>" ajax="1"><?php echo _('No'); ?></a>
-                </p>
-                <p id="thanks" class="hidden"><?php echo _('Thank you for your feedback!'); ?></p>
-                <div id="helpful-bar"></div>
-                <div id="helpful-fade"></div>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <form class="form-inline" action="/kb/search" role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="kbs" placeholder="Enter question or search..." />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i> Search</button>
+                    </div>
+                </form>
+
             </div>
-            <?php if ( count( $articles ) > 1 ) { ?>
-            <aside id="right-sidebar">
-                <h2><?php echo _('Other Articles'); ?></h2>
-                <?php
-                foreach ( $articles as $art ) {
-                    if ( $art->id == $article->id )
-                        continue;
-                    ?>
-                    <a href="<?php echo url::add_query_arg( 'aid', $art->id, '/kb/article/' ); ?>" title="<?php echo $art->title; ?>"><?php echo $art->title; ?></a>
-                <?php } ?>
-            </aside>
-            <?php } ?>
-            <br class="clr" />
-        </div>
+        </section>
     </div>
 </div>
 
-<?php echo $template->end(0); ?>
+<div class="row-fluid">
+    <div class="col-lg-<?php echo ( count( $articles ) == 1 ) ? '12' : '9' ?>">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php echo $article->title; ?>
+            </header>
+
+            <div class="panel-body">
+                <?php echo $article->content; ?>
+            </div>
+
+            <div class="clearfix" id="helpful">
+                <div class="alert alert-info pull-left">
+                    <p>Was this article helpful?</p>
+                    <a href="<?php echo url::add_query_arg( array( '_nonce' => $rate_nonce, 'aid' => $article->id, 'r' => KnowledgeBaseArticleRating::POSITIVE ), '/kb/rate/' ); ?>" class="btn btn-xs btn-success rate">Yes</a>
+                    <a href="<?php echo url::add_query_arg( array( '_nonce' => $rate_nonce, 'aid' => $article->id, 'r' => KnowledgeBaseArticleRating::NEGATIVE ), '/kb/rate/' ); ?>" class="btn btn-xs btn-danger rate">No</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <?php if ( count( $articles ) > 1 ): ?>
+        <div class="col-lg-3">
+            <section class="panel">
+                <header class="panel-heading">
+                    Other Articles
+                </header>
+
+                <div class="panel-body">
+                    <ul>
+                        <?php
+                            foreach ( $articles as $art ):
+                                if ( $art->id == $article->id )
+                                    continue;
+                        ?>
+                            <li><a href="<?php echo url::add_query_arg( 'aid', $art->id, '/kb/article/' ); ?>" title="<?php echo $art->title; ?>"><?php echo $art->title; ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+
+            </section>
+        </div>
+    <?php endif; ?>
+</div>

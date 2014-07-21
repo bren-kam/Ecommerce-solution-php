@@ -7,138 +7,141 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var User $owner
  * @var Account $account
+ * @var User $owner
+ * @var array $address
  * @var array $checkboxes
- * @var string $account_title
- * @var string $users
- * @var string $phone
- * @var string $products
- * @var string $os_users
- * @var string $plan
- * @var string $plan_description
- * @var string $address
- * @var string $city
- * @var string $state
- * @var string $zip
+ * @var string $errs
+ * @var array $users
+ * @var array $os_users
+ * @var array $checkboxes
  */
 ?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
 
-<div id="tabs">
-    <div class="tab-link"><a href="/accounts/?aid=<?php echo $account->id; ?>" class="selected" title="<?php echo _('Account'); ?>"><?php echo _('Account'); ?></a></div>
-    <div class="tab-link"><a href="/accounts/website-settings/?aid=<?php echo $account->id; ?>" title="<?php echo _('Website Settings'); ?>"><?php echo _('Website Settings'); ?></a></div>
-    <div class="tab-link"><a href="/accounts/other-settings/?aid=<?php echo $account->id; ?>" title="<?php echo _('Other Settings'); ?>"><?php echo _('Other Settings'); ?></a></div>
-    <div class="tab-link"><a href="/accounts/actions/?aid=<?php echo $account->id; ?>" title="<?php echo _('Actions'); ?>"><?php echo _('Actions'); ?></a></div>
-    <?php if ( $account->craigslist ) { ?>
-        <div class="tab-link"><a href="/accounts/craigslist/?aid=<?php echo $account->id; ?>" title="<?php echo _('Craigslist'); ?>"><?php echo _('Craigslist'); ?></a></div>
-    <?php
-    }
+            <header class="panel-heading">
+                <ul class="nav nav-tabs tab-bg-dark-navy-blue" role="tablist">
+                    <li class="active"><a href="/accounts/edit/?aid=<?php echo $account->id ?>">Account</a></li>
+                    <li><a href="/accounts/website-settings/?aid=<?php echo $account->id ?>">Website</a></li>
+                    <li><a href="/accounts/other-settings/?aid=<?php echo $account->id ?>">Other</a></li>
+                    <li><a href="/accounts/actions/?aid=<?php echo $account->id ?>">Actions</a></li>
+                    <?php if ( $account->craigslist ): ?>
+                        <div class="tab-link"><a href="/accounts/craigslist/?aid=<?php echo $account->id; ?>" title="<?php echo _('Craigslist'); ?>"><?php echo _('Craigslist'); ?></a></div>
+                    <?php endif; ?>
 
-    if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ) {
-        ?>
-        <div class="tab-link"><a href="/accounts/dns/?aid=<?php echo $account->id; ?>" title="<?php echo _('DNS'); ?>"><?php echo _('DNS'); ?></a></div>
-    <?php } ?>
+                    <?php if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ): ?>
+                        <li><a href="/accounts/dns/?aid=<?php echo $account->id ?>">DNS</a></li>
+                    <?php endif; ?>
+
+                    <li><a href="/accounts/notes/?aid=<?php echo $account->id ?>">Notes</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">Customize <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
+                            <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
+                            <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3>Account Information: <?php echo $account->title ?></h3>
+            </header>
+            <div class="panel-body">
+
+
+
+                <?php if ( $errs ): ?>
+                    <div class="alert alert-danger">
+                        <?php echo $errs; ?>
+                    </div>
+                <?php endif; ?>
+
+                <form id="fEditAccount" role="form" method="post">
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="tTitle">Title</label>
+                                <input type="text" id="tTitle" name="tTitle" class="form-control" placeholder="Enter title" value="<?php echo $account->title ?>" data-bv-notempty data-bv-notempty-message="Title is required" />
+                            </div>
+                            <div class="form-group">
+                                <label for="tPhone">Phone</label>
+                                <input type="text" id="tPhone" name="tPhone" class="form-control" placeholder="Enter phone" value="<?php echo $account->phone ?>" />
+                            </div>
+                            <div class="form-group">
+                                <label for="tProducts">Products</label>
+                                <input type="number" id="tProducts" name="tProducts" class="form-control" placeholder="Enter # of products" value="<?php echo $account->products ?>" min="0"  data-bv-notempty data-bv-notempty-message="# of products is required" data-bv-integer data-bv-integer-message="# of products must be a number" />
+                            </div>
+                            <div class="form-group">
+                                <label for="tPlan">Plan</label>
+                                <input type="text" id="tPlan" name="tPlan" class="form-control" placeholder="Enter plan" value="<?php echo $account->plan_name ?>" />
+                            </div>
+                            <div class="form-group">
+                                <label for="tAddress">Address</label>
+                                <input type="text" id="tAddress" name="tAddress" class="form-control" placeholder="Address" value="<?php echo $address['address'] ?>" />
+                            </div>
+                            <div class="form-group form-group-address clearfix">
+                                <label for="tCity">City</label>
+                                <input type="text" id="tCity" name="tCity" class="form-control" placeholder="City" value="<?php echo $address['city'] ?>" />
+                                <select id="sState" name="sState" class="form-control">
+                                    <?php foreach ($states as $k => $v): ?>
+                                        <option value="<?php echo $k ?>" <?php if ($k==$address['state']) echo 'selected' ?>><?php echo $v ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="number" id="tZip" name="tZip" class="form-control" placeholder="Zip Code" value="<?php echo $address['zip'] ?>" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="sUserID">Owner</label>
+                                <select class="form-control" id="sUserID" name="sUserID">
+                                    <?php foreach ($users as $k => $v): ?>
+                                        <option value="<?php echo $k ?>" <?php if ($k==$account->user_id) echo 'selected' ?>><?php echo $v ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input class="form-control" disabled value="<?php echo $owner->email ?>" />
+                            </div>
+                            <div class="form-group">
+                                <label for="sOSUserID">Online Specialist</label>
+                                <select class="form-control" id="sOSUserID" name="sOSUserID">
+                                    <?php foreach ($os_users as $k => $v): ?>
+                                        <option value="<?php echo $k ?>" <?php if ($k==$account->os_user_id) echo 'selected' ?>><?php echo $v ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="taPlanDescription">Plan Description</label>
+                                <textarea id="taPlanDescription" name="taPlanDescription" class="form-control" rows="3"><?php echo $account->plan_description?></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <?php foreach ( $checkboxes as $feature ): ?>
+                            <div class="col-lg-6">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="<?php echo $feature['form_name']?>" name="<?php echo $feature['form_name']?>" data-toggle="switch" value="1" <?php if ($feature['selected']) echo 'checked' ?>/>
+                                        <?php echo $feature['name'] ?>
+                                    </label>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-lg btn-primary pull-right">Save</button>
+                        </div>
+                    </div>
+
+                    <?php nonce::field('edit') ?>
+                </form>
+            </div>
+        </section>
+    </div>
 </div>
-
-<?php
-echo $template->start();
-
-if ( $errs )
-    echo '<p class="red">' . $errs . '</p><br />';
-?>
-
-<form name="fEditAccount" action="" method="post">
-    <h3><?php echo _('Information'); ?></h3>
-    <table>
-        <tr>
-            <td>
-                <label for="tTitle"><?php echo _('Title'); ?></label>
-                <br />
-                <?php echo $account_title; ?>
-            </td>
-            <td>
-                <label for="sUserID"><?php echo _('Owner'); ?></label>
-                <br />
-                <?php echo $users; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="tPhone"><?php echo _('Phone'); ?></label>
-                <br />
-                <?php echo $phone; ?>
-            </td>
-            <td>
-                <strong><?php echo _('Email'); ?></strong>
-                <br />
-                <?php echo $owner->email; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="tProducts"><?php echo _('Products'); ?></label>
-                <br />
-                <?php echo $products; ?>
-            </td>
-            <td>
-                <label for="sOSUserID"><?php echo _('Online Specialist'); ?></label>
-                <br />
-                <?php echo $os_users; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="tPlan"><?php echo _('Plan'); ?></label>
-                <br />
-                <?php echo $plan; ?>
-
-                <br />
-                <label for="address"><?php echo _('Address'); ?></label>
-                <br />
-                <?php echo $address; ?><br />
-                <?php echo "$city $state $zip"; ?>
-            </td>
-            <td>
-                <label for="taPlanDescription"><?php echo _('Plan Description'); ?></label>
-                <br />
-                <?php echo $plan_description; ?>
-            </td>
-        </tr>
-    </table>
-    <br /><br />
-
-    <h3><?php echo _('Features'); ?></h3>
-    <table id="tFeatures">
-        <?php
-        $i = 0;
-        $open = false;
-
-        foreach ( $checkboxes as $feature => $cb ) {
-            $selected = $cb['selected'] ? ' selected' : '';
-            $i++;
-
-            if ( !$open ) {
-                echo '<tr>';
-                $open = true;
-            }
-            ?>
-            <td><label for="<?php echo $cb['form_name']; ?>"><?php echo $cb['name']; ?></label></td>
-            <td><a href="#" class="on-off<?php echo $selected; ?>"></a><?php echo $cb['checkbox']; ?></td>
-            <?php
-            if ( 0 == $i % 2 ) {
-                echo '</tr>';
-                $open = false ;
-            }
-        }
-
-        if ( $open )
-            echo '</tr>';
-        ?>
-    </table>
-
-    <p class="float-right"><input type="submit" class="button" value="<?php echo _('Save'); ?>" /></p>
-    <br clear="right" />
-    <?php nonce::field('edit'); ?>
-</form>
-
-<?php echo $template->end(); ?>

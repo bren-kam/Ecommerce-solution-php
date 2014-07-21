@@ -12,7 +12,7 @@ class Ticket extends ActiveRecordBase {
         , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created;
 
     // Fields from other tables
-    public $role, $website_id, $domain, $email;
+    public $role, $website_id, $domain, $email, $last_updated_at, $last_updated_by;
 
     /**
      * Setup the account initial data
@@ -85,13 +85,35 @@ class Ticket extends ActiveRecordBase {
 	 * Get all information of the tickets
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return Ticket[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        return $this->prepare( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, a.`date_created`, b.`contact_name` AS name, b.`email`, d.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` $order_by LIMIT $limit"
+        return $this->prepare(
+            "SELECT a.`ticket_id`
+                , IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to
+                , a.`summary`
+                , a.`status`
+                , a.`priority`
+                , a.`date_created`
+                , b.`contact_name` AS name
+                , b.`email`
+                , d.`title` AS website
+                , MAX(tc.`date_created`) AS last_updated_at
+                , tcu.`contact_name` AS last_updated_by
+            FROM `tickets` AS a
+            LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
+            LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` )
+            LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` )
+            LEFT JOIN ( SELECT `ticket_id`, MAX(`ticket_comment_id`) AS `ticket_comment_id` FROM `ticket_comments` GROUP BY `ticket_id` ) AS `last_tc` ON ( a.`ticket_id` = last_tc.`ticket_id` )
+            LEFT JOIN `ticket_comments` AS tc ON ( last_tc.`ticket_comment_id` = tc.`ticket_comment_id` )
+            LEFT JOIN `users` AS tcu ON ( tc.`user_id` = tcu.`user_id` )
+            WHERE 1" . $where . "
+            GROUP BY a.`ticket_id`
+            $order_by
+            LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Ticket' );

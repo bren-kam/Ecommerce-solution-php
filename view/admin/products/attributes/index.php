@@ -9,17 +9,24 @@
  * @var User $user
  */
 
-echo $template->start( _('Attributes'), '../sidebar' );
 ?>
 
-<table ajax="/products/attributes/list-all/" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="100%" sort="1"><?php echo _('Attribute Name'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Attributes
+            </header>
 
-<?php echo $template->end(); ?>
+            <div class="panel-body">
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/products/attributes/list-all/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Attribute Name</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

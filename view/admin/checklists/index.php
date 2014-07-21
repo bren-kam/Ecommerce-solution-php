@@ -9,30 +9,40 @@
  * @var User $user
  */
 
-echo $template->start( _('Checklists') );
 ?>
 
-<div class="relative">
-    <select id="sCompleted">
-        <option value="0"><?php echo _('Incomplete'); ?></option>
-        <option value="1"><?php echo _('Completed'); ?></option>
-    </select>
-    <table ajax="/checklists/list-all/" perPage="30,50,100">
-        <thead>
-            <tr>
-                <th width="10%" sort="1"><?php echo _('Days Left'); ?></th>
-                <th width="30%"><?php echo _('Account'); ?></th>
-                <th width="20%"><?php echo _('Online Specialist'); ?></th>
-                <th width="20%"><?php echo _('Type'); ?></th>
-                <th width="20%"><?php echo _('Date Created'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+<?php nonce::field( 'store_session', '_store_session' ); ?>
+
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Checklists
+            </header>
+
+            <div class="panel-body">
+
+                <div class="clearfix">
+                    <p class="pull-right">
+                        <select class="form-control" id="sCompleted">
+                            <option value="0">Show incomplete Tasks</option>
+                            <option value="1">Show completed Tasks</option>
+                        </select>
+                    </p>
+                </div>
+
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/checklists/list-all/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Days Left</th>
+                            <th>Account</th>
+                            <th>Online Specialist</th>
+                            <th>Type</th>
+                            <th>Date Created</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
-
-<?php
-nonce::field( 'store_session', '_store_session' );
-echo $template->end();
-?>

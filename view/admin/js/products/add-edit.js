@@ -1,265 +1,475 @@
-// When the page has loaded
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    // Make the form verify that the images is a proper field
-	$('#fAddEditProduct').submit( function() {
-		if ( 'public' == $('#sStatus').val() && ( $('#images-list .image') ).length < 1 ) {
-			alert( $(this).attr('err') );
-			return false;
-		}
-	});
-
-    // Trigger the check to make sure the slug is available
-	$('#tName').change( function() {
-		if ( '' == $(this).val().replace(/\s/g, '') )
-            return;
-
-        // Get slugs
-        var tProductSlug = $('#tProductSlug');
-
-        // Change slug
-        if ( '' == tProductSlug.val() )
-            tProductSlug.val( $(this).val().slug() );
-
-        // Create the product ID
-        if ( '' == $('#fAddEditProduct').attr('action') )
-            $.post( '/products/create/', { _nonce : $('#_create_product').val() }, ajaxResponse , 'json');
-	});
+/**
+ * Object to Product Image Uploader
+ */
+var ProductImageUploader = {
 
     /**
-     * Make sure it also contains a proper slug
+     * The File Uploader
      */
-    $('#tProductSlug').change( function() {
-        $(this).val( $(this).val().slug() );
-    });
-
-    // Date Picker
-	$('#tPublishDate').datepicker({
-		dateFormat: 'MM d, yy'
-        , altField: ('#hPublishDate')
-        , altFormat: 'yy-mm-dd'
-	});
-
-    // Handle all the lists
-    $('#right .list').each( function() {
-        applyListClasses( $(this) );
-    });
-
-    // Make Specs sortable
-    $('#product-specs-list').sortable({
-        forcePlaceholderSize : true
-        , placeholder: 'list-item-placeholder'
-        , update: function() {
-            applyListClasses( $('#product-specs-list') );
-        }
-    });
-
-    // Make Images sortable
-    $('#images-list').sortable({
-        forcePlaceholderSize : true
-        , placeholder: 'image-placeholder'
-    }).on( 'click', 'a.delete', function() { // Make sure deleting works
-        if ( confirm( $(this).attr('confirm') ) )
-            $(this).parent().parent().remove();
-    });
-
-    // The 'Add Spec' button
-    $('#add-product-spec').click( function() {
-        var tAddSpecName = $('#tAddSpecName'), specName = tAddSpecName.val().trim().replace( /[|`]/g, '');
-        var taAddSpecValue = $('#taAddSpecValue'), specValue = taAddSpecValue.val().trim().replace( /[|`]/g, '');
-        var productSpecsList = $('#product-specs-list'), productSpecTemplate = $('#product-spec-template');
-
-		// ake sure it's a valid entry
-		if ( '' == specName && '' == specValue )
-			return;
-
-		var values = specValue.split( /\n/ );
-
-		for ( var i in values ) {
-			specValue = values[i].trim();
-
-            var newProductSpec = productSpecTemplate
-                .clone()
-                .removeAttr('id');
-
-            newProductSpec
-                .find('span.specification-name')
-                    .text( specName )
-                    .end()
-                .find('span.specification-value')
-                    .text( specValue )
-                    .end()
-                .find('input:first')
-                    .val( specName + '|' + specValue );
-
-			productSpecsList.append( newProductSpec );
-		}
-
-		// Reset values
-		$('#tAddSpecName, #taAddSpecValue').val('').trigger('blur');
-
-        // Update the list
-        applyListClasses( productSpecsList );
-    });
-
-    // The 'Add Tag' button
-	$('#add-tag').click( function() {
-		var tagValue = $('#tTags'), tagValues = tagValue.val().split(','), tagTemplate = $('#tag-template'), tagsList = $('#tags-list');
-
-		for ( var i in tagValues ) {
-			var tag = tagValues[i];
-
-			// If they entered nothing, do nothing
-			if ( !tag.length )
-				return;
-
-			// Start creating new div
-			var newTag = tagTemplate
-                .clone()
-                .removeAttr('id');
-
-            newTag.prepend(tag).find('input:first').val( tag );
-
-			// Append it
-			tagsList.append( newTag );
-		}
-
-		// Reset to default values
-        tagValue.val('').trigger('blur');
-
-        // Update the list
-        applyListClasses( tagsList );
-	});
-
-    // The 'Add Attribute' button
-	$('#add-attribute').click( function() {
-        var attributeItemTemplate = $('#attribute-item-template'), attributeItemsList = $('#attribute-items-list'), sAttributes = $('#sAttributes');
-
-		sAttributes.find('option:selected').each( function() {
-			var option = $(this), attributeItemId = option.val();
-
-			// Make sure they actually put something in
-			if ( '' == attributeItemId )
-                return;
-
-            var newAttributeItem = attributeItemTemplate
-                .clone()
-                .removeAttr('id');
-
-            newAttributeItem
-                .find('strong:first')
-                    .prepend( option.parents('optgroup:first').attr('label') )
-                    .after( option.text() )
-                    .end()
-                .find('input:first')
-                    .val( attributeItemId );
-
-            attributeItemsList.append( newAttributeItem );
-
-            // Deselect the option
-            option.attr('disabled', true).prop('selected', false);
-		});
-
-        // Update the list
-        applyListClasses( attributeItemsList );
-	});
-
-    // Make delete functions work
-    $('#right').on( 'click', 'a.delete', function() {
-        // Get the list
-        var list = $(this).parents('.list:first');
-
-        // Remove the parent
-        $(this).parent().remove();
-
-        // Make it look good
-        applyListClasses( list );
-    });
-
-    // Make attribute items delete work
-    $('#attribute-items-list').on( 'click', 'a.delete-attribute-item', function() {
-        var attributeItemId = $(this).next().val();
-
-        // Remove parent
-        $(this).parent().remove();
-
-        // Enable item in drop down
-        $('#sAttributes option[value=' + attributeItemId + ']').attr('disabled', false);
-    });
-
-    // Setup File Uploader
-    var uploader = new qq.FileUploader({
-        action: '/products/upload-image/'
-        , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
-        , element: $('#upload-image')[0]
-        , sizeLimit: 10485760 // 10 mb's
-        , onSubmit: function( id, fileName ) {
-            uploader.setParams({
-                _nonce : $('#_upload_image').val()
-                , iid : $('#sIndustry').val()
-                , pid : $('#hProductId').val()
-            });
-
-            $('#aUpload').hide();
-            $('#upload-loader').show();
-        }
-        , onComplete: function( id, fileName, responseJSON ) {
-            $('#upload-loader').hide();
-            $('#aUpload').show();
-            ajaxResponse( responseJSON );
-        }
-    });
+    uploader: null
 
     /**
-     * Make the uploader work
+     * New Image Template
      */
-    $('#aUpload').click( function() {
-        if( '' == $('#sIndustry').val() ) {
-            alert( $(this).attr('err') );
+    , template: null
+
+    /**
+     * Setup events
+     */
+    , init: function() {
+        // Setup File Uploader
+        ProductImageUploader.uploader = new qq.FileUploader({
+            action: '/products/upload-image/'
+            , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
+            , element: $('#upload-image')[0]
+            , sizeLimit: 10485760 // 10 mb's
+            , onSubmit: ProductImageUploader.submit
+            , onComplete: ProductImageUploader.complete
+        });
+
+        // Upload file trigger
+        $('#aUpload').click( ProductImageUploader.open );
+        $('body').on('click', '.remove-image', ProductImageUploader.remove);
+
+        // Get the image template
+        ProductImageUploader.template = $('#image-template').clone();
+        ProductImageUploader.template.removeAttr('id');
+    }
+
+    /**
+     * Submit - triggered when a file is selected to upload
+     *
+     * @param id
+     * @param fileName
+     */
+    , submit: function( id, fileName ) {
+        ProductImageUploader.uploader.setParams({
+            _nonce : $('#_upload_image').val()
+            , iid : $('#sIndustry').val()
+            , pid : ProductForm.getProductId()
+        });
+
+        $('#aUpload').hide();
+        $('#upload-loader').removeClass('hidden').show();
+    }
+
+    /**
+     * Complete - handles upload response
+     * @param id
+     * @param fileName
+     * @param responseJSON
+     */
+    , complete: function( id, fileName, response ) {
+        $('#upload-loader').hide();
+        $('#aUpload').show();
+
+        GSR.defaultAjaxResponse( response );
+
+        if ( response.success ) {
+            // Clone image template
+            ProductImageUploader.template.clone()
+                .find('a:first')
+                .attr('href', response.image_url.replace('/small/', '/large/'))
+                .find('img:first')
+                .attr('src', response.image_url)
+                .parents('.image:first')
+                .find('input:first')
+                .val(response.image_name)
+                .parent()
+                .appendTo('#images-list');
+        }
+    }
+
+    /**
+     * Opens uploader
+     * @param e
+     */
+    , open: function(e) {
+        if ( e )
+            e.preventDefault();
+
+        if( $('#sIndustry').val() == '' ) {
+            alert( 'You must select an Industry before uploading an image' );
             return;
         }
+
+        // Ensure we have a product id
+        if ( ProductForm.getProductId() == '' )
+            ProductForm.createProduct();
 
         if ( $.support.cors ) {
             $('#upload-image input:first').click();
         } else {
             alert( $('#err-support-cors').text() );
         }
-    });
+    }
 
-    // Make attributes specific to a category
-    $('#sCategory').change( updateAttributes );
+    /**
+     * Removes an image
+     * @param e
+     */
+    , remove: function(e) {
+        if ( e ) e.preventDefault();
 
-    // We need to update them once
-    updateAttributes();
+        if ( confirm( 'Are you sure you want to delete this image? It cannot be undone.' ) ) {
+            $(this).parents('p.image').remove();
+        }
+    }
 
-    // Stripe them
-    applyListClasses('.list');
-    applyListClasses('#product-specs-list');
+}
+
+var ProductSpecEditor = {
+
+    template: null
+
+    /**
+     * Setup events
+     */
+    , init: function() {
+
+        // Get Template
+        ProductSpecEditor.template = $('#product-spec-template').clone();
+        ProductSpecEditor.template.removeAttr('id');
+
+        // Bind Events
+        $('#add-product-spec').click( ProductSpecEditor.add );
+        $('body').on('click', '.remove-spec', ProductSpecEditor.remove );
+
+    }
+
+    /**
+     * Adds a Product Specification
+     * @param e
+     */
+    , add: function(e) {
+        e.preventDefault();
+
+        var tAddSpecName = $('#tAddSpecName');
+        var specName = $.trim(tAddSpecName.val()).replace( /[|`]/g, '');
+
+        var taAddSpecValue = $('#taAddSpecValue');
+        var specValue = $.trim(taAddSpecValue.val()).replace( /[|`]/g, '');
+
+        var productSpecsList = $('#product-specs-list');
+
+        if ( specName == '' )
+            return;
+
+        var values = specValue.split( /\n/ );
+
+        for ( var i in values ) {
+            specValue = values[i].trim();
+
+            var newProductSpec = ProductSpecEditor.template.clone();
+
+            newProductSpec
+                .find('span.specification-name').text( specName ).end()
+                .find('span.specification-value').text( specValue ).end()
+                .find('input:first').val( specName + '|' + specValue );
+
+            productSpecsList.append( newProductSpec );
+        }
+
+        // Reset values
+        $('#tAddSpecName, #taAddSpecValue').val('').trigger('blur');
+    }
+
+    /**
+     * Removes a Product Specification
+     * @param e
+     */
+    , remove: function(e) {
+        e.preventDefault();
+
+        $(this).parents('.product-spec').remove();
+    }
+
+}
+
+var ProductTagEditor = {
+
+    template: null
+
+    /**
+     * Setup Events
+     */
+    , init: function() {
+
+        // Get Template
+        ProductTagEditor.template = $('#product-tag-template').clone();
+        ProductTagEditor.template.removeAttr('id');
+
+        // Bind Events
+        $('#add-product-tag').click( ProductTagEditor.add );
+        $('body').on('click', '.remove-tag', ProductTagEditor.remove );
+
+    }
+
+    /**
+     * Add a Product Tag
+     * @param e
+     */
+    , add: function(e) {
+        e.preventDefault();
+
+        var tTag = $('#tTag');
+        var tag = $.trim(tTag.val()).replace( /[|`]/g, '');
+
+        var productTagsList = $('#product-tags-list');
+
+        if ( tag == '' )
+            return;
+
+        var newProductTag = ProductTagEditor.template.clone();
+
+        newProductTag
+            .prepend( tag )
+            .find('input:first').val( tag );
+
+        productTagsList.append( newProductTag );
+
+        // Reset values
+        $('#tTag').val('').trigger('blur');
+    }
+
+    /**
+     * Removes a Product Tag
+     * @param e
+     */
+    , remove: function(e) {
+        e.preventDefault();
+
+        $(this).parents('.product-tag').remove();
+    }
+
+}
+
+var ProductAttributeEditor = {
+
+    template: null
+
+    /**
+     * Setup events
+     */
+    , init: function() {
+
+        // Get Template
+        ProductAttributeEditor.template = $('#attribute-template').clone();
+        ProductAttributeEditor.template.removeAttr('id');
+
+        // Bind Events
+        $('#add-attribute').click( ProductAttributeEditor.add );
+        $('body').on('click', '.remove-attribute', ProductAttributeEditor.remove );
+
+        // Get attributes based on it's category
+        $('#sCategory').change( ProductAttributeEditor.getAttributes );
+
+        // Get Attributes for the first time
+        ProductAttributeEditor.getAttributes();
+    }
+
+    /**
+     * Adds a Product Attribute
+     * @param e
+     */
+    , add: function(e) {
+        e.preventDefault();
+
+        var attributeItemsList = $('#attribute-items-list')
+        var sAttributes = $('#sAttributes');
+
+        sAttributes.find('option:selected').each( function() {
+            var option = $(this)
+            var attributeItemId = option.val();
+
+            // Make sure they actually put something in
+            if ( attributeItemId == '' )
+                return;
+
+            var newAttributeItem = ProductAttributeEditor.template.clone();
+
+            newAttributeItem
+                .find('strong:first')
+                .prepend( option.parents('optgroup:first').attr('label') )
+                .after( option.text() )
+                .end()
+                .find('input:first')
+                .val( attributeItemId );
+
+            attributeItemsList.append( newAttributeItem );
+
+            // Deselect the option
+            option
+                .attr('disabled', true)
+                .prop('selected', false);
+        });
+
+    }
+
+    /**
+     * Removes a Product Attribute
+     * @param e
+     */
+    , remove: function(e) {
+        e.preventDefault();
+
+        var attributeItemId = $(this).siblings('input').val();
+
+        // Remove parent
+        $(this).parent().remove();
+
+        // Enable item in drop down
+        $('#sAttributes option[value=' + attributeItemId + ']').removeAttr('disabled');
+    }
+
+    /**
+     * Loads Product Attributes based of Selected Category
+     * @param e
+     */
+    , getAttributes: function(e) {
+        if ( e )
+            e.preventDefault();
+
+        var categoryId = parseInt( $('#sCategory').val() );
+
+        if ( categoryId <= 0 )
+            return;
+
+        // Load attribute items
+        $.post(
+            '/products/get-attribute-items/'
+            ,{ _nonce: $('#_get_attribute_items').val(), cid : categoryId }
+            , ProductAttributeEditor._loadAttributes
+        );
+    }
+
+    /**
+     * Handles /products/get-attribute-items/ callback
+     * @param response
+     */
+    , _loadAttributes: function(response) {
+        if ( response.success ) {
+
+            $('#sAttributes').empty();
+
+            for ( attribute_name in response.attributes ) {
+
+                var attribute_items = response.attributes[attribute_name];
+
+                var optgroup = $('<optgroup />', { label: attribute_name} );
+
+                for ( i in attribute_items ) {
+                    var attribute_item = attribute_items[i];
+                    var option = $( '<option />', { value: attribute_item.id } ).text( attribute_item.name );
+                    optgroup.append( option );
+                }
+
+                $('#sAttributes').append( optgroup );
+            }
+
+        }
+    }
+
+}
+
+
+var ProductForm = {
+
+    /**
+     * Setup Events
+     */
+    init: function() {
+
+        // Setup datepicker
+        $('#tPublishDate').datepicker().on('changeDate', function(e) {
+            $('#hPublishDate').val( e.date.toISOString().slice(0, 10) );
+        });
+
+        // If it's a new product form, create product id after setting name
+        $('#tName').change( ProductForm.setProductSlug );
+
+    }
+
+    /**
+     * Get Product Id
+     * @returns {string}
+     */
+    , getProductId: function() {
+        return $('#hProductId').val();
+    }
+
+    /**
+     * Set product slug from it's name
+     * @param e
+     */
+    , setProductSlug: function(e) {
+        if ( e ) e.preventDefault();
+
+        // Get product name
+        var productName = $('#tName').val();
+
+        // Get current slug
+        var tProductSlug = $('#tProductSlug');
+
+        // Set slug if empty
+        if ( tProductSlug.val() == '' )
+            tProductSlug.val( productName.slug() );
+    }
+
+    /**
+     * Create products
+     * @param e
+     */
+    , createProduct: function(e) {
+        if ( e ) e.preventDefault();
+
+        // Prevent if we already have a Product ID
+        if ( ProductForm.getProductId() != '' )
+            return;
+
+        // Create the product ID
+        $.post(
+            '/products/create/'
+            , { _nonce : $('#_create_product').val() }
+            , ProductForm._setProductId
+        );
+    }
+
+    /**
+     * Sets product id, /products/create/ callback
+     * @param response
+     */
+    , _setProductId: function(response) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.product_id ) {
+            $('#hProductId').val( response.product_id );
+            $('#fAddEditProduct').attr( 'action', '?pid=' + response.product_id );
+        }
+    }
+
+    /**
+     * Generates a Slug from a String
+     * @param str
+     * @returns {string}
+     */
+    , getSlug: function(str) {
+        return str
+                .replace(/^\s+|\s+$/g,"")
+                .replace( /[^-a-zA-Z0-9\s]/g, '' )
+                .replace( /[\s]/g, '-' )
+                .toLowerCase();
+    }
+
+}
+
+/**
+ * Initialize
+ */
+jQuery(function(){
+    ProductImageUploader.init();
+    ProductSpecEditor.init();
+    ProductTagEditor.init();
+    ProductAttributeEditor.init();
+    ProductForm.init();
 });
 
-// Apply the classes
-function applyListClasses( list ) {
-    $('.item', list).removeClass('even').filter(':even').addClass('even');
-}
-
-// Update attributes
-function updateAttributes() {
-    var categoryId = parseInt( $('#sCategory').val() );
-
-    if ( categoryId <= 0 )
-        return;
-
-    // Load attribute items
-	$.post( '/products/get-attribute-items/', { _nonce: $('#_get_attribute_items').val(), cid : categoryId }, ajaxResponse, 'json' );
-}
-
-// Disable attributes
-$.fn.disableAttributes = function() {
-    var sAttributes = $('#sAttributes');
-
-    $('#attribute-items-list input').each( function() {
-        $('option[value=' + $(this).val() + ']', sAttributes).attr( 'disabled', true );
-    });
-};
-
-// Turns text into a slug
-String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); };

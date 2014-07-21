@@ -56,7 +56,16 @@ class Config {
      * @var array
      */
     private static $resources = array(
-        'jquery-ui' => 'http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
+        /* CSS */
+        'bootstrap-datepicker-css' => '//cdn.jsdelivr.net/bootstrap.datepicker/0.1/css/datepicker.css'
+        , 'jquery-ui' => '//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
+
+        /* JS */
+        , 'ace-js' => '//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js'
+        , 'bootstrap-datepicker-js' => '//cdn.jsdelivr.net/bootstrap.datepicker/0.1/js/bootstrap-datepicker.js'
+        , 'bootstrap-validator-js' => '//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.4.5/js/bootstrapValidator.min.js'
+        , 'jqueryui-js' => '//code.jquery.com/ui/1.11.0/jquery-ui.min.js'
+        , 'typeahead-js' => '//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.bundle.js'
     );
 		
 	/**

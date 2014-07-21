@@ -31,12 +31,12 @@ class ReportsController extends BaseController {
 
         $this->resources
             ->javascript('reports/index')
-            ->css('reports/index')
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::resource('typeahead-js') )
+            ->css('reports/index');
 
         return $this->get_template_response( 'index' )
             ->kb( 26 )
-            ->select( 'search' )
+            ->select( 'reports', 'reports/index' )
             ->set( compact( 'services' ) );
     }
 
@@ -46,7 +46,7 @@ class ReportsController extends BaseController {
      * @return TemplateResponse|CsvResponse
      */
     protected function custom() {
-        $form_reports = new FormTable( 'fCustomReports' );
+        $form_reports = new BootstrapForm( 'fCustomReports' );
         $form_reports->submit( _('Download') );
 
         $reports_array = array(
@@ -89,7 +89,7 @@ class ReportsController extends BaseController {
 
         return $this->get_template_response( 'custom' )
             ->kb( 27 )
-            ->select( 'custom' )
+            ->select( 'reports', 'reports/custom' )
             ->add_title( _('Custom Reports') )
             ->set( compact( 'form' ) );
     }
@@ -111,32 +111,32 @@ class ReportsController extends BaseController {
         $results = array();
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'brand':
-                $results = $report->autocomplete_brands( $_POST['term'] );
+                $results = $report->autocomplete_brands( $_GET['term'] );
             break;
 
             case 'online_specialist':
                 $where = ( $this->user->has_permission( User::ROLE_ADMIN ) ) ? '' : ' AND a.`company_id` = ' . (int) $this->user->company_id;
 
-                $results = $report->autocomplete_online_specialists( $_POST['term'], $where );
+                $results = $report->autocomplete_online_specialists( $_GET['term'], $where );
             break;
 
             case 'marketing_specialist':
-                $results = $report->autocomplete_marketing_specialists( $_POST['term'] );
+                $results = $report->autocomplete_marketing_specialists( $_GET['term'] );
             break;
 
             case 'company':
                 if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) {
                     $where = ( $this->user->has_permission( User::ROLE_ADMIN ) ) ? '' : ' AND `company_id` = ' . (int) $this->user->company_id;
-                    $results = $report->autocomplete_companies( $_POST['term'], $where );
+                    $results = $report->autocomplete_companies( $_GET['term'], $where );
                 } else {
                     $results = array();
                 }
             break;
 
             case 'billing_state':
-                $results = $this->user->autocomplete( $_POST['term'], 'billing_state' );
+                $results = $this->user->autocomplete( $_GET['term'], 'billing_state' );
 
                 if ( is_array( $results ) )
                 foreach ( $results as &$r ) {
@@ -147,7 +147,7 @@ class ReportsController extends BaseController {
 
             case 'package':
                 $where = ( $this->user->has_permission( User::ROLE_ADMIN ) ) ? '' : ' AND `company_id` = ' . (int) $this->user->company_id;
-                $results = $report->autocomplete_company_packages( $_POST['term'], $where );
+                $results = $report->autocomplete_company_packages( $_GET['term'], $where );
             break;
         }
 

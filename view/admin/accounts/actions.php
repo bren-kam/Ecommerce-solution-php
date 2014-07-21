@@ -13,44 +13,65 @@
 
 ?>
 
-<div id="tabs">
-    <div class="tab-link"><a href="/accounts/edit/?aid=<?php echo $account->id; ?>" title="<?php echo _('Account'); ?>"><?php echo _('Account'); ?></a></div>
-    <div class="tab-link"><a href="/accounts/website-settings/?aid=<?php echo $account->id; ?>" title="<?php echo _('Website Settings'); ?>"><?php echo _('Website Settings'); ?></a></div>
-    <div class="tab-link"><a href="/accounts/other-settings/?aid=<?php echo $account->id; ?>" title="<?php echo _('Other Settings'); ?>"><?php echo _('Other Settings'); ?></a></div>
-    <div class="tab-link"><a href="/accounts/actions/?aid=<?php echo $account->id; ?>" class="selected" title="<?php echo _('Actions'); ?>"><?php echo _('Actions'); ?></a></div>
-    <?php if ( $account->craigslist ) { ?>
-        <div class="tab-link"><a href="/accounts/craigslist/?aid=<?php echo $account->id; ?>" title="<?php echo _('Craigslist'); ?>"><?php echo _('Craigslist'); ?></a></div>
-    <?php
-    }
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
 
-    if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ) {
-        ?>
-        <div class="tab-link"><a href="/accounts/dns/?aid=<?php echo $account->id; ?>" title="<?php echo _('DNS'); ?>"><?php echo _('DNS'); ?></a></div>
-    <?php } ?>
+            <header class="panel-heading">
+                <ul class="nav nav-tabs tab-bg-dark-navy-blue" role="tablist">
+                    <li><a href="/accounts/edit/?aid=<?php echo $account->id ?>">Account</a></li>
+                    <li><a href="/accounts/website-settings/?aid=<?php echo $account->id ?>">Website</a></li>
+                    <li><a href="/accounts/other-settings/?aid=<?php echo $account->id ?>">Other</a></li>
+                    <li class="active"><a href="/accounts/actions/?aid=<?php echo $account->id ?>">Actions</a></li>
+
+                    <?php if ( $account->craigslist ): ?>
+                        <div class="tab-link"><a href="/accounts/craigslist/?aid=<?php echo $account->id; ?>" title="<?php echo _('Craigslist'); ?>"><?php echo _('Craigslist'); ?></a></div>
+                    <?php endif; ?>
+
+                    <?php if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ): ?>
+                        <li><a href="/accounts/dns/?aid=<?php echo $account->id ?>">DNS</a></li>
+                    <?php endif; ?>
+
+                    <li><a href="/accounts/notes/?aid=<?php echo $account->id ?>">Notes</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">Customize <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
+                            <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
+                            <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3>Other Settings: <?php echo $account->title ?></h3>
+            </header>
+
+            <div class="panel-body">
+
+                <?php if ( 0 == $account->version ) { ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-website/' ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
+                <?php } else { ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-package/' ); ?>" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></p>
+                <?php } ?>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Delete Categories and Products'); ?>" confirm="<?php echo _('Are you sure you want to delete all categories and products? This cannot be undone.'); ?>"><?php echo _('Delete Categories and Products'); ?></a></p>
+
+                <?php if ( empty( $settings['sendgrid-username'] ) ) { ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" ajax="1"><?php echo _('Create Email Marketing Account'); ?></a></p>
+                <?php } ?>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reorganize-categories/' ); ?>" title="<?php echo _('Reorganize Categories'); ?>"><?php echo _('Reorganize Categories'); ?></a></p>
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/add-email-template/' ); ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add Email Template'); ?></a></p>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reset-product-prices/' ); ?>" title="<?php echo _('Set all product prices to zero.'); ?>"><?php echo _('Reset all product prices'); ?></a></p>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" ajax="1" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
+
+            </div>
+        </section>
+    </div>
 </div>
 
-<?php echo $template->start( _('Actions' ) . ': ' . $account->title ); ?>
 
-<?php if ( 0 == $account->version ) { ?>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-website/' ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
-<?php } else { ?>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-package/' ); ?>" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></p>
-<?php } ?>
-
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Delete Categories and Products'); ?>" confirm="<?php echo _('Are you sure you want to delete all categories and products? This cannot be undone.'); ?>"><?php echo _('Delete Categories and Products'); ?></a></p>
-
-<?php if ( empty( $settings['sendgrid-username'] ) ) { ?>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" ajax="1"><?php echo _('Create Email Marketing Account'); ?></a></p>
-<?php } ?>
-
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
-
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reorganize-categories/' ); ?>" title="<?php echo _('Reorganize Categories'); ?>"><?php echo _('Reorganize Categories'); ?></a></p>
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/add-email-template/' ); ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add Email Template'); ?></a></p>
-
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reset-product-prices/' ); ?>" title="<?php echo _('Set all product prices to zero.'); ?>"><?php echo _('Reset all product prices'); ?></a></p>
-
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
-
-<?php echo $template->end(); ?>

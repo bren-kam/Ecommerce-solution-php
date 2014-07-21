@@ -9,19 +9,26 @@
  * @var User $user
  */
 
-echo $template->start();
 ?>
 
-<table ajax="/users/list-all/" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="50%" sort="1"><?php echo _('Name'); ?></th>
-            <th width="40%"><?php echo _('Email'); ?></th>
-            <th width="10%"><?php echo _('Permission'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Users
+            </header>
 
-<?php echo $template->end(); ?>
+            <div class="panel-body">
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/users/list-all/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Name</th>
+                            <th>Email</th>
+                            <th>Permission</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

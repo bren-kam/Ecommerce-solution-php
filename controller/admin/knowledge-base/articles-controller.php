@@ -23,10 +23,12 @@ ArticlesController extends BaseController {
         $uc_section = ucwords( $kb_section );
         $link = '<a href="' . url::add_query_arg( 's', $kb_section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
+        $this->resources->javascript( 'knowledge-base/articles/index' );
+
         return $this->get_template_response( 'index' )
             ->kb( 28 )
             ->set( compact( 'link', 'kb_section' ) )
-            ->select( 'articles', 'view' );
+            ->select( 'knowledge-base', 'knowledge-base/articles/index' );
     }
 
     /**
@@ -58,7 +60,7 @@ ArticlesController extends BaseController {
         // Instantiate classes
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditArticle', url::add_query_arg( array( 's' => $_GET['s'], 'kbaid' => $kb_article->id ), '/knowledge-base/articles/add-edit/' ) );
+        $ft = new BootstrapForm( 'fAddEditArticle', url::add_query_arg( array( 's' => $_GET['s'], 'kbaid' => $kb_article->id ), '/knowledge-base/articles/add-edit/' ) );
 
         $ft->submit( ( $kb_article->id ) ? _('Save') : _('Add') );
 
@@ -73,7 +75,10 @@ ArticlesController extends BaseController {
         $ft->add_field( 'textarea', _('Content'), 'taContent', $kb_article->content )
             ->attribute( 'rte', 1 );
 
-        $media_manager_link = '<a href="#dUploadFile" title="' . _('Media Manager') . '" rel="dialog">' . _('Upload File') . '</a>';
+        $upload_url = '/knowledge-base/articles/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+        $search_url = '/knowledge-base/articles/get-files/?_nonce=' . nonce::create( 'get_files' );
+        $delete_url = '/knowledge-base/articles/delete-file/?_nonce=' . nonce::create( 'delete_file' );
+        $media_manager_link = '<button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="' . $upload_url . '" data-search-url="'. $search_url .'" data-delete-url="'. $delete_url .'">Upload File</button>';
 
         $ft->add_field( 'row', '', $media_manager_link );
 
@@ -132,12 +137,13 @@ ArticlesController extends BaseController {
         $form = $ft->generate_form();
 
         $this->resources
-            ->javascript( 'fileuploader', 'knowledge-base/articles/add-edit' );
+            ->javascript( 'fileuploader', 'media-manager', 'knowledge-base/articles/add-edit' )
+            ->css( 'media-manager' );
 
         // Get Page
         return $this->get_template_response( 'add-edit' )
             ->kb( 29 )
-            ->select( 'articles', 'add' )
+            ->select( 'knowledge-base', 'knowledge-base/articles/add' )
             ->add_title( ( ( $kb_article->id ) ? _('Edit') : _('Add') ) . ' ' . _('Article') )
             ->set( compact( 'form' ) );
     }
@@ -167,7 +173,6 @@ ArticlesController extends BaseController {
 
         // Set initial data
         $data = false;
-        $confirm_delete = _('Are you sure you want to delete this article? This cannot be undone.');
         $delete_nonce = nonce::create( 'delete' );
 
         /**
@@ -178,7 +183,7 @@ ArticlesController extends BaseController {
             $data[] = array(
                 $article->title . '<div class="actions">' .
                     '<a href="' . url::add_query_arg( array( 's' => $_GET['section'], 'kbaid' => $article->id ), '/knowledge-base/articles/add-edit/' ) . '" title="' . $article->title . '">' . _('Edit') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( array( 'kbaid' => $article->id, '_nonce' => $delete_nonce ), '/knowledge-base/articles/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
+                    '<a href="' . url::add_query_arg( array( 'kbaid' => $article->id, '_nonce' => $delete_nonce ), '/knowledge-base/articles/delete/' ) . '" title="' . _('Delete') . '" class="delete-article">' . _('Delete') . '</a></div>'
                 , $article->category
                 , $article->page
                 , number_format( (int) $article->helpful )
@@ -213,12 +218,6 @@ ArticlesController extends BaseController {
         $kb_article->status = KnowledgeBaseArticle::STATUS_DELETED;
         $kb_article->save();
 
-        // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
         return $response;
     }
 
@@ -245,17 +244,8 @@ ArticlesController extends BaseController {
             $categories_array[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
         }
 
-         // Create new form table
-        $ft = new FormTable( 'fAddEditArticle' );
-
-        $html = $ft->add_field( 'select', _('Category'), 'sCategory' )
-            ->options( $categories_array )
-            ->generate();
-
-        jQuery('#sCategory')->replaceWith( $html );
-
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'categories', $categories_array );
 
         return $response;
     }
@@ -283,18 +273,8 @@ ArticlesController extends BaseController {
             $pages_array[$page->id] = $page->name;
         }
 
-         // Create new form table
-        $ft = new FormTable( 'fAddEditArticle' );
-        $kb_page_id = ( isset( $_POST['kbpid'] ) ) ? $_POST['kbpid'] : 0;
-
-        $html = $ft->add_field( 'select', _('Page'), 'sPage', $kb_page_id )
-            ->options( $pages_array )
-            ->generate();
-
-        jQuery('#sPage')->replaceWith( $html );
-
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'pages', $pages_array );
 
         return $response;
     }
@@ -344,35 +324,8 @@ ArticlesController extends BaseController {
 
         $file_path = 'http://kb.retailcatalog.us/' . $file_name;
 
-        // If they don't have any files, remove the message that is sitting there
-        jQuery('#file-list p.no-files')->remove();
-
-        $delete_file_nonce = nonce::create('delete_file');
-        $date = new DateTime();
-        $confirm = _('Are you sure you want to delete this file?');
-        $file_id = format::slug( $file_name );
-
-        // Add the new link and apply sparrow to it
-        if ( in_array( $extension, image::$extensions ) ) {
-            $html = '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-        } else {
-            $html = '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-        }
-
-        jQuery('#file-list')
-            ->append( $html )
-            ->sparrow();
-
-        // Adjust back to original name
-        jQuery('#tFileName')
-            ->val('')
-            ->trigger('blur');
-
-        jQuery('#upload-file-loader')->hide();
-        jQuery('#aUploadFile')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'name', $file_name );
+        $response->add_response( 'url', $file_path );
 
         return $response;
     }
@@ -433,31 +386,23 @@ ArticlesController extends BaseController {
         $file = new File( 'kb' . Config::key('aws-bucket-domain') );
         $files = $file->search_files($pattern, $offset, $limit);
 
-        $delete_file_nonce = nonce::create('delete_file');
-        $confirm = _('Are you sure you want to delete this file?');
-        $html = '';
-
-        foreach ($files as $file_name => $file_info) {
-            $extension = f::extension( $file_name );
+        $files_response = array();
+        foreach ( $files as $file_name => $file ) {
             $date = new DateTime();
-            $date->setTimestamp( $file_info['time'] );
+            $date->setTimestamp( $file['time'] );
             $file_path = 'http://kb.retailcatalog.us/' . $file_name;
             $file_id = format::slug( $file_name );
 
-            // Add the new link and apply sparrow to it
-            if ( in_array( $extension, image::$extensions ) ) {
-                // It's an image!
-                $html .= '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-            } else {
-                // It's not an image!
-                $html .= '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-            }
+            $files_response[] = array(
+                'name' => $file_id
+                , 'url' => $file_path
+                , 'date' => $date->format( 'F jS, Y')
+            );
         }
 
         // Add the response
-        $response->add_response( 'files', $html );
+        $response->add_response( 'files', $files_response );
 
         return $response;
-
     }
 }

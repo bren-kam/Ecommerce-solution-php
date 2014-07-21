@@ -24,7 +24,7 @@ class CompaniesController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->kb( 9 )
-            ->select( 'companies', 'view' );
+            ->select( 'companies', 'companies/index' );
     }
 
     /**
@@ -45,7 +45,7 @@ class CompaniesController extends BaseController {
             $company->get( $company_id );
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditCompany' );
+        $ft = new BootstrapForm( 'fAddEditCompany' );
 
         $ft->submit( ( $company_id ) ? _('Save') : _('Add') );
 
@@ -81,7 +81,7 @@ class CompaniesController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 10 )
-            ->select( 'companies', 'add' )
+            ->select( 'companies', 'companies/add' )
             ->set( 'form', $ft->generate_form() )
             ->add_title( ( $company_id ) ? _('Edit') : _('Add') );
     }

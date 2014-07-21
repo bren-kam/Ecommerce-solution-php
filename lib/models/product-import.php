@@ -12,7 +12,7 @@ class ProductImport extends ActiveRecordBase {
      */
     public $category_id, $brand_id, $industry_id, $website_id, $name, $slug,
             $description, $status, $sku, $price, $price_min, 
-            $product_specification, $image;
+            $product_specifications, $image;
             
     /**
      * Columns from other tables

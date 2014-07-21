@@ -18,66 +18,72 @@ $add_edit_url = '/products/categories/add-edit/';
 
 if ( $category->id )
     $add_edit_url = url::add_query_arg( array( 'cid' => $category->id, 'pcid' => $_GET['pcid'] ) );
+
 ?>
-<form name="fAddEditCategory" class="form-add-edit-category" id="fAddEditCategory" action="<?php echo $add_edit_url; ?>" method="post" ajax="1">
-<table>
-    <tr>
-        <td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tName" id="tName" value="<?php echo $template->v('name'); ?>" /></td>
-    </tr>
-    <tr>
-        <td><label for="sParentCategoryID"><?php echo _('Parent Category'); ?>:</label></td>
-        <td>
-            <select name="sParentCategoryID" id="sParentCategoryID">
-                <option value="">-- <?php echo _('Select Category'); ?> --</option>
-                <?php
-                foreach ( $categories as $c ) {
-                    $selected = ( $parent_category_id == $c->id ) ? ' selected="selected"' : '';
-                ?>
-                    <option value="<?php echo $c->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $c->depth * 5 ), $c->name; ?></option>
-                <?php } ?>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="tSlug"><?php echo _('Slug'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tSlug" id="tSlug" value="<?php echo $template->v('slug'); ?>" /></td>
-    </tr>
-    <tr>
-        <td><label for="tGoogleTaxonomy"><a href="http://www.google.com/basepages/producttype/taxonomy.en-US.txt" target="_blank" title="<?php echo _('Google Taxonomy'); ?>"><?php echo _('Google Taxonomy'); ?>:</a></label></td>
-        <td><input type="text" class="tb" name="tGoogleTaxonomy" id="tGoogleTaxonomy" value="<?php echo $google_taxonomy; ?>" /></td>
-    </tr>
-    <tr>
-        <td class="top"><label for="sAttributes"><?php echo _('Attributes'); ?>:</label></td>
-        <td>
-            <select name="sAttributes" id="sAttributes" multiple="multiple">
-                <?php
-                foreach ( $attributes as $a ) {
-                    $disabled = ( in_array( $a->id, $category_attribute_ids ) ) ? ' disabled="disabled"' : '';
-                ?>
-                    <option value="<?php echo $a->id; ?>"<?php echo $disabled; ?>><?php echo $a->title; ?></option>
-                <?php } ?>
-            </select>
-            <div id="attributes-list">
-            <?php foreach ( $category_attribute_ids as $caid ) { ?>
-            <div extra="<?php echo format::slug( $attributes[$caid]->title ); ?>" id="dAttribute<?php echo $caid; ?>" class="attribute-container">
-                <div class="attribute">
-                    <span class="attribute-name"><?php echo $attributes[$caid]->title; ?></span>
-                    <a href="#" class="delete-attribute" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" /></a>
+
+<form name="fAddEditCategory" id="fAddEditCategory" action="<?php echo $add_edit_url; ?>" method="post" role="form">
+
+    <!-- Modal -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="modalLabel"><?php echo $category->id ? 'Edit' : 'Add'?> Category</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="tName">Name:</label>
+                    <input type="text" class="form-control" name="tName" id="tName" value="<?php echo $name ?>" placeholder="Category Name" />
                 </div>
+
+                <div class="form-group">
+                    <label for="sParentCategoryID">Parent Category</label>
+                    <select class="form-control" name="sParentCategoryID" id="sParentCategoryID">
+                        <option value="">Select Category</option>
+                        <?php foreach ( $categories as $c ): ?>
+                            <option value="<?php echo $c->id; ?>" <?php if ( $parent_category_id == $c->id ) echo ' selected="selected"' ?>><?php echo str_repeat( '&nbsp;', $c->depth * 5 ), $c->name; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tSlug">Slug:</label>
+                    <input type="text" class="form-control" name="tSlug" id="tSlug" value="<?php echo $slug ?>" placeholder="Slug" />
+                </div>
+
+                <div class="form-group">
+                    <label for="tGoogleTaxonomy">Google Taxonomy (<a href="http://www.google.com/basepages/producttype/taxonomy.en-US.txt" target="_blank">read more</a>)</label>
+                    <input type="text" class="form-control" name="tGoogleTaxonomy" id="tGoogleTaxonomy" value="<?php echo $google_taxonomy ?>" placeholder="Google Taxonomy" />
+                </div>
+
+                <div class="form-group">
+                    <label for="sAttributes">Attributes</label>
+                    <select class="form-control" name="sAttributes" id="sAttributes" multiple="multiple">
+                        <?php foreach ( $attributes as $a ): ?>
+                            <option value="<?php echo $a->id; ?>"<?php if ( in_array( $a->id, $category_attribute_ids ) ) echo ' disabled="disabled"'; ?>><?php echo $a->title; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div id="attributes-list">
+                    <?php foreach ( $category_attribute_ids as $caid ): ?>
+                        <p class="attribute">
+                            <?php echo $attributes[$caid]->title; ?>
+                            <a href="javascript:;" class="delete-attribute pull-right" title="Delete">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                            <input type="hidden" name="hAttributes[]" value="<?php echo $caid ?>" />
+                        </p>
+                    <?php endforeach; ?>
+                </div>
+
             </div>
-            <?php } ?>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
             </div>
-            <input type="hidden" name="hAttributes" id="hAttributes" />
-        </td>
-    </tr>
-</table>
-<div class="boxy-footer hidden">
-    <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
-    <p class="text-right col-2 float-right"><input type="submit" class="button" value="<?php echo ( $category->id ) ? _('Save') : _('Add'); ?>" rel="fAddEditCategory" /></p>
-</div>
-<?php nonce::field('add_edit'); ?>
+        </div>
+    </div>
+
 </form>
-<script type="text/javascript">
-    updateAttributes();
-</script>
