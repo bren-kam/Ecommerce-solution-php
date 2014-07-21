@@ -1,0 +1,8 @@
+#kb-home-categories a {
+  display: inline-block;
+  margin: 5px;
+  background-color: #c6cace;
+}
+#kb-home-categories a:hover {
+  background-color: #a9c800;
+}

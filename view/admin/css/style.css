@@ -4818,3 +4818,9 @@ a.guest-on i {
 .input-group-btn {
   vertical-align: bottom;
 }
+#kb-dropdown a:first-child {
+  border: none!important;
+}
+#kb-dropdown a:first-child span {
+  color: #ff6c60;
+}
