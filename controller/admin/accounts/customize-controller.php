@@ -127,7 +127,8 @@ class CustomizeController extends BaseController {
         $account->get($_GET['aid']);
 
         $favicon = $account->get_settings("favicon");
-        $this->resources->javascript('fileuploader', 'accounts/customize/favicon');
+        $this->resources->javascript('fileuploader', 'accounts/customize/favicon')
+            ->css( 'accounts/customize/favicon' );
 
         return $this->get_template_response('favicon')
             ->select('customize', 'favico')

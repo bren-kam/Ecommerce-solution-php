@@ -30,7 +30,8 @@ ProductsController extends BaseController {
 
         $this->resources
             ->javascript('products/index')
-            ->javascript_url( Config::resource('typeahead-js') );
+            ->javascript_url( Config::resource('typeahead-js') )
+            ->css('products/index');
 
         return $this->get_template_response( 'index' )
             ->kb( 11 )
