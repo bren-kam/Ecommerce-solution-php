@@ -21,6 +21,7 @@ class AccountsController extends BaseController {
         unset( $_SESSION['accounts'] );
 
         $this->resources
+            ->css('accounts/index')
             ->javascript('accounts/index')
             ->javascript_url( Config::resource('typeahead-js') );
 
