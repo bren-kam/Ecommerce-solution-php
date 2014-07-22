@@ -16,7 +16,7 @@ var TicketCommentForm = {
             .removeClass('hidden')
             .filter(':not(#upload-loader)')
             .addClass('hide-on-blur');
-        $('#comment').blur( TicketCommentForm.hidForm );
+        $('#comment').blur( TicketCommentForm.hideForm );
 
         // Add Comment
         $('#add-comment-form').submit( TicketCommentForm.add );
@@ -193,7 +193,7 @@ var TicketView = {
         $('#sStatus').change( TicketView.updateStatus );
 
         $('#sAssignedTo').change( TicketView.assignTo );
-        $('#ticket-comments').on( 'click', '[data-assign-to]', TicketView.assignTo );
+        $('body').on( 'click', '[data-assign-to]', TicketView.assignTo );
 
     }
 
