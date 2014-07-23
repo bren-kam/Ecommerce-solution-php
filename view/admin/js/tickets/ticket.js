@@ -75,7 +75,7 @@ var TicketCommentForm = {
             comment.find('.template-contact-name').text( response.contact_name );
             comment.find('[data-assign-to]').attr( 'data-assign-to', response.user_id );
             comment.find('[data-comment-id]').attr( 'data-comment-id', response.id );
-            comment.find('.comment-text').text( response.comment );
+            comment.find('.comment-text').html( response.comment );
 
             if ( response.private == 0 )
                 comment.find('.template-private-comment').remove();
