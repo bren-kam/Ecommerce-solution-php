@@ -47,6 +47,10 @@ class WebsiteOrder extends ActiveRecordBase {
             , array( ':website_order_id' => $website_order_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
+        if ($this->website_shipping_method_id == self::get_ashley_express_shipping_method()->id) {
+            $this->shipping_method = self::get_ashley_express_shipping_method()->name;
+        }
+
         $this->id = $this->website_order_id;
     }
 
@@ -121,4 +125,24 @@ class WebsiteOrder extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+
+    /**
+     * Get Ashley Express Shipping Method
+     * @return WebsiteShippingMethod
+     */
+    public static function get_ashley_express_shipping_method() {
+        $shipping = new WebsiteShippingMethod();
+        $shipping->id = $shipping->website_shipping_method_id = 1048576;
+        $shipping->website_id = null;
+        $shipping->type = 'custom';
+        $shipping->name = 'Ashley Express';
+        $shipping->description = 'Ashley Express';
+        $shipping->method = 'Flat Rate';
+        $shipping->amount = 10;
+        $shipping->zip_codes = '';
+        $shipping->extra = '';
+        $shipping->date_created = '2014-07-23 00:00:00';
+        return $shipping;
+    }
 }
