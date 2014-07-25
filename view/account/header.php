@@ -1,160 +1,226 @@
 <?php
 /**
- * @package Grey Suit Retail
- * @page Header
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
  * @var Template $template
- * @var User $user
- * @var KnowledgeBaseArticle[] $kbh_articles
+ * @var Resources $resources
+ * @var Notification[] $notifications
  */
-
-$resources->css_before( 'labels/' . DOMAIN, 'style' );
-$resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 ?>
 <!DOCTYPE html>
-<!--[if IE 7]>
-<html class="ie ie7" lang="en-US">
-<![endif]-->
-<!--[if IE 8]>
-<html class="ie ie8" lang="en-US">
-<![endif]-->
-<!--[if !(IE 7) | !(IE 8)  ]><!-->
-<html lang="en-US">
-<!--<![endif]-->
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title><?php echo $template->v('title') . ' | ' . TITLE; ?></title>
-    <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/images/favicons/<?php echo DOMAIN ?>.ico">
+
+    <title><?php echo $template->v('title') . ' | ' . TITLE ?></title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/css_single/?f=bootstrap-reset" rel="stylesheet" />
+
+    <!--external css-->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="//cdn.jsdelivr.net/jquery.gritter/1.7.4/css/jquery.gritter.css" rel="stylesheet" />
+
     <?php echo $resources->get_css_urls(); ?>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <link rel="icon" href="<?php echo '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
-    <?php $template->get_head(); ?>
+
+    <!-- Custom styles for this template -->
+    <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style" />
+    <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style-responsive" />
+
+    <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- jQuery -->
+    <script src="//code.jquery.com/jquery-2.1.1.js"></script>
 </head>
 <body>
-<?php $template->get_top(); ?>
-<div id="wrapper">
-	<div id="header">
-		<?php $margin = floor( ( 82 - LOGO_HEIGHT ) / 2 ); ?>
-		<div id="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" height="<?php echo LOGO_HEIGHT; ?>" alt="<?php echo TITLE, ' ', _('Logo'); ?>" style="margin: <?php echo $margin; ?>px 0" /></div>
 
-        <div id="user-info">
-            <div class="user-info-block">
-                <?php if ( $user && $user->id ) { ?>
-                    <p><?php echo _('Welcome'), ' ', $user->contact_name; ?> | <a href="/logout/" title="<?php echo _('Log Out'); ?>"><?php echo _('Log out'); ?></a></p>
-                    <p><a href="/settings/" title="<?php echo _('Account Settings'); ?>"><?php echo _('Account Settings'); ?></a></p>
-                <?php } ?>
-                <?php if ( $online_specialist->id ) { ?>
-                    <p>Online specialist: <a href="mailto:<?php echo $online_specialist->email ?>"><?php echo $online_specialist->contact_name ?></a></p>
-                    <p>
+<section id="container" >
+
+<?php if ( !empty( $notifications ) ): ?>
+    <?php foreach( $notifications as $notification ): ?>
+        <div class="alert alert-dismissible alert-<?php echo $notification->success ? 'success' : 'danger' ?> fade in" role="alert">
+            <button data-dismiss="alert" class="close close-sm" type="button">
+                <i class="fa fa-times"></i>
+            </button>
+            <?php echo $notification->message ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<!--header start-->
+<header class="header white-bg">
+<div class="sidebar-toggle-box">
+    <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+</div>
+<!--logo start-->
+<a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
+<!--logo end-->
+<div class="top-nav ">
+    <!--search & user info start-->
+    <ul class="nav pull-right top-menu">
+        <!-- kb support dropdown start -->
+        <li class="dropdown" id="kb-dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+            <ul class="dropdown-menu extended">
+                <div class="log-arrow-up"></div>
+                <li><a href="#" data-toggle="modal" data-target="#support-modal">Support Request</a></li>
+                <?php
+                    if ( !empty( $kbh_articles ) )
+                        foreach ( $kbh_articles as $kbh_article ):
+                ?>
+                    <li>
+                        <a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo $kbh_article->title; ?></a>
+                    </li>
+                <?php endforeach ; ?>
+                <li><a href="/kb/browser/">Browser Support</a></li>
+            </ul>
+        </li>
+        <!-- kb support dropdown end -->
+        <!-- user login dropdown start-->
+        <li class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                <span class="account-name"><?php echo $user->account->title ?></span> | <span class="username"><?php echo $user->contact_name ?></span>
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu extended logout">
+                <div class="log-arrow-up"></div>
+                <li><a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a></li>
+                <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Sub-users</a></li>
+                <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp; Phone</a></li>
+                <?php if ( $online_specialist->id ): ?>
+                    <li class="big">
                         <?php
+                            echo '<a href="mailto:' . $online_specialist->email . '"><i class="fa fa-life-ring"></i> Online Specialist: ' . $online_specialist->contact_name . '</a>';
                             echo '<a href="mailto:' . $online_specialist->email . '">' . $online_specialist->email . '</a>';
-                            if ( $online_specialist->work_phone ) echo ' | ' . $online_specialist->work_phone;
+                            if ( $online_specialist->work_phone ) echo ' | <a href="tel:' . $online_specialist->work_phone . '">' . $online_specialist->work_phone . '</a>';
                         ?>
-                    </p>
-                <?php } ?>
-            </div>
-        </div>
-	</div>
-	<div id="nav">
-		<div id="nav-links">
-            <a href="/" title="<?php echo _('Dashboard'); ?>" class="nav-link <?php $template->select( 'dashboard' ); ?>"><?php echo _('Dashboard'); ?></a>
-            <?php
-            $links = array(
-                'pages'				    => array( 'website', _('Website') )
-                , 'product_catalog'	    => array( 'products', _('Products') )
-                , 'live' 			    => array( 'analytics', _('Analytics') )
-                , 'blog'			    => array( '', 'Blog' )
-                , 'email_marketing'	    => array( 'email-marketing', _('Email Marketing') )
-                , 'shopping_cart'	    => array( 'shopping-cart/users', _('Shopping Cart') )
-                , 'craigslist'		    => array( 'craigslist', _('Craigslist Ads') )
-                , 'social_media'	    => array( 'social-media', _('Social Media') )
-            );
+                    </li>
+                <?php endif; ?>
+                <li class="big"><a href="/logout/"><i class="fa fa-key"></i> Log Out</a></li>
+            </ul>
+        </li>
+        <!-- user login dropdown end -->
+    </ul>
+    <!--search & user info end-->
+</div>
+</header>
+<!--header end-->
+<!--sidebar start-->
+<aside>
+    <div id="sidebar"  class="nav-collapse ">
+        <!-- sidebar menu start-->
+        <ul class="sidebar-menu" id="nav-accordion">
 
-            $exceptions = array(
-                'shopping-cart/users' => 'shopping-cart'
-            );
+            <?php if ( $this->account->pages || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('website') ) echo 'class="active"'?>>
+                        <i class="fa fa-globe"></i>
+                        <span>Website</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('website/index') ) echo 'class="active"'?>><a href="/website/">Pages</a></li>
+                        <li <?php if ( $template->v('website/categories') ) echo 'class="active"'?>><a href="/website/categories/">Categories</a></li>
+                        <li <?php if ( $template->v('website/brands') ) echo 'class="active"'?>><a href="/website/brands/">Brands</a></li>
+                        <li <?php if ( $template->v('website/sidebar') ) echo 'class="active"'?>><a href="/website/sidebar/">Sidebar</a></li>
+                        <li <?php if ( $template->v('website/banners') ) echo 'class="active"'?>><a href="/website/banners/">Banners</a></li>
+                        <li <?php if ( $template->v('website/settings') ) echo 'class="active"'?>><a href="/website/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
 
-            $keys = array_keys( $links );
+            <?php if ( $this->account->product_catalog || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('products') ) echo 'class="active"'?>>
+                        <i class="fa fa-cube"></i>
+                        <span>Products</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">List Products</a></li>
+                        <li <?php if ( $template->v('products/add') ) echo 'class="active"'?>><a href="/products/add/">Add Product</a></li>
+                        <li <?php if ( $template->v('products/all') ) echo 'class="active"'?>><a href="/products/all/">All Products</a></li>
+                        <li <?php if ( $template->v('products/catalog-dump') ) echo 'class="active"'?>><a href="/products/catalog-dump/">Catalog Dump</a></li>
+                        <li <?php if ( $template->v('products/add-bulk') ) echo 'class="active"'?>><a href="/products/add-bulk/">Add Bulk</a></li>
+                        <li <?php if ( $template->v('products/block-products') ) echo 'class="active"'?>><a href="/products/block-products/">Block Products</a></li>
+                        <li <?php if ( $template->v('products/hide-categories') ) echo 'class="active"'?>><a href="/products/hide-categories/">Hide Categories</a></li>
+                        <li <?php if ( $template->v('products/manually-priced') ) echo 'class="active"'?>><a href="/products/manually-priced/">Manually Priced</a></li>
+                        <li <?php if ( $template->v('products/pricing-tools') ) echo 'class="active"'?>><a href="/products/add-bulk/">Pricing Tools</a></li>
+                        <li <?php if ( $template->v('products/export') ) echo 'class="active"'?>><a href="/products/export/">Export</a></li>
+                        <li <?php if ( $template->v('products/reaches') ) echo 'class="active"'?>><a href="/products/reaches/">Reaches</a></li>
+                        <li <?php if ( $template->v('products/product-builder') ) echo 'class="active"'?>><a href="/products/product-builder/">Product Builder</a></li>
+                        <li <?php if ( $template->v('products/brands') ) echo 'class="active"'?>><a href="/products/brands/">Brands</a></li>
+                        <li <?php if ( $template->v('products/top-categories') ) echo 'class="active"'?>><a href="/products/top-categories/">Top Categories</a></li>
+                        <li <?php if ( $template->v('products/related-products') ) echo 'class="active"'?>><a href="/products/related-products/">Releated Products</a></li>
+                        <li <?php if ( $template->v('products/settings') ) echo 'class="active"'?>><a href="/products/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
 
-            if ( isset( $user->account ) )
-            foreach ( $links as $key => $link ) {
-                if ( !$user->account->$key ) {
-                    if ( !$user->has_permission( User::ROLE_STORE_OWNER ) )
-                        continue;
+            <?php if ( $this->account->live || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('analytics') ) echo 'class="active"'?>>
+                        <i class="fa fa-bar-chart-o"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('analytics/index') ) echo 'class="active"'?>><a href="/analytics/">Analytics</a></li>
+                        <li <?php if ( $template->v('analytics/content-overview') ) echo 'class="active"'?>><a href="/analytics/content-overview/">Content Overview</a></li>
+                        <li <?php if ( $template->v('analytics/traffic-sources-overview') ) echo 'class="active"'?>><a href="/analytics/traffic-sources-overview/">Traffic Sources Overview</a></li>
+                        <li <?php if ( $template->v('analytics/traffic-sources') ) echo 'class="active"'?>><a href="/analytics/traffic-sources/">Sources</a></li>
+                        <li <?php if ( $template->v('analytics/keywords') ) echo 'class="active"'?>><a href="/analytics/keywords/">Keywords</a></li>
+                        <li <?php if ( $template->v('analytics/email-marketing') ) echo 'class="active"'?>><a href="/analytics/email-marketing/">Email Marketing</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
 
-                    if ( 'email_marketing' != $key )
-                        continue;
-                }
+            <?php if ( $this->account->email_marketing || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('email_marketing') ) echo 'class="active"'?>>
+                        <i class="fa fa-inbox"></i>
+                        <span>Email Marketing</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('email_marketing/index') ) echo 'class="active"'?>><a href="/email_marketing/">Dashboard</a></li>
+                        <li <?php if ( $template->v('email_marketing/campaigns') ) echo 'class="active"'?>><a href="/email_marketing/campaigns/">Campaigns</a></li>
+                        <li <?php if ( $template->v('email_marketing/subscribers') ) echo 'class="active"'?>><a href="/email_marketing/subscribers/">Subscribers</a></li>
+                        <li <?php if ( $template->v('email_marketing/email_lists') ) echo 'class="active"'?>><a href="/email_marketing/email-lists/">Email Lists</a></li>
+                        <li <?php if ( $template->v('email_marketing/autoresponders') ) echo 'class="active"'?>><a href="/email_marketing/autoresponders/">Autoresponders</a></li>
+                        <li <?php if ( $template->v('email_marketing/settings') ) echo 'class="active"'?>><a href="/email_marketing/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
 
-                switch ( $key ) {
-                    case 'blog':
-                    ?>
-                    <form action="http://<?php echo $user->account->domain; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm" class="hidden">
-                        <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
-                        <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
-                    </form>
-                    <a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $link[1]; ?>" class="nav-link"><?php echo $link[1]; ?></a>
-                    <?php
-                    break;
+            <?php if ( $this->account->shopping_cart || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('shopping-cart') ) echo 'class="active"'?>>
+                        <i class="fa fa-shopping-cart"></i>
+                        <span>Shopping Cart</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('shopping-cart/orders') ) echo 'class="active"'?>><a href="/shopping-cart/orders/">Orders</a></li>
+                        <li <?php if ( $template->v('shopping-cart/users') ) echo 'class="active"'?>><a href="/shopping-cart/users/">Users</a></li>
+                        <li <?php if ( $template->v('shopping-cart/shipping') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/">Shipping</a></li>
+                        <li <?php if ( $template->v('shopping-cart/coupons') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/">Coupons</a></li>
+                        <li <?php if ( $template->v('shopping-cart/settings') ) echo 'class="active"'?>><a href="/shopping-cart/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
 
-                    default:
-                        $selection = ( isset( $exceptions[$link[0]] ) ) ? $exceptions[$link[0]] : $link[0];
-                        ?>
-                        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>" class="nav-link <?php $template->select( $selection ); ?>"><?php echo $link[1]; ?></a>
-                        <?php
-                    break;
-                }
-            }
-			?>
-            <div id="nav-right">
-                <div id="support">
-                    <a href="#" id="aSupport" title="<?php echo _('Support'); ?>" class="nav-link"><?php echo _('Support'); ?></a>
-                    <div id="support-drop-down" class="hidden">
-                        <a href="#" id="aTicket" title="<?php echo _('Support'); ?>" class="first top"><?php echo _('Support Request'); ?></a>
-                        <a href="/kb/" title="<?php echo _('Knowledge Base'); ?>" class="top"><?php echo _('Knowledge Base'); ?></a>
-                        <?php
-                        if ( !empty( $kbh_articles ) ) {
-                            $article_count = count( $kbh_articles );
-                            $i = 0;
-
-                            foreach ( $kbh_articles as $kbh_article ) {
-                                $i++;
-                                $class = '';
-
-                                if ( 1 == $i ) {
-                                    $class = ' first';
-                                } elseif( $i == $article_count ) {
-                                    $class = ' last';
-                                }
-                            ?>
-                            <a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" class="article<?php echo $class; ?>" target="_blank"><?php echo $kbh_article->title; ?></a>
-                            <?php
-                            }
-                        }
-                        ?>
-                        <a href="/kb/browser/" title="<?php echo _('Browser Support'); ?>" class="last top"><?php echo _('Browser Support'); ?></a>
-                    </div>
-                </div>
-            </div>
-		</div>
-	</div>
-    <div id="current-site">
-        <?php if ( isset( $user->account ) ) { ?>
-        <div class="float-left">
-            <h3><?php echo _('Site'); ?>: <a href="http://<?php echo $user->account->domain; ?>/" title="<?php echo $user->account->title; ?>" target="_blank"><?php echo $user->account->title; ?></a></h3>
-            <?php if ( count( $user->accounts ) > 1 ) { ?>
-                <p><a href="/home/select-account/" class="highlight" title="<?php echo _('Change Account'); ?>">(<?php echo _('Change'); ?>)</a></p>
-            <?php } ?>
-        </div>
-        <?php
-        }
-        if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) ) {
-        ?>
-        <div id="return-to-admin">
-            <p><a href="http://admin.<?php echo DOMAIN; ?>/accounts/" class="button" title="<?php echo _('Back to Admin'); ?>"><?php echo _('Back to Admin'); ?></a></p>
-        </div>
-        <?php } ?>
+        </ul>
+        <!-- sidebar menu end-->
     </div>
+</aside>
+<!--sidebar end-->
+<!--main content start-->
+<section id="main-content">
+<section class="wrapper site-min-height">
+

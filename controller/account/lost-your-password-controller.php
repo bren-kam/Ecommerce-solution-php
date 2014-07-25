@@ -16,9 +16,12 @@ class LostYourPasswordController extends BaseController {
         $this->section = 'Lost your password';
     }
 
+    /**
+     * Index
+     *
+     * @return AjaxResponse|RedirectResponse
+     */
     protected function index() {
-        // Get the template response
-        $custom_response = new CustomResponse( $this->resources, $this->view_base . 'index', _('Lost Your Password') );
 
         $v = new Validator( 'fLostYourPassword' );
         $v->add_validation( 'email', 'email', _('The "Email" field must contain a valid email address') );
@@ -81,11 +84,15 @@ class LostYourPasswordController extends BaseController {
                 }
 
             }
+
+            $response = new AjaxResponse( true );
+            $response->check( empty( $errs ), $errs );
+            if ( !$response->has_error() )
+                $response->notify( $success );
+            return $response;
         }
 
-        $custom_response->set( compact( 'errs', 'validation', 'success' ) );
-
-        return $custom_response;
+        return new RedirectResponse( '/' );
     }
 
     /**
