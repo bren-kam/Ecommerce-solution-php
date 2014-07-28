@@ -67,7 +67,7 @@
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reset-product-prices/' ); ?>" title="<?php echo _('Set all product prices to zero.'); ?>"><?php echo _('Reset all product prices'); ?></a></p>
 
-                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" ajax="1" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
 
             </div>
         </section>
