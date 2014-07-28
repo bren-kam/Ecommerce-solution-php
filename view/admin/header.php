@@ -62,7 +62,7 @@
     <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
 </div>
 <!--logo start-->
-<a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
+<a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" <?php if ( LOGO_HEIGHT < 60 ) echo 'style="margin-top: '. ( (60-LOGO_HEIGHT) / 2) .'px"' ?> alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
 <!--logo end-->
 <div class="top-nav ">
     <!--search & user info start-->
