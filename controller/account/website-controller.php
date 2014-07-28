@@ -679,7 +679,7 @@ class WebsiteController extends BaseController {
         }
         if ( $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link' )
+                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link', 'sm-instagram-link' )
             );
         }
 
@@ -761,6 +761,9 @@ class WebsiteController extends BaseController {
 
             $form->add_field( 'text', _('YouTube Link'), 'sm-youtube-link', $settings['sm-youtube-link'] )
                 ->add_validation( 'url', _('The "YouTube Link" must be a valid link') );
+
+            $form->add_field( 'text', _('Instagram Link'), 'sm-instagram-link', $settings['sm-instagram-link'] )
+                ->add_validation( 'url', _('The "Instagram Link" must be a valid link') );
         }
 
         // Next section
