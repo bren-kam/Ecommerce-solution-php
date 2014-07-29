@@ -34,9 +34,10 @@ class WebsiteController extends BaseController {
 
         // Set resources
         $this->resources
-            ->css('website/pages/page')
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css_url( Config::resource( 'jquery-ui' ) )
+            ->css( 'website/edit', 'media-manager' )
+            ->javascript_url( Config::resource( 'typeahead-js' ), Config::resource( 'jqueryui-js' ) )
+            ->javascript( 'fileuploader', 'media-manager', 'website/edit' );
 
         // Initialize variables
         $page = new AccountPage();
@@ -49,9 +50,6 @@ class WebsiteController extends BaseController {
             $product = new Product;
             $page->products = $product->get_by_ids( $product_ids );
         }
-
-        $account_file = new AccountFile();
-        $files = $account_file->get_by_account( $this->user->account->id );
 
         $account_pagemeta = new AccountPagemeta();
 
@@ -990,35 +988,9 @@ class WebsiteController extends BaseController {
         $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
         $account_file->create();
 
-        // If they don't have any files, remove the message that is sitting there
-        jQuery('#file-list p.no-files')->remove();
-
-        $delete_file_nonce = nonce::create('delete_file');
-        $date = new DateTime( $account_file->date_created );
-        $confirm = _('Are you sure you want to delete this file?');
-
-        // Add the new link and apply sparrow to it
-        if ( in_array( $extension, image::$extensions ) ) {
-            $html = '<div id="file-' . $account_file->id . '" class="file"><a href="#' . $account_file->file_path . '" id="aFile' . $account_file->id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $account_file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-        } else {
-            $html = '<div id="file-' . $account_file->id . '" class="file"><a href="#' . $account_file->file_path . '" id="aFile' . $account_file->id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-        }
-
-        jQuery('#file-list')
-            ->append( $html )
-            ->sparrow();
-
-        // Adjust back to original name
-        jQuery('#tFileName')
-            ->val('')
-            ->trigger('blur');
-
-        jQuery('#upload-file-loader')->hide();
-        jQuery('#aUploadFile')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-        $response->add_response( 'file', $account_file->file_path );
+        $response->add_response( 'id', $account_file->website_file_id );
+        $response->add_response( 'name', f::name( $account_file->file_path ) );
+        $response->add_response( 'url', $account_file->file_path );
 
         return $response;
     }
@@ -1107,21 +1079,7 @@ class WebsiteController extends BaseController {
             $attachment->create();
         }
 
-        switch ( $page->slug ) {
-            case 'current-offer':
-                jQuery('#dCouponContent')->html('<img src="' . $image_url . '" style="padding-bottom:20px" alt="' . _('Coupon') . '" /><br />');
-            break;
-
-            case 'financing':
-                jQuery('#dApplyNowContent')->html('<img src="' . $image_url . '" style="padding-bottom:10px" alt="' . _('Apply Now') . '" /><br /><p>' . _('Place "[apply-now]" into the page content above to place the location of your image. When you view your website, this will be replaced with the image uploaded.') . '</p>' );
-            break;
-        }
-
-        jQuery('#upload-image-loader')->hide();
-        jQuery('#aUploadImage')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'url', $image_url );
 
         return $response;
     }
@@ -1413,7 +1371,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['afid'] ), _('Image failed to upload') );
+        $response->check( isset( $_GET['id'] ), _('Failed to delete file') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -1425,7 +1383,11 @@ class WebsiteController extends BaseController {
         $account_file = new AccountFile();
 
         // Get the account file
-        $account_file->get( $_GET['afid'], $this->user->account->domain, $this->user->account->id );
+        $account_file->get( $_GET['id'], $this->user->account->domain, $this->user->account->id );
+
+        $response->check( $account_file->id, "File {$_GET['id']} not found");
+        if ( $response->has_error() )
+            return $response;
 
         $url_info = parse_url( $account_file->file_path );
         $key = substr( str_replace( $bucket . '/', '', $url_info['path'] ), 1 );
@@ -1433,18 +1395,8 @@ class WebsiteController extends BaseController {
         // Delete from Amazon
         $file->delete_file( $key );
 
-        // Remove that file
-        jQuery('#file-' . $account_file->id )->remove();
-
         // Delete record
         $account_file->remove();
-
-        // Get the files, see how many there are
-        if ( 0 == count( $account_file->get_by_account( $this->user->account->id ) ) )
-            jQuery('#file-list')->append( '<p class="no-files">' . _('You have not uploaded any files.') . '</p>'); // Add a message
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -1850,6 +1802,9 @@ class WebsiteController extends BaseController {
 
         $category->get( $product->category_id );
 
+        $product->image_url = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images );
+        $response->add_response( 'product', $product );
+
         // Form the response HTML
         $product_box = '<div id="dProduct_' . $product->id . '" class="product">';
         $product_box .= '<h4>' . $product->name . '</h4>';
@@ -1858,12 +1813,6 @@ class WebsiteController extends BaseController {
         $product_box .= '<p class="product-actions" id="pProductAction' . $product->id . '"><a href="#" class="remove-product" title="' . _('Remove Product') . '">' . _('Remove') . '</a></p>';
         $product_box .= '<input type="hidden" name="products[]" class="hidden" value="' . $product->id . '" />';
         $product_box .= '</div>';
-
-        jQuery('#dSelectedProducts')->append( $product_box );
-        jQuery('#product-count')->text( number_format( $product_count + 1 ) );
-        jQuery('a.close:visible')->click();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -1919,47 +1868,7 @@ class WebsiteController extends BaseController {
             $location->create();
         }
 
-
-        $delete_location = nonce::create( 'delete_location' );
-        $confirm_delete = _('Are you sure you want to delete this location? This cannot be undone.');
-
-        $location_html = '<div class="location" id="location-' . $location->id . '">';
-        $location_html .= '<h2><span class="name">' . $location->name . '</span></h2>';
-        $location_html .= '<div class="location-left">';
-        $location_html .= '<span class="address">' . $location->address . '</span><br />';
-        $location_html .= '<span class="city">' . $location->city . '</span>, <span class="state">' . $location->state . '</span> <span class="zip">' . $location->zip . '</span>';
-        $location_html .= '</div>';
-        $location_html .= '<div class="location-right">';
-        $location_html .= '<span class="phone">' . $location->phone . '</span><br />';
-        $location_html .= '<span class="fax">' . $location->fax . '</span><br />';
-        $location_html .= '</div>';
-        $location_html .= '<div class="float-right">';
-        $location_html .= '<span class="email">' . $location->email . '</span><br />';
-        $location_html .= '<span class="website">' . $location->website . '</span>';
-        $location_html .= '</div>';
-        $location_html .= '<br />';
-        $location_html .= '<br clear="all" />';
-        $location_html .= '<br />';
-        $location_html .= '<strong>' . _('Store Hours') . ':</strong>';
-        $location_html .= '<br />';
-        $location_html .= '<span class="store-hours">' . $location->store_hours . '</span>';
-        $location_html .= '<div class="actions">';
-        $location_html .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_location, 'wlid' => $location->id ), '/website/delete-location/' ) . '" class="delete-location" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" /></a>';
-        $location_html .= '<a href="#' . $location->id . '" class="edit-location" title="' . _('Edit') . '"><img src="/images/icons/edit.png" width="15" height="17" alt="' . _('Edit') . '" /></a>';
-        $location_html .= '</div>';
-        $location_html .= '</div>';
-
-        // Are we replacing or appending
-        if ( $website_location_id ) {
-            jQuery('#location-' . $location->id)->replaceWith( $location_html );
-            jQuery('#location-' . $location->id)->sparrow();
-        } else {
-            jQuery('#dContactUsList')->append( $location_html )->sparrow();
-        }
-
-        jQuery('a.close:visible')->click();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'location', $location );
 
         return $response;
     }
@@ -1974,32 +1883,15 @@ class WebsiteController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have everything right
-        $response->check( isset( $_POST['wlid'] ), _('Unable to get location. Please refresh the page and try again.') );
+        $response->check( isset( $_GET['wlid'] ), _('Unable to get location. Please refresh the page and try again.') );
 
         if ( $response->has_error() )
             return $response;
 
         $location = new WebsiteLocation();
-        $location->get( $_POST['wlid'], $this->user->account->id );
+        $location->get( $_GET['wlid'], $this->user->account->id );
 
-        jQuery('#name')->val( $location->name );
-        jQuery('#address')->val( $location->address );
-        jQuery('#city')->val( $location->city );
-        jQuery('#state')->val( $location->state );
-        jQuery('#zip')->val( $location->zip );
-        jQuery('#phone')->val( $location->phone );
-        jQuery('#fax')->val( $location->fax );
-        jQuery('#email')->val( $location->email );
-        jQuery('#website')->val( $location->website );
-        jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
-        jQuery('#store-image')->val( $location->store_image );
-        if ( $location->store_image )
-            jQuery('#store-image-preview .image')->attr( 'src', $location->store_image )->show();
-        else
-            jQuery('#store-image-preview .image')->hide();
-        jQuery('#wlid')->val( $location->id );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'location', $location );
 
         return $response;
     }
@@ -2023,10 +1915,6 @@ class WebsiteController extends BaseController {
         $location->get( $_GET['wlid'], $this->user->account->id );
         $location->remove();
 
-        jQuery('#location-' . $location->id)->remove();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
         return $response;
     }
 
@@ -2045,8 +1933,7 @@ class WebsiteController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&location[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 9 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $location = new WebsiteLocation();
         $location->update_sequence( $this->user->account->id, $sequence );
@@ -2250,7 +2137,11 @@ class WebsiteController extends BaseController {
 
     }
 
-    function custom_404() {
+    /**
+     * Custom 404
+     * @return TemplateResponse
+     */
+    public function custom_404() {
 
         if ( $this->verified() ) {
             $text_404 = format::strip_only( $_POST['text-404'], '<script>' );
@@ -2272,5 +2163,33 @@ class WebsiteController extends BaseController {
             ->add_title( _('Custom 404 Page') )
             ->set( compact( 'text_404', 'files' ) );
 
+    }
+
+    /**
+     * Get Files
+     * @return AjaxResponse
+     */
+    public function get_files() {
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $page = isset( $_GET['page'] ) ? (int) $_GET['page'] : 0;
+        $per_page = isset( $_GET['pp'] ) ? (int) $_GET['pp'] : 18;
+        $files = array_slice( $files, $page * $per_page, $per_page );
+
+        foreach ( $files as $file ) {
+            $file->name = f::name( $file->file_path );
+            $file->url = $file->file_path;
+            $file->date = $file->date_created;
+            $file->id = $file->website_file_id;
+        }
+
+        $response->add_response( 'files', $files );
+        return $response;
     }
 }

@@ -750,7 +750,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
+        $response->check( isset( $_GET['type'], $_GET['term'] ), _('Autocomplete failed') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -759,27 +759,27 @@ class ProductsController extends BaseController {
         $ac_suggestions = array();
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_by_account( $_GET['term'], $this->user->account->id );
             break;
 
             case 'product':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'name', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_by_account( $_GET['term'], 'name', $this->user->account->id );
             break;
 
             case 'sku':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'sku', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_by_account( $_GET['term'], 'sku', $this->user->account->id );
             break;
 
             default:
-                if ( is_array($_POST['type']) ) {
+                if ( is_array($_GET['type']) ) {
                     $account_product = new AccountProduct();
-                    $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
-                    $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], $_POST['type'], $this->user->account->id, $limit );
+                    $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
+                    $ac_suggestions = $account_product->autocomplete_by_account( $_GET['term'], $_GET['type'], $this->user->account->id, $limit );
                 }
             break;
         }
