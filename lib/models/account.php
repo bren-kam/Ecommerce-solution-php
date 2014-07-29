@@ -443,6 +443,18 @@ class Account extends ActiveRecordBase {
             , 30    // Signature Design - C (Updated)
             , 31    // Signature Design - D (Updated)
             , 32    // IR - Theme 4 (updated)
+            , 33    // GSR - Theme 1 (unlocked)
+            , 34    // GSR - Theme 2 (unlocked)
+            , 35    // GSR - Theme 3 (unlocked)
+            , 36    // GSR - Theme 4 (unlocked)
+            , 37    // IMR - Theme 1 (Unlocked)
+            , 38    // IMR - Theme 2 (Unlocked)
+            , 39    // IMR - Theme 3 (Unlocked)
+            , 40    // IMR - Theme 4 (Unlocked)
+            , 41    // RTO 1 (Unlocked)
+            , 42    // RTO 2 (Unlocked)
+            , 43    // RTO 3 (Unlocked)
+            , 44    // RTO 4 (Unlocked)
         );
         
         return in_array($this->company_package_id, $new_template_company_package_ids);
