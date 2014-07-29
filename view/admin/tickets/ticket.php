@@ -48,7 +48,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
 ?>
 
 <div class="row-fluid">
-    <div class="col-lg-8">
+    <div class="col-lg-9 col-md-9">
 
         <section class="panel">
             <header class="panel-heading" id="ticket-title">
@@ -90,11 +90,6 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
                     <div class="form-group">
                         <textarea class="form-control" name="comment" id="comment" rows="1" placeholder="Write a comment..."></textarea>
                     </div>
-                    <div class="checkbox hidden">
-                        <label>
-                            <input type="checkbox" name="private"> This is a Private Comment
-                        </label>
-                    </div>
                     <div class="row hidden clearfix">
                         <div class="col-lg-4">
                             <button type="button" id="upload" class="btn btn-default">Attach</button>
@@ -112,6 +107,11 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
                         </div>
                         <div class="col-lg-8">
                             <button type="submit" class="btn btn-primary pull-right">Send comment</button>
+                            <div class="checkbox pull-right">
+                                <label>
+                                    <input type="checkbox" name="private"> Private Comment &nbsp;
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
 
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-3 col-md-3">
         <section class="panel">
             <header class="panel-heading">
                 Information
