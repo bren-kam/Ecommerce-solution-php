@@ -52,7 +52,7 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Account</th>
+                                <th sort="1">Account</th>
                                 <th>User Name</th>
                                 <th>Online Specialist</th>
                             </tr>
