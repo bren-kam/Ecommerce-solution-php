@@ -4839,3 +4839,6 @@ a.guest-on i {
 #kb-dropdown > a span {
   color: #ff6c60;
 }
+#kb-dropdown .keep-open {
+  cursor: default;
+}
