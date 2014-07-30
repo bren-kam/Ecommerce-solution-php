@@ -465,7 +465,7 @@ ProductsController extends BaseController {
          */
         if ( is_array( $products ) )
         foreach ( $products as $p ) {
-            $created_by = ( 0 == $p->website_id ) ? $p->created_by : '<span class="highlight">' . $p->created_by . '</span>';
+            $created_by = ( 0 == $p->website_id ) ? $p->created_by : '<span class="label label-primary">' . $p->created_by . '</span>';
 
             $data[] = array(
                 $p->name .

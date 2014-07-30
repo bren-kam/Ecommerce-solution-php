@@ -325,9 +325,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 
         // set/unset Ashley Express flag
-        if ( !empty( $ashley_express_skus ) ) {
-            $this->set_bulk_ashley_express( $ashley_express_skus );
-        }
+        // Update 2014-07-30 this was changed to flag manually, NOT via xml
+        // if ( !empty( $ashley_express_skus ) ) {
+        //     $this->set_bulk_ashley_express( $ashley_express_skus );
+        // }
 
 		// Add new products to Account
         $industries = $account->get_industries();

@@ -238,6 +238,16 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                         <input type="hidden" name="hPublishDate" id="hPublishDate" value="<?php echo $date->getTimestamp() > 0 ? $date->format('Y-m-d') : date('Y-m-d'); ?>" />
                     </div>
 
+                    <?php if ( $product->id ): ?>
+                        <ul>
+                            <li><strong>Created By:</strong> <?php echo $product->created_user ?></li>
+                            <li><strong>Updated By:</strong> <?php echo $product->updated_user ?></li>
+                            <?php if ( $account->id ): ?>
+                                <li><strong>Website:</strong> <?php echo $account->title ?></li>
+                            <?php endif; ?>
+                        </ul>
+                    <?php endif; ?>
+
                     <p class="clearfix">
                         <button type="submit" class="btn btn-success pull-right">Publish</button>
                     </p>
