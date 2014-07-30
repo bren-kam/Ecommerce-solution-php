@@ -16,3 +16,7 @@
   position: absolute;
   left: -5000px;
 }
+#sAttributes {
+  font-size: 12px;
+  min-height: 200px;
+}
