@@ -17,7 +17,7 @@
  * @var array $product_attribute_items
  * @var array $tags
  * @var array $product_images
- * @var Account $accounts
+ * @var Account[] $accounts
  * @var BootstrapValidator $validation
  */
 
@@ -166,11 +166,11 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                     <p>
                         <button type="button" id="aUpload" class="btn btn-primary">Upload</button>
 
-                        <div class="progress progress-sm hidden" id="upload-loader">
-                            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                                <span class="sr-only">Loading...</span>
-                            </div>
+                    <div class="progress progress-sm hidden" id="upload-loader">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                            <span class="sr-only">Loading...</span>
                         </div>
+                    </div>
                     </p>
 
                     <!-- Where the uploader lives -->
@@ -189,6 +189,28 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                         <?php endforeach; ?>
                     </div>
 
+                </div>
+            </section>
+
+            <section class="panel">
+                <header class="panel-heading">
+                    Accounts using this product
+                </header>
+
+                <div class="panel-body">
+                    <?php if ( empty( $accounts ) ): ?>
+                        No accounts using this product yet!
+                    <?php else: ?>
+                        <ul>
+                            <?php foreach ( $accounts as $a ): ?>
+                                <li>
+                                    <a href="http://<?php echo $a->domain ?>" target="_blank"><i class="fa fa-globe" title="Go to Account Website"></i></a>
+                                    <a href="/accounts/edit/?aid=<?php echo $a->id ?>" target="_blank"><i class="fa fa-pencil" title="View/Edit this account"></i></a>
+                                    <?php echo $a->title ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
             </section>
 
