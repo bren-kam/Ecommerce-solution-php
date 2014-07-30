@@ -74,16 +74,14 @@
             </a>
             <ul class="dropdown-menu extended">
                 <div class="log-arrow-up"></div>
-                <li><a href="#" data-toggle="modal" data-target="#support-modal">Support Request</a></li>
-                <?php
-                    if ( !empty( $kbh_articles ) )
-                        foreach ( $kbh_articles as $kbh_article ):
-                ?>
-                    <li>
-                        <a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo $kbh_article->title; ?></a>
-                    </li>
-                <?php endforeach ; ?>
-                <li><a href="/kb/browser/">Browser Support</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#support-modal"><i class="fa fa-ticket"></i> Support Request</a></li>
+                <?php if ( !empty( $kbh_articles ) ): ?>
+                    <li><a href="javascript:;"><i class="fa fa-book"></i> <strong>Knowledge Base</strong></a></li>
+                    <?php foreach ( $kbh_articles as $kbh_article ): ?>
+                        <li><a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo str_repeat( '&nbsp;', 8 ) . $kbh_article->title; ?></a></li>
+                    <?php endforeach ; ?>
+                <?php endif; ?>
+                <li><a href="/kb/browser/"><i class="fa fa-globe"></i> Browser Support</a></li>
             </ul>
         </li>
         <!-- kb support dropdown end -->
