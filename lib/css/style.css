@@ -4842,3 +4842,11 @@ a.guest-on i {
 #kb-dropdown .keep-open {
   cursor: default;
 }
+/* Top level alerts */
+#container > .alert {
+  position: absolute;
+  top: 0;
+  left: 5%;
+  z-index: 9999;
+  width: 90%;
+}

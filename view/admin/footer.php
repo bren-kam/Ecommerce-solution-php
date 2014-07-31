@@ -48,14 +48,30 @@
                         <textarea rows="5" class="form-control" id="taTicketMessage" name="taTicketMessage" placeholder="Enter Message..."></textarea>
                     </div>
 
+                    <p>
+                        <button type="button" id="ticket-upload" class="btn btn-sm btn-default">Upload</button>
+
+                        <div class="progress progress-sm hidden" id="ticket-upload-progress">
+                            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </p>
+
+                    <ul id="ticket-attachments"></ul>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
                 </div>
             </div>
         </div>
     </form>
+
+    <!-- Real Uploader -->
+    <div id="ticket-uploader"></div>
+    <?php nonce::field( 'upload_to_ticket', '_upload_to_ticket' ) ?>
 </div>
 <!-- Support (Ticket) Modal end -->
 
@@ -70,6 +86,7 @@
 <script src="/resources/js_single/?f=respond.min" ></script>
 <script src="//cdn.jsdelivr.net/jquery.gritter/1.7.4/js/jquery.gritter.min.js" ></script>
 <script src="/resources/js_single/?f=bootstrapValidator.min"></script>
+<script src="/resources/js_single/?f=fileuploader"></script>
 
 <script src="/resources/js_single/?f=common-scripts"></script>
 <script src="/resources/js_single/?f=head.min" ></script>

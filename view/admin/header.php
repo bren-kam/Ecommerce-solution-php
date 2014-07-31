@@ -43,7 +43,7 @@
 
 <body>
 
-<section id="container" >
+<section id="container">
 
 <?php if ( !empty( $notifications ) ): ?>
     <?php foreach( $notifications as $notification ): ?>
