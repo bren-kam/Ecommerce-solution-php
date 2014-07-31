@@ -59,7 +59,13 @@
         $run_auto_prices = nonce::create('run_auto_prices');
 
         foreach ( $auto_prices as $auto_price ) {
-            $brand_name = ( 0 == $auto_price->brand_id ) ? _('All') : $brands[$auto_price->brand_id]->name;
+            if ( $auto_price->brand_id == 0 ) {
+                $brand_name = 'All';
+            } else if ( $auto_price->brand_id == 1048576 ) {
+                $brand_name = '-- Ashley Express Program --';
+            } else {
+                $brand_name = $brands[$auto_price->brand_id]->name;
+            }
             $category = Category::$categories[$auto_price->category_id];
             ?>
             <tr id="ap_<?php echo $auto_price->brand_id; ?>_<?php echo $auto_price->category_id; ?>">
@@ -83,8 +89,11 @@
             <td>
                 <select id="brand">
                     <option value="0">-- All --</option>
+                    <?php if ( $user->account->get_settings( 'ashley-express' ) ) { ?>
+                        <option value="1048576">-- Ashley Express Program --</option>
+                    <?php } ?>
                     <?php foreach ( $brands as $brand ) { ?>
-                    <option value="<?php echo $brand->id; ?>"><?php echo $brand->name; ?></option>
+                        <option value="<?php echo $brand->id; ?>"><?php echo $brand->name; ?></option>
                     <?php } ?>
                 </select>
             </td>
