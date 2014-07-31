@@ -388,6 +388,11 @@ var ProductForm = {
         // If it's a new product form, create product id after setting name
         $('#tName').change( ProductForm.setProductSlug );
 
+        // Make Images sortable
+        $('#images-list').sortable({
+            forcePlaceholderSize : true
+            , placeholder: 'image-placeholder'
+        })
     }
 
     /**
