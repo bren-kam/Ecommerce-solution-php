@@ -1,0 +1,40 @@
+#sidebar-list .sidebar-element {
+  position: relative;
+  width: 40%;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+#sidebar-list .sidebar-element.disabled {
+  opacity: 0.6;
+}
+#sidebar-list .sidebar-element.disabled h3 {
+  color: #797979;
+}
+#sidebar-list .sidebar-element .sidebar-actions {
+  position: absolute;
+  top: 12px;
+  right: 5px;
+}
+#sidebar-list .sidebar-element .sidebar-actions .remove {
+  color: red;
+  font-size: 18px;
+}
+#sidebar-list .sidebar-element h3 {
+  margin: 0 0 5px 0;
+}
+#sidebar-list .sidebar-element img {
+  width: 100%;
+}
+#sidebar-list .sidebar-element video {
+  margin-bottom: 15px;
+}
+#sidebar-list .sidebar-element-placeholder {
+  height: 100px;
+  width: 40%;
+  border: 1px dashed #999;
+}
+#sidebar-list #video-uploader {
+  position: absolute;
+  left: -5000px;
+}

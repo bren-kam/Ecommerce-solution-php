@@ -3,6 +3,9 @@
   float: left;
   position: relative;
 }
+#product-list .product img {
+  width: 100%;
+}
 #product-list .product h4 {
   text-align: center;
 }

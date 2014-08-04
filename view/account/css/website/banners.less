@@ -1,0 +1,40 @@
+#banner-list {
+  .banner {
+    position: relative;
+    width: 60%;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+
+    &.disabled {
+      opacity: 0.6;
+      h3 {
+        color: #797979;
+      }
+    }
+
+    .banner-actions {
+      position: absolute;
+      top: 12px;
+      right: 5px;
+
+      .remove {
+        color: red;
+        font-size: 18px;
+      }
+    }
+
+    img {
+      width: 100%;
+      margin-top: 35px;
+    }
+
+  }
+
+  .banner-placeholder {
+    height: 100px;
+    width: 60%;
+    border: 1px dashed #999;
+  }
+
+}

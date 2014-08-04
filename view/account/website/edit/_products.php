@@ -38,8 +38,25 @@
             </table>
         </div>
 
-        <div id="product-list">
 
+        <div id="product-list" class="clearfix">
+            <?php
+                if ( $product_count > 0 ):
+                foreach ( $page->products as $product ):
+                    $images = $product->get_images();
+                    $product_image = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/' . current( $images );
+            ?>
+                <div class="product">
+                    <img src="<?php echo $product_image ?>"/>
+                    <h4><?php echo $product->name ?></h4>
+                    <p class="brand"><?php echo $product->brand ?></p>
+                    <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
+                    <input type="hidden" name="products[]" value="<?php echo $product->id ?>"/>
+                </div>
+            <?php
+                endforeach;
+                endif;
+            ?>
         </div>
 
         <div class="radio">

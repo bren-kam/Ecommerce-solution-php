@@ -41,7 +41,7 @@ var ProductForm = {
         // Add Product & Product Template
         $( '#show-product-form' ).click( ProductForm.showProductForm );
         $( '#tAddProducts' ).on( 'click', '.add-product', ProductForm.addProduct );
-        ProductForm.template = $( '#product-template' ).clone().removeClass('hidden');
+        ProductForm.template = $( '#product-template' ).clone().removeClass('hidden').removeAttr('id');
         $( '#product-template' ).remove();
 
         // Remove Product

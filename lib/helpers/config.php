@@ -59,6 +59,7 @@ class Config {
         /* CSS */
         'bootstrap-datepicker-css' => '//cdn.jsdelivr.net/bootstrap.datepicker/0.1/css/datepicker.css'
         , 'jquery-ui' => '//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
+        , 'videojs-css' => '//vjs.zencdn.net/4.6/video-js.css'
 
         /* JS */
         , 'ace-js' => '//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js'
@@ -66,6 +67,7 @@ class Config {
         , 'bootstrap-validator-js' => '//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.4.5/js/bootstrapValidator.min.js'
         , 'jqueryui-js' => '//code.jquery.com/ui/1.11.0/jquery-ui.min.js'
         , 'typeahead-js' => '//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.bundle.js'
+        , 'videojs-js' => '//vjs.zencdn.net/4.6/video.js'
     );
 		
 	/**

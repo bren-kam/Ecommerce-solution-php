@@ -72,6 +72,7 @@
 <script src="/resources/js_single/?f=bootstrapValidator.min"></script>
 <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
 <script src="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+<script src="/resources/js_single/?f=bootstrap-switch"></script>
 
 <script src="/resources/js_single/?f=common-scripts"></script>
 <script src="/resources/js_single/?f=head.min" ></script>

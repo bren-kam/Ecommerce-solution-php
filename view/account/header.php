@@ -22,6 +22,7 @@
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
     <link href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
     <link href="//cdn.jsdelivr.net/jquery.gritter/1.7.4/css/jquery.gritter.css" rel="stylesheet" />
+    <link href="/resources/css_single/?f=bootstrap-switch" rel="stylesheet" />
 
     <?php echo $resources->get_css_urls(); ?>
 
@@ -133,6 +134,7 @@
                         <li <?php if ( $template->v('website/brands') ) echo 'class="active"'?>><a href="/website/brands/">Brands</a></li>
                         <li <?php if ( $template->v('website/sidebar') ) echo 'class="active"'?>><a href="/website/sidebar/">Sidebar</a></li>
                         <li <?php if ( $template->v('website/banners') ) echo 'class="active"'?>><a href="/website/banners/">Banners</a></li>
+                        <li <?php if ( $template->v('website/home-page-layout') ) echo 'class="active"'?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
                         <li <?php if ( $template->v('website/settings') ) echo 'class="active"'?>><a href="/website/settings/">Settings</a></li>
                     </ul>
                 </li>

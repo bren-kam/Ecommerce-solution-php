@@ -1,20 +1,13 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Edit Page
+ * @page Edit Brand
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var AccountPage $page
- * @var string $page_title
- * @var array $files
- * @var string $js_validation
- * @var string $errs
- * @var int $product_count
- * @var string $contact_validation
- * @var bool $hide_sidebar
+ * @var AccountBrand $brand
  */
 
 $upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
@@ -22,26 +15,24 @@ $search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
 $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 ?>
 
-<form id="fEditPage" action="/website/edit/?apid=<?php echo $page->id ?>" method="post" role="form" data-account-page-id="<?php echo $page->id ?>">
+<form id="fEditPage" action="/website/edit-brand/?bid=<?php echo $_GET['bid'] ?>" method="post" role="form">
 
     <div class="row-fluid">
         <div class="col-lg-9">
             <section class="panel">
                 <header class="panel-heading">
-                    Edit Page
+                    Edit Brand - <?php echo $brand->name ?>
                 </header>
 
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="tTitle">Title:</label>
-                        <input type="text" class="form-control" name="tTitle" id="tTitle" placeholder="Title" value="<?php echo $page->title ?>"/>
+                        <input type="text" class="form-control" name="tTitle" id="tTitle" placeholder="Title" value="<?php echo $brand->name ?>"/>
                     </div>
-
-                    <p><strong>Link:</strong> http://<?php echo $user->account->domain ?>/<input type="text" id="tPageSlug" name="tPageSlug" value="<?php echo $page->slug ?>" placeholder="Slug" />/</p>
 
                     <div class="form-group">
                         <label for="taContent">Content:</label>
-                        <textarea name="taContent" id="taContent" rows="3" cols="60" rte="1"><?php echo $page->content ?></textarea>
+                        <textarea name="taContent" id="taContent" rows="3" cols="60" rte="1"><?php echo $brand->content ?></textarea>
                     </div>
 
                     <p>
@@ -49,18 +40,11 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </p>
 
                     <p class="clearfix">
-                        <?php nonce::field( 'edit' ) ?>
+                        <?php nonce::field( 'edit_brand' ) ?>
                         <button type="submit" class="btn btn-primary pull-right">Save</button>
                     </p>
                 </div>
             </section>
-
-            <?php include __DIR__ . '/edit/_products.php' ?>
-
-            <?php
-                if ( in_array ($page->slug, array( 'contact-us', 'current-offer', 'financing' ) ) )
-                    include __DIR__ . '/edit/_' . $page->slug . '.php';
-            ?>
 
         </div>
 
@@ -73,26 +57,29 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="tMetaTitle">Meta Title:</label>
-                        <input type="text" class="form-control" name="tMetaTitle" id="tMetaTitle" value="<?php echo $page->meta_title ?>"/>
+                        <input type="text" class="form-control" name="tMetaTitle" id="tMetaTitle" value="<?php echo $brand->meta_title ?>"/>
                     </div>
                     <div class="form-group">
                         <label for="tMetaDescription">Meta Description:</label>
-                        <input type="text" class="form-control" name="tMetaDescription" id="tMetaDescription" value="<?php echo $page->meta_description ?>"/>
+                        <input type="text" class="form-control" name="tMetaDescription" id="tMetaDescription" value="<?php echo $brand->meta_description ?>"/>
                     </div>
                     <div class="form-group">
                         <label for="tMetaKeywords">Meta Keywords:</label>
-                        <input type="text" class="form-control" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $page->meta_keywords ?>"/>
+                        <input type="text" class="form-control" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $brand->meta_keywords ?>"/>
                     </div>
-                    <div class="checkbox">
+
+                    <p><strong>Text Placement:</strong></p>
+                    <div class="radio">
                         <label>
-                            <input type="checkbox" name="cbHideSidebar" value="yes" <?php if ( $hide_sidebar == '1' ) echo 'checked="checked"'; ?> />
-                            Hide Sidebar
+                            <input type="radio" name="rPosition" value="1"<?php if ( '0' != $brand->top ) echo ' checked="checked"'; ?> />
+                            Text above products
+                        </label>
+                        <label>
+                            <input type="radio" name="rPosition" value="1"<?php if ( '0' == $brand->top ) echo ' checked="checked"'; ?> />
+                            Text after products
                         </label>
                     </div>
 
-                    <?php if ( $product_count == 0 ): ?>
-                        <button type="button" id="show-product-form" class="btn btn-xs btn-default">Add Products</button>
-                    <?php endif; ?>
                 </div>
             </section>
         </div>
