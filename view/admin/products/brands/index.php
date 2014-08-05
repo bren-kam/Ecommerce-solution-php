@@ -23,7 +23,7 @@
                     <table class="display table table-bordered table-striped" ajax="/products/brands/list-all/" perPage="30,50,100">
                         <thead>
                             <th sort="1">Brand Name</th>
-                            <th sort="1">URL</th>
+                            <th>URL</th>
                         </thead>
                     </table>
                 </div>
