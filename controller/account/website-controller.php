@@ -565,7 +565,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'home-page-layout' )
             ->kb( 135 )
-            ->select( 'settings', 'home-page-layout' )
+            ->select( 'website', 'website/home-page-layout' )
             ->add_title( _('Home Page Layout') )
             ->set( compact( 'layout' ) );
     }
@@ -580,9 +580,8 @@ class WebsiteController extends BaseController {
         $pages = $page->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'website/navigation' )
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'website/navigation' );
+            ->css( 'jquery.nestable', 'website/navigation' )
+            ->javascript( 'jquery.nestable', 'website/navigation' );
 
         if ( $this->verified() ) {
             $navigation = array();
@@ -603,6 +602,8 @@ class WebsiteController extends BaseController {
                             list( $url, $name ) = explode( '|', $sub_page );
                             $navigation_node['children'][] = compact( 'url', 'name' );
                         }
+                        if ( empty( $navigation_node['children'] ) )
+                            unset( $navigation_node['children'] );
                     }
 
                     $navigation[] = $navigation_node;
@@ -618,7 +619,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'navigation' )
             ->kb( 136 )
-            ->select( 'settings', 'sidebar-navigation' )
+            ->select( 'website', 'website/navigation' )
             ->add_title( _('Navigation') )
             ->set( compact( 'pages', 'navigation' ) );
     }
@@ -648,12 +649,12 @@ class WebsiteController extends BaseController {
         $footer_navigation = ( empty( $footer_navigation ) ) ? array() : json_decode( $footer_navigation );
 
         $this->resources
-            ->css( 'website/footer-navigation' )
-            ->javascript( 'website/footer-navigation' );
+            ->css( 'jquery.nestable', 'website/footer-navigation' )
+            ->javascript( 'jquery.nestable', 'website/footer-navigation' );
 
         return $this->get_template_response( 'footer-navigation' )
             ->kb( 138 )
-            ->select( 'settings', 'footer-navigation' )
+            ->select( 'website', 'website/navigation' )
             ->add_title( _('Footer Navigation') )
             ->set( compact( 'pages', 'footer_navigation' ) );
     }
@@ -809,7 +810,7 @@ class WebsiteController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 44 )
             ->add_title( _('Settings') )
-            ->select( 'settings', 'page-settings' )
+            ->select( 'settings', 'website/settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
@@ -2013,7 +2014,6 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     public function header() {
-
         if ( $this->verified() ) {
             $header = htmlentities( $_POST['header'] );
             $this->user->account->set_settings( array( 'header' => $header ) );
@@ -2027,11 +2027,12 @@ class WebsiteController extends BaseController {
         $files = $account_file->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->javascript('fileuploader', 'gsr-media-manager');
+            ->css('media-manager')
+            ->javascript('fileuploader', 'media-manager');
 
         return $this->get_template_response('header')
             ->kb( 139 )
-            ->select( 'settings', 'header-html' )
+            ->select( 'website', 'website/header' )
             ->add_title( _('Header') )
             ->set( compact( 'header', 'files' ) );
 
@@ -2153,7 +2154,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function html_header() {
+    public function html_head() {
 
         if ( $this->verified() ) {
             $html_header = htmlentities( $_POST['html-header'] );
@@ -2164,10 +2165,10 @@ class WebsiteController extends BaseController {
         $html_header = $this->user->account->get_settings('html-header');
         $html_header = html_entity_decode($html_header);
 
-        return $this->get_template_response('html-header')
+        return $this->get_template_response('html-head')
             ->kb( 0 )
-            ->select( 'settings', 'html-header' )
-            ->add_title( _('HTML Header') )
+            ->select( 'website', 'website/settings' )
+            ->add_title( _('HTML Head') )
             ->set( compact( 'html_header' ) );
 
     }
@@ -2188,13 +2189,14 @@ class WebsiteController extends BaseController {
         $files = $account_file->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->javascript('fileuploader', 'gsr-media-manager');
+            ->css('media-manager')
+            ->javascript('fileuploader', 'media-manager');
 
         $text_404 = $this->user->account->get_settings('text-404');
 
         return $this->get_template_response('custom-404')
             ->kb( 0 )
-            ->select( 'settings', 'custom-404' )
+            ->select( 'website', 'website/settings' )
             ->add_title( _('Custom 404 Page') )
             ->set( compact( 'text_404', 'files' ) );
 

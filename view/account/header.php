@@ -62,7 +62,7 @@
     <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
 </div>
 <!--logo start-->
-<a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
+    <a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" <?php if ( LOGO_HEIGHT < 60 ) echo 'style="margin-top: '. ( (60-LOGO_HEIGHT) / 2) .'px"' ?> alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
 <!--logo end-->
 <div class="top-nav ">
     <!--search & user info start-->
@@ -135,6 +135,8 @@
                         <li <?php if ( $template->v('website/sidebar') ) echo 'class="active"'?>><a href="/website/sidebar/">Sidebar</a></li>
                         <li <?php if ( $template->v('website/banners') ) echo 'class="active"'?>><a href="/website/banners/">Banners</a></li>
                         <li <?php if ( $template->v('website/home-page-layout') ) echo 'class="active"'?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
+                        <li <?php if ( $template->v('website/navigation') ) echo 'class="active"'?>><a href="/website/navigation/">Navigation</a></li>
+                        <li <?php if ( $template->v('website/header') ) echo 'class="active"'?>><a href="/website/header/">Header</a></li>
                         <li <?php if ( $template->v('website/settings') ) echo 'class="active"'?>><a href="/website/settings/">Settings</a></li>
                     </ul>
                 </li>

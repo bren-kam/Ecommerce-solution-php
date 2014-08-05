@@ -9,5 +9,6 @@
  */
 
 define( 'TITLE', 'Grey Suit Retail' );
-define( 'LOGO_WIDTH', 39 );
+define( 'LOGO_WIDTH', 233 );
+define( 'LOGO_HEIGHT', 35 );
 define( 'COMPANY_ID', 4 );
