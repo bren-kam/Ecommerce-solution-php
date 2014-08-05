@@ -447,8 +447,8 @@ class AccountsController extends BaseController {
             , 'responsive-web-design'
         );
 
-        $test_ashley_feed_url = url::add_query_arg( 'aid', $account->id, '/accounts/test-ashley-feed/' );
-        $test_ashley_feed = ' (<a href="' . $test_ashley_feed_url . '#dTestAshleyFeed" title="' . _('Test') . '" rel="dialog" ajax="1">' . _('Test') . '</a>)';
+        $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
+        $test_ashley_feed = ' (<a href="' . $test_ashley_feed_url . '" title="' . _('Test') . '" ajax="1">' . _('Test') . '</a>)';
 
         // Start adding fields
         $ft->add_field( 'text', _('FTP Username'), 'tFTPUsername', security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY ) );
@@ -1171,9 +1171,13 @@ class AccountsController extends BaseController {
     /**
      * Test Ashley Feed
      *
-     * @return HtmlResponse
+     * @return AjaxResponse
      */
     protected function test_ashley_feed() {
+        $response = new AjaxResponse( $this->verified() );
+        if ($response->has_error())
+            return $response;
+
         // Get the account
         $account = new Account();
         $account->get( $_GET['aid'] );
@@ -1188,9 +1192,11 @@ class AccountsController extends BaseController {
         $file_count = count( $files );
 
         // Create response
-        $response = new CustomResponse( $this->resources, 'accounts/ashley-files' );
-
-        $response->set( compact( 'files', 'file_count' ) );
+        $message = "Got {$file_count} file(s):";
+        foreach ($files as $f) {
+            $message .= "<br> {$f['name']} - {$f['size']}";
+        }
+        $response->notify( $message );
 
         return $response;
     }
