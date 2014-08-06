@@ -149,7 +149,7 @@
                         <span>Products</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">List Products</a></li>
+                        <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">My Products</a></li>
                         <li <?php if ( $template->v('products/add') ) echo 'class="active"'?>><a href="/products/add/">Add Product</a></li>
                         <li <?php if ( $template->v('products/all') ) echo 'class="active"'?>><a href="/products/all/">All Products</a></li>
                         <li <?php if ( $template->v('products/catalog-dump') ) echo 'class="active"'?>><a href="/products/catalog-dump/">Catalog Dump</a></li>

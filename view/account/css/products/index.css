@@ -1,0 +1,17 @@
+#product-list .product {
+  float: left;
+  width: 19%;
+  height: 325px;
+  margin-right: 1%;
+  margin-bottom: 15px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+#product-list .product h3 {
+  font-size: 16px;
+  margin: 3px 0;
+}
+#product-list .product img {
+  width: 60%;
+}

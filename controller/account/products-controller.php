@@ -63,7 +63,7 @@ class ProductsController extends BaseController {
 
         $this->resources->javascript( 'products/index' )
             ->css( 'products/index' )
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::resource( 'typeahead-js' ) );
 
         return $this->get_template_response( 'index')
             ->kb( 45 )
@@ -823,12 +823,7 @@ class ProductsController extends BaseController {
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
         // Let them know
-        $response->check( false, _('All discontinued products have been removed') );
-
-        // Reset products to blank
-        jQuery('#dProductList')->empty();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'All discontinued products have been removed' );
 
         return $response;
     }
@@ -913,19 +908,19 @@ class ProductsController extends BaseController {
 
         foreach ( $products as $product ) {
             if ($this->user->account->is_new_template() ) {
-                $product->link = '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
+                $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
-                $product->link = ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+                $product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
             }
 
-		}
+            $product->image_url = 'http://' . str_replace( ' ', '', $product->industry ) . '.retailcatalog.us/products/' . $product->product_id . '/' . $product->image;
+        }
 
-        $user = $this->user;
-
-        // Make sure it's a valid ajax call
-        $response = new CustomResponse( $this->resources, 'products/search' );
-        $response->set( compact( 'product_count', 'products', 'page', 'per_page', 'user' ) );
-
+        $response = new AjaxResponse( true );
+        $response->add_response( 'products', $products );
+        $response->add_response( 'product_start', (($page -1) * $per_page + 1) < $product_count ? (($page -1) * $per_page + 1) : $product_count );
+        $response->add_response( 'product_end', ($page * $per_page) < $product_count ? ($page * $per_page) : $product_count );
+        $response->add_response( 'product_count', $product_count );
         return $response;
     }
 
@@ -956,12 +951,7 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-        // Remove the product then lower the count
-        jQuery('#dProduct_' . $_GET['pid'])
-            ->remove()
-            ->lowerProductCount();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Product removed.' );
 
         return $response;
     }
@@ -995,13 +985,7 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-        // Remove the product then lower the count
-        jQuery('#dProduct_' . $_GET['pid'])
-            ->remove()
-            ->lowerProductCount();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->notify( 'Product blocked' );
         return $response;
     }
 
@@ -1028,26 +1012,17 @@ class ProductsController extends BaseController {
         $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
         $account_category->save();
 
-        $response->check( false, _('Your category image has been set!') );
+        $response->notify( 'Your category image has been set');
 
         return $response;
     }
 
     /**
-     * Get Product Dialog Info
+     * Edit (Get Product Dialog Info)
      *
-     * @return AjaxResponse
+     * @return CustomResponse
      */
-    protected function get_product_dialog_info() {
-        // Make sure it's a valid ajax call
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_POST['pid'] ), _('Please select a product to edit') );
-
-        // If there is an error or now user id, return
-        if ( $response->has_error() )
-            return $response;
-
+    protected function edit() {
         // Instantiate objects
         $account_product = new AccountProduct();
         $account_product_option = new AccountProductOption();
@@ -1057,12 +1032,12 @@ class ProductsController extends BaseController {
         $category = new Category();  // For getting public URL
 
         // Get variables
-        $account_product->get( $_POST['pid'], $this->user->account->id );
-        $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_POST['pid'] );
-        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_POST['pid'] );
-        $product_options_array = $product_option->get_by_product( $_POST['pid'] );
+        $account_product->get( $_GET['pid'], $this->user->account->id );
+        $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
+        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_GET['pid'] );
+        $product_options_array = $product_option->get_by_product( $_GET['pid'] );
 
-        $product->get( $_POST['pid'] );
+        $product->get( $_GET['pid'] );
         $images = $product->get_images();
         $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
         $account_product->name = $product->name;
@@ -1084,10 +1059,15 @@ class ProductsController extends BaseController {
 			$product_options[$po->id]['list_items'][$po->product_option_list_item_id] = $po->value;
 		}
 
+        $coupons = $website_coupon->get_by_account( $this->user->account->id );
+
         // Add to response
-        $response
-            ->add_response( 'product', (array) $account_product )
-            ->add_response( 'product_options', $product_options );
+        $response = new CustomResponse( $this->resources, 'products/edit' );
+        $response->set( array(
+            'product' => $account_product
+            , 'product_options' => $product_options
+            , 'coupons' => $coupons
+        ) );
 
         return $response;
     }
@@ -1139,15 +1119,14 @@ class ProductsController extends BaseController {
 
         if ( $this->user->account->shopping_cart ) {
             $account_product->wholesale_price = $_POST['tWholesalePrice'];
-            $account_product->additional_shipping_amount = ( 'Flat Rate' == $_POST['rShippingMethod'] ) ? $_POST['tShippingFlatRate'] : $_POST['tShippingPercentage'];
+            $account_product->additional_shipping_amount = $_POST['tAdditionalShipping'];
             $account_product->weight = $_POST['tWeight'];
             $account_product->additional_shipping_type = $_POST['rShippingMethod'];
             $account_product->ships_in = $_POST['tShipsIn'];
             $account_product->store_sku = $_POST['tStoreSKU'];
 
-            $coupons = ( empty( $_POST['hCoupons'] ) ) ? false : explode( '|', $_POST['hCoupons'] );
+            $coupons = $_POST['hCoupons'];
         } else {
-
             $coupons = false;
         }
 
@@ -1230,7 +1209,7 @@ class ProductsController extends BaseController {
 				$product_option_ids .= $po_id;
 
 				// If it's a drop down, set the values
-				if ( $dropdown )
+				if ( isset( $po['list_items'] ) )
 				foreach ( $po['list_items'] as $li_id => $price ) {
                     if ( is_array( $price ) ) {
                         $alt_price = $price['reg'];
@@ -1258,12 +1237,7 @@ class ProductsController extends BaseController {
                 $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
 
-        jQuery('.close:visible:first')->click();
-        jQuery( '#sPrice' . $account_product->product_id )->text( (int) $account_product->price );
-        jQuery( '#sAlternatePrice' . $account_product->product_id )->text( $account_product->alternate_price );
-        jQuery( '#sAlternatePriceName' . $account_product->product_id )->text( $account_product->alternate_price_name );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Product updated' );
 
         return $response;
     }
