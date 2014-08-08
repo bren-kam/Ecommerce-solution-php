@@ -1408,7 +1408,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             /***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo "AMF: $item_key\n";
             set_time_limit(3600);
             flush();
 
@@ -1515,7 +1514,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                         $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
                     } catch( InvalidParametersException $e ) {
                         fn::info( $product );
-                        echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
                         exit;
                     }
 
