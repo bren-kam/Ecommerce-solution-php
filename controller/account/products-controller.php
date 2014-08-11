@@ -105,13 +105,14 @@ class ProductsController extends BaseController {
         if ( $product_count > $this->user->account->products )
             $this->notify( _('Please contact your Online Specialist to add additional products. Product Usage has exceeded the number of items allowed.'), false );
 
-        $this->resources->javascript( 'products/add' )
-            ->css( 'products/add' )
-            ->css_url( Config::resource('jquery-ui') );
+        $this->resources
+            ->javascript_url( Config::resource( 'typeahead-js' ) )
+            ->javascript( 'products/add' )
+            ->css( 'products/add' );
 
         $response = $this->get_template_response( 'add' )
             ->kb( 46 )
-            ->select( 'sub-products', 'add' )
+            ->select( 'products', 'products/add' )
             ->set( compact( 'product_count', 'categories', 'brands' ) );
 
         return $response;
@@ -130,7 +131,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'all' )
             ->kb( 47 )
             ->add_title( _('All Products') )
-            ->select( 'sub-products', 'all' )
+            ->select( 'products', 'products/all' )
             ->set( compact( 'products' ) );
 
         return $response;
@@ -187,14 +188,17 @@ class ProductsController extends BaseController {
             }
         }
 
+        $brand = new Brand();
+        $brands = $brand->get_all();
+
         $this->resources->javascript( 'products/catalog-dump' )
             ->css_url( Config::resource('jquery-ui') );
 
         $response = $this->get_template_response( 'catalog-dump' )
             ->kb( 48 )
             ->add_title( _('Catalog Dump') )
-            ->select( 'sub-products', 'catalog-dump' )
-            ->set( compact( 'js_validation', 'errs' ) );
+            ->select( 'products', 'products/catalog-dump' )
+            ->set( compact( 'js_validation', 'errs', 'brands' ) );
 
         return $response;
     }
@@ -205,9 +209,9 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function add_bulk() {
-        $form = new FormTable( 'fAddBulk' );
+        $form = new BootstrapForm( 'fAddBulk' );
         $form->submit( _('Add Bulk'), '', 1 );
-        $form->add_field( 'textarea', '', 'taSKUs' )
+        $form->add_field( 'textarea', 'One SKU per Line', 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
         $success = false;
@@ -244,7 +248,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'add-bulk' )
             ->kb( 49 )
             ->add_title( _('Add Bulk') )
-            ->select( 'sub-products', 'add-bulk' )
+            ->select( 'products', 'products/add-bulk' )
             ->set( compact( 'form', 'already_existed', 'not_added_skus', 'success' ) );
     }
 
@@ -254,9 +258,9 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function block_products() {
-        $form = new FormTable( 'fBlockProducts' );
-        $form->submit( _('Block Products'), '', 1 );
-        $form->add_field( 'textarea', '', 'taSKUs' )
+        $form = new BootstrapForm( 'fBlockProducts' );
+        $form->submit( _('Block Products'), "", 1 );
+        $form->add_field( 'textarea', "Separate SKU's by putting one on each line", 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
         $account_product = new AccountProduct();
@@ -274,7 +278,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'block-products' )
             ->kb( 50 )
             ->add_title( _('Block Products') )
-            ->select( 'sub-products', 'block-products' )
+            ->select( 'products', 'products/block-products' )
             ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
 
         return $response;
@@ -302,9 +306,9 @@ class ProductsController extends BaseController {
             $categories[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
         }
 
-        $form = new FormTable( 'fCategories' );
+        $form = new BootstrapForm( 'fCategories' );
         $form->submit( _('Hide Categories'), '', 1 );
-        $form->add_field( 'select', '', 'sCategoryIDs[]' )
+        $form->add_field( 'select', 'Select Categories to Hide', 'sCategoryIDs[]' )
             ->attribute( 'multiple', 'multiple' )
             ->attribute( 'class', 'height-200' )
             ->options( $categories );
@@ -335,7 +339,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'hide-categories' )
             ->kb( 51 )
             ->add_title( _('Hide Categories') )
-            ->select( 'sub-products', 'hide-categories' )
+            ->select( 'products', 'products/hide-categories' )
             ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $blocked_categories ) );
     }
 
@@ -694,7 +698,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
+        $response->check( isset( $_GET['type'], $_GET['term'] ), _('Autocomplete failed') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -703,25 +707,25 @@ class ProductsController extends BaseController {
         $ac_suggestions = array();
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_all( $_GET['term'], $this->user->account->id );
             break;
 
             case 'product':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'name', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_GET['term'], 'name', $this->user->account->id );
             break;
 
             case 'sku':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'sku', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_GET['term'], 'sku', $this->user->account->id );
             break;
 
             case 'sku-products':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_GET['term'], array( 'name', 'sku' ), $this->user->account->id );
             break;
 
             default: break;
@@ -1338,8 +1342,8 @@ class ProductsController extends BaseController {
         // Create output
         if ( is_array( $products ) )
         foreach ( $products as $product ) {
-        	$dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
-        	$actions = '<a href="#" class="add-product" id="aAddProduct' . $product->id . '" name="' . $product->name . '" title="' . _('Add') . '">' . _('Add Product') . '</a>';
+        	$dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/get-product/' ) . '" title="View Product" data-modal>';
+        	$actions = '<a href="javascript:;" class="add-product" data-id="'.$product->id.'" data-name="'.$product->name.'">Add Product</a>';
 
         	$data[] = array(
         		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'

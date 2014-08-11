@@ -157,7 +157,7 @@
                         <li <?php if ( $template->v('products/block-products') ) echo 'class="active"'?>><a href="/products/block-products/">Block Products</a></li>
                         <li <?php if ( $template->v('products/hide-categories') ) echo 'class="active"'?>><a href="/products/hide-categories/">Hide Categories</a></li>
                         <li <?php if ( $template->v('products/manually-priced') ) echo 'class="active"'?>><a href="/products/manually-priced/">Manually Priced</a></li>
-                        <li <?php if ( $template->v('products/pricing-tools') ) echo 'class="active"'?>><a href="/products/add-bulk/">Pricing Tools</a></li>
+                        <li <?php if ( $template->v('products/pricing-tools') ) echo 'class="active"'?>><a href="/products/pricing-tools/">Pricing Tools</a></li>
                         <li <?php if ( $template->v('products/export') ) echo 'class="active"'?>><a href="/products/export/">Export</a></li>
                         <li <?php if ( $template->v('products/reaches') ) echo 'class="active"'?>><a href="/products/reaches/">Reaches</a></li>
                         <li <?php if ( $template->v('products/product-builder') ) echo 'class="active"'?>><a href="/products/product-builder/">Product Builder</a></li>
