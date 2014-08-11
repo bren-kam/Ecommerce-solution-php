@@ -440,6 +440,7 @@ class AccountsController extends BaseController {
             , 'ashley-ftp-username'
             , 'ashley-ftp-password'
             , 'ashley-alternate-folder'
+            , 'ashley-express-buyer-id'
             , 'facebook-url'
             , 'advertising-url'
             , 'zopim'
@@ -463,6 +464,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Ashley FTP Username') . $test_ashley_feed, 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
+        $ft->add_field( 'text', _('Ashley Express - Buyer Indentification Code'), 'tAshleyExpressBuyerCode', $settings['ashley-express-buyer-id'] );
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
@@ -488,6 +490,7 @@ class AccountsController extends BaseController {
                 , 'ashley-ftp-username' => security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
                 , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
                 , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']
+                , 'ashley-express-buyer-id' => $_POST['tAshleyExpressBuyerCode']
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
@@ -1293,7 +1296,7 @@ class AccountsController extends BaseController {
             $response->notify( _('Please specify your Address, City, State and ZIP code before creating an Email Marketing Account'), false );
             return $response;
         }
-        
+
         $phone = ( empty( $user->work_phone ) ) ? $user->cell_phone : $user->work_phone;
         if ( empty( $phone ) )
             $phone = '8185551234';
