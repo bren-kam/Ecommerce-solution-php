@@ -42,4 +42,72 @@ class TestController extends BaseController {
 //
 //        return false;
 //    }
+
+    protected function route53_replace() {
+
+        $replace_search_1 = '199.79.48.137';
+        $replace_search_2 = '199.79.48.138';
+
+        if ( $this->verified() ) {
+
+            $domain_list = explode("\n", trim( $_POST['domains'] ) );
+            foreach ($domain_list as &$d) {
+                $d = trim($d);
+            }
+
+            library('r53');
+            $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
+
+            $marker = null;
+
+            do {
+                $response = $r53->listHostedZones( $marker );
+                $marker = $response['NextMarker'];
+
+                foreach ( $response['HostedZone'] as $zone ) {
+
+                    if ( in_array( $zone['Name'], $domain_list ) ) {
+
+                        $dns_changes = array();
+                        $records_result = $r53->listResourceRecordSets( $zone['Id']  );
+                        foreach ( $records_result['ResourceRecordSets'] as $record ) {
+
+                            $changed = false;
+                            foreach ( $record['ResourceRecords'] as &$record_value ) {
+                                if ( strpos( $record_value, $replace_search_1 ) !== false ) {
+                                    $record_value = str_replace( $replace_search_1, $_POST['replace-1'], $record_value ) ;
+                                    $changed = true;
+                                } else if ( strpos( $record_value, $replace_search_2 ) !== false ) {
+                                    $record_value = str_replace( $replace_search_2, $_POST['replace-2'], $record_value ) ;
+                                    $changed = true;
+                                }
+                            }
+                            if ( $changed ) {
+                                $dns_changes[] = $r53->prepareChange( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  );
+
+                                echo "Update for {$zone['Name']}: " . json_encode( array( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  ) ) . "<br />";
+                            }
+
+                        }
+
+                        if ( !empty( $dns_changes ) ) {
+                            echo "...running all from {$zone['Name']}...";
+                            $change_result = $r53->changeResourceRecordSets( $zone['Id'], $dns_changes, 'gsr/route53-replace ' . date('Y-m-d H:i:s') );
+                            echo json_encode( $change_result ) . "<br /><hr />";
+                        } else {
+                            echo "No matching records found for {$zone['Name']}<br /><hr />";
+                        }
+
+                    }
+
+                }
+            } while( $marker !== null );
+
+            echo "Finished!";
+            die;
+
+        }
+
+        return $this->get_template_response( 'route53-replace' )->set( compact( 'replace_search_1', 'replace_search_2' ) );
+    }
 }
