@@ -126,6 +126,13 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         // Declare array
         $ashley_express_skus = array();
 
+        $ns = $this->xml->getDocNamespaces();
+        if ( isset( $this->xml->inquiry->potentialBuyer ) ) {
+            $account->set_settings( array(
+                'ashley-express-buyer-id' => (string)$this->xml->inquiry->potentialBuyer->children( $ns['fnParty'] )->attributes()->partyIdentifierCode
+            ) );
+        }
+
         // Generate array of our items
         /**
          * @var SimpleXMLElement $item
