@@ -38,13 +38,27 @@ if ( !empty( $order->phone ) ) {
     ?>
     <br /><br />
     <?php } ?>
+
     <strong><?php echo _('Shipping Method');?>:</strong> <?php echo $order->shipping_method; ?>
+
+    <?php if ( $order->shipping_track_number ) { ?>
+        <br/>
+        <p><strong>Shipping Track Numbers:</strong></p>
+        <ul>
+            <?php foreach ( explode( ',', $order->shipping_track_number ) as $track_number ) { ?>
+                <li><?php echo $track_number ?></li>
+            <?php } ?>
+        </ul>
+    <?php } ?>
+
     <br />
     <label for="sStatus"><?php echo _('Status'); ?></label>:
     <select name="sStatus" id="sStatus">
         <option value="0"<?php if ( '0' == $order->status ) echo ' selected="selected"'; ?>><?php echo _('Purchased'); ?></option>
         <option value="1"<?php if ( '1' == $order->status ) echo ' selected="selected"'; ?>><?php echo _('Pending'); ?></option>
         <option value="2"<?php if ( '2' == $order->status ) echo ' selected="selected"'; ?>><?php echo _('Delivered'); ?></option>
+        <option value="3"<?php if ( '3' == $order->status ) echo ' selected="selected"'; ?>><?php echo _('Received'); ?></option>
+        <option value="4"<?php if ( '4' == $order->status ) echo ' selected="selected"'; ?>><?php echo _('Shipped'); ?></option>
         <option value="-1"<?php if ( '-1' == $order->status ) echo ' selected="selected"'; ?>><?php echo _('Declined'); ?></option>
     </select>
     <input type="hidden" id="hOrderID" value="<?php echo $order->id; ?>" />

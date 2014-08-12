@@ -111,7 +111,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		// Get the file if there is one
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
-		
+
         // SSH Connection
         $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
@@ -130,7 +130,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
-	 * 
+	 *
 	 * @param Account $account
 	 * @param string $file (optional|)
 	 * @return bool
@@ -156,11 +156,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
                 $size = f::size2bytes( $f['size'] );
 
-                if ( empty( $file ) && $size >= self::COMPLETE_CATALOG_MINIMUM ) {
-                    $file = $f['name'];
-                } else {
-                    $delete_files[] = $f['name'];
-                }
+                $file_name = f::name( $f['name'] );
+                if ( strpos( $file_name, '888-' ) === false )
+                    continue;
+
+                if ( $size < self::COMPLETE_CATALOG_MINIMUM )
+                    continue;
+
+                $file = $f['name'];
             }
 		}
 
@@ -276,7 +279,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                         $group_items[$series] = true;
 						continue;
                     }
-                    
+
 					if ( in_array( $series . $item, $all_skus ) ) {
                         $group_items[$series] = true;
 						continue;
@@ -345,7 +348,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         $account_product = new AccountProduct();
 
         $account_product->remove_bulk( $account->id, $remove_products );
-		
+
 		// Reorganize Categories
         $account_category = new AccountCategory();
 		$account_category->reorganize_categories( $account->id, new Category() );
@@ -378,7 +381,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Make sure they didn't go below a minimum price
             $account_product->adjust_to_minimum_price( $account->id );
 	}
-	
+
 	/**
 	 * Gets the products SKUs of a website to determine what products they have
 	 *

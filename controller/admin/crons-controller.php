@@ -80,6 +80,18 @@ class CronsController extends BaseController {
         $email_marketing = new EmailMarketing();
         $email_marketing->mark_sent();
 
+        // Ashley Express Feed - Order Acknowledgement
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_acknowledgement_all();
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Ashley Express Feed - Order ASN
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_asn_all();
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
 
         return new HtmlResponse( 'Hourly Jobs Completed');
     }
@@ -96,7 +108,7 @@ class CronsController extends BaseController {
 
         // Ashley Express Feed
         $ashley_express_feed = new AshleyExpressFeedGateway();
-        $ashley_express_feed->run_all();
+        $ashley_express_feed->run_flag_products_all();
         unset( $ashley_express_feed );
         gc_collect_cycles();
 

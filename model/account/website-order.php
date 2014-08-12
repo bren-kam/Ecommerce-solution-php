@@ -5,13 +5,16 @@ class WebsiteOrder extends ActiveRecordBase {
     const STATUS_PENDING = 1;
     const STATUS_DELIVERED = 2;
 
+    const STATUS_RECEIVED = 3;  // Ashley Express - Order Received by External Service
+    const STATUS_SHIPPED = 4;   // Ashley Express - Order Shipped
+
     // The columns we will have access to
     public $id, $website_order_id, $website_id, $website_user_id, $website_cart_id, $website_shipping_method_id
         , $website_coupon_id, $shipping_price, $tax_price, $coupon_discount, $total_cost, $email, $phone
         , $billing_first_name, $billing_last_name, $billing_address1, $billing_address2, $billing_city
         , $billing_state, $billing_zip, $billing_phone, $billing_alt_phone, $shipping_name, $shipping_first_name
         , $shipping_last_name, $shipping_address1, $shipping_address2, $shipping_city, $shipping_state
-        , $shipping_zip, $status, $date_created;
+        , $shipping_zip, $status, $date_created, $shipping_track_number;
 
     // Artificial field
     public $name;
@@ -78,6 +81,7 @@ class WebsiteOrder extends ActiveRecordBase {
     public function save() {
         parent::update( array(
             'status' => $this->status
+            , 'shipping_track_number' => $this->shipping_track_number
         ), array(
             'website_order_id' => $this->id
         ), 'i', 'i' );
