@@ -1612,4 +1612,30 @@ class AccountsController extends BaseController {
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Run Ashley Express Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_express_feed() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run( $account );
+
+        // Give them a notification
+        $this->notify( _('The Ashley Express Feed has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+
 }

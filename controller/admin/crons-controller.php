@@ -33,7 +33,7 @@ class CronsController extends BaseController {
 			foreach ( $keys as $key ) {
 				$file->delete_file( "attachments/{$key}" );
 			}
-	
+
 			// Delete everything relating to them
 			$ticket->deleted_uncreated_tickets();
 		}
@@ -93,6 +93,12 @@ class CronsController extends BaseController {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
+
+        // Ashley Express Feed
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_all();
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
 
         /** Run Ashley Feed */
         $ashley = new AshleyMasterProductFeedGateway();
