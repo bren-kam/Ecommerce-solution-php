@@ -97,7 +97,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             return;
 
         // Make sure the folder has been created
-		$local_folder = sys_get_temp_dir();
+		$local_folder = sys_get_temp_dir() . '/';
 
 		// Grab the latest file
 		if( !file_exists( $local_folder . $file ) )
