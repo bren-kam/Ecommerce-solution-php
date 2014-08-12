@@ -1632,7 +1632,7 @@ class AccountsController extends BaseController {
 
         // Run the feed
         $ashley_express_feed = new AshleyExpressFeedGateway();
-        $ashley_express_feed->run( $account );
+        $ashley_express_feed->run_flag_products( $account );
 
         // Give them a notification
         $this->notify( _('The Ashley Express Feed has been successfully run!') );
