@@ -446,6 +446,7 @@ class AccountsController extends BaseController {
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
+            , 'server-ip'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -470,6 +471,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
+        $ft->add_field( 'select', 'Server Host/IP', 'sServerIP', $settings['server-ip'] )
+            ->options( array( '162.218.139.218' => 'VMW 09 (162.218.139.218)', '162.218.139.219' => 'VMW 10 (162.218.139.219)' ) );
 
         if ( $ft->posted() ) {
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
@@ -496,6 +499,7 @@ class AccountsController extends BaseController {
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
+                , 'server-ip' => $_POST['sServerIP']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
