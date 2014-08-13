@@ -20,6 +20,7 @@ var Reports = {
             return;
 
         $( '<li />' )
+            .data( 'service', option.val() )
             .text( 'Service - ' + option.text() + ' ' )
             .append(
                 $( '<input />' )
@@ -63,11 +64,11 @@ var Reports = {
 
     , deleteCriteria: function() {
         var criteriaItem = $(this).parents( 'li:first' );
-        var criteria = criteriaItem.data( 'criteria' );
 
         // If it's a Service, enable it again from the dropdown
-        if ( criteria.service ) {
-            $('#services [value=' + criteria.service + ']').prop( 'disabled', false );
+        var service = criteriaItem.data( 'service' );
+        if ( service ) {
+            $('#services [value=' + service + ']').prop( 'disabled', false );
         }
 
         criteriaItem.remove();
