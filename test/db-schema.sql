@@ -1878,6 +1878,7 @@ CREATE TABLE IF NOT EXISTS `website_orders` (
   `shipping_city` varchar(100) NOT NULL,
   `shipping_state` varchar(30) NOT NULL,
   `shipping_zip` varchar(10) NOT NULL,
+  `shipping_track_number` text NULL DEFAULT NULL,
   `status` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_order_id`),
