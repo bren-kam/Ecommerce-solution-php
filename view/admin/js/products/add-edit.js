@@ -360,7 +360,7 @@ var ProductAttributeEditor = {
 
                 for ( i in attribute_items ) {
                     var attribute_item = attribute_items[i];
-                    var option = $( '<option />', { value: attribute_item.id } ).text( attribute_item.name );
+                    var option = $( '<option />', { value: attribute_item.id } ).html( attribute_item.name );
                     optgroup.append( option );
                 }
 
