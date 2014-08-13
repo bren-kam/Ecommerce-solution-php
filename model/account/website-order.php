@@ -139,11 +139,11 @@ class WebsiteOrder extends ActiveRecordBase {
         $shipping = new WebsiteShippingMethod();
         $shipping->id = $shipping->website_shipping_method_id = 1048576;
         $shipping->website_id = null;
-        $shipping->type = 'custom';
+        $shipping->type = 'ashley-express';
         $shipping->name = 'Ashley Express';
         $shipping->description = 'Ashley Express';
-        $shipping->method = 'Flat Rate';
-        $shipping->amount = 10;
+        $shipping->method = '';
+        $shipping->amount = 0;
         $shipping->zip_codes = '';
         $shipping->extra = '';
         $shipping->date_created = '2014-07-23 00:00:00';
