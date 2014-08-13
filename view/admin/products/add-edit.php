@@ -346,7 +346,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                         ?>
                             <p class="attribute clearfix">
                                 <strong><?php echo $pai->title; ?> &ndash; </strong>
-                                <?php echo $pai->name; ?>
+                                <?php echo html_entity_decode( $pai->name ); ?>
                                 <a href="#" class="remove-attribute pull-right" title="Delete"><i class="fa fa-trash-o"></i></a>
                                 <input type="hidden" name="attributes[]" value="<?php echo $pai->id; ?>" />
                             </p>
