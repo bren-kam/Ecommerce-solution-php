@@ -1641,5 +1641,70 @@ class AccountsController extends BaseController {
         return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
     }
 
+    public function install_new_theme() {
+        $sources = array(
+            'unlocked' => 1352
+            , 'upgrade' => 1415
+            , 'upgrade2' => 1422
+        );
+
+        // Template account
+        $source_account = new Account();
+        $source_account->get( $sources[$_GET['source']] );
+
+        // Where are we installing the new Theme
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( !$source_account->id || !$account->id ) {
+            throw new Exception( "Account #{$_GET['aid']} or Source Account #{$_GET['source']} not found." );
+        }
+
+        // Copy LESS
+        $less = $source_account->get_settings( 'css' );
+        $account->set_settings( array( 'css' => $less ) );
+
+        // If they have a custom config for Home Page Layout
+        // We need to install Trending Products Feature
+        $layout = $account->get_settings( 'layout' );
+        $layout = json_decode( $layout );
+        if ( $layout ) {
+            $found = false;
+            foreach ( $layout as $element ) {
+                if ( $element->name == 'popular-items' ) {
+                    $found = true;
+                }
+            }
+            if ( !$found ) {
+                $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
+                $account->set_settings( array(
+                    'layout' => json_encode( $layout )
+                ) );
+            }
+        }
+
+        // Add Index
+        $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
+        if ( !$username )
+            throw new Exception( "Can't find username for this account. You will need to set new index.php manually." );
+
+        // Get where is hosted
+        $server = $account->set_settings( 'server-ip' );
+        $server_list = Config::settings( 'servers' );
+        $server_settings = isset( $server_list[$server] ) ? $server_list[$server] : $server_list['legacy'];
+
+        // Install new files
+        $ssh_connection = ssh2_connect( $server_settings['ip'], 22 );
+        ssh2_auth_password( $ssh_connection, $server_settings['username'], $server_settings['password'] );
+
+        ssh2_exec( $ssh_connection, "mv /home/$username/public_html/index.php /home/$username/public_html/index.php.old" );
+        ssh2_exec( $ssh_connection, "cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
+        ssh2_exec( $ssh_connection, "sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
+
+        echo 'Finished!'; die;
+    }
+
+
+
 
 }
