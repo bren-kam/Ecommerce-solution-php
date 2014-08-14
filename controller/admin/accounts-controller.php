@@ -1689,7 +1689,7 @@ class AccountsController extends BaseController {
             throw new Exception( "Can't find username for this account. You will need to set new index.php manually." );
 
         // Get where is hosted
-        $server = $account->set_settings( 'server-ip' );
+        $server = $account->get_settings( 'server-ip' );
         $server_list = Config::settings( 'servers' );
         $server_settings = isset( $server_list[$server] ) ? $server_list[$server] : $server_list['legacy'];
 
