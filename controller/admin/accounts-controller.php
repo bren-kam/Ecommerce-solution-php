@@ -1690,7 +1690,7 @@ class AccountsController extends BaseController {
 
         // Get where is hosted
         $server = $account->get_settings( 'server-ip' );
-        $server_list = Config::settings( 'servers' );
+        $server_list = Config::setting( 'servers' );
         $server_settings = isset( $server_list[$server] ) ? $server_list[$server] : $server_list['legacy'];
 
         // Install new files
