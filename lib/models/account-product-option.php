@@ -203,7 +203,7 @@ class AccountProductOption extends ActiveRecordBase {
      * @param int $account_id
      */
     protected function copy_list_items( $template_account_id, $account_id ) {
-        $this->copy( $this->table, array(
+        $this->copy( 'website_product_option_list_items', array(
                 'website_id' => $account_id
                 , 'product_id' => NULL
                 , 'product_option_id' => NULL
