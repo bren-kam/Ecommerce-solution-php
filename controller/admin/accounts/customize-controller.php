@@ -91,7 +91,7 @@ class CustomizeController extends BaseController {
         $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
         $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
-         
+
         if ( $ft->posted() ) {
             // Update settings
             $account->set_settings( array(
@@ -124,7 +124,7 @@ class CustomizeController extends BaseController {
     protected function favicon() {
          if (!$this->user->has_permission(User::ROLE_ADMIN) || !isset($_GET['aid']))
             return new RedirectResponse('/accounts/');
-         
+
         // Get Account
         $account = new Account();
         $account->get($_GET['aid']);
@@ -149,7 +149,7 @@ class CustomizeController extends BaseController {
     protected function save_less() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse($this->verified());
-       
+
         // Get account
         if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_css = $_POST['less'];
@@ -162,7 +162,7 @@ class CustomizeController extends BaseController {
 
         $account = new Account();
         $account->get($_GET['aid']);
-        
+
         // If there is an error or now user id, return
         if ( $response->has_error() )
              return $response;
@@ -185,7 +185,7 @@ class CustomizeController extends BaseController {
         // Update all other LESS sites
         if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_accounts = $account->get_less_sites();
-			
+
             /**
              * @var Account $less_account
              * @var string $unlocked_less
@@ -194,7 +194,7 @@ class CustomizeController extends BaseController {
             foreach ( $less_accounts as $less_account ) {
                 if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
                     continue;
-				
+
                 $less_account->set_settings( array(
                     'css' => $less->compile( $less_css . $less_account->get_settings('less') )
                 ));
@@ -264,5 +264,31 @@ class CustomizeController extends BaseController {
         $response->add_response( 'refresh', true );
 
         return $response;
+    }
+
+    public function ashley_express_shipping_prices() {
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( $this->verified() ) {
+
+            $file = $_FILES['file'];
+            $filename = tempnam( sys_get_temp_dir(), 'ae_' ) . '.' . f::extension( $file['name'] );
+
+            move_uploaded_file( $file['tmp_name'], $filename );
+            $ae = new AshleyExpressFeedGateway();
+            try {
+                $updated = $ae->run_shipping_prices( $account, $filename );
+                $this->notify( "Updated $updated products" );
+            } catch( Exception $e ) {
+                $this->notify( $e->getMessage(), false );
+            }
+
+        }
+
+        return $this->get_template_response( 'ashley-express-shipping-prices' )
+            ->set( compact( 'account' ) )
+            ->kb( 0 );
     }
 }
