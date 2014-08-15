@@ -83,14 +83,12 @@ class CustomizeController extends BaseController {
             'slideshow-fixed-width'
             , 'slideshow-categories'
             , 'sidebar-left'
-            , 'ashley-express'
         );
 
         // Start adding fields
         $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
         $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
-        $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
          
         if ( $ft->posted() ) {
             // Update settings
@@ -98,7 +96,6 @@ class CustomizeController extends BaseController {
                 'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
                 , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
                 , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
-                , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
             ));
 
             $this->notify( _('Settings have been updated!') );

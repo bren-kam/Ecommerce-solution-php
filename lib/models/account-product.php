@@ -474,7 +474,7 @@ class AccountProduct extends ActiveRecordBase {
                 , 'status' => NULL
                 , 'on_sale' => NULL
                 , 'sequence' => NULL
-                , 'active' => 1
+                , 'active' => NULL
             ), array( 'website_id' => $template_account_id )
         );
     }
