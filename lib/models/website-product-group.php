@@ -179,9 +179,9 @@ class WebsiteProductGroup extends ActiveRecordBase {
      */
     protected function copy_groups( $template_account_id, $account_id ) {
         $this->prepare(
-            'INSERT INTO `website_product_groups` (`website_id`, `name`) SELECT :account_id, `name` FROM `website_product_groups` WHERE `website_id` = :template_account_id GROUP BY `name`'
-            , 'ii'
-            , array( ':account_id' => $account_id, ':template_account_id' => $template_account_id )
+            'INSERT INTO `website_product_groups` (`website_id`, `name`) SELECT :account_id, wpg.`name` FROM `website_product_groups` AS wpg LEFT JOIN `website_product_groups` AS wpg2 ON ( wpg2.`name` = wpg.`name` AND wpg2.`account_id` = :account_id2 ) WHERE wpg.`website_id` = :template_account_id AND wpg2.`website_product_group_id` IS NULL GROUP BY `name`'
+            , 'iii'
+            , array( ':account_id' => $account_id, ':account_id2' => $account_id, ':template_account_id' => $template_account_id )
         )->query();
     }
 
