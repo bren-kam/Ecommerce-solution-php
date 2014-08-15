@@ -59,9 +59,15 @@ class TestController extends BaseController {
 			$account = new Account();
 			
             foreach ($domain_list as $domain) {
+				$account = new Account();
 				$account = $account->prepare( 'SELECT *, `website_id` AS id FROM `websites` WHERE `domain` LIKE :domain', 'i', array( ':domain' => trim( '%' . $domain ) ) )->get_row( PDO::FETCH_INTO, $account );
+				
+				if ( !$account->id )
+					continue;
+				
 				$zone_id = $account->get_settings( 'r53-zone-id' );
 				$records_result = $r53->listResourceRecordSets( $zone_id  );
+				$dns_changes = array();
 				
 				foreach ( $records_result['ResourceRecordSets'] as $record ) {
 					$changed = false;

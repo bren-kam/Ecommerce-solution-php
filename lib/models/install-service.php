@@ -306,10 +306,23 @@ class InstallService {
         $account_product = new AccountProduct();
         $account_product->copy_by_account( $template_account->id, $account->id );
 
+        // Copy product options
+        $account_product_option = new AccountProductOption();
+        $account_product_option->copy_by_account( $template_account->id, $account->id );
+
+        // Copy related products
+        $account_product_group = new WebsiteProductGroup();
+        $account_product_group->copy_by_account( $template_account->id, $account->id );
+
         // Reorganize Categories
         $account_category = new AccountCategory();
         $account_category->reorganize_categories( $account->id, new Category() );
 
-        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'less', 'css' ) );
+        $account->copy_settings_by_account( $template_account->id, $account->id, array(
+            'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect'
+            , 'banner-hide-scroller', 'sidebar-image-width', 'less', 'css', 'slideshow-fixed-width'
+            , 'slideshow-categories', 'sidebar-left', 'top-categories', 'favicon', 'navigation', 'layout', 'header'
+            , 'footer-navigation'
+        ) );
     }
 }
