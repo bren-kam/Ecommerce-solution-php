@@ -179,7 +179,7 @@ class WebsiteProductGroup extends ActiveRecordBase {
      */
     protected function copy_groups( $template_account_id, $account_id ) {
         $this->prepare(
-            'INSERT INTO `website_product_groups` (`website_id`, `name`) SELECT :account_id, DISTINCT `name` FROM `website_product_groups` WHERE `website_id` = :template_account_id'
+            'INSERT INTO `website_product_groups` (`website_id`, `name`) SELECT :account_id, `name` FROM `website_product_groups` WHERE `website_id` = :template_account_id GROUP BY `name`'
             , 'ii'
             , array( ':account_id' => $account_id, ':template_account_id' => $template_account_id )
         )->query();
