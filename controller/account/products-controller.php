@@ -531,7 +531,7 @@ class ProductsController extends BaseController {
      */
     protected function settings() {
         // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array(
