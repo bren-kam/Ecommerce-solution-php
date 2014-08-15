@@ -193,7 +193,7 @@ class WebsiteProductGroup extends ActiveRecordBase {
      */
     protected function copy_group_relations( $template_account_id, $account_id ) {
         $this->prepare(
-            'INSERT INTO `website_product_group_relations` (`website_product_group_id`, `product_id`) SELECT wpg2.`website_product_group_id`, wpgr.`product_id` FROM `website_product_group_relations` AS wpgr LEFT JOIN `website_product_groups` AS wpg ON ( wpgr.`website_product_group_id` = wpg.`website_product_group_id` ) LEFT JOIN `website_product_groups` AS wpg2 ON ( wpg2.`name` = wpg.`name` ) WHERE wpg.`website_id` = :template_account_id AND wpg2.`website_id` = :account_id'
+            'INSERT INTO `website_product_group_relations` (`website_product_group_id`, `product_id`) SELECT wpg2.`website_product_group_id`, wpgr.`product_id` FROM `website_product_group_relations` AS wpgr LEFT JOIN `website_product_groups` AS wpg ON ( wpgr.`website_product_group_id` = wpg.`website_product_group_id` ) LEFT JOIN `website_product_groups` AS wpg2 ON ( wpg2.`name` = wpg.`name` ) WHERE wpg.`website_id` = :template_account_id AND wpg2.`website_id` = :account_id ON DUPLICATE KEY UPDATE `product_id = VALUES(`product_id`)'
             , 'ii'
             , array( ':account_id' => $account_id, ':template_account_id' => $template_account_id )
         )->query();
