@@ -48,6 +48,23 @@ class Config {
         , 'server-username'     => 'root'
         , 'server-password'     => 'WIxp2sDfRgLMDTL5'
         , 'default-timezone'    => 'America/New_York'
+        , 'servers'             => array(
+            'legacy'            => array(
+                'ip'            => '199.79.48.137'
+                , 'username'    => 'root'
+                , 'password'    => 'WIxp2sDfRgLMDTL5'
+            )
+            , '162.218.139.218' => array(
+                'ip'            => '199.79.48.137'
+                , 'username'    => 'root'
+                , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+            )
+            , '162.218.139.219' => array(
+                'ip'            => '162.218.139.219'
+                , 'username'    => 'root'
+                , 'password'    => 'IlkWJGkM8e75uYxh'
+            )
+        )
     );
 
     /**
@@ -67,7 +84,7 @@ class Config {
         , 'jqueryui-js' => '//code.jquery.com/ui/1.11.0/jquery-ui.min.js'
         , 'typeahead-js' => '//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.bundle.js'
     );
-		
+
 	/**
 	 * Returns a key
 	 *

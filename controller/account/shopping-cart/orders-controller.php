@@ -96,6 +96,14 @@ class OrdersController extends BaseController {
                     $status = 'Delivered';
                 break;
 
+                case WebsiteOrder::STATUS_RECEIVED:
+                    $status = 'Received';
+                    break;
+
+                case WebsiteOrder::STATUS_SHIPPED:
+                    $status = 'Shipped';
+                    break;
+
                 default:
                     $status = 'Error';
                 break;

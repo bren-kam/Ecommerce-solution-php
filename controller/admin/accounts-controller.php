@@ -446,6 +446,7 @@ class AccountsController extends BaseController {
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
+            , 'server-ip'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -470,6 +471,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
+        $ft->add_field( 'select', 'Server Host/IP', 'sServerIP', $settings['server-ip'] )
+            ->options( array( '162.218.139.218' => 'VMW 09 (162.218.139.218)', '162.218.139.219' => 'VMW 10 (162.218.139.219)' ) );
 
         if ( $ft->posted() ) {
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
@@ -496,6 +499,7 @@ class AccountsController extends BaseController {
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
+                , 'server-ip' => $_POST['sServerIP']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -1611,5 +1615,96 @@ class AccountsController extends BaseController {
 
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
+
+    /**
+     * Run Ashley Express Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_express_feed() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_flag_products( $account );
+
+        // Give them a notification
+        $this->notify( _('The Ashley Express Feed has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    public function install_new_theme() {
+        $sources = array(
+            'unlocked' => 1352
+            , 'upgrade' => 1415
+            , 'upgrade2' => 1422
+        );
+
+        // Template account
+        $source_account = new Account();
+        $source_account->get( $sources[$_GET['source']] );
+
+        // Where are we installing the new Theme
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( !$source_account->id || !$account->id ) {
+            throw new Exception( "Account #{$_GET['aid']} or Source Account #{$_GET['source']} not found." );
+        }
+
+        // Copy LESS
+        $less = $source_account->get_settings( 'css' );
+        $account->set_settings( array( 'css' => $less ) );
+
+        // If they have a custom config for Home Page Layout
+        // We need to install Trending Products Feature
+        $layout = $account->get_settings( 'layout' );
+        $layout = json_decode( $layout );
+        if ( $layout ) {
+            $found = false;
+            foreach ( $layout as $element ) {
+                if ( $element->name == 'popular-items' ) {
+                    $found = true;
+                }
+            }
+            if ( !$found ) {
+                $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
+                $account->set_settings( array(
+                    'layout' => json_encode( $layout )
+                ) );
+            }
+        }
+
+        // Add Index
+        $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
+        if ( !$username )
+            throw new Exception( "Can't find username for this account. You will need to set new index.php manually." );
+
+        // Get where is hosted
+        $server = $account->get_settings( 'server-ip' );
+        $server_list = Config::setting( 'servers' );
+        $server_settings = isset( $server_list[$server] ) ? $server_list[$server] : $server_list['legacy'];
+
+        // Install new files
+        $ssh_connection = ssh2_connect( $server_settings['ip'], 22 );
+        ssh2_auth_password( $ssh_connection, $server_settings['username'], $server_settings['password'] );
+
+        ssh2_exec( $ssh_connection, "mv /home/$username/public_html/index.php /home/$username/public_html/index.php.old" );
+        ssh2_exec( $ssh_connection, "cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
+        ssh2_exec( $ssh_connection, "sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
+
+        echo 'Finished!'; die;
+    }
+
+
+
 
 }
