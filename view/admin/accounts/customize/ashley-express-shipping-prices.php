@@ -1,22 +1,7 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Account > Customize > Settings
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var Account $account
- * @var string $form
- */
-
-?>
 
 <div class="row-fluid">
     <div class="col-lg-12">
         <section class="panel">
-
             <header class="panel-heading">
                 <ul class="nav nav-tabs tab-bg-dark-navy-blue" role="tablist">
                     <li><a href="/accounts/edit/?aid=<?php echo $account->id ?>">Account</a></li>
@@ -43,11 +28,43 @@
                         </ul>
                     </li>
                 </ul>
-                <h3>Settings: <?php echo $account->title ?></h3>
+
+                <h3>
+                    Import - Ashley Express shipping prices <small><?php echo $account->title ?></small>
+                </h3>
             </header>
 
             <div class="panel-body">
-                <?php echo $form ?>
+
+                <p>The Excel/CSV must contain <strong>*only*</strong> the following columns:</p>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ashley Item</th>
+                            <th>Estimated Express Freight Per Carton</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt;SKU&gt;</td>
+                            <td>&lt;AE Shipping Price&gt;</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <form method="post" enctype="multipart/form-data" role="form">
+                    <div class="form-group">
+                        <label for="file">XLS/CSV File:</label>
+                        <input type="file" name="file" />
+                    </div>
+
+                    <p>
+                        <?php nonce::field( 'ashley_express_shipping_prices' ); ?>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </p>
+                </form>
+
             </div>
         </section>
     </div>

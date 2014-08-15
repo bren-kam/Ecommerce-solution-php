@@ -1,5 +1,4 @@
-<?php
-/**
+<?php /**
  * @package Grey Suit Retail
  * @page Search Reports
  *
