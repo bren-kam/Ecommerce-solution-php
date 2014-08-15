@@ -368,7 +368,7 @@ class ProductsController extends BaseController {
         $brands = $brand->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'products/price-tools', 'products/product-prices' )
+            ->css( 'products/product-prices' )
             ->javascript( 'products/product-prices' );
 
         return $this->get_template_response( 'product-prices' )
@@ -385,8 +385,8 @@ class ProductsController extends BaseController {
      */
     protected function price_multiplier() {
         $this->resources
-            ->css( 'products/price-tools' )
-            ->javascript( 'fileuploader', 'products/multiply-prices' );
+            ->css( 'products/price-multiplier' )
+            ->javascript( 'fileuploader', 'products/price-multiplier' );
 
         return $this->get_template_response( 'price-multiplier' )
             ->kb( 115 )
@@ -1506,10 +1506,10 @@ class ProductsController extends BaseController {
             $data[] = array(
                 $product->sku
                 , $product->name
-                , '<input type="text" class="alternate_price" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
-                , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
-                , '<input type="text" class="sale_price" id="tSalePrice' . $product->id . '" value="' . $product->sale_price . '" />'
-                , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
+                , '<input type="text" class="form-control" value="' . $product->alternate_price . '" data-product-id="'. $product->product_id .'" data-name="alternate_price" />'
+                , '<input type="text" class="form-control" value="' . $product->price . '" data-product-id="'. $product->product_id .'" data-name="price" />'
+                , '<input type="text" class="form-control" value="' . $product->sale_price . '" data-product-id="'. $product->product_id .'" data-name="sale_price" />'
+                , '<input type="text" class="form-control" value="' . $product->price_note . '" data-product-id="'. $product->product_id .'" data-name="price_note" />'
             );
         }
 
@@ -1547,9 +1547,7 @@ class ProductsController extends BaseController {
                 $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
         }
 
-        jQuery('span.success')->show()->delay(5000)->hide();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Your products has been updated' );
 
         return $response;
     }
@@ -1933,10 +1931,6 @@ class ProductsController extends BaseController {
         $auto_price->get( $_GET['bid'], $_GET['cid'], $this->user->account->id );
         $auto_price->remove();
         $response->notify( _('Auto Price have been deleted.') );
-
-        // Delete from page
-        jQuery('#ap_' . $_GET['bid'] . '_' . $_GET['cid'] )->remove();
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

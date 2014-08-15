@@ -1,0 +1,17 @@
+#images-list .image {
+  float: left;
+  position: relative;
+}
+#images-list .image a.remove-image {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: none;
+}
+#images-list .image:hover a.remove-image {
+  display: block;
+}
+#upload-image {
+  position: absolute;
+  left: -5000px;
+}
