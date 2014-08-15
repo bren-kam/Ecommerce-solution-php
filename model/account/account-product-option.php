@@ -167,4 +167,51 @@ class AccountProductOption extends ActiveRecordBase {
         $this->delete_website_product_option_list_items( $account_id, $product_id );
         $this->delete_website_product_options( $account_id, $product_id );
     }
+
+    /**
+     * Copy product options
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    public function copy_by_account( $template_account_id, $account_id ) {
+        $this->copy_options( $template_account_id, $account_id );
+        $this->copy_list_items( $template_account_id, $account_id );
+    }
+
+    /**
+     * Copy options
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    protected function copy_options( $template_account_id, $account_id ) {
+        $this->copy( $this->table, array(
+                'website_id' => $account_id
+                , 'product_id' => NULL
+                , 'product_option_id' => NULL
+                , 'price' => NULL
+                , 'required' => NULL
+            ), array( 'website_id' => $template_account_id )
+        );
+    }
+
+    /**
+     * Copy list items
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    protected function copy_list_items( $template_account_id, $account_id ) {
+        $this->copy( $this->table, array(
+                'website_id' => $account_id
+                , 'product_id' => NULL
+                , 'product_option_id' => NULL
+                , 'product_option_list_item_id' => NULL
+                , 'price' => NULL
+                , 'alt_price' => NULL
+                , 'alt_price2' => NULL
+            ), array( 'website_id' => $template_account_id )
+        );
+    }
 }

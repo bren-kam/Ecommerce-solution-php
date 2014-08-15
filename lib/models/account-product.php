@@ -472,6 +472,9 @@ class AccountProduct extends ActiveRecordBase {
                 'website_id' => $account_id
                 , 'product_id' => NULL
                 , 'status' => NULL
+                , 'price' => NULL
+                , 'sale_price' => NULL
+                , 'alternate_price' => NULL
                 , 'on_sale' => NULL
                 , 'sequence' => NULL
                 , 'active' => NULL
