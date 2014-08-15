@@ -322,7 +322,8 @@ class InstallService {
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect'
             , 'banner-hide-scroller', 'sidebar-image-width', 'less', 'css', 'slideshow-fixed-width'
             , 'slideshow-categories', 'sidebar-left', 'top-categories', 'favicon', 'navigation', 'layout', 'header'
-            , 'footer-navigation'
+            , 'footer-navigation', 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link'
+            , 'sm-linkedin-link', 'sm-youtube-link', 'sm-instagram-link'
         ) );
     }
 }
