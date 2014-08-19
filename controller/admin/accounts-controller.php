@@ -1286,7 +1286,7 @@ class AccountsController extends BaseController {
             $response->notify( _('Please specify your Address, City, State and ZIP code before creating an Email Marketing Account'), false );
             return $response;
         }
-        
+
         $phone = ( empty( $user->work_phone ) ) ? $user->cell_phone : $user->work_phone;
         if ( empty( $phone ) )
             $phone = '8185551234';

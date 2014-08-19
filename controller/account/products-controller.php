@@ -595,8 +595,8 @@ class ProductsController extends BaseController {
      */
     protected function brands() {
         $this->resources->javascript( 'products/brands' )
-            ->css( 'products/brands' )
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::resource( 'typeahead-js' ), Config::resource( 'jqueryui-js' ) )
+            ->css( 'products/brands' );
 
         $website_top_brand = new WebsiteTopBrand();
 
@@ -638,8 +638,8 @@ class ProductsController extends BaseController {
         }
 
         $this->resources->javascript( 'products/top-categories' )
-            ->css( 'products/top-categories' )
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::Resource('jqueryui-js') )
+            ->css( 'products/top-categories' );
 
         return $this->get_template_response( 'top-categories' )
             ->kb( 137 )
@@ -1603,8 +1603,7 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&dBrand[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 9 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $website_top_brand = new WebsiteTopBrand();
         $website_top_brand->update_sequence( $this->user->account->id, $sequence );
@@ -1627,8 +1626,7 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&dTopCategory[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 15 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $this->user->account->set_settings( array( 'top-categories' => json_encode( $sequence ) ) );
 
@@ -1713,20 +1711,7 @@ class ProductsController extends BaseController {
         $website_top_brand->sequence = $_POST['s'];
         $website_top_brand->create();
 
-        // Now add it to the page
-        $dBrand = '<div id="dBrand_' . $brand->id . '" class="brand">';
-       	$dBrand .= '<img src="' . $brand->image . '" title="' . $brand->name . '" />';
-       	$dBrand .= '<h4>' . $brand->name . '</h4>';
-       	$dBrand .= '<p class="brand-url"><a href="' . $brand->link . '" title="' . $brand->name . '" target="_blank">' . $brand->link . '</a></p>';
-       	$dBrand .= '<a href="' . url::add_query_arg( array( '_nonce' => nonce::create('remove_brand'), 'bid' => $brand->id ), '/products/remove-brand/' ) . '" title="' . _('Remove') . '" ajax="1" confirm="' . _('Are you sure you want to remove this brand?') . '">' . _('Remove') . '</a>';
-       	$dBrand .= '</div>';
-
-       	jQuery('#brands')
-       		->append( $dBrand )
-       		->sparrow();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'brand', $brand );
 
         return $response;
     }

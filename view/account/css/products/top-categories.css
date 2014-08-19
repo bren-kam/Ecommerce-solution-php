@@ -1,0 +1,32 @@
+#category-list .category-placeholder {
+  width: 240px;
+  height: 250px;
+  float: left;
+  display: inline;
+  margin: 0 10px 10px 0;
+  border: 3px dashed #ccc;
+}
+#category-list .category {
+  width: 240px;
+  height: 250px;
+  float: left;
+  display: inline;
+  margin: 0 10px 10px 0;
+  border: 1px solid #eee;
+  text-align: center;
+  position: relative;
+}
+#category-list .category img {
+  max-width: 200px;
+  max-height: 200px;
+}
+#category-list .category .remove {
+  position: absolute;
+  display: none;
+  top: 0px;
+  right: 0px;
+  color: red;
+}
+#category-list .category:hover .remove {
+  display: block;
+}

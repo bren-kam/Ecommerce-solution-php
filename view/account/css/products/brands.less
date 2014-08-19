@@ -1,0 +1,36 @@
+#brand-list {
+  .brand-placeholder {
+    width: 240px;
+    height: 280px;
+    float: left;
+    display: inline;
+    margin: 0 10px 10px 0;
+    border: 3px dashed #ccc;
+  }
+  .brand {
+    width: 240px;
+    height: 280px;
+    float: left;
+    display: inline;
+    margin: 0 10px 10px 0;
+    border: 1px solid #eee;
+    text-align: center;
+    position: relative;
+
+    img {
+      max-width: 200px;
+      max-height: 200px;
+    }
+
+    .remove {
+      position: absolute;
+      display: none;
+      top: 0px;
+      right: 0px;
+      color: red;
+    }
+    &:hover .remove {
+      display: block;
+    }
+  }
+}

@@ -72,9 +72,9 @@ class RelatedProductsController extends BaseController {
         }
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'products/related-products/add-edit')
-            ->javascript( 'products/related-products/add-edit' );
+            ->javascript( 'products/related-products/add-edit' )
+            ->javascript_url( Config::resource('typeahead-js') );
 
         $title = ( $group->id ) ? _('Edit') : _('Add');
 
@@ -117,7 +117,7 @@ class RelatedProductsController extends BaseController {
         foreach ( $groups as $group ) {
             $actions = '<a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/related-products/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
            	$actions .= ' | <a href="' . url::add_query_arg( array( 'wpgid' => $group->id, '_nonce' => $delete_nonce ), '/products/related-products/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
-           	$actions .= ' | <a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/related-products/show-products/#dShowGroups' . $group->id ) . '" title="' . _("Related Products") . '" rel="dialog">' . _('Show Products') . '</a>';
+           	$actions .= ' | <a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/related-products/show-products/' ) . '" title="Related Products" data-modal>Show Products</a>';
 
             $data[] = array(
                 $group->name . '<div class="actions">' . $actions . '</div>'
@@ -154,11 +154,8 @@ class RelatedProductsController extends BaseController {
         $website_product_group->remove_relations();
         $website_product_group->remove();
 
-        // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
         // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -178,7 +175,7 @@ class RelatedProductsController extends BaseController {
         $products = $product->get_by_ids( $website_product_group->get_product_relation_ids() );
 
         $response = new CustomResponse( $this->resources, 'products/related-products/show-products' );
-        $response->set( compact( 'products' ) );
+        $response->set( compact( 'products', 'website_product_group' ) );
 
         return $response;
     }
@@ -242,7 +239,7 @@ class RelatedProductsController extends BaseController {
         if ( is_array( $products ) )
         foreach ( $products as $product ) {
             $dialog = '<a href="' . url::add_query_arg( array( '_nonce' => $get_product_nonce, 'pid' => $product->id ), '/products/related-products/get-product/#dProductDialog' . $product->id ) . '" title="' . _('View') . '" rel="dialog">';
-           	$actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/products/related-products/add-product/' ) . '" title="' . _('Add') . '" ajax="1">' . _('Add Product') . '</a>';
+           	$actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/products/related-products/add-product/' ) . '" class="add-product">' . _('Add Product') . '</a>';
 
             $data[] = array(
                 $dialog . format::limit_chars( $product->name,  50, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>',
@@ -281,18 +278,8 @@ class RelatedProductsController extends BaseController {
         $product->get( $account_product->product_id );
         $image = current( $product->get_images() );
 
-        // Form the response HTML
-        $product_box = '<div id="dProduct_' . $product->id . '" class="product">';
-        $product_box .= '<h4>' . format::limit_chars( $product->name, 37 ) . '</h4>';
-        $product_box .= '<p align="center"><img src="http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . $image . '" alt="' . $product->name . '" height="110" style="margin:10px" /></p>';
-        $product_box .= '<p>' . _('Brand') . ': ' . $product->brand . '</p>';
-        $product_box .= '<p class="product-actions" id="pProductAction' . $product->id . '"><a href="#" class="remove-product" title="' . _('Remove') . '">' . _('Remove') . '</a></p>';
-        $product_box .= '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' . $product->id . '" value="' . $product->id . '" />';
-        $product_box .= '</div>';
-
-        jQuery('#dSelectedProducts')->append( $product_box );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $product->image_url = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$image}";
+        $response->add_response( 'product', $product );
 
         return $response;
     }

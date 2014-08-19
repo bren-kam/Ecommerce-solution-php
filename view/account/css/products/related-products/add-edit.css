@@ -1,0 +1,28 @@
+#product-list .product {
+  width: 240px;
+  height: 300px;
+  float: left;
+  display: inline;
+  margin: 0 10px 10px 0;
+  border: 1px solid #eee;
+  text-align: center;
+  position: relative;
+}
+#product-list .product h4 {
+  margin-bottom: 0;
+  height: 38px;
+}
+#product-list .product img {
+  max-width: 200px;
+  max-height: 200px;
+}
+#product-list .product .remove {
+  position: absolute;
+  display: none;
+  top: 0px;
+  right: 0px;
+  color: red;
+}
+#product-list .product:hover .remove {
+  display: block;
+}
