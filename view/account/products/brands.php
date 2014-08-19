@@ -50,7 +50,7 @@ nonce::field( 'update_brand_sequence', '_update_brand_sequence' );
 
             <div class="panel-body">
 
-                <div id="top-categories">
+                <div id="brand-list">
                     <?php foreach ( $top_brands as $brand ): ?>
                         <div class="brand" data-brand-id="<?php echo $brand->id ?>">
                             <img src="<?php echo $brand->image; ?>" />
