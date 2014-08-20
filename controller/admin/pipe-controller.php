@@ -66,6 +66,84 @@ class PipeController extends BaseController {
     }
 
     /**
+     * Pipe deploy
+     *
+     * @return HtmlResponse
+     */
+    protected function deploy() {
+        library( 'email/rfc822-addresses' );
+        library( 'email/mime-parser-class' );
+
+        $email_content = file_get_contents( 'php://stdin' );
+
+        // Response
+        $response = new HtmlResponse( '' );
+
+        // Create mime
+        $mime = new mime_parser_class();
+        $mime->ignore_syntax_errors = 1;
+
+        $mime->Decode( array( 'Data' => $email_content ), $emails );
+        $email = $emails[0];
+
+        // Make sure it's from Wercker
+        if ( !stristr( $email['ExtractedAddresses']['from:'][0], 'alerts@wercker.com' ) )
+            return $response;
+
+        // Get data
+        list( $repo, $message ) = explode( ':', $email['Headers']['subject:'] );
+
+        // make sure hte build passed
+        if ( 'passed.' != substr( $message, -7 ) )
+            return $response;
+
+        // Determine what repo passed
+        switch ( $repo ) {
+            case 'KerryJones/Imagine-Retailer':
+                if ( !stristr( $message, 'release-' ) )
+                    return $response;
+
+                $server = new Server();
+                $servers = $server->get_all();
+
+                // Build on all servers
+                foreach( $servers as $server ) {
+                    // SSH Connection
+                    $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+                    ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+                    // Build
+                    ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/backend-testing/build.xml" );
+                }
+            break;
+
+            case 'KerryJones/GSR-Site':
+                if ( !stristr( $message, 'development' ) )
+                    return $response;
+
+                $server = new Server();
+                $servers = $server->get_all();
+
+                // Build on all servers
+                foreach( $servers as $server ) {
+                    // SSH Connection
+                    $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+                    ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+                    // Build
+                    ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
+                }
+            break;
+
+            default:
+                return $response;
+            break;
+        }
+
+        return $response;
+    }
+
+    /**
      * Pipe reaches
      *
      * @return HtmlResponse

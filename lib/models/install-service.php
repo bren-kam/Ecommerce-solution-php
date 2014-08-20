@@ -4,19 +4,28 @@ class InstallService {
     /**
      * Install a website
      *
+     * @throws ModelException
+     *
      * @param Account $account
      * @param int $user_id the user that performs the operation
      */
     public function install_website( Account $account, $user_id = -1) {
+        if ( empty( $account->server_id ) )
+            throw new ModelException( 'No connected server' );
+
         // Create website industry (furniture)
         $account->add_industries( array( 1 ) );
 
         // Get Username
         $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
 
+        // Get Server
+        $server = new Server();
+        $server->get( $account->server_id );
+
         // SSH Connection
-        $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
-        ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+        ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
         // Copy files
         ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
