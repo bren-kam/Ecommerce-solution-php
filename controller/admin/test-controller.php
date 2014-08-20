@@ -104,4 +104,50 @@ class TestController extends BaseController {
 
         return $this->get_template_response( 'route53-replace' )->set( compact( 'replace_search_1', 'replace_search_2' ) );
     }
+
+    /**
+     * Recompile All LESS
+     * @return HtmlResponse
+     */
+    protected function recompile_all_less() {
+        set_time_limit(3600);
+
+        // Get account
+        $unlocked = new Account();
+        $unlocked->get( Account::TEMPLATE_UNLOCKED );
+        $unlocked_less = $unlocked->get_settings('less');
+
+        library('lessc.inc');
+
+        $account = new Account();
+        $less_accounts = $account->get_less_sites();
+
+        /**
+         * @var Account $less_account
+         * @var string $unlocked_less
+         */
+        foreach ( $less_accounts as $less_account ) {
+            if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
+                continue;
+
+            echo "Compiling LESS for {$less_account->website_id} {$less_account->title}...<br>\n";
+            flush();
+
+            $less = new lessc;
+            $less->setFormatter("compressed");
+
+            $site_less = $less_account->get_settings('less');
+
+            $less_account->set_settings( array(
+                'css' => $less->compile( $unlocked_less . $site_less )
+            ));
+
+            unset( $less );
+            unset( $site_less );
+            unset( $less_account );
+            gc_collect_cycles();
+        }
+
+        return new HtmlResponse( 'All LESS sites Recompiled' );
+    }
 }

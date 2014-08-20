@@ -144,6 +144,8 @@ class CustomizeController extends BaseController {
      * @return AjaxResponse
      */
     protected function save_less() {
+        set_time_limit(3600);
+
         // Make sure it's a valid ajax call
         $response = new AjaxResponse($this->verified());
 
@@ -192,9 +194,18 @@ class CustomizeController extends BaseController {
                 if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
                     continue;
 
+                $less = new lessc;
+                $less->setFormatter("compressed");
+                $site_less = $less_account->get_settings('less');
+
                 $less_account->set_settings( array(
-                    'css' => $less->compile( $less_css . $less_account->get_settings('less') )
+                    'css' => $less->compile( $less_css . $site_less )
                 ));
+
+                unset( $less );
+                unset( $site_less );
+                unset( $less_account );
+                gc_collect_cycles();
             }
         }
 
