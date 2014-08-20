@@ -66,6 +66,67 @@ class PipeController extends BaseController {
     }
 
     /**
+     * Pipe deploy
+     *
+     * @return HtmlResponse
+     */
+    protected function deploy() {
+        library( 'email/rfc822-addresses' );
+        library( 'email/mime-parser-class' );
+
+        $email_content = file_get_contents( 'php://stdin' );
+
+        // Response
+        $response = new HtmlResponse( '' );
+
+        // Create mime
+        $mime = new mime_parser_class();
+        $mime->ignore_syntax_errors = 1;
+
+        $mime->Decode( array( 'Data' => $email_content ), $emails );
+        $email = $emails[0];
+
+        // Get data
+        list( $repo, $message ) = explode( ':', $email['Headers']['subject:'] );
+
+        // If it wasn't passed, ignore it
+        if ( 'passed.' != substr( $message, -7 ) )
+            return $response;
+
+        switch ( $repo ) {
+            case 'KerryJones/Imagine-Retailer':
+                if ( !stristr( $message, 'release-' ) )
+                    return $response;
+
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::server('ip'), 22 );
+                ssh2_auth_password( $ssh_connection, Config::server('username'), Config::server('password') );
+
+                // Build
+                ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/backend-testing/build.xml" );
+            break;
+
+            case 'KerryJones/GSR-Site':
+                if ( !stristr( $message, 'development' ) )
+                    return $response;
+
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::server('ip'), 22 );
+                ssh2_auth_password( $ssh_connection, Config::server('username'), Config::server('password') );
+
+                // Build
+                ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
+            break;
+
+            default:
+                return $response;
+            break;
+        }
+
+        return $response;
+    }
+
+    /**
      * Pipe reaches
      *
      * @return HtmlResponse

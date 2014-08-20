@@ -23,12 +23,9 @@ class InstallService {
         $server = new Server();
         $server->get( $account->server_id );
 
-        $server_array = Config::setting('servers');
-        $server_setting = $server_array[$server->ip];
-
         // SSH Connection
-        $ssh_connection = ssh2_connect( $server_setting['ip'], 22 );
-        ssh2_auth_password( $ssh_connection, $server_setting['username'], $server_setting['server-password'] );
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+        ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
         // Copy files
         ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );

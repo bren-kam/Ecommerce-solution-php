@@ -48,22 +48,38 @@ class Config {
         , 'server-username'     => 'root'
         , 'server-password'     => 'WIxp2sDfRgLMDTL5'
         , 'default-timezone'    => 'America/New_York'
-        , 'servers'             => array(
-            'legacy'            => array(
-                'ip'            => '199.79.48.137'
-                , 'username'    => 'root'
-                , 'password'    => 'WIxp2sDfRgLMDTL5'
-            )
-            , '162.218.139.218' => array(
-                'ip'            => '199.79.48.137'
-                , 'username'    => 'root'
-                , 'password'    => 'ZjhNCaLL9YhYD5Rf'
-            )
-            , '162.218.139.219' => array(
-                'ip'            => '162.218.139.219'
-                , 'username'    => 'root'
-                , 'password'    => 'IlkWJGkM8e75uYxh'
-            )
+    );
+
+    /**
+     * Servers
+     * @access private
+     * @var array
+     */
+    private static $servers = array(
+        'legacy' => array(
+            'ip'            => '199.79.48.137'
+            , 'username'    => 'root'
+            , 'password'    => 'WIxp2sDfRgLMDTL5'
+        )
+        , '162.218.139.218' => array(
+            'ip'            => '199.79.48.137'
+            , 'username'    => 'root'
+            , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+        )
+        , 'mail09.blinkyblinky.me' => array(
+            'ip'            => '199.79.48.137'
+            , 'username'    => 'root'
+            , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+        )
+        , '162.218.139.219' => array(
+            'ip'            => '162.218.139.219'
+            , 'username'    => 'root'
+            , 'password'    => 'IlkWJGkM8e75uYxh'
+        )
+        , 'mail10.blinkyblinky.me' => array(
+            'ip'            => '162.218.139.219'
+            , 'username'    => 'root'
+            , 'password'    => 'IlkWJGkM8e75uYxh'
         )
     );
 
@@ -103,6 +119,20 @@ class Config {
 	 */
 	public static function setting( $setting ) {
 		return self::$settings[$setting];
+	}
+
+	/**
+	 * Returns a setting
+	 *
+	 * @param string $setting
+     * @param string $server
+	 * @return mixed
+	 */
+	public static function server( $setting, $server = NULL ) {
+        if ( is_null( $server ) )
+            $server = $_SERVER['HOSTNAME'];
+
+		return self::$servers[$server][$setting];
 	}
 
 	/**

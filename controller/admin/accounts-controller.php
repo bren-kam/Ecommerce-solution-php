@@ -1652,6 +1652,11 @@ class AccountsController extends BaseController {
         return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
     }
 
+    /**
+     * Install New Theme
+     *
+     * @throws Exception
+     */
     public function install_new_theme() {
         $sources = array(
             'unlocked' => 1352
@@ -1700,13 +1705,12 @@ class AccountsController extends BaseController {
             throw new Exception( "Can't find username for this account. You will need to set new index.php manually." );
 
         // Get where is hosted
-        $server = $account->get_settings( 'server-ip' );
-        $server_list = Config::setting( 'servers' );
-        $server_settings = isset( $server_list[$server] ) ? $server_list[$server] : $server_list['legacy'];
+        $server = new Server;
+        $server->get( $account->server_id );
 
-        // Install new files
-        $ssh_connection = ssh2_connect( $server_settings['ip'], 22 );
-        ssh2_auth_password( $ssh_connection, $server_settings['username'], $server_settings['password'] );
+        // SSH Connection
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+        ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
         ssh2_exec( $ssh_connection, "mv /home/$username/public_html/index.php /home/$username/public_html/index.php.old" );
         ssh2_exec( $ssh_connection, "cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
