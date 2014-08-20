@@ -98,24 +98,34 @@ class PipeController extends BaseController {
                 if ( !stristr( $message, 'release-' ) )
                     return $response;
 
-                // SSH Connection
-                $ssh_connection = ssh2_connect( Config::server('ip'), 22 );
-                ssh2_auth_password( $ssh_connection, Config::server('username'), Config::server('password') );
+                $server = new Server();
+                $servers = $server->get_all();
 
-                // Build
-                ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/backend-testing/build.xml" );
+                foreach( $servers as $server ) {
+                    // SSH Connection
+                    $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+                    ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+                    // Build
+                    ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/backend-testing/build.xml" );
+                }
             break;
 
             case 'KerryJones/GSR-Site':
                 if ( !stristr( $message, 'development' ) )
                     return $response;
 
-                // SSH Connection
-                $ssh_connection = ssh2_connect( Config::server('ip'), 22 );
-                ssh2_auth_password( $ssh_connection, Config::server('username'), Config::server('password') );
+                $server = new Server();
+                $servers = $server->get_all();
 
-                // Build
-                ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
+                foreach( $servers as $server ) {
+                    // SSH Connection
+                    $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+                    ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+                    // Build
+                    ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
+                }
             break;
 
             default:
