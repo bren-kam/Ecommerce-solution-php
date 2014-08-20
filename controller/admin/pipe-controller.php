@@ -86,13 +86,18 @@ class PipeController extends BaseController {
         $mime->Decode( array( 'Data' => $email_content ), $emails );
         $email = $emails[0];
 
+        // Make sure it's from Wercker
+        if ( !stristr( $email['ExtractedAddresses']['from:'][0], 'alerts@wercker.com' ) )
+            return $response;
+
         // Get data
         list( $repo, $message ) = explode( ':', $email['Headers']['subject:'] );
 
-        // If it wasn't passed, ignore it
+        // make sure hte build passed
         if ( 'passed.' != substr( $message, -7 ) )
             return $response;
 
+        // Determine what repo passed
         switch ( $repo ) {
             case 'KerryJones/Imagine-Retailer':
                 if ( !stristr( $message, 'release-' ) )
@@ -101,6 +106,7 @@ class PipeController extends BaseController {
                 $server = new Server();
                 $servers = $server->get_all();
 
+                // Build on all servers
                 foreach( $servers as $server ) {
                     // SSH Connection
                     $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
@@ -118,6 +124,7 @@ class PipeController extends BaseController {
                 $server = new Server();
                 $servers = $server->get_all();
 
+                // Build on all servers
                 foreach( $servers as $server ) {
                     // SSH Connection
                     $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
