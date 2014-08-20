@@ -446,7 +446,6 @@ class AccountsController extends BaseController {
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
-            , 'server-ip'
             , 'ashley-express'
         );
 
@@ -473,10 +472,20 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
         $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
-        $ft->add_field( 'select', 'Server Host/IP', 'sServerIP', $settings['server-ip'] )
-            ->options( array( '162.218.139.218' => 'VMW 09 (162.218.139.218)', '162.218.139.219' => 'VMW 10 (162.218.139.219)' ) );
+
+        $server = new Server();
+        $servers = $server->get_all();
+        $server_array = array( '' => '-- Select Server --' );
+
+        foreach ( $servers as $server ) {
+            $server_array[$server->id] = $server->name . ' (' . $server->ip . ')';
+        }
+
+        $ft->add_field( 'select', 'Server Host/IP', 'sServerId', $account->server_id )
+            ->options( $server_array );
 
         if ( $ft->posted() ) {
+            $account->server_id = $_POST['sServerId'];
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
             $account->ga_profile_id = $_POST['tGAProfileID'];
             $account->ga_tracking_key = $_POST['tGATrackingKey'];
@@ -502,7 +511,6 @@ class AccountsController extends BaseController {
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
                 , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
-                , 'server-ip' => $_POST['sServerIP']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );

@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `checklist_website_item_notes` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`checklist_website_item_note_id`),
   KEY `checklist_item_id` (`checklist_website_item_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7135 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -343,7 +343,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`company_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -359,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `company_packages` (
   PRIMARY KEY (`company_package_id`),
   KEY `company_id` (`company_id`,`website_id`),
   KEY `fk_cp_idx` (`company_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=27 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1167,7 +1167,20 @@ CREATE TABLE IF NOT EXISTS `ratings` (
   `date_created` datetime DEFAULT NULL,
   PRIMARY KEY (`rating_id`),
   UNIQUE KEY `UNIQUE` (`product_id`,`ip_address`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=47882 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=47882;
+
+-- --------------------------------------------------------
+
+-- --
+-- Table structure for table `server`
+--
+
+CREATE TABLE IF NOT EXISTS `server` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `ip` varchar(15) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- --------------------------------------------------------
 
@@ -1541,6 +1554,8 @@ CREATE TABLE IF NOT EXISTS `websites` (
   `company_package_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `os_user_id` int(11) NOT NULL,
+  `user_id_updated` INT(11) DEFAULT NULL,
+  `server_id` int(11) NOT NULL,
   `domain` varchar(150) NOT NULL,
   `subdomain` varchar(50) NOT NULL,
   `title` varchar(100) NOT NULL DEFAULT 'Website Title',
@@ -1578,7 +1593,6 @@ CREATE TABLE IF NOT EXISTS `websites` (
   `status` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `user_id_updated` INT(11) DEFAULT NULL,
   PRIMARY KEY (`website_id`),
   KEY `user_id` (`user_id`,`os_user_id`),
   KEY `status` (`status`)
