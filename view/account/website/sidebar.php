@@ -23,7 +23,7 @@ $industries = $user->account->get_industries();
     <a href="/website/sidebar/" title="<?php echo _('Sidebar'); ?>" class="top<?php $template->select('sidebar'); ?>"><?php echo _('Sidebar'); ?></a>
     <a href="/website/banners/" title="<?php echo _('Banners'); ?>" class="top<?php $template->select('banners'); ?>"><?php echo _('Banners'); ?></a>
     <a href="/website/sale/" title="<?php echo _('Sale'); ?>" class="top<?php $template->select('sale'); ?>"><?php echo _('Sale'); ?></a>
-    <?php if ( in_array( Industry::FURNITURE, $industries ) && $user->account->product_catalog ) { ?>
+    <?php if ( !$user->account->is_new_template() && in_array( Industry::FURNITURE, $industries ) && $user->account->product_catalog ) { ?>
     <a href="/website/room-planner/" title="<?php echo _('Room Planner'); ?>" class="top<?php $template->select('room-planner'); ?>"><?php echo _('Room Planner'); ?></a>
     <?php } ?>
 
