@@ -87,7 +87,7 @@ class PipeController extends BaseController {
         $email = $emails[0];
 
         // Make sure it's from Wercker
-        if ( !stristr( $email['ExtractedAddresses']['from:'][0], 'alerts@wercker.com' ) )
+        if ( 'alerts@wercker.com' != $email['ExtractedAddresses']['from:'][0]['address'] )
             return $response;
 
         // Get data
