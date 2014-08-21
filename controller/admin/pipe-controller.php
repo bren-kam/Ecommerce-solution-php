@@ -93,7 +93,7 @@ class PipeController extends BaseController {
         // Get data
         list( $repo, $message ) = explode( ':', $email['Headers']['subject:'] );
 
-        // make sure hte build passed
+        // make sure the build passed
         if ( 'passed.' != substr( $message, -7 ) )
             return $response;
 
