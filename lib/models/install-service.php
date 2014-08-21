@@ -24,7 +24,7 @@ class InstallService {
         $server->get( $account->server_id );
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+        $ssh_connection = ssh2_connect( $server->ip, 22 );
         ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
         // Copy files

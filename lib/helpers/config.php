@@ -62,12 +62,12 @@ class Config {
             , 'password'    => 'WIxp2sDfRgLMDTL5'
         )
         , '162.218.139.218' => array(
-            'ip'            => '199.79.48.137'
+            'ip'            => '162.218.139.218'
             , 'username'    => 'root'
             , 'password'    => 'ZjhNCaLL9YhYD5Rf'
         )
         , 'mail09.blinkyblinky.me' => array(
-            'ip'            => '199.79.48.137'
+            'ip'            => '162.218.139.218'
             , 'username'    => 'root'
             , 'password'    => 'ZjhNCaLL9YhYD5Rf'
         )
