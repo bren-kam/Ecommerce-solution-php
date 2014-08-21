@@ -365,9 +365,13 @@ class AccountsController extends BaseController {
             $account->theme = $_POST['tTheme'];
 
             if ( !$account->live && isset( $_POST['cbLive'] ) && $_POST['cbLive'] ) {
+                // Get Server
+                $server = new Server();
+                $server->get( $account->server_id );
+
                 // SSH Connection
-                $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
-                ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+                $ssh_connection = ssh2_connect( $server->ip, 22 );
+                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
                 $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
                 $domain = url::domain( $account->domain, false );
