@@ -17,7 +17,7 @@ date_default_timezone_set('America/Chicago');
 define( 'LIVE', false );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', '/gsr/systems/backend/' );
+define( 'ABS_PATH', __DIR__ . '/' );
 
 // Hold the library path
 define( 'LIB_PATH', ABS_PATH . 'lib/' );
