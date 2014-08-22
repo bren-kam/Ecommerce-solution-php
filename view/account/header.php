@@ -74,16 +74,14 @@
             </a>
             <ul class="dropdown-menu extended">
                 <div class="log-arrow-up"></div>
-                <li><a href="#" data-toggle="modal" data-target="#support-modal">Support Request</a></li>
-                <?php
-                    if ( !empty( $kbh_articles ) )
-                        foreach ( $kbh_articles as $kbh_article ):
-                ?>
-                    <li>
-                        <a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo $kbh_article->title; ?></a>
-                    </li>
-                <?php endforeach ; ?>
-                <li><a href="/kb/browser/">Browser Support</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#support-modal"><i class="fa fa-ticket"></i> Support Request</a></li>
+                <?php if ( !empty( $kbh_articles ) ): ?>
+                    <li><a href="javascript:;" class="keep-open"><i class="fa fa-book"></i> <strong>Knowledge Base</strong></a></li>
+                    <?php foreach ( $kbh_articles as $kbh_article ): ?>
+                        <li><a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo str_repeat( '&nbsp;', 8 ) . $kbh_article->title; ?></a></li>
+                    <?php endforeach ; ?>
+                <?php endif; ?>
+                <li><a href="/kb/browser/"><i class="fa fa-globe"></i> Browser Support</a></li>
             </ul>
         </li>
         <!-- kb support dropdown end -->
@@ -193,12 +191,12 @@
                         <span>Email Marketing</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('email_marketing/index') ) echo 'class="active"'?>><a href="/email_marketing/">Dashboard</a></li>
-                        <li <?php if ( $template->v('email_marketing/campaigns') ) echo 'class="active"'?>><a href="/email_marketing/campaigns/">Campaigns</a></li>
-                        <li <?php if ( $template->v('email_marketing/subscribers') ) echo 'class="active"'?>><a href="/email_marketing/subscribers/">Subscribers</a></li>
-                        <li <?php if ( $template->v('email_marketing/email_lists') ) echo 'class="active"'?>><a href="/email_marketing/email-lists/">Email Lists</a></li>
-                        <li <?php if ( $template->v('email_marketing/autoresponders') ) echo 'class="active"'?>><a href="/email_marketing/autoresponders/">Autoresponders</a></li>
-                        <li <?php if ( $template->v('email_marketing/settings') ) echo 'class="active"'?>><a href="/email_marketing/settings/">Settings</a></li>
+                        <li <?php if ( $template->v('email-marketing/index') ) echo 'class="active"'?>><a href="/email-marketing/">Dashboard</a></li>
+                        <li <?php if ( $template->v('email-marketing/campaigns') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/">Campaigns</a></li>
+                        <li <?php if ( $template->v('email-marketing/subscribers') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/">Subscribers</a></li>
+                        <li <?php if ( $template->v('email-marketing/email_lists') ) echo 'class="active"'?>><a href="/email-marketing/email-lists/">Email Lists</a></li>
+                        <li <?php if ( $template->v('email-marketing/autoresponders') ) echo 'class="active"'?>><a href="/email-marketing/autoresponders/">Autoresponders</a></li>
+                        <li <?php if ( $template->v('email-marketing/settings') ) echo 'class="active"'?>><a href="/email-marketing/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
