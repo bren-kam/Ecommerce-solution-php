@@ -200,12 +200,12 @@ class AccountProduct extends ActiveRecordBase {
         $where = '';
         $inner_join = '';
         // Add the where by Brand
-        if ( $brand_id > 0 ) {
+        if ( $brand_id > 0 && $brand_id != WebsiteOrder::get_ashley_express_shipping_method()->id ) {
             $where = ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( $brand_id == 1048576 ) {
+        } else if ( $brand_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_shipping_method` wpsm ON ( p.`product_id` = wpsm.`product_id` AND wpsm.`website_id` = wp.`website_id` ) ';
-            $where = " AND t.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
+            $where = " AND wpsm.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
         }
 
         // Run once
@@ -283,12 +283,12 @@ class AccountProduct extends ActiveRecordBase {
         // Add the where
         $inner_join = '';
         // Add the where by Brand
-        if ( is_numeric($brand_id) && $brand_id > 0 ) {
+        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != WebsiteOrder::get_ashley_express_shipping_method()->id ) {
             $where = ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( is_numeric($brand_id) && $brand_id == 1048576 ) {
+        } else if ( is_numeric($brand_id) && $brand_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_shipping_method` wpsm ON ( p.`product_id` = wpsm.`product_id` AND wpsm.`website_id` = wp.`website_id` ) ';
-            $where = " AND t.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
+            $where = " AND wpsm.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
         } else {
             // 2pc only applied to Ashley products
             $where = ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ';
