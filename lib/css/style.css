@@ -4801,3 +4801,7 @@ a.guest-on i {
 #kb-dropdown a:first-child span {
   color: #ff6c60;
 }
+div#uploader {
+  position: absolute;
+  left: -5000px;
+}

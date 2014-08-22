@@ -39,7 +39,7 @@ class AuthorizedUsersController extends BaseController {
         if ( $user_id )
             $auth_user_website->get( $user_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditAuthUser' );
+        $form = new BootstrapForm( 'fAddEditAuthUser' );
 
         if ( !$auth_user_website->user_id )
             $form->submit( _('Add') );
