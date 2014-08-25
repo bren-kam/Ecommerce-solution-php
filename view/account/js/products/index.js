@@ -95,6 +95,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 			$('#tSalePrice').val( p['sale_price'] );
 			$('#cbOnSale').attr( 'checked', 1 == p['on_sale'] );
 			$('#tPriceNote').val( p['price_note'] );
+            $('#tSetupFee').val( p['setup_fee'] );
 
 			// Product Information
 			$('#taProductNote').val( p['product_note'] );

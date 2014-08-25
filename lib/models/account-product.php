@@ -12,7 +12,7 @@ class AccountProduct extends ActiveRecordBase {
         , $additional_shipping_amount, $weight, $additional_shipping_type
         , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $price_note
         , $product_note, $ships_in, $store_sku, $warranty_length, $alternate_price_strikethrough
-        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated;
+        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
 
     // Artificial columns
     public $link, $industry, $coupons, $product_options, $created_by, $count;
@@ -359,10 +359,11 @@ class AccountProduct extends ActiveRecordBase {
             , 'store_sku' => strip_tags($this->store_sku)
             , 'active' => $this->active
             , 'manual_price' => $this->manual_price
+            , 'setup_fee' => $this->setup_fee
         ), array(
             'website_id' => $this->website_id
             , 'product_id' => $this->product_id
-        ), 'iiiissssiiisssiiiissssi', 'ii' );
+        ), 'iiiissssiiisssiiiissssii', 'ii' );
     }
 
     /**

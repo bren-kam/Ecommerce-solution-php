@@ -1125,6 +1125,7 @@ class ProductsController extends BaseController {
         $account_product->alternate_price = $_POST['tAlternatePrice'];
         $account_product->price = $_POST['tPrice'];
         $account_product->sale_price = $_POST['tSalePrice'];
+        $account_product->setup_fee = $_POST['tSetupFee'];
         $account_product->inventory = $_POST['tInventory'];
         $account_product->alternate_price_name = $_POST['tAlternatePriceName'];
         $account_product->price_note = $_POST['tPriceNote'];

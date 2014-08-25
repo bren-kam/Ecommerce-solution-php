@@ -132,6 +132,10 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 				<td>&nbsp;</td>
 				<td><input type="checkbox" name="cbOnSale" id="cbOnSale" value="true" /> <label for="cbOnSale"><?php echo _('On Sale?'); ?></label></td>
 			</tr>
+            <tr>
+                <td><label for="tSetupFee"><?php echo _('Setup Fee'); ?>:</label></td>
+                <td><input type="text" class="tb" name="tSetupFee" id="tSetupFee" /></td>
+            </tr>
 		</table>
 		<table class="col-2 float-left">
 			<tr><td colspan="2"><h4><?php echo _('Product Information'); ?></h4></td></tr>
