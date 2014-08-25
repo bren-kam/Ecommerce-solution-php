@@ -2038,6 +2038,7 @@ CREATE TABLE IF NOT EXISTS `website_products` (
   `blocked` int(1) NOT NULL DEFAULT '0',
   `active` int(1) NOT NULL DEFAULT '1',
   `manual_price` INT(1) NOT NULL DEFAULT '0',
+  `setup_fee` FLOAT NULL DEFAULT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_id`,`product_id`),
   KEY `website_id` (`website_id`)
