@@ -2049,4 +2049,39 @@ class ProductsController extends BaseController {
         return new RedirectResponse( '/products/manually-priced/' );
     }
 
+    /**
+     * Get
+     *
+     * @return AjaxResponse
+     */
+    protected function get() {
+        $response = new AjaxResponse( $this->verified() );
+
+        $account_product = new AccountProduct();
+        $product = new Product();
+        $category = new Category();
+
+        // Get
+        $account_product->get( $_GET['pid'], $this->user->account->id );
+
+        // Get Product Images & Name
+        $product->get( $_GET['pid'] );
+        $images = $product->get_images();
+        $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
+        $account_product->name = $product->name;
+
+        // Get Category
+        $category->get( $product->category_id );
+
+        // Get Product Link
+        if ($this->user->account->is_new_template() ) {
+            $account_product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
+        } else {
+            $account_product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+        }
+
+        $response->add_response( 'product', $account_product );
+        return $response;
+    }
+
 }

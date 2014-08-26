@@ -234,9 +234,7 @@ class AuthorizedUsersController extends BaseController {
         $auth_user_website->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

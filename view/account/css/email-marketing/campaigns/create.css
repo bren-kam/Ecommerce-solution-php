@@ -1,0 +1,236 @@
+/* Progress Bar
+----------------------------------------- */
+.form-steps {
+  list-style: none;
+  overflow: hidden;
+  padding: 0;
+  margin: 0 0 30px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+}
+.form-steps li {
+  float: left;
+  width: 33.33333333333333%;
+  padding: 0;
+  margin: 0;
+}
+.form-steps li a {
+  position: relative;
+  display: block;
+  width: 100%;
+  color: #white;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 34px;
+  font-weight: normal;
+  text-align: center;
+  background: #e3e3e3;
+  padding-left: 30px;
+}
+.form-steps li a:before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  /* Go big on the size, and let overflow hide */
+  border-bottom: 50px solid transparent;
+  border-left: 30px solid #fff;
+  position: absolute;
+  top: 50%;
+  margin-top: -50px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 1;
+}
+.form-steps li a:after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  /* Go big on the size, and let overflow hide */
+  border-bottom: 50px solid transparent;
+  border-left: 30px solid #e3e3e3;
+  position: absolute;
+  top: 50%;
+  margin-top: -50px;
+  left: 100%;
+  z-index: 2;
+}
+.form-steps li a:hover {
+  background: #e3e3e3;
+  color: #63656b;
+}
+.form-steps li a:hover:after {
+  border-left-color: #e3e3e3 !important;
+}
+.form-steps li.active a {
+  background: #9ac600;
+  color: #475b00;
+  text-shadow: 1px 1px 0 rgba(186, 228, 39, 0.8);
+}
+.form-steps li.active a:after {
+  border-left-color: #9ac600 !important;
+}
+/* Layout and Content Type Selectors/Thumbnails
+----------------------------------------- */
+.layout-thumbnails li,
+.content-thumbnails li {
+  float: left;
+  margin: 0 0 10px 15px;
+  height: 140px;
+  width: 100px;
+  text-align: center;
+  padding-top: 20px;
+  box-sizing: border-box;
+}
+.content-thumbnails li {
+  background: #eee;
+}
+.content-thumbnails li:hover {
+  cursor: move;
+}
+.content-thumbnails li img {
+  opacity: 0.4;
+}
+.layout-thumbnails li:hover {
+  cursor: pointer;
+}
+.layout-thumbnails li img {
+  width: 100%;
+  border: 1px solid #bbb;
+}
+.layout-thumbnails li.active img {
+  border: 1px solid #343434;
+}
+/* email.css overwrites to make .email-layout editable look better
+----------------------------------------- */
+.droppable-hover {
+  background-color: yellow!important;
+  opacity: 0.3;
+}
+/* Background and Borders for Editor */
+.email-layout {
+  border: 1px solid #bdbdbd;
+  padding: 15px;
+  margin: 0 0 17px 0;
+}
+#email-editor {
+  width: 632px;
+}
+#email-editor .droppable {
+  border: 1px dashed #666;
+}
+/* When placeholders are empty */
+#email-editor .droppable:not(.empty-content-type):not(.has-content) {
+  vertical-align: middle;
+  background-color: #e5e5e5;
+}
+#email-editor p.placeholder {
+  vertical-align: middle;
+  text-align: center;
+  font-size: 16px;
+  padding: 0;
+}
+/* When placeholders has a content type, but still not data has been set */
+#email-editor .empty-content-type {
+  background: #e5e5e5;
+}
+#email-editor .empty-content-type [data-content-type] {
+  height: inherit;
+}
+#email-editor .empty-content-type [data-content-type="text"] .placeholder-content {
+  background: url('/images/campaigns/text.png') no-repeat center;
+  opacity: 0.4;
+  height: inherit;
+}
+#email-editor .empty-content-type [data-content-type="image"] .placeholder-content {
+  background: url('/images/campaigns/image.png') no-repeat center;
+  opacity: 0.4;
+  height: inherit;
+}
+#email-editor .empty-content-type [data-content-type="product"] .placeholder-content {
+  background: url('/images/campaigns/product.png') no-repeat center;
+  opacity: 0.4;
+  height: inherit;
+}
+/* When placeholder has a content type AND data has been set */
+.has-content {
+  height: auto;
+}
+.has-content .placeholder-content {
+  background: none;
+}
+/* Content Type inner structure */
+td div[data-content-type] {
+  position: relative;
+}
+/* Content Type actions */
+.placeholder-actions {
+  position: absolute;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.8);
+  width: 100%;
+}
+.placeholder-actions a {
+  display: inline-block;
+  float: left;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 2px;
+  color: white;
+}
+.placeholder-actions a:hover {
+  color: white;
+}
+.placeholder-actions a.hidden {
+  display: none;
+}
+[data-action=edit] {
+  margin-left: 5px;
+}
+/* actions for Product*/
+.product-autocomplete {
+  width: 80px;
+  float: left;
+  padding: 2px;
+  font-size: 9px;
+  margin-left: 5px;
+  margin-top: 3px;
+}
+.edit-price-actions {
+  display: inline-block;
+}
+.edit-price-actions input,
+.edit-price-actions a {
+  float: left;
+  margin-left: 4px;
+  margin-bottom: 0;
+}
+.edit-price-actions input {
+  width: 40px;
+  padding: 2px;
+  font-size: 9px;
+  margin-top: 3px;
+}
+/* actions for Image */
+.image-link-url {
+  width: 80px;
+  float: left;
+  padding: 2px;
+  font-size: 9px;
+  margin-top: 3px;
+}
+[data-action="save-link"] {
+  margin-left: -18px;
+  color: black!important;
+}
+[data-action="clear"] {
+  float: right!important;
+}
+/* Text Editor Modal for content-type=text*/
+#editor-container {
+  width: 600px;
+}

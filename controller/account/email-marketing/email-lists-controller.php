@@ -41,7 +41,7 @@ class EmailListsController extends BaseController {
         if ( $email_list_id )
             $email_list->get( $email_list_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditEmailList' );
+        $form = new BootstrapForm( 'fAddEditEmailList' );
 
         if ( !$email_list->id )
             $form->submit( _('Add') );
@@ -213,9 +213,7 @@ class EmailListsController extends BaseController {
         $sendgrid->list->delete( $email_list->name );
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

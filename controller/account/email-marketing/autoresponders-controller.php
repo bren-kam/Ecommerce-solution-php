@@ -41,7 +41,7 @@ class AutorespondersController extends BaseController {
         if ( $email_autoresponder_id )
             $email_autoresponder->get( $email_autoresponder_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditAutoresponder' );
+        $form = new BootstrapForm( 'fAddEditAutoresponder' );
 
         if ( !$email_autoresponder->id )
             $form->submit( _('Add') );
@@ -167,9 +167,7 @@ class AutorespondersController extends BaseController {
         $email_autoresponder->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

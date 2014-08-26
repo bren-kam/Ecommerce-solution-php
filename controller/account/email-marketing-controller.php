@@ -70,7 +70,7 @@ class EmailMarketingController extends BaseController {
      */
     protected function settings() {
          // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array( 'from_name', 'from_email', 'timezone', 'remove-header-footer' );

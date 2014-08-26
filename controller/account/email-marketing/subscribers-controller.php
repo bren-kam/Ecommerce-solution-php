@@ -54,7 +54,7 @@ class SubscribersController extends BaseController {
         if ( $email_id )
             $email->get( $email_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditSubscriber' );
+        $form = new BootstrapForm( 'fAddEditSubscriber' );
 
         if ( !$email->id )
             $form->submit( _('Add') );
@@ -314,10 +314,7 @@ class SubscribersController extends BaseController {
             $sendgrid->email->delete( $email_list->name, $email->email );
         }
 
-        // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
