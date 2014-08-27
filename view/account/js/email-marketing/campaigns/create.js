@@ -159,7 +159,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         var img_width = box_width * ( ( box_width < 200 ) ? 0.9  : 0.6 );  // 90% for colspan 1,2,3. 60% for the rest
                         var tpl = '<div class="product-img" width="' + img_width + '"><a href="' + r.product.link + '"><img src="' + r.product.image + '" width="' + img_width + '" /></a></div>';
                         tpl += '<div class="product-content">';
-                        tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
+                        tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name + '</h2></a>';
 
                         tpl += '<div class="product-price-container">';
                         if ( r.product.sale_price > 0 )
