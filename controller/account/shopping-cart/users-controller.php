@@ -39,7 +39,7 @@ class UsersController extends BaseController {
             return new RedirectResponse('/shopping-cart/users/');
 
         /***** CREATE FORM *****/
-        $form = new FormTable( 'fEditUser' );
+        $form = new BootstrapForm( 'fEditUser' );
 
         // Personal Information
         $form->add_field( 'title', _('Personal Information') );
@@ -250,9 +250,7 @@ class UsersController extends BaseController {
         $website_user->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

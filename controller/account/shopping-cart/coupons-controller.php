@@ -73,6 +73,7 @@ class CouponsController extends BaseController {
                     $coupon->add_free_shipping_methods( $_POST['cbFreeShippingMethods'] );
 
                 $this->notify( _('Your coupon has been created/updated successfully!') );
+                return new RedirectResponse('/shopping-cart/coupons/');
             }
         }
 
@@ -80,7 +81,8 @@ class CouponsController extends BaseController {
         $free_shipping_methods = $coupon->get_free_shipping_methods();
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) )
+            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ) )
             ->javascript( 'shopping-cart/coupons/add-edit' );
 
         return $this->get_template_response( 'add-edit' )
@@ -162,11 +164,7 @@ class CouponsController extends BaseController {
         $website_coupon->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -178,7 +176,7 @@ class CouponsController extends BaseController {
      */
     protected function apply_to_brand() {
         // Instantiate classes
-        $form = new FormTable( 'fApplyToBrand' );
+        $form = new BootstrapForm( 'fApplyToBrand' );
 
         $brand = new Brand();
         $brands = $brand->get_by_account( $this->user->account->id );

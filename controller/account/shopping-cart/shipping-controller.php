@@ -39,7 +39,7 @@ class ShippingController extends BaseController {
 
         /***** CREATE FORM *****/
 
-        $form = new FormTable( 'fAddEditCustom' );
+        $form = new BootstrapForm( 'fAddEditCustom' );
 
         $form->add_field( 'text', _('Name'), 'tName', $shipping_method->name )
             ->attribute( 'maxlength', 50 )
@@ -114,7 +114,7 @@ class ShippingController extends BaseController {
 
         /***** CREATE FORM *****/
 
-        $form = new FormTable( 'fAddEditUPS' );
+        $form = new BootstrapForm( 'fAddEditUPS' );
 
         $services = array(
             '02' => _('UPS Second Day Air')
@@ -224,7 +224,7 @@ class ShippingController extends BaseController {
 
         /***** CREATE FORM *****/
 
-        $form = new FormTable( 'fAddEditFedex' );
+        $form = new BootstrapForm( 'fAddEditFedex' );
 
         $services = array(
             'EUROPE_FIRST_INTERNATIONAL_PRIORITY' => _('Europe First International Priority')
@@ -341,7 +341,7 @@ class ShippingController extends BaseController {
 
         // Create form
 
-        $form = new FormTable( 'fShippingSettings' );
+        $form = new BootstrapForm( 'fShippingSettings' );
 
         // Generic Settings
         $form->add_field( 'title', _('Generic Settings') );
@@ -565,9 +565,7 @@ class ShippingController extends BaseController {
         $shipping_method->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

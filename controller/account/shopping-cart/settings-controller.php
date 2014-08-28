@@ -20,7 +20,7 @@ class SettingsController extends BaseController {
     protected function index() {
         $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed', 'authorize-net-id' );
 
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         $form->add_field( 'text', _('Email Receipt'), 'tReceipt', $settings['email-receipt'] )
             ->attribute( 'maxlength', 150 )
@@ -77,7 +77,7 @@ class SettingsController extends BaseController {
         );
 
         // Create Form
-        $form = new FormTable( 'fPaymentSettings' );
+        $form = new BootstrapForm( 'fPaymentSettings' );
 
 
         $form->add_field( 'row', '', _('All Payment Methods') );
