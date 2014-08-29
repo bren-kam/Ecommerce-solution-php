@@ -1,31 +1,20 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page List Website Brands
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Brands
+            </header>
 
-echo $template->start( _('Website Brands') );
-?>
-
-<div class="relative">
-    <table ajax="/website/list-brands/" perPage="30,50,100">
-        <thead>
-            <tr>
-                <th width="65%"><?php echo _('Name'); ?></th>
-                <th width="35%"><?php echo _('Last Updated'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+            <div class="panel-body">
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/website/list-brands/" perPage="30,50,100">
+                        <thead>
+                        <th sort="1">Title</th>
+                        <th>Updated</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
-
-<?php
-nonce::field( 'store_session', '_store_session' );
-echo $template->end();
-?>

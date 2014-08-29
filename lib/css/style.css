@@ -4874,3 +4874,7 @@ a {
 a:hover {
   color: #2a3542;
 }
+div#uploader {
+  position: absolute;
+  left: -5000px;
+}

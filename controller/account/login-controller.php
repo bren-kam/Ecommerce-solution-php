@@ -7,7 +7,7 @@ class LoginController extends BaseController {
         parent::__construct( );
 
         // Tell what is the base for all login
-        $this->view_base = 'login/';
+        $this->view_base = '';
         $this->section = 'Login';
     }
 
@@ -18,7 +18,7 @@ class LoginController extends BaseController {
      */
     protected function index() {
         // Get the template response
-        $custom_response = new CustomResponse( $this->resources, $this->view_base . 'index', _('Login') );
+        $custom_response = new CustomResponse( $this->resources, $this->view_base . 'login', _('Login') );
 
         $v = new Validator( 'fLogin' );
         $v->add_validation( 'email', 'email', _('The "Email" field must contain a valid email address') );

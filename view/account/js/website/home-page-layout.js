@@ -1,33 +1,33 @@
- /* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+var Layout = {
 
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-	// Make the elements sortable
-	$('#dElementBoxes').sortable({
-		items		            : '.element-box'
-		, placeholder	        : 'box-placeholder'
-		, forcePlaceholderSize  : true
-        , update                : saveLayout
-	}).on( 'click', 'a.enable-disable', function() {
-        var parent = $(this).parent();
+    init: function() {
+        $('#layout-list').on( 'switchChange.bootstrapSwitch', ':checkbox', Layout.changeStatus );
 
-        // Handle stuff
-        if ( $(this).hasClass('disabled') ) {
-            $(this).removeClass('disabled');
-            parent.removeClass('disabled');
-            parent.find('input:first').val( parent.find('h2:first').text() + '|0');
-        } else {
-            $(this).addClass('disabled');
-            parent.addClass('disabled');
-            parent.find('input:first').val( parent.find('h2:first').text() + '|1');
-        }
+        $('#layout-list').sortable({
+            items		: '.layout',
+            cancel		: 'input, button, a',
+            placeholder	: 'banner-placeholder',
+            revert		: true,
+            forcePlaceholderSize : true
+        });
 
-        saveLayout();
-    });
-});
 
-function saveLayout() {
-    $.post( '/website/save-layout/', { _nonce: $('#_save_layout').val(), layout : $('#fHomePageLayout').serialize() }, ajaxResponse );
+    }
+
+    , changeStatus: function( event, state ) {
+        var element = $(this).parents('.layout');
+        var input = element.find('.layout-value');
+
+        var search = state ? '|1' : '|0';
+        var replace = state ? '|0' : '|1';
+        input.val( input.val().replace( search, replace ) );
+
+        if ( state )
+            element.removeClass('disabled');
+        else
+            element.addClass('disabled');
+    }
+
 }
+
+jQuery( Layout.init );

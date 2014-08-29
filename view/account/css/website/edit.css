@@ -1,0 +1,70 @@
+#product-list .product {
+  width: 200px;
+  float: left;
+  position: relative;
+}
+#product-list .product img {
+  width: 100%;
+}
+#product-list .product h4 {
+  text-align: center;
+}
+#product-list .product p {
+  text-align: center;
+}
+#product-list .product .remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: red;
+}
+#uploader {
+  position: absolute;
+  left: -5000px;
+}
+#location-list .location {
+  width: 32%;
+  min-height: 350px;
+  float: left;
+  display: inline-block;
+  border: 1px solid #ccc;
+  margin: 0 10px 10px 0;
+  position: relative;
+}
+#location-list .location h3 {
+  font-size: 18px;
+  margin-top: 10px;
+}
+#location-list .location .edit {
+  position: absolute;
+  top: 0;
+  right: 14px;
+  color: red;
+}
+#location-list .location .remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: red;
+}
+#location-list .location:hover {
+  background-color: #eee;
+}
+#location-list .location-placeholder {
+  float: left;
+  display: inline-block;
+  border: 3px dashed #ccc;
+  width: 250px;
+}
+#store-image {
+  position: relative;
+}
+#store-image a {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: red;
+}
+#store-image img {
+  max-width: 300px;
+}

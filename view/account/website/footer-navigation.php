@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Footer-Navigation
+ * @page Navigation
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -10,61 +10,92 @@
  * @var AccountPage[] $pages
  * @var array $footer_navigation
  */
-
-echo $template->start( _('Footer Navigation') );
 ?>
 
-<a href="#dAddEditNavigation" title="<?php echo _('Add Menu Item'); ?>" rel="dialog"><?php echo _('Add Menu Item'); ?></a>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Footer Navigation
+                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#add-menu-item"><i class="fa fa-plus"></i> Add Menu Item</a>
+                <a href="/website/navigation" class="btn btn-default btn-sm pull-right">Switch to Header Navigation</a>
+            </header>
 
-<br />
-<hr />
-<br />
+            <div class="panel-body">
 
-<form action="" name="fNavigation" method="post">
-    <div id="navigation-menu-list">
-        <?php foreach ( $footer_navigation as $page ) { ?>
-            <div class="menu-item">
-                <h4 class="name"><?php echo $page->name; ?></h4>
-                <p class="menu-item-actions">
-                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                </p>
+                <form method="post" role="form">
+                    <div class="dd" id="navigation">
+                        <ol class="dd-list">
+                            <?php foreach ( $footer_navigation as $k => $page ): ?>
+                                <li class="dd-item dd3-item" data-id="<?php echo $k ?>">
+                                    <div class="dd-handle dd3-handle"></div>
+                                    <div class="dd3-content">
+                                        <?php echo $page->name ?>
+                                        <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
+                                        <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
+                                        <input type="hidden" name="footer-navigation[<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                           </ol>
+                    </div>
 
-                <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
-                <input type="hidden" name="footer-navigation[]" value="<?php echo $page->url . '|' . $page->name; ?>">
+                    <p>
+                        <input type="hidden" name="tree" id="tree" value="" />
+                        <?php nonce::field( 'footer_navigation' ) ?>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </p>
+                </form>
+
+
             </div>
-        <?php } ?>
-    </div>
-    <input type="submit" class="button" value="<?php echo _('Save'); ?>">
-    <?php nonce::field('footer_navigation'); ?>
-</form>
-<br clear="all"><br>
-
-<div id="dAddEditNavigation" class="hidden">
-    <p><input type="text" class="tb" id="menu-item-name" placeholder="<?php echo _('Menu Item Name'); ?>"></p>
-    <p>
-        <input type="radio" name="menu-link" value="menu-url" checked="checked">
-        <input type="text" class="tb" id="menu-url" placeholder='<?php echo _('Menu link, i.e. "contact"'); ?>'>
-        <br><br>
-        <input type="radio" name="menu-link" id="menu-link-2" value="menu-page">
-        <select id="menu-page">
-            <?php foreach ( $pages as $page ) { ?>
-                <option value="<?php echo $page->slug; ?>"><?php echo ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title; ?></option>
-            <?php } ?>
-        </select>
-        <br><br>
-    </p>
-    <p><a href="#" class="button" id="add-menu-item" title="<?php echo _('Add Menu Item'); ?>"><?php echo _('Add'); ?></a></p>
-</div>
-
-<div class="hidden">
-    <div id="dMenuItem" class="menu-item">
-        <h4 class="name"></h4>
-        <p class="menu-item-actions">
-            <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-        </p>
-
-        <a href="#" class="url" target="_blank" ></a>
+        </section>
     </div>
 </div>
 
-<?php echo $template->end(); ?>
+
+<!-- Modal -->
+<div class="modal fade" id="add-menu-item" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new Menu Item</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name">
+                </div>
+                <div class="form-group">
+                    <label for="link-select">Select a Link:</label>
+                    <select id="link-select" class="form-control">
+                        <option value=""></option>
+                        <?php foreach ( $pages as $page ) { ?>
+                            <option value="<?php echo $page->slug; ?>"><?php echo ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="link">Custom Link:</label>
+                    <input type="text" class="form-control" id="link">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-menu-item">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="hidden">
+    <li class="dd-item dd3-item" id="item-template">
+        <div class="dd-handle dd3-handle"></div>
+        <div class="dd3-content">
+            <span class="page-url"></span>
+            <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
+            <input type="hidden">
+        </div>
+    </li>
+</ul>

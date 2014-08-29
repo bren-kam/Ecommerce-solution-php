@@ -19,7 +19,7 @@ class WebsiteController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 36 )
-            ->select( 'pages', 'view' );
+            ->select( 'website', 'website/index' );
     }
 
     /**
@@ -34,9 +34,10 @@ class WebsiteController extends BaseController {
 
         // Set resources
         $this->resources
-            ->css('website/pages/page')
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css_url( Config::resource( 'jquery-ui' ) )
+            ->css( 'website/edit', 'media-manager' )
+            ->javascript_url( Config::resource( 'typeahead-js' ), Config::resource( 'jqueryui-js' ) )
+            ->javascript( 'fileuploader', 'media-manager', 'website/edit' );
 
         // Initialize variables
         $page = new AccountPage();
@@ -49,9 +50,6 @@ class WebsiteController extends BaseController {
             $product = new Product;
             $page->products = $product->get_by_ids( $product_ids );
         }
-
-        $account_file = new AccountFile();
-        $files = $account_file->get_by_account( $this->user->account->id );
 
         $account_pagemeta = new AccountPagemeta();
 
@@ -249,7 +247,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'edit' )
             ->kb( 37 )
-            ->select( 'pages', 'edit' )
+            ->select( 'website', 'website/index' )
             ->add_title( $page->title . ' | ' . _('Pages') )
             ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title', 'product_count' ), $resources ) );
     }
@@ -264,7 +262,7 @@ class WebsiteController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
             return new RedirectResponse('/website/');
 
-        $form = new FormTable( 'fAddPage' );
+        $form = new BootstrapForm( 'fAddPage' );
         $form->submit( _('Add') );
 
         $form->add_field( 'text', _('Title'), 'tTitle' )
@@ -329,7 +327,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'categories' )
             ->kb( 38 )
-            ->select( 'pages', 'category-pages' )
+            ->select( 'website', 'website/categories' )
             ->set( compact( 'categories' ) );
     }
 
@@ -346,12 +344,7 @@ class WebsiteController extends BaseController {
         $category = new AccountCategory();
         $category->get( $this->user->account->id, $_GET['cid'] );
 
-        $account_file = new AccountFile();
-        $files = $account_file->get_by_account( $this->user->account->id );
-
         if ( $this->verified() ) {
-            if ( _('Category Title...') == $_POST['tTitle'] )
-                $_POST['tTitle'] = '';
 
             $category->title = $_POST['tTitle'];
             $category->content = $_POST['taContent'];
@@ -367,14 +360,14 @@ class WebsiteController extends BaseController {
         }
 
         $this->resources
-            ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css( 'website/pages/page', 'media-manager' )
+            ->javascript( 'fileuploader', 'media-manager' );
 
         return $this->get_template_response('edit-category')
             ->kb( 39 )
-            ->select( 'pages', 'edit-category' )
+            ->select( 'website', 'website/categories' )
             ->add_title( _('Edit Category') )
-            ->set( compact( 'category', 'files' ) );
+            ->set( compact( 'category' ) );
     }
 
     /**
@@ -399,12 +392,14 @@ class WebsiteController extends BaseController {
         $images_alt = '1' == $settings['images-alt'];
 
         $this->resources
-            ->css( 'website/website-sidebar' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/website-sidebar' );
+            ->css( 'website/website-sidebar', 'media-manager' )
+            ->css_url( Config::resource( 'videojs-css' ) )
+            ->javascript_url( Config::resource( 'jqueryui-js' ), Config::resource( 'videojs-js' ) )
+            ->javascript( 'fileuploader', 'media-manager', 'website/website-sidebar' );
 
         return $this->get_template_response( 'website-sidebar' )
             ->kb( 40 )
-            ->select( 'sidebar' )
+            ->select( 'website', 'website/sidebar' )
             ->add_title( _('Sidebar') )
             ->set( compact( 'dimensions', 'files', 'attachments', 'page', 'images_alt' ) );
     }
@@ -446,12 +441,13 @@ class WebsiteController extends BaseController {
         $slideshow_fixed_width = $this->user->account->get_settings('slideshow-fixed-width');
 
         $this->resources
-            ->css( 'website/banners' )
-            ->javascript( 'fileuploader', 'website/banners' );
+            ->css( 'website/banners', 'media-manager' )
+            ->javascript_url( Config::resource( 'jqueryui-js' ) )
+            ->javascript( 'fileuploader', 'media-manager', 'website/banners' );
 
         return $this->get_template_response( 'banners' )
             ->kb( 41 )
-            ->select( 'banners' )
+            ->select( 'website', 'website/banners' )
             ->add_title( _('Banners') )
             ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page', 'slideshow_fixed_width' ) );
     }
@@ -542,6 +538,18 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     protected function home_page_layout() {
+        if ( $this->verified() ) {
+            $layout = array();
+
+            foreach ( $_POST['layout'] as $element ) {
+                list( $name, $disabled ) = explode( '|', $element );
+                $name = strtolower( $name );
+                $layout[] = compact( 'name', 'disabled' );
+            }
+
+            $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
+        }
+
         $layout = $this->user->account->get_settings('layout');
         if ( empty( $layout ) ) {
             $layout = array(
@@ -553,18 +561,20 @@ class WebsiteController extends BaseController {
             if ( $this->user->account->is_new_template() ) {
                 $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
                 $layout[] = (object) array( 'name' => 'best-seller-items', 'disabled' => 0 );
+                $layout[] = (object) array( 'name' => 'recently-viewed-items', 'disabled' => 0 );
             }
-        } else {
+        } else if ( is_string( $layout ) ) {
             $layout = json_decode( $layout );
         }
 
         $this->resources
             ->css( 'website/home-page-layout' )
+            ->javascript_url( Config::resource( 'jqueryui-js' ) )
             ->javascript( 'website/home-page-layout' );
 
         return $this->get_template_response( 'home-page-layout' )
             ->kb( 135 )
-            ->select( 'settings', 'home-page-layout' )
+            ->select( 'website', 'website/home-page-layout' )
             ->add_title( _('Home Page Layout') )
             ->set( compact( 'layout' ) );
     }
@@ -579,9 +589,8 @@ class WebsiteController extends BaseController {
         $pages = $page->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'website/navigation' )
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'website/navigation' );
+            ->css( 'jquery.nestable', 'website/navigation' )
+            ->javascript( 'jquery.nestable', 'website/navigation' );
 
         if ( $this->verified() ) {
             $navigation = array();
@@ -602,6 +611,8 @@ class WebsiteController extends BaseController {
                             list( $url, $name ) = explode( '|', $sub_page );
                             $navigation_node['children'][] = compact( 'url', 'name' );
                         }
+                        if ( empty( $navigation_node['children'] ) )
+                            unset( $navigation_node['children'] );
                     }
 
                     $navigation[] = $navigation_node;
@@ -617,7 +628,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'navigation' )
             ->kb( 136 )
-            ->select( 'settings', 'sidebar-navigation' )
+            ->select( 'website', 'website/navigation' )
             ->add_title( _('Navigation') )
             ->set( compact( 'pages', 'navigation' ) );
     }
@@ -647,12 +658,12 @@ class WebsiteController extends BaseController {
         $footer_navigation = ( empty( $footer_navigation ) ) ? array() : json_decode( $footer_navigation );
 
         $this->resources
-            ->css( 'website/footer-navigation' )
-            ->javascript( 'website/footer-navigation' );
+            ->css( 'jquery.nestable', 'website/footer-navigation' )
+            ->javascript( 'jquery.nestable', 'website/footer-navigation' );
 
         return $this->get_template_response( 'footer-navigation' )
             ->kb( 138 )
-            ->select( 'settings', 'footer-navigation' )
+            ->select( 'website', 'website/navigation' )
             ->add_title( _('Footer Navigation') )
             ->set( compact( 'pages', 'footer_navigation' ) );
     }
@@ -664,13 +675,14 @@ class WebsiteController extends BaseController {
      */
     protected function settings() {
         // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
             , 'logo-link'
+            , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
@@ -766,6 +778,18 @@ class WebsiteController extends BaseController {
                 ->add_validation( 'url', _('The "Instagram Link" must be a valid link') );
         }
 
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'title', _('Sale Page') );
+
+        $form->add_field( 'text', _('Title'), 'page_sale-title', $settings['page_sale-title'] )
+            ->attribute( 'maxlength', '50' );
+
+        $form->add_field( 'text', _('Slug'), 'page_sale-slug', $settings['page_sale-slug'] )
+            ->attribute( 'maxlength', '50' );
+
+        $form->add_field( 'text', _('Meta Description'), 'page_sale-description', $settings['page_sale-description'] )
+            ->attribute( 'maxlength', '250' );
+
         // Next section
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Other') );
@@ -798,7 +822,7 @@ class WebsiteController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 44 )
             ->add_title( _('Settings') )
-            ->select( 'settings', 'page-settings' )
+            ->select( 'settings', 'website/settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
@@ -1002,35 +1026,9 @@ class WebsiteController extends BaseController {
         $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
         $account_file->create();
 
-        // If they don't have any files, remove the message that is sitting there
-        jQuery('#file-list p.no-files')->remove();
-
-        $delete_file_nonce = nonce::create('delete_file');
-        $date = new DateTime( $account_file->date_created );
-        $confirm = _('Are you sure you want to delete this file?');
-
-        // Add the new link and apply sparrow to it
-        if ( in_array( $extension, image::$extensions ) ) {
-            $html = '<div id="file-' . $account_file->id . '" class="file"><a href="#' . $account_file->file_path . '" id="aFile' . $account_file->id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $account_file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-        } else {
-            $html = '<div id="file-' . $account_file->id . '" class="file"><a href="#' . $account_file->file_path . '" id="aFile' . $account_file->id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-        }
-
-        jQuery('#file-list')
-            ->append( $html )
-            ->sparrow();
-
-        // Adjust back to original name
-        jQuery('#tFileName')
-            ->val('')
-            ->trigger('blur');
-
-        jQuery('#upload-file-loader')->hide();
-        jQuery('#aUploadFile')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-        $response->add_response( 'file', $account_file->file_path );
+        $response->add_response( 'id', $account_file->website_file_id );
+        $response->add_response( 'name', f::name( $account_file->file_path ) );
+        $response->add_response( 'url', $account_file->file_path );
 
         return $response;
     }
@@ -1119,21 +1117,7 @@ class WebsiteController extends BaseController {
             $attachment->create();
         }
 
-        switch ( $page->slug ) {
-            case 'current-offer':
-                jQuery('#dCouponContent')->html('<img src="' . $image_url . '" style="padding-bottom:20px" alt="' . _('Coupon') . '" /><br />');
-            break;
-
-            case 'financing':
-                jQuery('#dApplyNowContent')->html('<img src="' . $image_url . '" style="padding-bottom:10px" alt="' . _('Apply Now') . '" /><br /><p>' . _('Place "[apply-now]" into the page content above to place the location of your image. When you view your website, this will be replaced with the image uploaded.') . '</p>' );
-            break;
-        }
-
-        jQuery('#upload-image-loader')->hide();
-        jQuery('#aUploadImage')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'url', $image_url );
 
         return $response;
     }
@@ -1244,6 +1228,58 @@ class WebsiteController extends BaseController {
 
         return $response;
     }
+
+
+    /**
+     * Create Sidebar Image
+     *
+     * @return AjaxResponse
+     */
+    protected function create_sidebar_image() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['apid'], $_POST['fn'] ), _('Not enough data to create image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $file = new File();
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+
+        $file_path = tempnam( sys_get_temp_dir(), rand(1, 9999) );
+        @copy( $_POST['fn'], $file_path );
+
+        // Get some stuff
+        $sidebar_image_width = $this->user->account->get_settings( 'sidebar-image-width' );
+        $max_width = ( empty ( $settings['sidebar-image-width'] ) ) ? 1000 : $settings['sidebar-image-width'];
+
+        $image_name =  format::slug( f::strip_extension( $file_path ) ) . '.' . f::extension( $file_path );
+        $page->get( $_POST['apid'], $this->user->account->id );
+
+        // Create the different versions we need
+        $image_dir = $this->user->account->id . "/sidebar/";
+        $image_name = $file->upload_image( $file_path, $image_name, $max_width, 1000, 'websites', $image_dir );
+
+        @unlink( $file_path );
+
+        // Form image url
+        $image_url = 'http://websites.retailcatalog.us/' . $image_dir . $image_name;
+
+        // Create the account attachment
+        $attachment->website_page_id = $page->id;
+        $attachment->key = 'sidebar-image';
+        $attachment->value = $image_url;
+        $attachment->create();
+
+        $response->add_response( 'id', $attachment->id );
+        $response->add_response( 'url', $image_url );
+
+        return $response;
+    }
+
 
     /**
      * Upload Sidebar Image
@@ -1417,6 +1453,61 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Create Banner
+     *
+     * @return AjaxResponse
+     */
+    protected function create_banner() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['apid'] ), _('Not enough data to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate classes
+        $file = new File();
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+
+        // Get some stuff
+        $page->get( $_POST['apid'], $this->user->account->id );
+        $settings = $this->user->account->get_settings( 'banner-width', 'banner-height' );
+
+        $max_width = ( empty ( $settings['banner-width'] ) ) ? 1500 : $settings['banner-width'];
+        $max_height = ( empty ( $settings['banner-height'] ) ) ? 1500 : $settings['banner-height'];
+
+        $file_path = tempnam( sys_get_temp_dir(), rand(1, 9999) );
+        @copy( $_POST['fn'], $file_path );
+
+        $banner_name =  format::slug( f::strip_extension( $_POST['fn'] ) ) . '.' . f::extension( $_POST['fn'] );
+
+        // Create the different versions we need
+        $banner_dir = $this->user->account->id . "/banners/";
+        $banner_name = $file->upload_image( $file_path, $banner_name, $max_width, $max_height, 'websites', $banner_dir );
+
+        // Delete file
+        @unlink( $file_path );
+
+        // Form image url
+        $banner_url = 'http://websites.retailcatalog.us/' . $banner_dir . $banner_name;
+
+        // Set variables
+        $attachment->website_page_id = $page->id;
+        $attachment->key = 'banner';
+        $attachment->value = $banner_url;
+        $attachment->create();
+
+        // Add the response
+        $response->add_response( 'id', $attachment->id );
+        $response->add_response( 'url', $banner_url );
+
+        return $response;
+    }
+
+    /**
      * Delete File
      *
      * @return AjaxResponse
@@ -1425,7 +1516,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['afid'] ), _('Image failed to upload') );
+        $response->check( isset( $_GET['id'] ), _('Failed to delete file') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -1437,7 +1528,11 @@ class WebsiteController extends BaseController {
         $account_file = new AccountFile();
 
         // Get the account file
-        $account_file->get( $_GET['afid'], $this->user->account->domain, $this->user->account->id );
+        $account_file->get( $_GET['id'], $this->user->account->domain, $this->user->account->id );
+
+        $response->check( $account_file->id, "File {$_GET['id']} not found");
+        if ( $response->has_error() )
+            return $response;
 
         $url_info = parse_url( $account_file->file_path );
         $key = substr( str_replace( $bucket . '/', '', $url_info['path'] ), 1 );
@@ -1445,18 +1540,8 @@ class WebsiteController extends BaseController {
         // Delete from Amazon
         $file->delete_file( $key );
 
-        // Remove that file
-        jQuery('#file-' . $account_file->id )->remove();
-
         // Delete record
         $account_file->remove();
-
-        // Get the files, see how many there are
-        if ( 0 == count( $account_file->get_by_account( $this->user->account->id ) ) )
-            jQuery('#file-list')->append( '<p class="no-files">' . _('You have not uploaded any files.') . '</p>'); // Add a message
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -1554,12 +1639,7 @@ class WebsiteController extends BaseController {
         $attachment->meta = $meta;
         $attachment->save();
 
-        // Show and hide success
-        jQuery( '#' . $_POST['target'] )->show()->delay(5000)->hide();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->notify( 'Sidebar information updated.' );
         return $response;
     }
 
@@ -1583,32 +1663,7 @@ class WebsiteController extends BaseController {
         $attachment->status = $_GET['s'];
         $attachment->save();
 
-        $enable_disable_url = url::add_query_arg( array(
-            '_nonce' => nonce::create( 'update_attachment_status' )
-            , 'apaid' => $attachment->id
-            , 's' => ( '0' == $_GET['s'] ) ? '1' : '0'
-        ), '/website/update-attachment-status/' );
-
-        if ( '0' == $_GET['s'] ) {
-            jQuery('#aEnableDisable' . $attachment->id)->replaceWith('<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable disabled" title="' . _('Enable/Disable') . '" ajax="1"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>');
-
-            // Disabled
-                jQuery('#dAttachment_' . $attachment->id)
-                ->addClass('disabled')
-                ->insertAfter('#dElementBoxes .element-box:last:not(#dAttachment_' . $attachment->id . ')')
-                ->updateElementOrder()
-                ->updateDividers();
-        } else {
-            jQuery('#aEnableDisable' . $attachment->id)->replaceWith('<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this sidebar element? This will remove it from the sidebar on your website.') . '"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>');
-
-            // Enabled
-            jQuery('#dAttachment_' . $attachment->id)->removeClass('disabled');
-        }
-
-        jQuery('#aEnableDisable' . $attachment->id)->parent()->sparrow();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'id', $attachment->id );
 
         return $response;
     }
@@ -1633,11 +1688,7 @@ class WebsiteController extends BaseController {
         $attachment->value = $_POST['taEmail'];
         $attachment->save();
 
-        // Show and hide success
-        jQuery('#pTempEmailMessage')->show()->delay(5000)->hide();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Sidebar email updated.' );
 
         return $response;
     }
@@ -1650,8 +1701,6 @@ class WebsiteController extends BaseController {
     protected function remove_attachment() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_GET['si'], $_GET['t'] ), _('You do not have permission to remove this attachment') );
 
         if ( $response->has_error() )
             return $response;
@@ -1671,36 +1720,7 @@ class WebsiteController extends BaseController {
             $file->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $attachment->value ) );
         }
 
-        if ( '1' == $_GET['si'] ) {
-            $attachment->remove();
-
-            jQuery('#' . $_GET['t'])->remove()->updateDividers();
-        } else {
-            $attachment->value = '';
-            $attachment->save();
-
-            // Figure out what it's getting replaced with
-            switch ( $_GET['t'] ) {
-                case 'dRoomPlannerContent':
-                    $replacement = '<img src="/media/images/placeholders/240x100.png" width="200" height="100" alt="' . _('Placeholder') . '" />';
-                break;
-
-                case 'dVideoContent':
-                    $replacement = '<img src="/media/images/placeholders/354x235.png" width="354" height="235" alt="' . _('Placeholder') . '" />';
-                break;
-
-                default:
-                    $replacement = '<img src="/media/images/placeholders/240x300.png" width="240" height="300" alt="' . _('Placeholder') . '" />';
-                break;
-            }
-
-            // Replace the current image and remove the remove link
-            jQuery('#' . $_GET['t'])->html($replacement);
-            jQuery('#aRemove' . $attachment->id)->remove();
-        }
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $attachment->remove();
 
         return $response;
     }
@@ -1719,8 +1739,7 @@ class WebsiteController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&dAttachment[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 14 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $attachment = new AccountPageAttachment();
         $attachment->update_sequence( $this->user->account->id, $sequence );
@@ -1862,6 +1881,9 @@ class WebsiteController extends BaseController {
 
         $category->get( $product->category_id );
 
+        $product->image_url = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images );
+        $response->add_response( 'product', $product );
+
         // Form the response HTML
         $product_box = '<div id="dProduct_' . $product->id . '" class="product">';
         $product_box .= '<h4>' . $product->name . '</h4>';
@@ -1870,12 +1892,6 @@ class WebsiteController extends BaseController {
         $product_box .= '<p class="product-actions" id="pProductAction' . $product->id . '"><a href="#" class="remove-product" title="' . _('Remove Product') . '">' . _('Remove') . '</a></p>';
         $product_box .= '<input type="hidden" name="products[]" class="hidden" value="' . $product->id . '" />';
         $product_box .= '</div>';
-
-        jQuery('#dSelectedProducts')->append( $product_box );
-        jQuery('#product-count')->text( number_format( $product_count + 1 ) );
-        jQuery('a.close:visible')->click();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -1931,47 +1947,7 @@ class WebsiteController extends BaseController {
             $location->create();
         }
 
-
-        $delete_location = nonce::create( 'delete_location' );
-        $confirm_delete = _('Are you sure you want to delete this location? This cannot be undone.');
-
-        $location_html = '<div class="location" id="location-' . $location->id . '">';
-        $location_html .= '<h2><span class="name">' . $location->name . '</span></h2>';
-        $location_html .= '<div class="location-left">';
-        $location_html .= '<span class="address">' . $location->address . '</span><br />';
-        $location_html .= '<span class="city">' . $location->city . '</span>, <span class="state">' . $location->state . '</span> <span class="zip">' . $location->zip . '</span>';
-        $location_html .= '</div>';
-        $location_html .= '<div class="location-right">';
-        $location_html .= '<span class="phone">' . $location->phone . '</span><br />';
-        $location_html .= '<span class="fax">' . $location->fax . '</span><br />';
-        $location_html .= '</div>';
-        $location_html .= '<div class="float-right">';
-        $location_html .= '<span class="email">' . $location->email . '</span><br />';
-        $location_html .= '<span class="website">' . $location->website . '</span>';
-        $location_html .= '</div>';
-        $location_html .= '<br />';
-        $location_html .= '<br clear="all" />';
-        $location_html .= '<br />';
-        $location_html .= '<strong>' . _('Store Hours') . ':</strong>';
-        $location_html .= '<br />';
-        $location_html .= '<span class="store-hours">' . $location->store_hours . '</span>';
-        $location_html .= '<div class="actions">';
-        $location_html .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_location, 'wlid' => $location->id ), '/website/delete-location/' ) . '" class="delete-location" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" /></a>';
-        $location_html .= '<a href="#' . $location->id . '" class="edit-location" title="' . _('Edit') . '"><img src="/images/icons/edit.png" width="15" height="17" alt="' . _('Edit') . '" /></a>';
-        $location_html .= '</div>';
-        $location_html .= '</div>';
-
-        // Are we replacing or appending
-        if ( $website_location_id ) {
-            jQuery('#location-' . $location->id)->replaceWith( $location_html );
-            jQuery('#location-' . $location->id)->sparrow();
-        } else {
-            jQuery('#dContactUsList')->append( $location_html )->sparrow();
-        }
-
-        jQuery('a.close:visible')->click();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'location', $location );
 
         return $response;
     }
@@ -1986,32 +1962,15 @@ class WebsiteController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have everything right
-        $response->check( isset( $_POST['wlid'] ), _('Unable to get location. Please refresh the page and try again.') );
+        $response->check( isset( $_GET['wlid'] ), _('Unable to get location. Please refresh the page and try again.') );
 
         if ( $response->has_error() )
             return $response;
 
         $location = new WebsiteLocation();
-        $location->get( $_POST['wlid'], $this->user->account->id );
+        $location->get( $_GET['wlid'], $this->user->account->id );
 
-        jQuery('#name')->val( $location->name );
-        jQuery('#address')->val( $location->address );
-        jQuery('#city')->val( $location->city );
-        jQuery('#state')->val( $location->state );
-        jQuery('#zip')->val( $location->zip );
-        jQuery('#phone')->val( $location->phone );
-        jQuery('#fax')->val( $location->fax );
-        jQuery('#email')->val( $location->email );
-        jQuery('#website')->val( $location->website );
-        jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
-        jQuery('#store-image')->val( $location->store_image );
-        if ( $location->store_image )
-            jQuery('#store-image-preview .image')->attr( 'src', $location->store_image )->show();
-        else
-            jQuery('#store-image-preview .image')->hide();
-        jQuery('#wlid')->val( $location->id );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'location', $location );
 
         return $response;
     }
@@ -2035,10 +1994,6 @@ class WebsiteController extends BaseController {
         $location->get( $_GET['wlid'], $this->user->account->id );
         $location->remove();
 
-        jQuery('#location-' . $location->id)->remove();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
         return $response;
     }
 
@@ -2057,42 +2012,10 @@ class WebsiteController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&location[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 9 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $location = new WebsiteLocation();
         $location->update_sequence( $this->user->account->id, $sequence );
-
-        return $response;
-    }
-
-    /**
-     * Update Home Page Layout
-     *
-     * @return AjaxResponse
-     */
-    protected function save_layout() {
-        // Make sure it's a valid ajax call
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_POST['layout'] ), _('Unable to update Home Page Layout. Please contact your Online Specialist.') );
-
-        // Return if there is an error
-        if ( $response->has_error() )
-            return $response;
-
-        $layout_array = explode( '&layout[]=', urldecode( $_POST['layout'] ) );
-        $layout_array[0] = substr( $layout_array[0], 9 );
-        $layout = array();
-
-        foreach ( $layout_array as $element ) {
-            list( $name, $disabled ) = explode( '|', $element );
-            $name = strtolower( $name );
-            $layout[] = compact( 'name', 'disabled' );
-        }
-
-        $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
-        $this->notify('Your Layout settings have been saved!');
 
         return $response;
     }
@@ -2103,7 +2026,6 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     public function header() {
-
         if ( $this->verified() ) {
             $header = htmlentities( $_POST['header'] );
             $this->user->account->set_settings( array( 'header' => $header ) );
@@ -2117,11 +2039,12 @@ class WebsiteController extends BaseController {
         $files = $account_file->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->javascript('fileuploader', 'gsr-media-manager');
+            ->css('media-manager')
+            ->javascript('fileuploader', 'media-manager');
 
         return $this->get_template_response('header')
             ->kb( 139 )
-            ->select( 'settings', 'header-html' )
+            ->select( 'website', 'website/header' )
             ->add_title( _('Header') )
             ->set( compact( 'header', 'files' ) );
 
@@ -2142,7 +2065,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'brands' )
             ->kb( 141 )
-            ->select( 'pages', 'brand-pages' );
+            ->select( 'website', 'website/brands' );
     }
 
     /**
@@ -2183,12 +2106,12 @@ class WebsiteController extends BaseController {
         }
 
         $this->resources
-            ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css( 'website/pages/page', 'media-manager' )
+            ->javascript( 'fileuploader', 'media-manager' );
 
         return $this->get_template_response('edit-brand')
             ->kb( 0 )
-            ->select( 'pages', 'edit-brand' )
+            ->select( 'website', 'website/brands' )
             ->add_title( _('Edit Brand') )
             ->set( compact( 'brand', 'files' ) );
     }
@@ -2204,7 +2127,7 @@ class WebsiteController extends BaseController {
         $account_brand = new AccountBrand();
 
         // Set Order by
-        $dt->order_by( 'name', 'wb.`date_updated`' );
+        $dt->order_by( '`name`', 'wb.`date_updated`' );
         $dt->add_where( ' AND ( wb.`website_id` IS NULL OR wb.`website_id` = ' . (int) $this->user->account->id . ') ' );
         $dt->add_where( ' AND ( wp.`website_id` = ' . (int) $this->user->account->id . ') ');
         $dt->search( array( 'b.`name`' => false ) );
@@ -2243,7 +2166,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function html_header() {
+    public function html_head() {
 
         if ( $this->verified() ) {
             $html_header = htmlentities( $_POST['html-header'] );
@@ -2254,15 +2177,19 @@ class WebsiteController extends BaseController {
         $html_header = $this->user->account->get_settings('html-header');
         $html_header = html_entity_decode($html_header);
 
-        return $this->get_template_response('html-header')
+        return $this->get_template_response('html-head')
             ->kb( 0 )
-            ->select( 'settings', 'html-header' )
-            ->add_title( _('HTML Header') )
+            ->select( 'website', 'website/settings' )
+            ->add_title( _('HTML Head') )
             ->set( compact( 'html_header' ) );
 
     }
 
-    function custom_404() {
+    /**
+     * Custom 404
+     * @return TemplateResponse
+     */
+    public function custom_404() {
 
         if ( $this->verified() ) {
             $text_404 = format::strip_only( $_POST['text-404'], '<script>' );
@@ -2274,15 +2201,72 @@ class WebsiteController extends BaseController {
         $files = $account_file->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->javascript('fileuploader', 'gsr-media-manager');
+            ->css('media-manager')
+            ->javascript('fileuploader', 'media-manager');
 
         $text_404 = $this->user->account->get_settings('text-404');
 
         return $this->get_template_response('custom-404')
             ->kb( 0 )
-            ->select( 'settings', 'custom-404' )
+            ->select( 'website', 'website/settings' )
             ->add_title( _('Custom 404 Page') )
             ->set( compact( 'text_404', 'files' ) );
 
     }
+
+    /**
+     * Get Files
+     * @return AjaxResponse
+     */
+    public function get_files() {
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $page = isset( $_GET['page'] ) ? (int) $_GET['page'] : 0;
+        $per_page = isset( $_GET['pp'] ) ? (int) $_GET['pp'] : 18;
+        $files = array_slice( $files, $page * $per_page, $per_page );
+
+        foreach ( $files as $file ) {
+            $file->name = f::name( $file->file_path );
+            $file->url = $file->file_path;
+            $file->date = $file->date_created;
+            $file->id = $file->website_file_id;
+        }
+
+        $response->add_response( 'files', $files );
+        return $response;
+    }
+
+    /**
+     * Footer
+     *
+     * @return TemplateResponse
+     */
+    public function footer() {
+        if ( $this->verified() ) {
+            $footer = htmlentities( $_POST['footer'] );
+            $this->user->account->set_settings( array( 'footer' => $footer ) );
+            $this->notify('Your Footer settings have been saved!');
+        }
+
+        $footer = $this->user->account->get_settings('footer');
+        $footer = html_entity_decode($footer);
+
+        $this->resources
+            ->css('media-manager')
+            ->javascript('fileuploader', 'media-manager');
+
+        return $this->get_template_response('footer')
+            ->kb( 0 )
+            ->select( 'website', 'website/footer' )
+            ->add_title( _('Footer') )
+            ->set( compact( 'footer', 'files' ) );
+
+    }
+
 }

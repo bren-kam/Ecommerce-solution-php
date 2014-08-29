@@ -24,7 +24,7 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 75 )
             ->add_title( _('Subscribers') )
-            ->select( 'subscribers', 'subscribed' );
+            ->select( 'email-marketing', 'email-marketing/subscribers' );
     }
 
     /**
@@ -36,7 +36,7 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'unsubscribed' )
             ->kb( 76 )
             ->add_title( _('Unsubscribers') )
-            ->select( 'subscribers', 'unsubscribed' );
+            ->select( 'email-marketing', 'email-marketing/subscribers' );
     }
 
     /**
@@ -54,7 +54,7 @@ class SubscribersController extends BaseController {
         if ( $email_id )
             $email->get( $email_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditSubscriber' );
+        $form = new BootstrapForm( 'fAddEditSubscriber' );
 
         if ( !$email->id )
             $form->submit( _('Add') );
@@ -149,7 +149,7 @@ class SubscribersController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 77 )
-            ->select( 'subscribers', 'add-edit' )
+            ->select( 'email-marketing', 'email-marketing/subscribers' )
             ->add_title( $title . ' ' . _('Subscriber') )
             ->set( compact( 'email', 'form' ) );
     }
@@ -216,7 +216,7 @@ class SubscribersController extends BaseController {
 
         return $this->get_template_response( 'import' )
             ->kb( 78 )
-            ->select( 'subscribers', 'import' )
+            ->select( 'email-marketing', 'email-marketing/subscribers' )
             ->add_title( _('Import') )
             ->set( compact( 'email_lists' ) );
     }
@@ -314,10 +314,7 @@ class SubscribersController extends BaseController {
             $sendgrid->email->delete( $email_list->name, $email->email );
         }
 
-        // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

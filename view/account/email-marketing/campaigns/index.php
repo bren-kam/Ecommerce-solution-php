@@ -1,27 +1,24 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Campaigns | Email Marketing
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Campaigns
+                <a href="/email-marketing/campaigns/create/" class="btn btn-sm btn-success pull-right "><i class="fa fa-plus"></i> Create a new Campaign</a>
+            </header>
 
-echo $template->start( _('Campaigns'), '../sidebar' );
-?>
-<table ajax="/email-marketing/campaigns/list-all/" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="40%"><?php echo _('Subject'); ?></th>
-            <th width="20%"><?php echo _('Status'); ?></th>
-            <th width="20%" sort="1 desc"><?php echo _('Created'); ?></th>
-            <th width="20%"><?php echo _('Scheduled To'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+            <div class="panel-body">
 
-<?php echo $template->end(); ?>
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/email-marketing/campaigns/list-all/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Subject</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Scheduled To</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

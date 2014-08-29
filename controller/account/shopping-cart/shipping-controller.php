@@ -20,7 +20,7 @@ class ShippingController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 124 )
-            ->select( 'shipping' );
+            ->select( 'shopping-cart', 'shopping-cart/shipping' );
     }
 
     /**
@@ -39,7 +39,7 @@ class ShippingController extends BaseController {
 
         /***** CREATE FORM *****/
 
-        $form = new FormTable( 'fAddEditCustom' );
+        $form = new BootstrapForm( 'fAddEditCustom' );
 
         $form->add_field( 'text', _('Name'), 'tName', $shipping_method->name )
             ->attribute( 'maxlength', 50 )
@@ -85,7 +85,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 125 )
-            ->select( 'shipping', 'add-edit-custom' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
@@ -114,7 +114,7 @@ class ShippingController extends BaseController {
 
         /***** CREATE FORM *****/
 
-        $form = new FormTable( 'fAddEditUPS' );
+        $form = new BootstrapForm( 'fAddEditUPS' );
 
         $services = array(
             '02' => _('UPS Second Day Air')
@@ -185,7 +185,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 126 )
-            ->select( 'shipping', 'add-edit-ups' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
@@ -224,7 +224,7 @@ class ShippingController extends BaseController {
 
         /***** CREATE FORM *****/
 
-        $form = new FormTable( 'fAddEditFedex' );
+        $form = new BootstrapForm( 'fAddEditFedex' );
 
         $services = array(
             'EUROPE_FIRST_INTERNATIONAL_PRIORITY' => _('Europe First International Priority')
@@ -289,7 +289,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 127 )
-            ->select( 'shipping', 'add-edit-fedex' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
@@ -341,7 +341,7 @@ class ShippingController extends BaseController {
 
         // Create form
 
-        $form = new FormTable( 'fShippingSettings' );
+        $form = new BootstrapForm( 'fShippingSettings' );
 
         // Generic Settings
         $form->add_field( 'title', _('Generic Settings') );
@@ -448,7 +448,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'settings' )
             ->kb( 128 )
-            ->select( 'shipping', 'shipping-settings' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
             ) )
@@ -565,9 +565,7 @@ class ShippingController extends BaseController {
         $shipping_method->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

@@ -7,26 +7,36 @@
  * @var Product $product
  * @var Category $category
  */
- ?>
+?>
 
-<div class="float-left"><img src="http://<?php echo $product->industry; ?>.retailcatalog.us/products/<?php echo $product->id, '/small/', reset( $product->images ); ?>" alt="<?php echo $product->name; ?>" width="200" height="200" style="padding: 0 10px 10px 0;" /></div>
-<div class="float-left">
-	<h3><?php echo $product->name; ?></h3>
-	<table cellpadding="0" cellspacing="0" class="float-left form">
-		<tr>
-			<td><strong><?php echo _('SKU'); ?>:</strong></td>
-			<td><?php echo $product->sku; ?></td>
-		</tr>
-		<tr>
-			<td><strong><?php echo _('Brand'); ?>:</strong></td>
-			<td><?php echo $product->brand; ?></td>
-		</tr>
-		<tr>
-			<td><strong><?php echo _('Category'); ?>:</strong></td>
-			<td><?php echo $category->name; ?></td>
-		</tr>
-		<tr><td colspan="2">&nbsp;</td></tr>
-		<tr><td colspan="2" class="text-center"><a href="#" class="button add-product" id="aAddProduct<?php echo $product->id; ?>" name="<?php echo $product->name; ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add Product'); ?></a></td></tr>
-	</table>
-</div>
-<br clear="left" />
+    <!-- Modal -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="modalLabel"><?php echo $product->name ?></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-lg-6 text-right">
+                        <img src="http://<?php echo $product->industry; ?>.retailcatalog.us/products/<?php echo $product->id, '/small/', reset( $product->images ); ?>" />
+                    </div>
+                    <div class="col-lg-6">
+                        <h3><?php echo $product->name ?></h3>
+                        <ul>
+                            <li>SKU: <?php echo $product->sku ?></li>
+                            <li>Brand: <?php echo $product->brand ?></li>
+                            <li>Category: <?php echo $category->name ?></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+</form>

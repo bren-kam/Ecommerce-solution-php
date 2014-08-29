@@ -98,12 +98,8 @@ class Resources {
      * @return string
      */
     public function get_css_file() {
-        // These are the path for 2.0 js/css path
-        // Should disappear and become default when we launch release-3.0
-        $global_css_dir = ( strpos( $_SERVER['SERVER_NAME'], 'admin.' ) !== FALSE ) ? 'css/' : 'old.css/';
-
         // Define the paths to check
-        $paths = array( VIEW_PATH . 'css/', LIB_PATH . $global_css_dir );
+        $paths = array( VIEW_PATH . 'css/', LIB_PATH . 'css/' );
 
         // We can take adding random files if we need to
         $css_files = func_get_args();
@@ -179,15 +175,10 @@ class Resources {
      * @return string
      */
     public function get_javascript_file() {
-        // These are the path for 2.0 js/css path
-        // Should disappear and become default when we launch release-3.0
-        $global_js_dir = ( strpos( $_SERVER['SERVER_NAME'], 'admin.' ) !== FALSE ) ? 'js/' : 'old.js/';
-
         // Compression is on by default
         $compression = true;
 
-        // Define the paths to check
-        $paths = array( VIEW_PATH . 'js/', LIB_PATH . $global_js_dir );
+        $paths = array( VIEW_PATH . 'js/', LIB_PATH . 'js/' );
 
         // We can take adding random files if we need to
         $javascript_files = func_get_args();

@@ -19,7 +19,7 @@ class CouponsController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 129 )
-            ->select( 'coupons', 'view' );
+            ->select( 'shopping-cart', 'shopping-cart/coupons' );
     }
 
     /**
@@ -73,6 +73,7 @@ class CouponsController extends BaseController {
                     $coupon->add_free_shipping_methods( $_POST['cbFreeShippingMethods'] );
 
                 $this->notify( _('Your coupon has been created/updated successfully!') );
+                return new RedirectResponse('/shopping-cart/coupons/');
             }
         }
 
@@ -80,12 +81,13 @@ class CouponsController extends BaseController {
         $free_shipping_methods = $coupon->get_free_shipping_methods();
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) )
+            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ) )
             ->javascript( 'shopping-cart/coupons/add-edit' );
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 130 )
-            ->select( 'coupons', 'add' )
+            ->select( 'shopping-cart', 'shopping-cart/coupons' )
             ->set( compact( 'coupon', 'shipping_methods','free_shipping_methods', 'js_validation', 'errs' ) );
     }
 
@@ -162,11 +164,7 @@ class CouponsController extends BaseController {
         $website_coupon->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -178,7 +176,7 @@ class CouponsController extends BaseController {
      */
     protected function apply_to_brand() {
         // Instantiate classes
-        $form = new FormTable( 'fApplyToBrand' );
+        $form = new BootstrapForm( 'fApplyToBrand' );
 
         $brand = new Brand();
         $brands = $brand->get_by_account( $this->user->account->id );
@@ -211,7 +209,7 @@ class CouponsController extends BaseController {
         return $this->get_template_response( 'apply-to-brand' )
             ->kb( 143 )
             ->add_title( _('Apply to Brand | Coupons') )
-            ->select( 'coupons', 'apply-to-brand' )
+            ->select( 'shopping-cart', 'shopping-cart/coupons' )
             ->set( array(
                 'form' => $form->generate_form()
             ) );
@@ -231,7 +229,7 @@ class CouponsController extends BaseController {
             ->css( 'shopping-cart/coupons/products' );
         return $this->get_template_response( 'products' )
             ->kb( 0 )
-            ->select( 'coupons', 'coupon-products' )
+            ->select( 'shopping-cart', 'shopping-cart/coupons' )
             ->set( compact( 'coupons' ) );
     }
 

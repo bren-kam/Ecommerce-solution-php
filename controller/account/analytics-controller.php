@@ -86,10 +86,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $visits_plotting_array[] = array($r_date, $r_value);
         }
-
-        $visits_plotting = implode( ',', $visits_plotting_array );
 
         // Sparklines
         $sparklines['visits'] = $analytics->create_sparkline( $records );
@@ -101,20 +99,20 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'swfobject', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'index' )
             ->kb( 62 )
             ->add_title( _('Dashboard') )
-            ->select( 'dashboard' )
-            ->set( compact( 'sparklines', 'traffic_sources', 'pie_chart', 'visits_plotting', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/index' )
+            ->set( compact( 'sparklines', 'traffic_sources', 'pie_chart', 'visits_plotting_array', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -145,10 +143,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $page_views_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $page_views_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $page_views_plotting = implode( ',', $page_views_plotting_array );
 
         // Sparklines
         $sparklines['page_views'] = $analytics->create_sparkline( $records );
@@ -158,19 +154,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'content-overview' )
             ->add_title( _('Content Overview') )
-            ->select( 'content-overview' )
-            ->set( compact( 'sparklines', 'page_views_plotting', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/content-overview' )
+            ->set( compact( 'sparklines', 'page_views_plotting_array', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -204,10 +200,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $page_views_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $page_views_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $page_views_plotting = implode( ',', $page_views_plotting_array );
 
         // Sparklines
         $sparklines['page_views'] = $analytics->create_sparkline( $records );
@@ -217,19 +211,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'page' )
             ->add_title( _('Page') )
-            ->select( 'content-overview' )
-            ->set( compact( 'sparklines', 'page_views_plotting', 'total', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/content-overview' )
+            ->set( compact( 'sparklines', 'page_views_plotting_array', 'total', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -262,10 +256,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $visits_plotting = implode( ',', $visits_plotting_array );
 
         // Sparklines
         $sparklines['direct'] = $analytics->sparkline( 'direct' );
@@ -277,19 +269,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'swfobject', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'traffic-sources-overview' )
             ->add_title( _('Traffic Sources Overview') )
-            ->select( 'traffic-sources' )
-            ->set( compact( 'sparklines', 'visits_plotting', 'traffic_sources', 'top_traffic_sources', 'top_keywords', 'pie_chart', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/traffic-sources-overview' )
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'traffic_sources', 'top_traffic_sources', 'top_keywords', 'pie_chart', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -320,10 +312,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $visits_plotting = implode( ',', $visits_plotting_array );
 
         // Sparklines
         $sparklines['visits'] = $analytics->create_sparkline( $records );
@@ -334,19 +324,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'traffic-sources' )
             ->add_title( _('Traffic Sources') )
-            ->select( 'traffic-sources', 'sources' )
-            ->set( compact( 'sparklines', 'visits_plotting', 'total', 'traffic_sources', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/traffic-sources' )
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'traffic_sources', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -377,10 +367,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $visits_plotting = implode( ',', $visits_plotting_array );
 
         // Sparklines
         $sparklines['visits'] = $analytics->create_sparkline( $records );
@@ -391,19 +379,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'keywords' )
             ->add_title( _('Traffic Keywords') )
-            ->select( 'traffic-sources', 'keywords' )
-            ->set( compact( 'sparklines', 'total', 'visits_plotting', 'keywords', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/keywords' )
+            ->set( compact( 'sparklines', 'total', 'visits_plotting_array', 'keywords', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -437,10 +425,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $visits_plotting = implode( ',', $visits_plotting_array );
 
         // Sparklines
         $sparklines['visits'] = $analytics->create_sparkline( $records );
@@ -451,19 +437,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'keyword' )
             ->add_title( _('Keyword') )
-            ->select( 'traffic-sources', 'keywords' )
-            ->set( compact( 'sparklines', 'visits_plotting', 'total', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/keywords' )
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -497,10 +483,8 @@ class AnalyticsController extends BaseController {
         // Visits plotting
         if ( is_array( $records ) )
         foreach ( $records as $r_date => $r_value ) {
-            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+            $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
-        $visits_plotting = implode( ',', $visits_plotting_array );
 
         // Sparklines
         $sparklines['visits'] = $analytics->create_sparkline( $records );
@@ -511,19 +495,19 @@ class AnalyticsController extends BaseController {
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
-        $date_start = $date_start->format('M d, Y');
+        $date_start = $date_start->format('n/j/Y');
         $date_end = new DateTime( $analytics->date_end );
-        $date_end = $date_end->format('M d, Y');
+        $date_end = $date_end->format('n/j/Y');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
             ->css( 'analytics/analytics' )
-            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'source' )
             ->add_title( _('Source') )
-            ->select( 'traffic-sources', 'sources' )
-            ->set( compact( 'sparklines', 'visits_plotting', 'total', 'date_start', 'date_end' ) );
+            ->select( 'analytics', 'analytics/traffic-sources' )
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'date_start', 'date_end' ) );
     }
 
     /**
@@ -549,7 +533,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'email-marketing' )
             ->add_title( _('Email Marketing') )
-            ->select( 'email-marketing' )
+            ->select( 'analytics', 'analytics/keywords' )
             ->set( compact( 'emails', 'stats' ) );
     }
 
@@ -583,11 +567,11 @@ class AnalyticsController extends BaseController {
 
         $this->resources
             ->css( 'analytics/analytics' )
-            ->javascript( 'swfobject', 'analytics/email' );
+            ->javascript( 'swfobject' );
 
         return $this->get_template_response( 'email' )
             ->add_title( _('Email') . ' | ' . _('Email Marketing') . ' | ' . _('Email Marketing') )
-            ->select( 'email-marketing' )
+            ->select( 'analytics', 'analytics/keywords' )
             ->set( compact( 'email', 'email_message', 'bar_chart' ) );
     }
 

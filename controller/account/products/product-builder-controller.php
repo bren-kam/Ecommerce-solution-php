@@ -23,12 +23,11 @@ class ProductBuilderController extends BaseController {
 
         $this->resources
             ->css( 'products/product-builder/index' )
-            ->css_url( Config::resource('jquery-ui') )
             ->javascript( 'products/product-builder/index' );
 
         return $this->get_template_response( 'index' )
             ->kb( 56 )
-            ->select( 'product-builder', 'view' );
+            ->select( 'products', 'products/product-builder' );
     }
 
     /**
@@ -185,12 +184,13 @@ class ProductBuilderController extends BaseController {
 
         $this->resources
             ->javascript( 'fileuploader', 'products/product-builder/add-edit' )
+            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ) )
             ->css('products/product-builder/add-edit')
-            ->css_url( Config::resource('jquery-ui') );
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 57 )
-            ->select( 'product-builder', 'add' )
+            ->select( 'products', 'products/product-builder' )
             ->add_title( $title )
             ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
     }
@@ -466,20 +466,8 @@ class ProductBuilderController extends BaseController {
         // Get image url
         $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";
 
-        // Clone image template
-        jQuery('#image-template')->clone()
-            ->removeAttr('id')
-            ->find('a:first')
-                ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
-                ->find('img:first')
-                    ->attr( 'src', $image_url )
-                    ->parents('.image:first')
-            ->find('input:first')
-                ->val($image_name)
-                ->parent()
-            ->appendTo('#images-list');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'image_url', $image_url );
+        $response->add_response( 'image_name', $image_name );
 
         return $response;
     }

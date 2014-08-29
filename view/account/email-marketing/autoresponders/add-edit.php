@@ -1,18 +1,12 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Add/Edit | Autoresponder | Email Marketing
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var EmailAutoresponder $email_autoresponder
- * @var string $form
- */
-
-$title = ( $email_autoresponder->id ) ? _('Edit') : _('Add');
-echo $template->start( $title . ' ' . _('Autoresponder'), '../sidebar' );
-echo $form;
-echo $template->end();
-?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php $email_autoresponder->id ? 'Edit' : 'Add' ?> Autoresponder
+            </header>
+            <div class="panel-body">
+                <?php echo $form ?>
+            </div>
+        </section>
+    </div>
+</div>

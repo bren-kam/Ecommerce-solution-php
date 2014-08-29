@@ -63,7 +63,7 @@ class ProductsController extends BaseController {
 
         $this->resources->javascript( 'products/index' )
             ->css( 'products/index' )
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::resource( 'typeahead-js' ) );
 
         return $this->get_template_response( 'index')
             ->kb( 45 )
@@ -105,13 +105,14 @@ class ProductsController extends BaseController {
         if ( $product_count > $this->user->account->products )
             $this->notify( _('Please contact your Online Specialist to add additional products. Product Usage has exceeded the number of items allowed.'), false );
 
-        $this->resources->javascript( 'products/add' )
-            ->css( 'products/add' )
-            ->css_url( Config::resource('jquery-ui') );
+        $this->resources
+            ->javascript_url( Config::resource( 'typeahead-js' ) )
+            ->javascript( 'products/add' )
+            ->css( 'products/add' );
 
         $response = $this->get_template_response( 'add' )
             ->kb( 46 )
-            ->select( 'sub-products', 'add' )
+            ->select( 'products', 'products/add' )
             ->set( compact( 'product_count', 'categories', 'brands' ) );
 
         return $response;
@@ -130,7 +131,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'all' )
             ->kb( 47 )
             ->add_title( _('All Products') )
-            ->select( 'sub-products', 'all' )
+            ->select( 'products', 'products/all' )
             ->set( compact( 'products' ) );
 
         return $response;
@@ -187,14 +188,17 @@ class ProductsController extends BaseController {
             }
         }
 
+        $brand = new Brand();
+        $brands = $brand->get_all();
+
         $this->resources->javascript( 'products/catalog-dump' )
             ->css_url( Config::resource('jquery-ui') );
 
         $response = $this->get_template_response( 'catalog-dump' )
             ->kb( 48 )
             ->add_title( _('Catalog Dump') )
-            ->select( 'sub-products', 'catalog-dump' )
-            ->set( compact( 'js_validation', 'errs' ) );
+            ->select( 'products', 'products/catalog-dump' )
+            ->set( compact( 'js_validation', 'errs', 'brands' ) );
 
         return $response;
     }
@@ -205,9 +209,9 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function add_bulk() {
-        $form = new FormTable( 'fAddBulk' );
+        $form = new BootstrapForm( 'fAddBulk' );
         $form->submit( _('Add Bulk'), '', 1 );
-        $form->add_field( 'textarea', '', 'taSKUs' )
+        $form->add_field( 'textarea', 'One SKU per Line', 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
         $success = false;
@@ -244,7 +248,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'add-bulk' )
             ->kb( 49 )
             ->add_title( _('Add Bulk') )
-            ->select( 'sub-products', 'add-bulk' )
+            ->select( 'products', 'products/add-bulk' )
             ->set( compact( 'form', 'already_existed', 'not_added_skus', 'success' ) );
     }
 
@@ -254,9 +258,9 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function block_products() {
-        $form = new FormTable( 'fBlockProducts' );
-        $form->submit( _('Block Products'), '', 1 );
-        $form->add_field( 'textarea', '', 'taSKUs' )
+        $form = new BootstrapForm( 'fBlockProducts' );
+        $form->submit( _('Block Products'), "", 1 );
+        $form->add_field( 'textarea', "Separate SKU's by putting one on each line", 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
         $account_product = new AccountProduct();
@@ -274,7 +278,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'block-products' )
             ->kb( 50 )
             ->add_title( _('Block Products') )
-            ->select( 'sub-products', 'block-products' )
+            ->select( 'products', 'products/block-products' )
             ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
 
         return $response;
@@ -302,9 +306,9 @@ class ProductsController extends BaseController {
             $categories[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
         }
 
-        $form = new FormTable( 'fCategories' );
+        $form = new BootstrapForm( 'fCategories' );
         $form->submit( _('Hide Categories'), '', 1 );
-        $form->add_field( 'select', '', 'sCategoryIDs[]' )
+        $form->add_field( 'select', 'Select Categories to Hide', 'sCategoryIDs[]' )
             ->attribute( 'multiple', 'multiple' )
             ->attribute( 'class', 'height-200' )
             ->options( $categories );
@@ -335,7 +339,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'hide-categories' )
             ->kb( 51 )
             ->add_title( _('Hide Categories') )
-            ->select( 'sub-products', 'hide-categories' )
+            ->select( 'products', 'products/hide-categories' )
             ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $blocked_categories ) );
     }
 
@@ -364,7 +368,7 @@ class ProductsController extends BaseController {
         $brands = $brand->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'products/price-tools', 'products/product-prices' )
+            ->css( 'products/product-prices' )
             ->javascript( 'products/product-prices' );
 
         return $this->get_template_response( 'product-prices' )
@@ -381,8 +385,8 @@ class ProductsController extends BaseController {
      */
     protected function price_multiplier() {
         $this->resources
-            ->css( 'products/price-tools' )
-            ->javascript( 'fileuploader', 'products/multiply-prices' );
+            ->css( 'products/price-multiplier' )
+            ->javascript( 'fileuploader', 'products/price-multiplier' );
 
         return $this->get_template_response( 'price-multiplier' )
             ->kb( 115 )
@@ -527,7 +531,7 @@ class ProductsController extends BaseController {
      */
     protected function settings() {
         // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array(
@@ -591,8 +595,8 @@ class ProductsController extends BaseController {
      */
     protected function brands() {
         $this->resources->javascript( 'products/brands' )
-            ->css( 'products/brands' )
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::resource( 'typeahead-js' ), Config::resource( 'jqueryui-js' ) )
+            ->css( 'products/brands' );
 
         $website_top_brand = new WebsiteTopBrand();
 
@@ -634,8 +638,8 @@ class ProductsController extends BaseController {
         }
 
         $this->resources->javascript( 'products/top-categories' )
-            ->css( 'products/top-categories' )
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript_url( Config::Resource('jqueryui-js') )
+            ->css( 'products/top-categories' );
 
         return $this->get_template_response( 'top-categories' )
             ->kb( 137 )
@@ -694,7 +698,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
+        $response->check( isset( $_GET['type'], $_GET['term'] ), _('Autocomplete failed') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -703,25 +707,25 @@ class ProductsController extends BaseController {
         $ac_suggestions = array();
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_all( $_GET['term'], $this->user->account->id );
             break;
 
             case 'product':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'name', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_GET['term'], 'name', $this->user->account->id );
             break;
 
             case 'sku':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'sku', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_GET['term'], 'sku', $this->user->account->id );
             break;
 
             case 'sku-products':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_GET['term'], array( 'name', 'sku' ), $this->user->account->id );
             break;
 
             default: break;
@@ -750,7 +754,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
+        $response->check( isset( $_GET['type'], $_GET['term'] ), _('Autocomplete failed') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -759,27 +763,27 @@ class ProductsController extends BaseController {
         $ac_suggestions = array();
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_by_account( $_GET['term'], $this->user->account->id );
             break;
 
             case 'product':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'name', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_by_account( $_GET['term'], 'name', $this->user->account->id );
             break;
 
             case 'sku':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'sku', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_by_account( $_GET['term'], 'sku', $this->user->account->id );
             break;
 
             default:
-                if ( is_array($_POST['type']) ) {
+                if ( is_array($_GET['type']) ) {
                     $account_product = new AccountProduct();
-                    $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
-                    $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], $_POST['type'], $this->user->account->id, $limit );
+                    $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
+                    $ac_suggestions = $account_product->autocomplete_by_account( $_GET['term'], $_GET['type'], $this->user->account->id, $limit );
                 }
             break;
         }
@@ -823,12 +827,7 @@ class ProductsController extends BaseController {
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
         // Let them know
-        $response->check( false, _('All discontinued products have been removed') );
-
-        // Reset products to blank
-        jQuery('#dProductList')->empty();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'All discontinued products have been removed' );
 
         return $response;
     }
@@ -913,19 +912,19 @@ class ProductsController extends BaseController {
 
         foreach ( $products as $product ) {
             if ($this->user->account->is_new_template() ) {
-                $product->link = '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
+                $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
-                $product->link = ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+                $product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
             }
 
-		}
+            $product->image_url = 'http://' . str_replace( ' ', '', $product->industry ) . '.retailcatalog.us/products/' . $product->product_id . '/' . $product->image;
+        }
 
-        $user = $this->user;
-
-        // Make sure it's a valid ajax call
-        $response = new CustomResponse( $this->resources, 'products/search' );
-        $response->set( compact( 'product_count', 'products', 'page', 'per_page', 'user' ) );
-
+        $response = new AjaxResponse( true );
+        $response->add_response( 'products', $products );
+        $response->add_response( 'product_start', (($page -1) * $per_page + 1) < $product_count ? (($page -1) * $per_page + 1) : $product_count );
+        $response->add_response( 'product_end', ($page * $per_page) < $product_count ? ($page * $per_page) : $product_count );
+        $response->add_response( 'product_count', $product_count );
         return $response;
     }
 
@@ -956,12 +955,7 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-        // Remove the product then lower the count
-        jQuery('#dProduct_' . $_GET['pid'])
-            ->remove()
-            ->lowerProductCount();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Product removed.' );
 
         return $response;
     }
@@ -995,13 +989,7 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-        // Remove the product then lower the count
-        jQuery('#dProduct_' . $_GET['pid'])
-            ->remove()
-            ->lowerProductCount();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->notify( 'Product blocked' );
         return $response;
     }
 
@@ -1028,26 +1016,17 @@ class ProductsController extends BaseController {
         $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
         $account_category->save();
 
-        $response->check( false, _('Your category image has been set!') );
+        $response->notify( 'Your category image has been set');
 
         return $response;
     }
 
     /**
-     * Get Product Dialog Info
+     * Edit (Get Product Dialog Info)
      *
-     * @return AjaxResponse
+     * @return CustomResponse
      */
-    protected function get_product_dialog_info() {
-        // Make sure it's a valid ajax call
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_POST['pid'] ), _('Please select a product to edit') );
-
-        // If there is an error or now user id, return
-        if ( $response->has_error() )
-            return $response;
-
+    protected function edit() {
         // Instantiate objects
         $account_product = new AccountProduct();
         $account_product_option = new AccountProductOption();
@@ -1057,12 +1036,12 @@ class ProductsController extends BaseController {
         $category = new Category();  // For getting public URL
 
         // Get variables
-        $account_product->get( $_POST['pid'], $this->user->account->id );
-        $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_POST['pid'] );
-        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_POST['pid'] );
-        $product_options_array = $product_option->get_by_product( $_POST['pid'] );
+        $account_product->get( $_GET['pid'], $this->user->account->id );
+        $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
+        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_GET['pid'] );
+        $product_options_array = $product_option->get_by_product( $_GET['pid'] );
 
-        $product->get( $_POST['pid'] );
+        $product->get( $_GET['pid'] );
         $images = $product->get_images();
         $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
         $account_product->name = $product->name;
@@ -1084,10 +1063,15 @@ class ProductsController extends BaseController {
 			$product_options[$po->id]['list_items'][$po->product_option_list_item_id] = $po->value;
 		}
 
+        $coupons = $website_coupon->get_by_account( $this->user->account->id );
+
         // Add to response
-        $response
-            ->add_response( 'product', (array) $account_product )
-            ->add_response( 'product_options', $product_options );
+        $response = new CustomResponse( $this->resources, 'products/edit' );
+        $response->set( array(
+            'product' => $account_product
+            , 'product_options' => $product_options
+            , 'coupons' => $coupons
+        ) );
 
         return $response;
     }
@@ -1140,15 +1124,14 @@ class ProductsController extends BaseController {
 
         if ( $this->user->account->shopping_cart ) {
             $account_product->wholesale_price = $_POST['tWholesalePrice'];
-            $account_product->additional_shipping_amount = ( 'Flat Rate' == $_POST['rShippingMethod'] ) ? $_POST['tShippingFlatRate'] : $_POST['tShippingPercentage'];
+            $account_product->additional_shipping_amount = $_POST['tAdditionalShipping'];
             $account_product->weight = $_POST['tWeight'];
             $account_product->additional_shipping_type = $_POST['rShippingMethod'];
             $account_product->ships_in = $_POST['tShipsIn'];
             $account_product->store_sku = $_POST['tStoreSKU'];
 
-            $coupons = ( empty( $_POST['hCoupons'] ) ) ? false : explode( '|', $_POST['hCoupons'] );
+            $coupons = $_POST['hCoupons'];
         } else {
-
             $coupons = false;
         }
 
@@ -1231,7 +1214,7 @@ class ProductsController extends BaseController {
 				$product_option_ids .= $po_id;
 
 				// If it's a drop down, set the values
-				if ( $dropdown )
+				if ( isset( $po['list_items'] ) )
 				foreach ( $po['list_items'] as $li_id => $price ) {
                     if ( is_array( $price ) ) {
                         $alt_price = $price['reg'];
@@ -1259,12 +1242,7 @@ class ProductsController extends BaseController {
                 $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
 
-        jQuery('.close:visible:first')->click();
-        jQuery( '#sPrice' . $account_product->product_id )->text( (int) $account_product->price );
-        jQuery( '#sAlternatePrice' . $account_product->product_id )->text( $account_product->alternate_price );
-        jQuery( '#sAlternatePriceName' . $account_product->product_id )->text( $account_product->alternate_price_name );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Product updated' );
 
         return $response;
     }
@@ -1365,8 +1343,8 @@ class ProductsController extends BaseController {
         // Create output
         if ( is_array( $products ) )
         foreach ( $products as $product ) {
-        	$dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
-        	$actions = '<a href="#" class="add-product" id="aAddProduct' . $product->id . '" name="' . $product->name . '" title="' . _('Add') . '">' . _('Add Product') . '</a>';
+        	$dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/get-product/' ) . '" title="View Product" data-modal>';
+        	$actions = '<a href="javascript:;" class="add-product" data-id="'.$product->id.'" data-name="'.$product->name.'">Add Product</a>';
 
         	$data[] = array(
         		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
@@ -1529,10 +1507,10 @@ class ProductsController extends BaseController {
             $data[] = array(
                 $product->sku
                 , $product->name
-                , '<input type="text" class="alternate_price" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
-                , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
-                , '<input type="text" class="sale_price" id="tSalePrice' . $product->id . '" value="' . $product->sale_price . '" />'
-                , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
+                , '<input type="text" class="form-control" value="' . $product->alternate_price . '" data-product-id="'. $product->product_id .'" data-name="alternate_price" />'
+                , '<input type="text" class="form-control" value="' . $product->price . '" data-product-id="'. $product->product_id .'" data-name="price" />'
+                , '<input type="text" class="form-control" value="' . $product->sale_price . '" data-product-id="'. $product->product_id .'" data-name="sale_price" />'
+                , '<input type="text" class="form-control" value="' . $product->price_note . '" data-product-id="'. $product->product_id .'" data-name="price_note" />'
             );
         }
 
@@ -1570,9 +1548,7 @@ class ProductsController extends BaseController {
                 $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
         }
 
-        jQuery('span.success')->show()->delay(5000)->hide();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'Your products has been updated' );
 
         return $response;
     }
@@ -1628,8 +1604,7 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&dBrand[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 9 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $website_top_brand = new WebsiteTopBrand();
         $website_top_brand->update_sequence( $this->user->account->id, $sequence );
@@ -1652,8 +1627,7 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&dTopCategory[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 15 );
+        $sequence = explode( '|', $_POST['s'] );
 
         $this->user->account->set_settings( array( 'top-categories' => json_encode( $sequence ) ) );
 
@@ -1738,20 +1712,7 @@ class ProductsController extends BaseController {
         $website_top_brand->sequence = $_POST['s'];
         $website_top_brand->create();
 
-        // Now add it to the page
-        $dBrand = '<div id="dBrand_' . $brand->id . '" class="brand">';
-       	$dBrand .= '<img src="' . $brand->image . '" title="' . $brand->name . '" />';
-       	$dBrand .= '<h4>' . $brand->name . '</h4>';
-       	$dBrand .= '<p class="brand-url"><a href="' . $brand->link . '" title="' . $brand->name . '" target="_blank">' . $brand->link . '</a></p>';
-       	$dBrand .= '<a href="' . url::add_query_arg( array( '_nonce' => nonce::create('remove_brand'), 'bid' => $brand->id ), '/products/remove-brand/' ) . '" title="' . _('Remove') . '" ajax="1" confirm="' . _('Are you sure you want to remove this brand?') . '">' . _('Remove') . '</a>';
-       	$dBrand .= '</div>';
-
-       	jQuery('#brands')
-       		->append( $dBrand )
-       		->sparrow();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'brand', $brand );
 
         return $response;
     }
@@ -1957,10 +1918,6 @@ class ProductsController extends BaseController {
         $auto_price->remove();
         $response->notify( _('Auto Price have been deleted.') );
 
-        // Delete from page
-        jQuery('#ap_' . $_GET['bid'] . '_' . $_GET['cid'] )->remove();
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
         return $response;
     }
 
@@ -2091,6 +2048,41 @@ class ProductsController extends BaseController {
         $account_product->lock_prices_by_account( $this->user->account->id );
 
         return new RedirectResponse( '/products/manually-priced/' );
+    }
+
+    /**
+     * Get
+     *
+     * @return AjaxResponse
+     */
+    protected function get() {
+        $response = new AjaxResponse( $this->verified() );
+
+        $account_product = new AccountProduct();
+        $product = new Product();
+        $category = new Category();
+
+        // Get
+        $account_product->get( $_GET['pid'], $this->user->account->id );
+
+        // Get Product Images & Name
+        $product->get( $_GET['pid'] );
+        $images = $product->get_images();
+        $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
+        $account_product->name = $product->name;
+
+        // Get Category
+        $category->get( $product->category_id );
+
+        // Get Product Link
+        if ($this->user->account->is_new_template() ) {
+            $account_product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
+        } else {
+            $account_product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+        }
+
+        $response->add_response( 'product', $account_product );
+        return $response;
     }
 
 }

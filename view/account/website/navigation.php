@@ -10,141 +10,107 @@
  * @var AccountPage[] $pages
  * @var array $navigation
  */
-
-echo $template->start( _('Header Menu Navigation') );
 ?>
 
-<a href="#dAddEditNavigation" title="<?php echo _('Add Menu Item'); ?>" rel="dialog"><?php echo _('Add Menu Item'); ?></a>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Header Navigation
+                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#add-menu-item"><i class="fa fa-plus"></i> Add Menu Item</a>
+                <a href="/website/footer-navigation" class="btn btn-default btn-sm pull-right">Switch to Footer Navigation</a>
+            </header>
 
-<br />
-<hr />
-<br />
+            <div class="panel-body">
 
-<form action="" name="fNavigation" id="fNavigation" method="post">
-    <ul id="navigation-menu-list">
-        <?php if ( $navigation ) { ?>
-            <?php foreach ( $navigation as $k => $page ) { ?>
-                <li id="l<?php echo $k ?>">
-                    <div class="menu-item">
-                        <h4 class="name"><?php echo $page->name; ?></h4>
-                        <p class="menu-item-actions">
-                            <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                        </p>
-
-                        <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
-                        <input type="hidden" name="navigation[l<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
-                    </div>
-                    <?php if ( isset( $page->children ) ) { ?>
-                        <ul>
-                            <?php foreach ( $page->children as $child_k => $child_page ) { ?>
-                                <li id="l<?php echo $k ?>l<?php echo $child_k ?>">
-                                    <div class="menu-item">
-                                        <h4 class="name"><?php echo $child_page->name; ?></h4>
-                                        <p class="menu-item-actions">
-                                            <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                                        </p>
-
-                                        <a href="#" class="url" target="_blank" ><?php echo $child_page->url; ?></a>
-                                        <input type="hidden" name="navigation[l<?php echo $k ?>l<?php echo $child_k ?>]" value="<?php echo $child_page->url . '|' . $child_page->name; ?>">
+                <form method="post" role="form">
+                    <div class="dd" id="navigation">
+                        <ol class="dd-list">
+                            <?php foreach ( $navigation as $k => $page ): ?>
+                                <li class="dd-item dd3-item" data-id="<?php echo $k ?>">
+                                    <div class="dd-handle dd3-handle"></div>
+                                    <div class="dd3-content">
+                                        <?php echo $page->name ?>
+                                        <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
+                                        <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
+                                        <input type="hidden" name="navigation[<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
                                     </div>
+                                    <?php if ( isset( $page->children ) ): ?>
+                                        <ol class="dd-list">
+                                            <?php foreach ( $page->children as $child_k => $child_page ): ?>
+                                                <li class="dd-item dd3-item" data-id="<?php echo $k . "_" . $child_k ?>">
+                                                    <div class="dd-handle dd3-handle"></div>
+                                                    <div class="dd3-content">
+                                                        <?php echo $child_page->name ?>
+                                                        <span class="page-url"><?php echo $child_page->url ? $child_page->url : '/' ?></span>
+                                                        <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
+                                                        <input type="hidden" name="navigation[<?php echo $k . '_' . $child_k ?>]" value="<?php echo $child_page->url . '|' . $child_page->name; ?>">
+                                                    </div>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ol>
+                                    <?php endif; ?>
                                 </li>
-                            <?php } ?>
-                        </ul>
-                    <?php } ?>
-                </li>
-            <?php } ?>
-        <?php } else { ?>
-        <li id="l1">
-            <div class="menu-item">
-                <h4 class="name">Home</h4>
-                <p class="menu-item-actions">
-                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                </p>
+                            <?php endforeach; ?>
+                           </ol>
+                    </div>
 
-                <a href="#" class="url" target="_blank" >/</a>
-                <input type="hidden" name="navigation[l1]" value="<?php echo '|Home'; ?>">
+                    <p>
+                        <input type="hidden" name="tree" id="tree" value="" />
+                        <?php nonce::field( 'navigation' ) ?>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </p>
+                </form>
+
+
             </div>
-        </li>
-        <li id="l2">
-            <div class="menu-item">
-                <h4 class="name">About</h4>
-                <p class="menu-item-actions">
-                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                </p>
-
-                <a href="#" class="url" target="_blank" >/about-us/</a>
-                <input type="hidden" name="navigation[l2]" value="<?php echo 'about-us|About Us'; ?>">
-            </div>
-        </li>
-        <li id="l3">
-            <div class="menu-item">
-                <h4 class="name">Current Offer</h4>
-                <p class="menu-item-actions">
-                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                </p>
-
-                <a href="#" class="url" target="_blank" >/current-offer/</a>
-                <input type="hidden" name="navigation[l3]" value="<?php echo 'current-offer|Current Offer'; ?>">
-            </div>
-        </li>
-        <li id="l4">
-            <div class="menu-item">
-                <h4 class="name">Financing</h4>
-                <p class="menu-item-actions">
-                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                </p>
-
-                <a href="#" class="url" target="_blank" >/financing/</a>
-                <input type="hidden" name="navigation[l4]" value="<?php echo 'financing|Financing'; ?>">
-            </div>
-        </li>
-        <li id="l5">
-            <div class="menu-item">
-                <h4 class="name">Contact</h4>
-                <p class="menu-item-actions">
-                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                </p>
-
-                <a href="#" class="url" target="_blank" >/contact-us/</a>
-                <input type="hidden" name="navigation[l5]" value="<?php echo 'contact-us|Contact'; ?>">
-            </div>
-        </li>
-        <?php } ?>
-    </ul>
-
-    <input type="submit" class="button" value="<?php echo _('Save'); ?>">
-    <?php nonce::field('navigation'); ?>
-</form>
-<br clear="all"><br>
-
-<div id="dAddEditNavigation" class="hidden">
-    <p><input type="text" class="tb" id="menu-item-name" placeholder="<?php echo _('Menu Item Name'); ?>"></p>
-    <p>
-        <input type="radio" name="menu-link" value="menu-url" checked="checked">
-        <input type="text" class="tb" id="menu-url" placeholder='<?php echo _('Menu link, i.e. "contact"'); ?>'>
-        <br><br>
-        <input type="radio" name="menu-link" id="menu-link-2" value="menu-page">
-        <select id="menu-page">
-            <?php foreach ( $pages as $page ) { ?>
-            <option value="<?php echo $page->slug; ?>"><?php echo ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title; ?></option>
-            <?php } ?>
-        </select>
-        <br><br>
-    </p>
-    <p><a href="#" class="button" id="add-menu-item" title="<?php echo _('Add Menu Item'); ?>"><?php echo _('Add'); ?></a></p>
+        </section>
+    </div>
 </div>
 
-<div class="hidden">
-    <li id="dMenuItem">
-        <div class="menu-item">
-            <h4 class="name"></h4>
-            <p class="menu-item-actions">
-                <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-            </p>
 
-            <a href="#" class="url" target="_blank" >/contact-us/</a>
+<!-- Modal -->
+<div class="modal fade" id="add-menu-item" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new Menu Item</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name">
+                </div>
+                <div class="form-group">
+                    <label for="link-select">Select a Link:</label>
+                    <select id="link-select" class="form-control">
+                        <option value=""></option>
+                        <?php foreach ( $pages as $page ) { ?>
+                            <option value="<?php echo $page->slug; ?>"><?php echo ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="link">Custom Link:</label>
+                    <input type="text" class="form-control" id="link">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-menu-item">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="hidden">
+    <li class="dd-item dd3-item" id="item-template">
+        <div class="dd-handle dd3-handle"></div>
+        <div class="dd3-content">
+            <span class="page-url"></span>
+            <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
+            <input type="hidden">
         </div>
     </li>
-</div>
-
-<?php echo $template->end(); ?>
+</ul>

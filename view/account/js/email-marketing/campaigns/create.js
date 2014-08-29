@@ -1,78 +1,16 @@
-head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckeditor.js', function() {
+var EmailEditor = {
 
-    // ---------------------------------------------------------
-    // ---------------------------------------------------------
-    // STEP 1
+    contentTypeDraggables: null
+    , layoutContainer: null
+    , layoutSelectors: null
+    , layouts: null
+    , placeholderSelector: null
 
-    // Date Picker
-    $('#dDate').datepicker({
-        minDate: 0
-        , dateFormat: 'yy-mm-dd'
-        , defaultDate: $('#date').val()
-        , onSelect: function(date) {
-            $("#date").val(date);
-        }
-    });
-
-    // Time Picker
-    var tTime = $('#tTime');
-    tTime.timepicker({
-        step: 60
-        , show24Hours: false
-        , timeFormat: 'g:i a'
-    }).timepicker('show');
-
-    // Fix for offset
-    tTime.timepicker('hide');
-
-    // Schedule options are only displayed if #schedule is checked
-    $('#schedule').change(function() {
-        if ($(this).is(':checked')) {
-            $('.schedule').show();
-        } else {
-            $('.schedule').hide();
-        }
-    }).change();
-    $('.schedule.hidden').removeClass('hidden').hide();
-
-    $('#select-all-subscribers').change(function(e){
-        if ($(this).prop('checked') === true) {
-            $('.subscribers :checkbox').prop('checked', true);
-            $('.subscribers :checkbox').attr('checked', 'checked');  // IE
-        } else {
-            $('.subscribers :checkbox').prop('checked', false);
-            $('.subscribers :checkbox').removeAttr('checked');  // IE
-        }
-    });
-
-    // ---------------------------------------------------------
-    // ---------------------------------------------------------
-    // STEP 2
-
-    var content_type_draggables = $('li[data-content-type]');
-    var layout_container = $('#email-editor');
-    var layout_selectors = $('li[data-layout]');
-    var layouts = $('div[data-layout]');
-    var placeholder_selector = '.droppable';
-
-    // Here we define out Content Types (text, product, image)
-    // and place the code that handles it
-    // - init() bind events
-    // - setup() called when a Content Type is dropped into a Placeholder (created editor, uploader, etc)
-    // - save() will save Content Type Data
-    var content_types = {
+    , contentTypes: {
 
         _base:  {
             init: function() {
-                $('body').on('click', '[data-action=clear]', function(e) {
-                    e.preventDefault();
-                    if (confirm('Are you sure do you want to remove this element?')) {
-                        $(this).parents('.droppable')
-                            .html('<p class="placeholder">Drag Content Here</p>')
-                            .removeClass('has-content')
-                            .removeClass('empty-content-type');
-                    }
-                });
+                $('body').on('click', '[data-action=clear]', EmailEditor.contentTypes._base.clear );
             }
             , setup: function(my_content) {
                 // Set an ID
@@ -80,40 +18,25 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     $(my_content).attr('id', 'ct' + Date.now());
                 my_content.find('.hidden').removeClass('hidden').hide();
             }
+            , clear: function() {
+                if (confirm('Are you sure do you want to remove this element?')) {
+                    $(this).parents('.droppable')
+                        .html('<p class="placeholder">Drag Content Here</p>')
+                        .removeClass('has-content')
+                        .removeClass('empty-content-type');
+                }
+            }
         }
 
         , product: {
             content: $('#email-builder-types div.content-type-template[data-content-type=product]')
             , init: function() {
-                $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
-                    e.preventDefault();
-                    $(this).parents('div[data-content-type]')
-                        .find('.product-autocomplete').show();
-                    $(this).parents('div[data-content-type]')
-                        .find('[data-action=edit], [data-action=edit-price]').hide();
-                });
-                $('#email-editor').on('click', '[data-action=edit-price]', function(e) {
-                    e.preventDefault();
-                    var placeholder = $(this).parents('div[data-content-type]');
-
-                    var price = placeholder.find('.product-price-container .price').text().parseProductPrice();
-                    var sale_price = placeholder.find('.product-price-container .sale-price').text().parseProductPrice();
-
-                    // if it's not a number, show "as is"
-                    price = price > 0 ? price : placeholder.find('.product-price-container .price').text();
-                    sale_price = sale_price > 0 ? sale_price : placeholder.find('.product-price-container .sale-price').text();
-
-                    placeholder.find('.product-price').val(price);
-                    placeholder.find('.product-sale-price').val(sale_price);
-
-                    placeholder.find('[data-action=edit], [data-action=edit-price]').hide();
-                    placeholder.find('.edit-price-actions').show();
-                });
-                $('#email-editor').on('click', '[data-action=save-price]', content_types['product'].save_price);
-
+                $('#email-editor').on('click', 'div[data-content-type=product] [data-action=edit]', EmailEditor.contentTypes.product.showEdit );
+                $('#email-editor').on('click', '[data-action=edit-price]', EmailEditor.contentTypes.product.showEditPrice );
+                $('#email-editor').on('click', '[data-action=save-price]', EmailEditor.contentTypes.product.savePrice );
             }
             , setup: function(my_content) {
-                content_types._base.setup(my_content);
+                EmailEditor.contentTypes._base.setup(my_content);
 
                 // Show autocomplete if it's a brand new product box
                 if ( my_content.find('.placeholder-content').is(':empty')  ) {
@@ -123,37 +46,54 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     my_content.find('[data-action=edit]').show();
                 }
 
-                // configure autocomplete
-                my_content.find('.product-autocomplete').autocomplete({
-                    minLength: 1
-                    , source: function(request, response){
-                        var type = ['name' , 'sku'];
-                        $.post(
-                            '/products/autocomplete-owned/'
-                            , { '_nonce' : $('#_autocomplete_owned').val(), 'type' : type, 'term' : request['term'], 'limit': 0 }
-                            , function( autocompleteResponse ) {
-                                response( autocompleteResponse['suggestions'] );
-                            }
-                            , 'json'
-                        );
+                var _nonce = $('#_autocomplete_owned').val();
+                var autocomplete = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value')
+                    , queryTokenizer: Bloodhound.tokenizers.whitespace
+                    , remote: {
+                        url: '/products/autocomplete-owned/?_nonce=' + _nonce + '&type[]=name&type[]=sku&term=%QUERY'
+                        , filter: function( list ) {
+                            return list.suggestions
+                        }
                     }
-                    , select: function( event, ui ) {
-                        content_types['product'].select_product( my_content, event, ui );
-                    }
-                }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-                    var input_text = my_content.find('.product-autocomplete').val();
-                    var re_search = new RegExp( '(' + input_text + ')', 'ig' );
-                    var re_replace = '<strong>$1</strong>';
-                    return $( "<li>" )
-                        .append( "<a>" + item.name.replace( re_search, re_replace ) + "<br><small>SKU: " + item.sku.replace( re_search, re_replace ) + "</small></a>" )
-                        .appendTo( ul );
-                };
+                });
+                autocomplete.initialize();
+                my_content.find('.product-autocomplete')
+                    .typeahead(null, {
+                        displayKey: 'name'
+                        , source: autocomplete.ttAdapter()
+                    })
+                    .unbind('typeahead:selected')
+                    .on('typeahead:selected', function(event, selected) {
+                        EmailEditor.contentTypes.product.selectProduct( my_content, event, selected );
+                    });
             }
-            , select_product: function( my_content, event, ui ) {
-                event.preventDefault();
-                $.post(
-                    '/products/get-product-dialog-info/'
-                    , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
+            , showEdit: function() {
+                $(this).parents('div[data-content-type]')
+                    .find('.product-autocomplete').show();
+                $(this).parents('div[data-content-type]')
+                    .find('[data-action=edit], [data-action=edit-price]').hide();
+            }
+            , showEditPrice: function() {
+                var placeholder = $(this).parents('div[data-content-type]');
+
+                var price = placeholder.find('.product-price-container .price').text().parseProductPrice();
+                var sale_price = placeholder.find('.product-price-container .sale-price').text().parseProductPrice();
+
+                // if it's not a number, show "as is"
+                price = price > 0 ? price : placeholder.find('.product-price-container .price').text();
+                sale_price = sale_price > 0 ? sale_price : placeholder.find('.product-price-container .sale-price').text();
+
+                placeholder.find('.product-price').val(price);
+                placeholder.find('.product-sale-price').val(sale_price);
+
+                placeholder.find('[data-action=edit], [data-action=edit-price]').hide();
+                placeholder.find('.edit-price-actions').show();
+            }
+            , selectProduct: function( my_content, event, item ) {
+                $.get(
+                    '/products/get/'
+                    , { '_nonce': $('#_get').val(), 'pid': item.value }
                     , function(r) {
                         var box_width = my_content.attr('width');
                         var img_width = box_width * ( ( box_width < 200 ) ? 0.9  : 0.6 );  // 90% for colspan 1,2,3. 60% for the rest
@@ -187,14 +127,13 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     , 'json'
                 );
             }
-            , save_price: function(e) {
-                e.preventDefault();
+            , savePrice: function(e) {
                 var placeholder = $(this).parents('[data-content-type]');
                 var price = placeholder.find('.product-price').val();
                 var sale_price = placeholder.find('.product-sale-price').val();
 
-                var price_str = price > 0 ? ( '$' + price.parseProductPrice().numberFormat() ) : price;
-                var sale_price_str = sale_price > 0 ? ( '$' + sale_price.parseProductPrice().numberFormat() ) : sale_price;
+                var price_str = price > 0 ? ( '$' + price.parseProductPrice().priceFormat() ) : price;
+                var sale_price_str = sale_price > 0 ? ( '$' + sale_price.parseProductPrice().priceFormat() ) : sale_price;
 
                 if ( sale_price > 0 && price == 0 )
                     return alert("Sale Price needs a Price");
@@ -215,39 +154,44 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         , text: {
             content: $('#email-builder-types div.content-type-template[data-content-type=text]')
             , init: function() {
-                $('#save-text').click(content_types['text'].save_text);
-                $('body').on('click', '.open-text-editor', function(e) {
-                    var instance = $(this).parents('[data-content-type]');
-                    var placeholder_id = instance.attr('id');
-                    var content = instance.find('.placeholder-content').html();
-                    var textarea = $('<textarea id="text-editor" name="text-editor"></textarea>');
-                    $('#save-text').data('placeholder-id', placeholder_id);
-                    textarea.val(content);
-                    $('#editor-container').html(textarea).sparrow();
-                    if (CKEDITOR.instances['text-editor']) {
-                        delete CKEDITOR.instances['text-editor'];
-                    };
-                    CKEDITOR.replace('text-editor', {
-                        allowedContent: !0,
-                        autoGrow_minHeight: 100,
-                        resize_minHeight: 100,
-                        height: 100,
-                        toolbar: [
-                            ["Bold", "Italic", "Underline"],
-                            ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
-                            ["NumberedList", "BulletedList", "Table"],
-                            ["Format"],
-                            ["Link", "Unlink"],
-                            ["Source"]
-                        ]
-                    });
-                });
+                $('body').on( 'click', '.open-text-editor', EmailEditor.contentTypes.text.showEditor );
+                $('body').on( 'click', '#save-text', EmailEditor.contentTypes.text.saveText );
             }
             , setup: function(my_content) {
-                content_types._base.setup(my_content);
-                my_content.sparrow();
+                EmailEditor.contentTypes._base.setup(my_content);
             }
-            , save_text: function(e) {
+            , showEditor: function() {
+                var instance = $(this).parents('[data-content-type]');
+                var placeholder_id = instance.attr('id');
+                var content = instance.find('.placeholder-content').html();
+                var textarea = $('<textarea id="text-editor" name="text-editor"></textarea>');
+
+                textarea.val(content);
+
+                // cleanup previous RTE Editors if any
+                if (CKEDITOR.instances['text-editor']) {
+                    delete CKEDITOR.instances['text-editor'];
+                };
+
+                $('#save-text').data('placeholder-id', placeholder_id);
+                $('#editor-container').html( textarea );
+
+                CKEDITOR.replace('text-editor', {
+                    allowedContent: !0,
+                    autoGrow_minHeight: 100,
+                    resize_minHeight: 100,
+                    height: 100,
+                    toolbar: [
+                        ["Bold", "Italic", "Underline"],
+                        ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
+                        ["NumberedList", "BulletedList", "Table"],
+                        ["Format"],
+                        ["Link", "Unlink"],
+                        ["Source"]
+                    ]
+                });
+            }
+            , saveText: function() {
                 var placeholder_id = $(this).data('placeholder-id');
                 var text = CKEDITOR.instances['text-editor'].getData();
                 $('#' + placeholder_id + ' .placeholder-content').html(text);
@@ -260,37 +204,42 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         , image: {
             'content': $('#email-builder-types div.content-type-template[data-content-type=image]')
             , init: function() {
-                // Media Manager "Select" button
-                $('#select-image').click(content_types['image'].select_image);
-                $('body').on('click', '.open-media-manager', function(e) {
+                // Open Media Manager
+                $('#email-editor').on('click', '[data-media-manager]', function() {
                     var placeholder_id = $(this).parents('[data-content-type]').attr('id');
-                    $('#select-image').data('placeholder-id', placeholder_id);
+                    MediaManager.placeholder_id = placeholder_id;
                 });
-                $('#email-editor').on('click', '[data-action=edit-link]', function(e) {
-                    e.preventDefault();
+                // Overwrite Media Manager "Submit"
+                MediaManager.submit = EmailEditor.contentTypes.image.selectImage;
+                // Edit Link
+                $('#email-editor').on('click', '[data-action=edit-link]', function() {
                     $(this).siblings('[data-action=save-link], .image-link-url').show();
                     $(this).hide();
                 });
-                $('#email-editor').on('click', '[data-action=save-link]', content_types['image'].save_image_link);
+                // Edit Link Submit
+                $('#email-editor').on('click', '[data-action=save-link]', EmailEditor.contentTypes.image.saveImageLink);
             }
             , setup: function(my_content) {
-                content_types._base.setup(my_content);
-                sparrow();
+                EmailEditor.contentTypes._base.setup(my_content);
+                //sparrow();
             }
-            , select_image: function(e) {
-                e.preventDefault();
-                var placeholder_id = $(this).data('placeholder-id');
+            , selectImage: function() {
+                var file = MediaManager.view.find('.mm-file.selected:first').parents( 'li:first').data();
+                var placeholder_id = MediaManager.placeholder_id;
                 var box_width = $('#' + placeholder_id).attr('width');
-                var image = $('a.file.selected img').clone();
-                image.attr('width', box_width);
-                $('#' + placeholder_id + ' .placeholder-content').html(image);
-                $('#' + placeholder_id + ' [data-action=edit-link]').show();
-                // mark is as has-content
-                $('#' + placeholder_id).parents('.droppable')
-                    .removeClass('empty-content-type').addClass('has-content');
+
+                if ( file ) {
+                    var image = $('<img src="' + file.url + '" alt="' + file.url + '" width="' + box_width + '" />');
+                    $('#' + placeholder_id + ' .placeholder-content').html(image);
+                    $('#' + placeholder_id + ' [data-action=edit-link]').show();
+                    // mark is as has-content
+                    $('#' + placeholder_id).parents('.droppable')
+                        .removeClass('empty-content-type').addClass('has-content');
+                }
+
+                delete MediaManager.placeholder_id;
             }
-            , save_image_link: function(e) {
-                e.preventDefault();
+            , saveImageLink: function(e) {
                 var url = $(this).siblings('.image-link-url').val();
                 var placeholder = $(this).parents('[data-content-type]');
                 var img = placeholder.find('.placeholder-content img');
@@ -299,7 +248,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 // if url is set, set an anchor wrapping the image
                 if ( url ) {
                     // check for valid url
-                    if ( !content_types['image'].is_url( url ) ) {
+                    if ( !EmailEditor.contentTypes.image.is_url( url ) ) {
                         alert('Please enter a valid URL');
                         return;
                     }
@@ -321,25 +270,63 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
             }
         }
 
-    };
+    }
 
-    // Make Content Types Draggable
-    content_type_draggables.draggable({
-        opacity: '0.7'
-        , helper: 'clone'
-    });
+    , init: function() {
+        EmailEditor.contentTypeDraggables = $('li[data-content-type]');
+        EmailEditor.layoutContainer = $('#email-editor');
+        EmailEditor.layoutSelectors = $('li[data-layout]');
+        EmailEditor.layouts = $('div[data-layout]');
+        EmailEditor.placeholderSelector = '.droppable';
 
-    // Make Placeholders Droppable, allows Content Type to be added on them
-    // This gets called every time the layout changes
-    layout_container.bind_placeholders = function() {
-        this.find(placeholder_selector).droppable({
+        // Make Content Types Draggable
+        EmailEditor.contentTypeDraggables.draggable({
+            opacity: '0.7'
+            , helper: 'clone'
+        });
+
+        // Make Placeholders Droppable, allows Content Type to be added on them
+        // This gets called every time the layout changes
+        EmailEditor.layoutContainer.bindPlaceholders = EmailEditor.bindPlaceholders;
+
+        // Change Layout
+        EmailEditor.layoutSelectors.click( EmailEditor.changeLayout );
+
+        // -- Initialize Events For Email Message --
+        // if we have content (email message), apply events to them
+        var current_content = EmailEditor.layoutContainer.find('div[data-content-type]');
+        if ( current_content.size() > 0 ) {
+            // bind events for empty placeholder
+            EmailEditor.layoutContainer.bindPlaceholders();
+            // bind events for placeholders with content in it
+            $.each( current_content, function (k, v) {
+                var ct = $(v).data('content-type');
+                // we need to acc the action toolbar
+                var ct_actions = EmailEditor.contentTypes[ct].content.find('.placeholder-actions').clone();
+                $(v).prepend(ct_actions);
+                // setup events
+                EmailEditor.contentTypes[ct].setup($(v));
+            });
+        } else {
+            // if it's a new Campaign, just pick the first Layout
+            EmailEditor.layoutSelectors.first().click();
+        }
+
+        // Call init() for all content types
+        for(i in EmailEditor.contentTypes) {
+            EmailEditor.contentTypes[i].init();
+        }
+    }
+
+    , bindPlaceholders: function() {
+        this.find(EmailEditor.placeholderSelector).droppable({
             accept: '[data-content-type]'
             , hoverClass: 'droppable-hover'
             , drop: function(event, ui) {
                 // Its a new content added to a placeholder
                 var placeholder = $(this);
                 var content_type_key = ui.draggable.data('content-type');
-                var content_type = content_types[content_type_key]
+                var content_type = EmailEditor.contentTypes[content_type_key];
                 var my_content = content_type.content.clone();
                 var box_width = placeholder.attr('width');
                 my_content.removeClass('content-type-template');
@@ -350,58 +337,27 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 content_type.setup(my_content);
             }
         });
-    };
+    }
 
-    // Change Layout
-    layout_selectors.click(function() {
-        var has_content = layout_container.find('.placeholder-content').size() > 0;
+    , changeLayout: function() {
+        var has_content = EmailEditor.layoutContainer.find('.placeholder-content').size() > 0;
         if ( has_content && !confirm("Do you want to change the email Layout? You will lose all you previous content.") )
             return;
 
         var layout_key = $(this).data('layout');
-        var layout = layouts.siblings('[data-layout=' + layout_key + ']');
+        var layout = EmailEditor.layouts.siblings('[data-layout=' + layout_key + ']');
         var my_layout = layout.html();
-        layout_container.find('*').remove();
-        layout_container.html(my_layout);
+        EmailEditor.layoutContainer.find('*').remove();
+        EmailEditor.layoutContainer.html(my_layout);
         // Rebind elements on Droppable, jQueryUI has no live binding for droppable =(
-        layout_container.bind_placeholders();
+        EmailEditor.layoutContainer.bindPlaceholders();
 
-        layout_selectors.removeClass('active');
+        EmailEditor.layoutSelectors.removeClass('active');
         $(this).addClass('active');
-    })
-
-    // -- Initialize Events For Email Message --
-    // if we have content (email message), apply events to them
-    var current_content = layout_container.find('div[data-content-type]');
-    if ( current_content.size() > 0 ) {
-        // bind events for empty placeholder
-        layout_container.bind_placeholders();
-        // bind events for placeholders with content in it
-        $.each( current_content, function (k, v) {
-            var ct = $(v).data('content-type');
-            // we need to acc the action toolbar
-            var ct_actions = content_types[ct].content.find('.placeholder-actions').clone();
-            $(v).prepend(ct_actions);
-            // setup events
-            content_types[ct].setup($(v));
-        });
-    } else {
-        // if it's a new Campaign, just pick the first Layout
-        layout_selectors.first().click();
     }
 
-    // Call init() for all content types
-    for(i in content_types) {
-        content_types[i].init();
-    }
-
-    // ---------------------------------------------------------
-    // ---------------------------------------------------------
-    // STEP 3
-
-    // This will generate the email content that will be Sent
-    function get_email_content() {
-        var editor_content = layout_container.clone();
+    , getEmailContent: function() {
+        var editor_content = EmailEditor.layoutContainer.clone();
         editor_content.find('.placeholder-actions').remove().end()
             .find('*').removeClass('ui-droppable').end()
             .find('.placeholder').remove().end();
@@ -409,15 +365,101 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         return editor_content;
     }
 
-    // ---------------------------------------------------------
-    // ---------------------------------------------------------
-    // FORM GLOBALS
+    , getSelectedLayout: function() {
+        return EmailEditor.layoutSelectors.closest('.active');
+    }
 
-    // Multiple Step Form
-    $('a[data-step]').click(function(e) {
-        e.preventDefault();
+}
 
+var CampaignForm = {
+
+    init: function() {
+
+        // Multiple Step Form
+        $('a[data-step]').click( CampaignForm.changeStep );
+        $('div[data-step].hidden').removeClass('hidden').hide();
+
+        CampaignForm.initStep1();
+        CampaignForm.initStep2();
+        CampaignForm.initStep3();
+    }
+
+    , initStep1: function() {
+
+        // Date Picker - No Conflict with jQueryUI
+        var datepicker = $.fn.datepicker.noConflict();
+        $.fn.bootstrapDatepicker = datepicker;
+
+        // Inline DIV
+        $('#schedule-datepicker').bootstrapDatepicker({
+            todayHighlight: true
+            , dateFormat: 'yyyy-mm-dd'
+        }).on( 'changeDate', function(e) {
+            $("#date").val(e.format('yyyy-mm-dd'));
+        }).bootstrapDatepicker( 'setDate', $('#date').val() );
+
+        // Time Picker
+        var time = $('#tTime');
+        time.timepicker({
+            step: 60
+            , show24Hours: false
+            , timeFormat: 'g:i a'
+        });
+
+        // Schedule options are only displayed if #schedule is checked
+        $('#schedule').change(function() {
+            if ($(this).is(':checked')) {
+                $('.schedule').removeClass('hidden').show();
+            } else {
+                $('.schedule').hide();
+            }
+        });
+
+        // Subscribers List
+        $('#select-all-subscribers').change(function(e){
+            if ($(this).prop('checked') === true) {
+                $('.subscribers :checkbox').prop('checked', true);
+                $('.subscribers :checkbox').attr('checked', 'checked');  // IE
+            } else {
+                $('.subscribers :checkbox').prop('checked', false);
+                $('.subscribers :checkbox').removeAttr('checked');  // IE
+            }
+        });
+    }
+
+    , initStep2: function() {
+        EmailEditor.init();
+    }
+
+    , initStep3: function() {
+        $('body').on( 'click', '.send-test', CampaignForm.sendTest );
+        $('.save-draft').click( CampaignForm.saveDraft );
+        $('.save-campaign').click( CampaignForm.save );
+    }
+
+    , changeStep: function() {
+        var step = $(this).data('step');
+
+        if ( !CampaignForm.validate() )
+            return;
+
+        // Show Step
+        $('div[data-step]').hide();
+        $('div[data-step=' + step + ']').show();
+
+        // Toggle active marker in progress bar
+        $('.form-steps a[data-step=' + step + ']')
+            .parent().addClass('active')
+            .siblings().removeClass('active');
+
+        if ( step == 3 ) {
+            CampaignForm.loadPreview();
+        }
+    }
+
+    , validate: function() {
         var current_step = $('li.active > a').data('step');
+
         if ( current_step == 1 ) {
             var validation = '';
             var subject = $('#subject').val();
@@ -429,63 +471,58 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 validation += "Please select at least one Subscribers list. ";
             }
             if ( validation ) {
-                ajaxResponse( { notification: { message: validation, success: false} } );
-                return;
+                GSR.defaultAjaxResponse( { error: validation } );
+                return false;
             }
         }
+        return true;
+    }
 
-        // Show form
-        $('div[data-step]').hide();
-        $('div[data-step=' + $(this).data('step') + ']').show();
+    , loadPreview: function() {
+        // Get form data
+        var data = CampaignForm.getFormData();
+        data._nonce = $('#_save_draft').val();
 
-        // Toggle active marker in progress bar
-        $('.progress-bar a[data-step=' + $(this).data('step') + ']')
-            .parent().addClass('active')
-            .siblings().removeClass('active');
+        // Post, then load preview as Iframe
+        $.post( '/email-marketing/campaigns/save-draft/', data, function(r) {
 
-        if ( $(this).data('step') == 3 ) {
-            // Do Save Draft and load Preview as Iframe
+            if ( r.notification && r.notification.success )
+                delete r.notification;
 
-            // Get form data
-            var data = get_form_data();
-            data._nonce = $('#_save_draft').val();
-            // Post, then load preview as Iframe
-            $.post( '/email-marketing/campaigns/save-draft/', data, function(r) {
+            GSR.defaultAjaxResponse(r);
 
-                if ( r.notification && r.notification.success )
-                    delete r.notification;
+            if ( r.campaign_id ) {
+                $('#campaign-id').remove();
+                $('<input />', {id: 'campaign-id', name: 'id', type: 'hidden'})
+                    .val( r.campaign_id )
+                    .appendTo('div[data-step=1]');
+            }
 
-                ajaxResponse(r);
+            var campaign_id = r.campaign_id ? r.campaign_id : $('#campaign-id').val();
 
-                var campaign_id = r.campaign_id ? r.campaign_id : $('#campaign-id').val();
+            var iframe = $('<iframe/>', {
+                id: 'preview-iframe'
+                , frameborder: 0
+                , scrolling: 'no'
+                , width: '100%'
+                , seamless: 'seamless'
+                , src: '/email-marketing/campaigns/preview/?_nonce='+ $('#_preview').val() +'&id='+ campaign_id
+            });
+            $('#email-preview').removeAttr('style');
+            iframe.load(function(){
+                var doc = this.contentDocument || this.contentWindow.document;
 
-                var iframe = $('<iframe/>', {
-                    id: 'preview-iframe'
-                    , frameborder: 0
-                    , scrolling: 'no'
-                    , width: '100%'
-                    , seamless: 'seamless'
-                    , src: '/email-marketing/campaigns/preview/?_nonce='+ $('#_preview').val() +'&id='+ campaign_id
-                });
-                $('#email-preview').removeAttr('style');
-                iframe.load(function(){
-                    var doc = this.contentDocument || this.contentWindow.document;
+                $('#email-preview').width(doc.body.scrollWidth);
+                iframe.width(doc.body.scrollWidth);
 
-                    $('#email-preview').width(doc.body.scrollWidth);
-                    iframe.width(doc.body.scrollWidth);
+                $('#email-preview').height(doc.body.scrollHeight);
+                iframe.height(doc.body.scrollHeight);
+            });
+            $('#email-preview').html(iframe);
+        } );
+    }
 
-                    $('#email-preview').height(doc.body.scrollHeight);
-                    iframe.height(doc.body.scrollHeight);
-                });
-                $('#email-preview').html(iframe);
-            } );
-
-        }
-    });
-    $('div[data-step].hidden').removeClass('hidden').hide();
-
-    // Serialize Form in a Key/Value Object
-    function get_form_data() {
+    , getFormData: function() {
         var data = {};
 
         // Set Step 1 data (campaign settings)
@@ -505,72 +542,91 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         );
 
         // Message HTML
-        data.message = get_email_content().html();
-        data.layout = layout_selectors.closest('.active').data('layout');
+        data.message = EmailEditor.getEmailContent().html();
+        data.layout = EmailEditor.getSelectedLayout().data('layout');
         if ( $('#no-template').prop('checked') )
             data.no_template = "yes";
         return data;
     }
 
-    // Saves Campaign as Draft
-    $('.save-draft').click(function(e) {
-        e.preventDefault();
-
-        if ($(this).hasClass('disabled'))
-            return;
-
-        $(this).addClass('disabled').text('Saving...');
-
+    , sendTest: function() {
         // Get form data
-        var data = get_form_data();
-        data._nonce = $('#_save_draft').val();
-
-        // Post!
-        $.post( '/email-marketing/campaigns/save-draft/', data, ajaxResponse );
-    });
-
-    // Send Test Email
-    $('.send-test').click(function(e) {
-        e.preventDefault();
-
-        // Get form data
-        var data = get_form_data();
+        var data = CampaignForm.getFormData();
         data._nonce = $('#_send_test').val();
         data.email = $('#test-destination').val();
 
         // Post!
-        $.post( '/email-marketing/campaigns/send-test/', data, ajaxResponse );
-    });
+        $.post( '/email-marketing/campaigns/send-test/', data, GSR.defaultAjaxResponse );
+    }
 
-    // Save Campaign
-    $('.save-campaign').click(function(e) {
-        e.preventDefault();
-
+    , saveDraft: function() {
         if ($(this).hasClass('disabled'))
             return;
 
         $(this).addClass('disabled').text('Saving...');
 
         // Get form data
-        var data = get_form_data();
+        var data = CampaignForm.getFormData();
+        data._nonce = $('#_save_draft').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/save-draft/', data, CampaignForm.saveDraftResponse );
+    }
+
+    , saveDraftResponse: function( response ) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            if ( response.campaign_id ) {
+                $('#campaign-id').remove();
+                $('<input />', {id: 'campaign-id', name: 'id', type: 'hidden'})
+                    .val( response.campaign_id )
+                    .appendTo('div[data-step=1]');
+            }
+            $('.save-draft').removeClass('disabled').text('Draft Saved!');
+        } else {
+            $('.save-draft').removeClass('disabled').text('Save Draft');
+        }
+    }
+
+    , save: function() {
+        if ($(this).hasClass('disabled'))
+            return;
+
+        $(this).addClass('disabled').text('Saving...');
+
+        // Get form data
+        var data = CampaignForm.getFormData();
         data._nonce = $('#_save_campaign').val();
 
         // Post!
-        $.post( '/email-marketing/campaigns/save-campaign/', data, function(r) {
-            if ( r.notification )
-                ajaxResponse(r);
-            else
-                window.location = '/email-marketing/campaigns/';
+        $.post( '/email-marketing/campaigns/save-campaign/', data, CampaignForm.saveResponse );
+    }
 
-        } );
-    });
+    , saveResponse: function( response ) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            window.location = '/email-marketing/campaigns/';
+        } else {
+            if ( response.campaign_id ) {
+                $('#campaign-id').remove();
+                $('<input />', {id: 'campaign-id', name: 'id', type: 'hidden'})
+                    .val( response.campaign_id )
+                    .appendTo('div[data-step=1]');
+            }
 
-});
+            $('.save-draft').removeClass('disabled').text('Looks Good! Send it Out.');
+        }
+    }
+
+}
 
 String.prototype.parseProductPrice = function() {
     return parseFloat( this.replace(/\$| |,/g, '') )
 }
-Number.prototype.numberFormat = function() {
+Number.prototype.priceFormat = function() {
     return this.toFixed(2).toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
 };
 
+
+
+jQuery( CampaignForm.init );

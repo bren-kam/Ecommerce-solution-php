@@ -20,7 +20,7 @@ class OrdersController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 120 )
-            ->select( 'orders' );
+            ->select( 'shopping-cart', 'shopping-cart/orders' );
     }
 
     /**
@@ -45,7 +45,7 @@ class OrdersController extends BaseController {
         return $this->get_template_response( 'view' )
             ->kb( 121 )
             ->add_title( _('View Order') )
-            ->select( 'orders' )
+            ->select( 'shopping-cart', 'shopping-cart/orders' )
             ->set( compact( 'order' ) );
     }
 

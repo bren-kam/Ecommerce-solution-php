@@ -1,0 +1,20 @@
+#auto-prices, #example table { width: auto }
+#auto-prices th, #example th { text-align: left; font-weight: bold; }
+#auto-prices tr td, #auto-prices tr th, #example tr td, #example tr th { padding-bottom: 7px; padding-right: 20px }
+input.tb { width: 90px }
+#auto-prices select, #example select { width: 150px }
+#example-name { width: auto; display: inline }
+#example-image { margin-right: 15px; border: 1px solid #ccc; }
+
+#example-price span {
+    font-size: 17px;
+}
+
+#example-price .sale-price {
+    font-size: 20px;
+    color: red;
+}
+
+#example-price .msrp {
+    font-size: 14px;
+}

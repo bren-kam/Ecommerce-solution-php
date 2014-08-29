@@ -1,16 +1,15 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Add Page
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var string $form
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
 
-echo $template->start( _('Add Page') );
-echo $form;
-echo $template->end();
-?>
+            <header class="panel-heading">
+                <h3>Create new Page</h3>
+            </header>
+            <div class="panel-body">
+
+                <?php echo $form ?>
+
+            </div>
+        </section>
+    </div>
+</div>

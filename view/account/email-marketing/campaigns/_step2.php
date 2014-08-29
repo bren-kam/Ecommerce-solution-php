@@ -1,90 +1,94 @@
 <?php
-/**
- * @package Grey Suit Retail
- * @page Step1 | Create | Campaigns | Email Marketing
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var User $user
- * @var EmailMessage $campaign
- * @var EmailList[] $email_lists
- * @var array $settings
- * @var string $timezone
- * @var string $server_timezone
- * @var AccountFile[] $files
- * @var string $default_from
- * @var boolean $overwrite_from
- * @var DateTime $scheduled_datetime
- */
+    nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
+    nonce::field( 'get', '_get' );
+    nonce::field( 'preview', '_preview' );
+
+    $mm_upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+    $mm_search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+    $mm_delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 ?>
 
-<div class="email-marketing-wrapper clear">
+<div class="row-fluid">
+    <div class="col-lg-8">
+        <section class="panel">
+            <div class="panel-body">
 
-    <div class="email-marketing-left">
-        <div class="email-layout" id="email-editor"><?php echo $campaign->message ?></div>
+                <div class="email-layout" id="email-editor"><?php echo $campaign->message ?></div>
 
-        <p class="float-left">
-            <a href="#" data-step="1" class="button" title="<?php echo _('< Back'); ?>"><?php echo _('< Back'); ?></a>
-            <a class="button save-draft" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
-        </p>
-        <p class="float-right">
-            <a href="#" data-step="3" class="button" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
-        </p>
-        <br clear="all" />
-    </div><!-- .email-marketing-left -->
+                <p>
+                    <a href="javascript:;" data-step="1" class="btn btn-default"">&lt; Back</a>
+                    <a class="btn btn-default save-draft">Save Draft</a>
 
-    <div class="email-marketing-right">
-        <ul class="idTabs clear">
-            <li><a href="#email-content" class="selected">Content</a></li>
-            <li><a href="#email-layouts">Layout</a></li>
-            <li><a href="#email-settings">Settings</a></li>
-        </ul>
-        <div id="email-content" class="tab-content">
-            <ul class="content-thumbnails clear">
-                <li data-content-type="product"><img src="/images/campaigns/product.png" /><br>Add Product</li>
-                <li data-content-type="text"><img src="/images/campaigns/text.png" /><br>Add Text</li>
-                <li data-content-type="image"><img src="/images/campaigns/image.png" /><br>Add Image</li>
-            </ul>
-        </div>
-        <div id="email-layouts" class="tab-content">
-            <ul class="layout-thumbnails clear">
-                <li data-layout="layout-1"><img src="/images/campaigns/layout-1.jpg" /></li>
-                <li data-layout="layout-2"><img src="/images/campaigns/layout-2.jpg" /></li>
-                <li data-layout="layout-3"><img src="/images/campaigns/layout-3.jpg" /></li>
-                <li data-layout="layout-4"><img src="/images/campaigns/layout-4.jpg" /></li>
-                <li data-layout="layout-5"><img src="/images/campaigns/layout-5.jpg" /></li>
-                <li data-layout="layout-6"><img src="/images/campaigns/layout-6.jpg" /></li>
-                <li data-layout="layout-7"><img src="/images/campaigns/layout-7.jpg" /></li>
-                <li data-layout="layout-8"><img src="/images/campaigns/layout-8.jpg" /></li>
-                <li data-layout="layout-9"><img src="/images/campaigns/layout-9.jpg" /></li>
-                <li data-layout="layout-10"><img src="/images/campaigns/layout-10.jpg" /></li>
-                <li data-layout="layout-11"><img src="/images/campaigns/layout-11.jpg" /></li>
-            </ul>
-        </div>
-        <div id="email-settings" class="tab-content">
-            <label for="no-template">
-                <input type="checkbox" class="cb" name="no-template" id="no-template" value="1" <?php if ( $campaign->id && !$campaign->email_template_id ) echo 'checked="checked"' ?>>
-                Remove Header/Footer
-            </label>
-        </div>
-    </div><!-- .email-marketing-right -->
+                    <a href="javascript:;" data-step="3" class="btn btn-primary pull-right">Next &gt;</a>
+                </p>
 
-</div><!-- .email-marketing-wrapper -->
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-4">
+        <section class="panel">
+            <div class="panel-body">
+
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#email-content" role="tab" data-toggle="tab">Content</a></li>
+                    <li><a href="#email-layouts" role="tab" data-toggle="tab">Layout</a></li>
+                    <li><a href="#email-settings" role="tab" data-toggle="tab">Settings</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="email-content" class="tab-pane active">
+                        <ul class="content-thumbnails list-inline">
+                            <li data-content-type="product"><img src="/images/campaigns/product.png" /><br>Add Product</li>
+                            <li data-content-type="text"><img src="/images/campaigns/text.png" /><br>Add Text</li>
+                            <li data-content-type="image"><img src="/images/campaigns/image.png" /><br>Add Image</li>
+                        </ul>
+                    </div>
+                    <div id="email-layouts" class="tab-pane">
+                        <ul class="layout-thumbnails list-inline">
+                            <li data-layout="layout-1"><img src="/images/campaigns/layout-1.jpg" /></li>
+                            <li data-layout="layout-2"><img src="/images/campaigns/layout-2.jpg" /></li>
+                            <li data-layout="layout-3"><img src="/images/campaigns/layout-3.jpg" /></li>
+                            <li data-layout="layout-4"><img src="/images/campaigns/layout-4.jpg" /></li>
+                            <li data-layout="layout-5"><img src="/images/campaigns/layout-5.jpg" /></li>
+                            <li data-layout="layout-6"><img src="/images/campaigns/layout-6.jpg" /></li>
+                            <li data-layout="layout-7"><img src="/images/campaigns/layout-7.jpg" /></li>
+                            <li data-layout="layout-8"><img src="/images/campaigns/layout-8.jpg" /></li>
+                            <li data-layout="layout-9"><img src="/images/campaigns/layout-9.jpg" /></li>
+                            <li data-layout="layout-10"><img src="/images/campaigns/layout-10.jpg" /></li>
+                            <li data-layout="layout-11"><img src="/images/campaigns/layout-11.jpg" /></li>
+                        </ul>
+                    </div>
+                    <div id="email-settings" class="tab-pane">
+                        <div class="checkbox">
+                            <label for="no-template">
+                                <input type="checkbox" name="no-template" id="no-template" value="1" <?php if ( $campaign->id && !$campaign->email_template_id ) echo 'checked="checked"' ?>>
+                                Remove Header/Footer
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
 
 <div class="hidden" id="email-builder-types">
 
     <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
-            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit" class="hidden" href="#"><img src="/images/campaigns/pencil.png" /></a>
-            <a data-action="edit-price" href="#"><img src="/images/campaigns/money_dollar.png" /></a>
+            <a data-action="clear" href="javascript:;"><i class="fa fa-trash-o"></i></a>
+            <a data-action="edit" class="hidden" href="javascript:;"><i class="fa fa-pencil"></i></a>
+            <a data-action="edit-price" href="javascript:;"><i class="fa fa-dollar"></i></a>
 
             <input type="text" class="product-autocomplete hidden" placeholder="SKU or Name" />
 
             <div class="edit-price-actions hidden">
                 <input type="text" class="product-sale-price" placeholder="Sale price" />
                 <input type="text" class="product-price" placeholder="Price" />
-                <a data-action="save-price" href="#"><img src="/images/icons/disk.png" /></a>
+                <a data-action="save-price" href="javascript:;"><i class="fa fa-save"></i></a>
             </div>
         </div>
         <div class="placeholder-content content-type-product"></div>
@@ -92,20 +96,20 @@
 
     <div class="content-type-template" data-content-type="text">
         <div class="placeholder-actions">
-            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit" href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/campaigns/pencil.png" /></a>
+            <a data-action="clear" href="javascript:;"><i class="fa fa-trash-o"></i></a>
+            <a data-action="edit" href="#" title="Edit Content" class="open-text-editor" data-toggle="modal" data-target="#text-editor-modal"><i class="fa fa-pencil"></i></a>
         </div>
         <div class="placeholder-content content-type-text"></div>
     </div>
 
     <div class="content-type-template" data-content-type="image">
         <div class="placeholder-actions">
-            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit"  href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/campaigns/pencil.png" /></a>
-            <a data-action="edit-link" class="hidden" href="#"><img src="/images/campaigns/link.png" /></a>
+            <a data-action="clear" href="javascript:;"><i class="fa fa-trash-o"></i></a>
+            <a data-action="edit"  href="javascript:;" title="Open Media Manager" rel="dialog"  data-media-manager data-upload-url="<?php echo $mm_upload_url ?>" data-search-url="<?php echo $mm_search_url ?>" data-delete-url="<?php echo $mm_delete_url ?>"><i class="fa fa-pencil"></i></a>
+            <a data-action="edit-link" class="hidden" href="javascript:;" title="Open Media Manager"><i class="fa fa-link"></i></a>
 
             <input type="text" class="image-link-url hidden" placeholder="Enter URL" />
-            <a data-action="save-link" class="hidden" href="#"><img src="/images/campaigns/save.png" /></a>
+            <a data-action="save-link" class="hidden" href="javascript:;"><i class="fa fa-save"></i></a>
         </div>
         <div class="placeholder-content content-type-image"></div>
     </div>
@@ -309,75 +313,21 @@
     </div>
 </div>
 
-<div id="dUploadFile" class="hidden">
-    <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
-    <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
-    <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-    <div class="hidden-fix position-absolute" id="upload-file"></div>
-    <br /><br />
-
-    <div id="file-list">/
-        <?php
-        if ( empty( $files ) ) {
-            echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>';
-        } else {
-            // Set variables
-            $delete_file_nonce = nonce::create('delete_file');
-            $confirm = _('Are you sure you want to delete this file?');
-
-            /**
-             * @var AccountFile $file
-             */
-            foreach ( $files as $file ) {
-                $file_name = f::name( $file->file_path );
-                $extension = f::extension( $file->file_path );
-                $date = new DateTime( $file->date_created );
-
-                if ( in_array( $extension, image::$extensions ) ) {
-                    // It's an image!
-                    echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file img" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-                } else {
-                    // It's not an image!
-                    echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-                }
-            }
-        }
-        ?>
-    </div>
-
-    <br /><br />
-    <div id="dCurrentLink" class="hidden">
-        <p><strong><?php echo _('Current Link'); ?>:</strong></p>
-        <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" /></p>
-        <br />
-        <table class="col-1">
-            <tr>
-                <td class="col-3"><strong><?php echo _('Date'); ?>:</strong></td>
-                <td class="col-3"><strong><?php echo _('Size'); ?>:</strong></td>
-                <td class="col-3">&nbsp;</td>
-            </tr>
-            <tr>
-                <td id="tdDate"></td>
-                <td id="tdSize"></td>
-                <td class="text-right"><a href="#" id="select-image" class="button close"><?php echo _('Select'); ?></a></td>
-            </tr>
-        </table>
+<!-- Modal -->
+<div class="modal fade" id="text-editor-modal" tabindex="-1" role="dialog" aria-labelledby="text-editor-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="text-editor-modal-label">Edit Text</h4>
+            </div>
+            <div class="modal-body">
+                <div id="editor-container"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="save-text">Save</button>
+            </div>
+        </div>
     </div>
 </div>
-<?php
-nonce::field( 'upload_file', '_upload_file' );
-nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
-nonce::field( 'get_product_dialog_info', '_get_product_dialog_info' );
-nonce::field( 'preview', '_preview' );
-?>
-
-<div id="dTextEditor" class="hidden">
-    <div id="editor-container"></div>
-    <br/>
-    <p class="text-right">
-        <a href="#" id="save-text" class="button close"><?php echo _('Save'); ?></a>
-    </p>
-</div>
-
-
-<br clear="all" />

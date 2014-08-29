@@ -59,7 +59,7 @@ class EmailMarketingController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 72 )
             ->add_title( _('Dashboard') )
-            ->select( 'email-dashboard' )
+            ->select( 'email-marketing', 'email-marketing/index' )
             ->set( compact( 'messages', 'subscribers', 'email', 'bar_chart', 'email_count' ) );
     }
 
@@ -70,7 +70,7 @@ class EmailMarketingController extends BaseController {
      */
     protected function settings() {
          // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array( 'from_name', 'from_email', 'timezone', 'remove-header-footer' );
@@ -116,7 +116,7 @@ class EmailMarketingController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 84 )
             ->add_title( _('Settings') )
-            ->select( 'settings' )
+            ->select( 'email-marketing', 'email-marketing/settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 }

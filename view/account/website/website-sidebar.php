@@ -10,335 +10,133 @@
  * @var AccountPage $page
  * @var string $dimensions
  * @var array $files
- * @var array $attachments
+ * @var AccountPageAttachment[] $attachments
  * @var bool $images_alt
  */
 
-echo $template->start( _('Sidebar') );
-?>
-
-<a href="#" id="aUploadSidebarImage" class="button" title="<?php echo _('Add Image'); ?>"><?php echo _('Add Image'); ?></a>
-<a href="#" class="button loader hidden" id="upload-sidebar-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-<div class="hidden-fix position-absolute" id="upload-sidebar-image"></div>
-<p><small><?php if ( $dimensions ) echo '(Max. ' . $dimensions . ')' ?></small></p>
-<br /><br /><br />
-<p class="alert">(<?php echo _('Note: The changes you make to your sidebar are immediately live on your website'); ?>)</p>
-<input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
-<?php
-$remove_attachment_nonce = nonce::create( 'remove_attachment' );
+nonce::field( 'update_attachment_status', '_update_attachment_status' );
 nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
-nonce::field( 'upload_sidebar_image', '_upload_sidebar_image' );
-nonce::field( 'upload_sidebar_video', '_upload_sidebar_video' );
+nonce::field( 'remove_attachment', '_remove_attachment');
+nonce::field( 'upload_sidebar_video', '_upload_sidebar_video');
+nonce::field( 'create_sidebar_image', '_create_sidebar_image');
+$update_extra_nonce = nonce::field( 'update_attachment_extra', '_nonce', false );
+$upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+$search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+$delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 ?>
+<input type="hidden" id="page-id" value="<?php echo current($attachments)->website_page_id ?>" />
 
-<div id="dElementBoxes">
-<?php
-$h2 = $content_id = $placerholder = $buttons = $value = '';
-$update_attachment_status_nonce = nonce::create( 'update_attachment_status' );
-$confirm_disable = _('Are you sure you want to deactivate this sidebar element? This will remove it from the sidebar on your website.');
-$confirm_remove = _('Are you sure you want to remove this sidebar element?');
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Sidebar Elements
+                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-media-manager title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>"><i class="fa fa-plus"></i> Upload or Select an Image</a>
+            </header>
 
-/**
- * @var AccountPageAttachment $a
- */
-foreach ( $attachments as $a ) {
-    $continue = false;
-    $remove = true;
+            <div class="panel-body">
 
-    if ( '0' == $a->status ) {
-        $disabled =  ' disabled';
-        $confirm = '';
-        $status = '1';
-    } else {
-        $confirm = ' confirm="' . $confirm_disable . '"';
-        $disabled = '';
-        $status = '0';
-    }
-    
-    $enable_disable_url = url::add_query_arg( array( 
-            '_nonce' => $update_attachment_status_nonce 
-            , 'apaid' => $a->id
-            , 's' => $status
-        )
-        , '/website/update-attachment-status/' 
-    );
-    
-    $enable_disable_link = '<a href="' . $enable_disable_url . '" id="aEnableDisable' . $a->id . '" class="enable-disable' . $disabled . '" title="' . _('Enable/Disable') . '" ajax="1"' . $confirm . '><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
+                <div id="sidebar-list">
 
-    switch ( $a->key ) {
-        case 'email':
-            ?>
-            <div class="element-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a->id; ?>">
-                <h2><?php echo _('Email Sign Up'); ?></h2>
+                    <div class="progress progress-sm hidden" id="new-element-loader">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
 
-                <?php echo $enable_disable_link; ?>
+                    <?php foreach ( $attachments as $attachment ): ?>
 
-                <div id="dEmailContent">
-                    <br />
-                    <form action="/website/update-sidebar-email/" method="post" ajax="1">
-                        <textarea name="taEmail" id="taEmail" cols="50" rows="3"><?php echo $a->value; ?></textarea>
-                        <p id="pTempEmailMessage" class="success hidden"><?php echo _('Your Email Sign Up text has been successfully updated.'); ?></p>
-                        <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $a->id; ?>" />
-                        <br /><br />
-                        <p align="center"><input type="submit" class="button" value="<?php echo _('Save'); ?>" /></p>
-                        <?php nonce::field( 'update_sidebar_email', '_nonce' ); ?>
-                    </form>
-                </div>
-            </div>
-            <?php
-            $continue = true;
-            continue;
-        break;
+                        <div class="sidebar-element <?php echo $attachment->key ?> <?php echo $attachment->status == '0' ? 'disabled' : '' ?>" data-attachment-id="<?php echo $attachment->id ?>">
 
-        case 'room-planner':
-            if ( !empty( $disabled ) || empty( $a->value ) ) {
-                $continue = true;
-                continue;
-            }
+                            <div class="sidebar-actions">
+                                <input type="checkbox" data-toggle="switch" value="active" <?php if ( $attachment->status == '1' ) echo 'checked' ?>/>
 
-            $h2 = _('Room Planner');
-            $content_id = 'dRoomPlannerContent';
-            $placerholder = '<img src="/images/placeholders/240x100.png" width="240" height="100" alt="' . _('Placeholder') . '" />';
-            $value = '<img src="http://' . $user->account->domain . $a->value . '" alt="' . _('Room Planner Image') . '" />';
+                                <?php if ( $attachment->key == 'sidebar-image' ): ?>
+                                    <a href="javascript:;" class="remove" title="Delete this Element"><i class="fa fa-trash-o"></i></a>
+                                <?php endif; ?>
+                            </div>
 
-            $buttons = '<input type="file" id="fUploadRoomPlanner" />';
-        break;
+                            <?php if ( $attachment->key == 'email' ): ?>
+                                <h3>Email Sign Up</h3>
+                                <form action="/website/update-sidebar-email/" method="post" role="form" ajax="1">
 
-        case 'search':
-            $h2 = _('Search');
-            $content_id = $placerholder = $value = $buttons = '';
-            $remove = false;
-        break;
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="taEmail" cols="50" rows="3"><?php echo $attachment->value; ?></textarea>
+                                    </div>
 
-        case 'sidebar-image':
-            if ( stristr( $a->value, 'http:' ) ) {
-                $image_url = $a->value;
-            } else {
-                $image_url = 'http://' . $user->account->domain . $a->value;
-            }
-            ?>
-            <div class="element-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a->id; ?>">
-                <h2><?php echo _('Sidebar Image'); ?></h2>
-                <?php if ( isset( $dimensions ) ) { ?>
-                    <p><small>Max Size: <?php echo $dimensions; ?></small></p>
-                <?php
-                }
+                                    <p>
+                                        <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $attachment->id ?>" />
+                                        <?php nonce::field( 'update_sidebar_email' ); ?>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </p>
+                                </form>
+                            <?php elseif ( $attachment->key == 'room-planner' ): ?>
+                                <h3>Room Planner</h3>
+                            <?php elseif ( $attachment->key == 'search' ): ?>
+                                <h3>Search</h3>
+                            <?php elseif ( $attachment->key == 'sidebar-image' ): ?>
+                                <h3>Image</h3>
+                                <img src="<?php echo $attachment->value ?>" />
+                                <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+                                    <div class="form-group">
+                                        <label>Image Link:</label>
+                                        <input type="text" class="form-control" name="extra" value="<?php echo $attachment->extra ?>" placeholder="Link URL" />
+                                    </div>
+                                    <p>
+                                        <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $attachment->id ?>" />
+                                        <?php echo $update_extra_nonce ?>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </p>
+                                </form>
+                            <?php elseif ( $attachment->key == 'video' ): ?>
+                                <h3>Video</h3>
+                                <?php if ( $attachment->value ): ?>
+                                    <video id="sidebar-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" data-setup='{"example_option":true}' width="350px" height="190px">
+                                        <source src="<?php echo $attachment->value ?>" type="video/mp4" />
+                                    </video>
+                                <?php else: ?>
+                                    <p>No video uploaded yet</p>
+                                <?php endif; ?>
+                                <p>
+                                    <button type="button" id="video-upload" class="btn btn-primary">Upload</button>
+                                    <div class="progress progress-sm hidden" id="video-upload-loader">
+                                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <!-- Where the uploader lives -->
+                                    <div id="video-uploader"></div>
+                                </p>
+                            <?php endif; ?>
 
-                echo $enable_disable_link;
-                
-                $remove_attachment_url = url::add_query_arg( array(
-                        '_nonce' => $remove_attachment_nonce
-                        , 'apaid' => $a->id
-                        , 't' => 'dAttachment_' . $a->id
-                        , 'si' => 1
-                    )
-                    , '/website/remove-attachment/'
-                );
-                ?>
-
-                <div id="dSidebarImage<?php echo $a->id; ?>">
-                    <br />
-                    <form action="/website/update-attachment-extra/" method="post" ajax="1">
-                        <div align="center">
-                            <p><img src="<?php echo $image_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" /></p>
-                            <p><a href="<?php echo $remove_attachment_url; ?>" id="aRemove<?php echo $a->id; ?>" title="<?php echo _('Remove Image'); ?>" ajax="1" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a></p>
-
-                            <p><input type="text" class="tb" name="extra" id="tSidebarImage<?php echo $a->id; ?>" placeholder="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a->extra ) ) ? 'http://' : $a->extra; ?>" /></p>
-
-                            <?php if ( $images_alt ) { ?>
-                                <p><input type="text" class="tb" name="meta" placeholder="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a->meta ) ) echo $a->meta; ?>" /></p>
-                            <?php } ?>
-
-                            <p id="pTempSidebarImage<?php echo $a->id; ?>" class="success hidden"><?php echo _('Your Sidebar Image has been successfully updated.'); ?></p>
-                            <br />
-                            <p align="center"><input type="submit" class="button" value="<?php echo _('Save'); ?>" /></p>
                         </div>
 
-                        <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $a->id; ?>" />
-                        <input type="hidden" name="target" value="pTempSidebarImage<?php echo $a->id; ?>" />
-                        <?php nonce::field( 'update_attachment_extra', '_nonce' ); ?>
-                    </form>
+                    <?php endforeach; ?>
+
                 </div>
+
             </div>
-            <?php
-            $continue = true;
-            continue;
-        break;
+        </section>
+    </div>
+</div>
 
-        case 'video':
-            if ( stristr( $a->value, 'http:' ) ) {
-                $video_url = $a->value;
-            } else {
-                $video_url = 'http://' . $user->account->domain . $a->value;
-            }
-            
-            $h2 = _('Video');
-            $content_id = 'dVideoContent';
-            $placerholder = '<img src="/images/placeholders/354x235.png" width="354" height="235" alt="' . _('Placeholder') . '" />';
-            
-            $key = substr( substr( md5( DOMAIN . '17e972798ee5066d58c' ), 11, 30 ), 0, -2 );
-            
-            $value = '<div id="player" style="width:239px; height:213px; margin:0 auto"></div>';
+<div id="sidebar-image-template" class="sidebar-element sidebar-image hidden">
+    <div class="sidebar-actions">
+        <input type="checkbox" value="active" checked/>
+        <a href="javascript:;" class="remove" title="Delete this Element"><i class="fa fa-trash-o"></i></a>
+    </div>
 
-            echo '
-            <script type="text/javascript" language="javascript">
-                head.load( "/resources/js_single/?f=flowplayer", function() {
-                        $f("player", "/media/flash/flowplayer.unlimited-3.1.5.swf", {
-                        key: \'' . $key . '\',
-                        playlist: [
-                            {
-                                url: \'' . $video_url . "',
-                                autoPlay: false,
-                                autoBuffering: true
-                            }
-                        ],
-                        plugins: {
-                            controls: {
-                                autoHide: 'never',
-                                backgroundColor: '#111009',
-                                backgroundGradient: [0.2,0.1,0],
-                                borderRadius: '0px',
-                                bufferColor: '#151515',
-                                bufferGradient: [0.2,0.1,0],
-                                buttonColor: '#888888',
-                                buttonOverColor: '#adadad',
-                                durationColor: '#FFFFFF',
-                                fullscreen: false,
-                                height: 25,
-                                opacity: 1,
-                                progressColor: '#6A6969',
-                                progressGradient: [0.8,0.3,0],
-                                sliderBorder: '1px solid rgba(15, 15, 15, 1)',
-                                sliderColor: '#151515',
-                                sliderGradient: [0.2,0.1,0],
-                                timeBgColor: '#0E0E0E',
-                                timeBorder: '0px solid rgba(0, 0, 0, 0.3)',
-                                timeColor: '#656565',
-                                timeSeparator: ' / ',
-                                volumeBorder: '1px solid rgba(128, 128, 128, 0.7)',
-                                volumeColor: '#ffffff',
-                                volumeSliderColor: '#000000',
-                                volumeSliderGradient: [0.1,0],
-                                tooltipColor: '#000000',
-                                tooltipTextColor: '#ffffff'
-                            }
-                        }
-                    });
-                });
-            </script>";
-
-            $remove = false;
-
-
-            $value .= '<br /><a href="#" id="aUploadSidebarVideo" class="button" title="' . _('Upload Video') . '">' . _('Upload') . '</a>';
-            $value .= '<a href="#" class="button loader hidden" id="upload-sidebar-video-loader" title="' . _('Loading') . '"><img src="/images/buttons/loader.gif" alt="' . _('Loading') . '" /></a>';
-            $value .= '<div class="hidden-fix position-absolute" id="upload-sidebar-video"></div>';
-        break;
-
-        case 'current-ad-pdf':
-        default:
-            $continue = true;
-            continue;
-        break;
-    }
-
-    if ( $continue )
-        continue;
-    ?>
-    <div class="element-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a->id; ?>">
-        <h2><?php echo $h2; ?></h2>
-
-        <?php
-        echo $enable_disable_link;
-
-        if ( !empty( $content_id ) ) { ?>
-        <div id="<?php echo $content_id; ?>" class="center-content">
-            <?php echo ( empty( $a->value ) && isset( $placeholder ) ) ? $placeholder : $value; ?>
+    <h3>Image</h3>
+    <img src="" />
+    <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+        <div class="form-group">
+            <label>Image Link:</label>
+            <input type="text" class="form-control" name="extra" placeholder="Link URL" />
         </div>
-        <?php } ?>
-        <br />
-
-        <?php
-        if ( !empty( $buttons ) ) {
-            $remove_attachment_url = url::add_query_arg( array(
-                    '_nonce' => $remove_attachment_nonce
-                    , 'apaid' => $a->id
-                    , 't' => $content_id
-                )
-                , '/website/remove-attachment/'
-            );
-            ?>
-            <div align="center" class="buttons">
-                <?php if ( !empty( $a->value ) && $remove ) { ?>
-                    <a href="<?php echo $remove_attachment_url; ?>" id="aRemove<?php echo $a->id; ?>" title="<?php echo _('Remove'); ?>" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a>
-                    <br /><br />
-                <?php
-                }
-
-                echo $buttons;
-                ?>
-                <br clear="left" />
-            </div>
-        <?php } ?>
-    </div>
-<?php } ?>
+        <p>
+            <input type="hidden" name="hAccountPageAttachmentId" />
+            <?php echo $update_extra_nonce ?>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </p>
+    </form>
 </div>
-
-<div id="dUploadFile" class="hidden">
-    <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
-    <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
-    <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-    <div class="hidden-fix position-absolute" id="upload-file"></div>
-    <br /><br />
-
-    <div id="file-list">
-    <?php
-    if ( empty( $files ) ) {
-        echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>';
-    } else {
-        // Set variables
-        $delete_file_nonce = nonce::create('delete_file');
-        $confirm = _('Are you sure you want to delete this file?');
-
-        /**
-         * @var AccountFile $file
-         */
-        foreach ( $files as $file ) {
-            $file_name = f::name( $file->file_path );
-            $extension = f::extension( $file->file_path );
-            $date = new DateTime( $file->date_created );
-
-            if ( in_array( $extension, image::$extensions ) ) {
-                // It's an image!
-                echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file img" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-            } else {
-                // It's not an image!
-                echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-            }
-        }
-    }
-    ?>
-    </div>
-
-    <br /><br />
-    <div id="dCurrentLink" class="hidden">
-        <p><strong><?php echo _('Current Link'); ?>:</strong></p>
-        <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" /></p>
-        <br />
-        <table class="col-1">
-            <tr>
-                <td class="col-3"><strong><?php echo _('Date'); ?>:</strong></td>
-                <td class="col-3"><strong><?php echo _('Size'); ?>:</strong></td>
-                <td class="col-3">&nbsp;</td>
-            </tr>
-            <tr>
-                <td id="tdDate"></td>
-                <td id="tdSize"></td>
-                <td class="text-right"><a href="#" id="insert-into-post" class="button close"><?php echo _('Insert Into Post'); ?></a></td>
-            </tr>
-        </table>
-    </div>
-</div>
-<?php nonce::field( 'upload_file', '_upload_file' ); ?>
-
-<?php echo $template->end(); ?>

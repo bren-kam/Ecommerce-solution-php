@@ -1,1 +1,10 @@
-#sParentCategoryID { position: absolute; left: 417px; top: -43px; width: 200px; }
+.panel-body {
+  position: relative;
+}
+.panel-body #sParentCategoryID {
+  width: auto;
+  position: absolute;
+  left: 200px;
+  top: 27px;
+  z-index: 1;
+}

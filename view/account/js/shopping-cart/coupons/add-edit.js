@@ -1,5 +1,11 @@
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    $('input.date').datepicker({
-    		dateFormat: 'yy-mm-dd'
-    });
-});
+var CouponForm = {
+
+    init: function(){
+        $('.input-daterange').datepicker({
+            format: 'yyyy-mm-dd'
+        });
+    }
+
+};
+
+jQuery( CouponForm.init );
