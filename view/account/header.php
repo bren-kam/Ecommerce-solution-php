@@ -186,16 +186,43 @@
 
             <?php if ( $this->account->email_marketing || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('email_marketing') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->v('email-marketing') ) echo 'class="active"'?>>
                         <i class="fa fa-inbox"></i>
                         <span>Email Marketing</span>
                     </a>
                     <ul class="sub">
                         <li <?php if ( $template->v('email-marketing/index') ) echo 'class="active"'?>><a href="/email-marketing/">Dashboard</a></li>
-                        <li <?php if ( $template->v('email-marketing/campaigns') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/">Campaigns</a></li>
-                        <li <?php if ( $template->v('email-marketing/subscribers') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/">Subscribers</a></li>
-                        <li <?php if ( $template->v('email-marketing/email_lists') ) echo 'class="active"'?>><a href="/email-marketing/email-lists/">Email Lists</a></li>
-                        <li <?php if ( $template->v('email-marketing/autoresponders') ) echo 'class="active"'?>><a href="/email-marketing/autoresponders/">Autoresponders</a></li>
+                        <li class="submenu">
+                            <a href="/email-marketing/campaigns/" class="<?php if ( $template->v('email-marketing/campaigns/index') || $template->v('email-marketing/campaigns/create') ) echo 'active'?>">Campaigns</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->v('email-marketing/campaigns/index') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/">List</a></li>
+                                <li <?php if ( $template->v('email-marketing/campaigns/create') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/create">Create</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/email-marketing/subscribers/" class="<?php if ( $template->v('email-marketing/subscribers') ) echo 'active'?>">Subscribers</a>
+                            <ul class="sub">
+                                <li><a href="/email-marketing/subscribers/">Subscribed</a></li>
+                                <li><a href="/email-marketing/subscribers/unsubscribed/">Unsubscribed</a></li>
+                                <li><a href="/email-marketing/subscribers/add-edit/">Add</a></li>
+                                <li><a href="/email-marketing/subscribers/import/">Import</a></li>
+                                <li><a href="/email-marketing/subscribers/export/">Export</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/email-marketing/email-lists/" class="<?php if ( $template->v('email-marketing/email-lists') ) echo 'active'?>">Email Lists</a>
+                            <ul class="sub">
+                                <li><a href="/email-marketing/email-lists/">List</a></li>
+                                <li><a href="/email-marketing/email-lists/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/email-marketing/autoresponders/" class="<?php if ( $template->v('email-marketing/autoresponders') ) echo 'active'?>">Autoresponders</a>
+                            <ul class="sub">
+                                <li><a href="/email-marketing/autoresponders/">List</a></li>
+                                <li><a href="/email-marketing/autoresponders/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
                         <li <?php if ( $template->v('email-marketing/settings') ) echo 'class="active"'?>><a href="/email-marketing/settings/">Settings</a></li>
                     </ul>
                 </li>
@@ -210,9 +237,33 @@
                     <ul class="sub">
                         <li <?php if ( $template->v('shopping-cart/orders') ) echo 'class="active"'?>><a href="/shopping-cart/orders/">Orders</a></li>
                         <li <?php if ( $template->v('shopping-cart/users') ) echo 'class="active"'?>><a href="/shopping-cart/users/">Users</a></li>
-                        <li <?php if ( $template->v('shopping-cart/shipping') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/">Shipping</a></li>
-                        <li <?php if ( $template->v('shopping-cart/coupons') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/">Coupons</a></li>
-                        <li <?php if ( $template->v('shopping-cart/settings') ) echo 'class="active"'?>><a href="/shopping-cart/settings/">Settings</a></li>
+                        <li class="submenu">
+                            <a href="/shopping-cart/shipping/" class="<?php if ( $template->v('shopping-cart/shipping') ) echo 'active'?>">Shipping</a>
+                            <ul class="sub">
+                                <li><a href="/shopping-cart/shipping/">List</a></li>
+                                <li><a href="/shopping-cart/shipping/add-edit-custom/">Add Custom</a></li>
+                                <li><a href="/shopping-cart/shipping/add-edit-ups/">Add UPS</a></li>
+                                <li><a href="/shopping-cart/shipping/add-edit-fedex/">Add FedEx</a></li>
+                                <li><a href="/shopping-cart/shipping/settings/">Settings</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/shopping-cart/coupons/" class="<?php if ( $template->v('shopping-cart/coupons') ) echo 'active'?>">Coupons</a>
+                            <ul class="sub">
+                                <li><a href="/shopping-cart/coupons/">List</a></li>
+                                <li><a href="/shopping-cart/coupons/add-edit/">Add</a></li>
+                                <li><a href="/shopping-cart/coupons/apply-to-brand/">Apply to Brand</a></li>
+                                <li><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/shopping-cart/settings/" class="<?php if ( $template->v('shopping-cart/settings') ) echo 'active'?>">Settings</a>
+                            <ul class="sub">
+                                <li><a href="/shopping-cart/settings/">General</a></li>
+                                <li><a href="/shopping-cart/settings/payment-settings/">Payment Settings</a></li>
+                                <li><a href="/shopping-cart/settings/taxes/">Taxes</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             <?php endif; ?>

@@ -24,7 +24,7 @@ class EmailsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 74 )
             ->add_title( _('Emails') )
-            ->select( 'emails', 'view' );
+            ->select( 'email-marketing', 'email-marketing/' );
     }
 
     /**

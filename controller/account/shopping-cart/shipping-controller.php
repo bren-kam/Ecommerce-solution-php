@@ -20,7 +20,7 @@ class ShippingController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 124 )
-            ->select( 'shipping' );
+            ->select( 'shopping-cart', 'shopping-cart/shipping' );
     }
 
     /**
@@ -85,7 +85,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 125 )
-            ->select( 'shipping', 'add-edit-custom' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
@@ -185,7 +185,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 126 )
-            ->select( 'shipping', 'add-edit-ups' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
@@ -289,7 +289,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 127 )
-            ->select( 'shipping', 'add-edit-fedex' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
@@ -448,7 +448,7 @@ class ShippingController extends BaseController {
 
         return $this->get_template_response( 'settings' )
             ->kb( 128 )
-            ->select( 'shipping', 'shipping-settings' )
+            ->select( 'shopping-cart', 'shopping-cart/shipping' )
             ->set( array(
                 'form' => $form->generate_form()
             ) )

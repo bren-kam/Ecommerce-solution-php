@@ -56,7 +56,7 @@ class SettingsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 131 )
             ->set( compact( 'form' ) )
-            ->select( 'settings', 'general' );
+            ->select( 'shopping-cart', 'shopping-cart/settings' );
     }
 
     /**
@@ -139,7 +139,7 @@ class SettingsController extends BaseController {
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
             ->set( compact( 'form' ) )
-            ->select( 'settings', 'payment-settings' )
+            ->select( 'shopping-cart', 'shopping-cart/settings' )
             ->add_title( _('Payment Settings') );
     }
 
@@ -186,7 +186,7 @@ class SettingsController extends BaseController {
 
         return $this->get_template_response( 'taxes' )
             ->kb( 133 )
-            ->select( 'settings', 'tax-settings' )
+            ->select( 'shopping-cart', 'shopping-cart/settings' )
             ->set( compact( 'taxes', 'states' ) );
     }
 }

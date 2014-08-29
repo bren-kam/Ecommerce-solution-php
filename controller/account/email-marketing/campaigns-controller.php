@@ -28,7 +28,7 @@ class CampaignsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 74 )
             ->add_title( _('Emails') )
-            ->select( 'campaigns', 'view' );
+            ->select( 'email-marketing', 'email-marketing/campaigns/index' );
     }
 
     /**
@@ -154,7 +154,7 @@ class CampaignsController extends BaseController {
         return $this->get_template_response( 'create' )
             ->kb( 144 )
             ->add_title( _('Campaigns') )
-            ->select( 'campaigns', 'create' )
+            ->select( 'email-marketing', 'email-marketing/campaigns/create' )
             ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
     }
 

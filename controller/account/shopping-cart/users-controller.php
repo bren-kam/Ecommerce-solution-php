@@ -20,7 +20,7 @@ class UsersController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 122 )
-            ->select( 'users' );
+            ->select( 'shopping-cart', 'shopping-cart/users' );
     }
 
     /**
@@ -123,7 +123,7 @@ class UsersController extends BaseController {
 
         $response = $this->get_template_response( 'edit' )
             ->kb( 123 )
-            ->select( 'users' )
+            ->select( 'shopping-cart', 'shopping-cart/users' )
             ->add_title( _('Edit User') )
             ->set( array( 'form' => $form->generate_form() ) );
 
