@@ -275,6 +275,18 @@
                 </li>
             <?php endif; ?>
 
+            <?php if ( $this->account->craigslist || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('website') ) echo 'class="active"'?>>
+                        <span>Craigslist</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('craigslist/index') ) echo 'class="active"'?>><a href="/craigslist/">List All</a></li>
+                        <li <?php if ( $template->v('craigslist/add-edit') ) echo 'class="active"'?>><a href="/craigslist/add-edit/">Add</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+
         </ul>
         <!-- sidebar menu end-->
     </div>
