@@ -27,7 +27,7 @@ class FacebookController extends BaseController {
         
         return $this->get_template_response( 'index' )
             ->kb( 85 )
-            ->select( 'facebook-pages', 'view' );
+            ->select( 'social-media', 'social-media/facebook/index' );
     }
 
     /**
@@ -47,7 +47,7 @@ class FacebookController extends BaseController {
         $facebook_page_count = $page->count_all( array( ' AND `website_id` = ' . (int) $this->user->account->id, '' ) );
         $has_permission = $page->id || $facebook_page_count < $facebook_page_limit || empty( $facebook_page_count );
 
-        $form = new FormTable( 'fAddEditFacebookPage' );
+        $form = new BootstrapForm( 'fAddEditFacebookPage' );
         $submit_text = ( $page->id ) ? _('Save') : _('Add');
         $form->submit( $submit_text );
 
@@ -75,7 +75,7 @@ class FacebookController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 86 )
-            ->select( 'facebook-pages', 'add' )
+            ->select( 'social-media', 'social-media/facebook/add-edit' )
             ->set( compact( 'page', 'has_permission', 'form' ) );
     }
 
@@ -786,7 +786,7 @@ class FacebookController extends BaseController {
      */
     protected function settings() {
         // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array( 'timezone' );
@@ -813,7 +813,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 87 )
             ->add_title( _('Settings') )
-            ->select( 'settings' )
+            ->select( 'social-media', 'social-media/facebook/settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 

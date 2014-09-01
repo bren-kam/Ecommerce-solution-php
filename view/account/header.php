@@ -120,7 +120,7 @@
         <!-- sidebar menu start-->
         <ul class="sidebar-menu" id="nav-accordion">
 
-            <?php if ( $this->account->pages || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+            <?php if ( $user->account->pages ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->v('website') ) echo 'class="active"'?>>
                         <i class="fa fa-globe"></i>
@@ -141,7 +141,7 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $this->account->product_catalog || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+            <?php if ( $user->account->product_catalog ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->v('products') ) echo 'class="active"'?>>
                         <i class="fa fa-cube"></i>
@@ -174,7 +174,7 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $this->account->live || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+            <?php if ( $user->account->live ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->v('analytics') ) echo 'class="active"'?>>
                         <i class="fa fa-bar-chart-o"></i>
@@ -191,7 +191,7 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $this->account->email_marketing || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+            <?php if ( $user->account->email_marketing ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->v('email-marketing') ) echo 'class="active"'?>>
                         <i class="fa fa-inbox"></i>
@@ -235,7 +235,7 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $this->account->shopping_cart || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+            <?php if ( $user->account->shopping_cart ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->v('shopping-cart') ) echo 'class="active"'?>>
                         <i class="fa fa-shopping-cart"></i>
@@ -275,14 +275,28 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $this->account->craigslist || $user->has_permission( User::ROLE_STORE_OWNER ) ): ?>
+            <?php if ( $user->account->craigslist ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('website') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->v('craigslist') ) echo 'class="active"'?>>
                         <span>Craigslist</span>
                     </a>
                     <ul class="sub">
                         <li <?php if ( $template->v('craigslist/index') ) echo 'class="active"'?>><a href="/craigslist/">List All</a></li>
                         <li <?php if ( $template->v('craigslist/add-edit') ) echo 'class="active"'?>><a href="/craigslist/add-edit/">Add</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+
+            <?php if ( $user->account->social_media ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->v('social-media') ) echo 'class="active"'?>>
+                        <i class="fa fa-facebook"></i>
+                        <span>Social Media</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->v('social-media/facebook/index') ) echo 'class="active"'?>><a href="/social-media/">List All</a></li>
+                        <li <?php if ( $template->v('social-media/facebook/add-edit') ) echo 'class="active"'?>><a href="/social-media/facebook/add-edit/">Add</a></li>
+                        <li <?php if ( $template->v('social-media/facebook/settings') ) echo 'class="active"'?>><a href="/social-media/facebook/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>

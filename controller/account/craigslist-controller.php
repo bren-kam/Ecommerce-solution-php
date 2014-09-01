@@ -18,7 +18,9 @@ class CraigslistController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        return $this->get_template_response( 'index' );
+
+        return $this->get_template_response( 'index' )
+            ->select( 'craigslist', 'craigslist/index' );
     }
 
     /**
@@ -116,7 +118,7 @@ class CraigslistController extends BaseController {
             ->javascript( 'craigslist/add-edit' );
 
         return $this->get_template_response( 'add-edit' )
-            ->select( 'add' )
+            ->select( 'craigslist', 'craigslist/add-edit' )
             ->add_title( $title )
             ->set( compact( 'ad', 'markets', 'craigslist_api', 'js_validation', 'errs' ) );
     }
