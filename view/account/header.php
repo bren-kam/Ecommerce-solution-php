@@ -93,6 +93,9 @@
             </a>
             <ul class="dropdown-menu extended logout">
                 <div class="log-arrow-up"></div>
+                <li class="big">
+                    <a href="http://<?php echo $user->account->domain ?>" target="_blank">Visit <?php echo $user->account->domain ?> <i class="fa fa-link" style="font-size:14px;"></i></a>
+                </li>
                 <li><a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a></li>
                 <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Authorized <br> Users</a></li>
                 <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp; Phone</a></li>
