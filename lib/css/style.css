@@ -4842,6 +4842,9 @@ a.guest-on i {
 #kb-dropdown .keep-open {
   cursor: default;
 }
+#kb-dropdown .dropdown-menu {
+  width: auto!important;
+}
 /* Top level alerts */
 #container > .alert {
   position: absolute;
