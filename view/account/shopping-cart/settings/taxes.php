@@ -8,7 +8,10 @@
                 <form id="fTaxes" method="post">
 
                     <div id="tax-list">
-                        <?php foreach ( $taxes['states'] as $abbr => $tax ) : ?>
+                        <?php
+                            if ( !empty( $taxes['states'] ) )
+                            foreach ( $taxes['states'] as $abbr => $tax ) :
+                        ?>
                             <?php
                                 $ta = "";
                                 if ( isset( $taxes['zip_codes'][$abbr] ) ):
