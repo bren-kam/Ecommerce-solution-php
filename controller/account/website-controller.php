@@ -680,7 +680,8 @@ class WebsiteController extends BaseController {
         // Get settings
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
-            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
+            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window'
+            , 'images-alt'
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
         );
@@ -740,6 +741,8 @@ class WebsiteController extends BaseController {
         $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
 
         $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
+
+        $form->add_field( 'checkbox', _('Open Banner & Sidebar Links in a New Window'), 'banner-links-new-window', $settings['banner-links-new-window'] );
 
         // Next section
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
