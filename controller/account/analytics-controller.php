@@ -111,7 +111,7 @@ class AnalyticsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 62 )
             ->add_title( _('Dashboard') )
-            ->select( 'analytics', 'analytics/index' )
+            ->menu_item( 'analytics/index' )
             ->set( compact( 'sparklines', 'traffic_sources', 'pie_chart', 'visits_plotting_array', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
     }
 
@@ -165,7 +165,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'content-overview' )
             ->add_title( _('Content Overview') )
-            ->select( 'analytics', 'analytics/content-overview' )
+            ->menu_item( 'analytics/content-overview' )
             ->set( compact( 'sparklines', 'page_views_plotting_array', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
     }
 
@@ -222,7 +222,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'page' )
             ->add_title( _('Page') )
-            ->select( 'analytics', 'analytics/content-overview' )
+            ->menu_item( 'analytics/content-overview' )
             ->set( compact( 'sparklines', 'page_views_plotting_array', 'total', 'date_start', 'date_end' ) );
     }
 
@@ -280,7 +280,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'traffic-sources-overview' )
             ->add_title( _('Traffic Sources Overview') )
-            ->select( 'analytics', 'analytics/traffic-sources-overview' )
+            ->menu_item( 'analytics/traffic-sources-overview' )
             ->set( compact( 'sparklines', 'visits_plotting_array', 'traffic_sources', 'top_traffic_sources', 'top_keywords', 'pie_chart', 'date_start', 'date_end' ) );
     }
 
@@ -335,7 +335,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'traffic-sources' )
             ->add_title( _('Traffic Sources') )
-            ->select( 'analytics', 'analytics/traffic-sources' )
+            ->menu_item( 'analytics/traffic-sources' )
             ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'traffic_sources', 'date_start', 'date_end' ) );
     }
 
@@ -390,7 +390,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'keywords' )
             ->add_title( _('Traffic Keywords') )
-            ->select( 'analytics', 'analytics/keywords' )
+            ->menu_item( 'analytics/keywords' )
             ->set( compact( 'sparklines', 'total', 'visits_plotting_array', 'keywords', 'date_start', 'date_end' ) );
     }
 
@@ -448,7 +448,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'keyword' )
             ->add_title( _('Keyword') )
-            ->select( 'analytics', 'analytics/keywords' )
+            ->menu_item( 'analytics/keywords' )
             ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'date_start', 'date_end' ) );
     }
 
@@ -506,7 +506,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'source' )
             ->add_title( _('Source') )
-            ->select( 'analytics', 'analytics/traffic-sources' )
+            ->menu_item( 'analytics/traffic-sources' )
             ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'date_start', 'date_end' ) );
     }
 
@@ -533,7 +533,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'email-marketing' )
             ->add_title( _('Email Marketing') )
-            ->select( 'analytics', 'analytics/keywords' )
+            ->menu_item( 'analytics/email-marketing' )
             ->set( compact( 'emails', 'stats' ) );
     }
 
@@ -571,7 +571,7 @@ class AnalyticsController extends BaseController {
 
         return $this->get_template_response( 'email' )
             ->add_title( _('Email') . ' | ' . _('Email Marketing') . ' | ' . _('Email Marketing') )
-            ->select( 'analytics', 'analytics/keywords' )
+            ->menu_item( 'analytics/email-marketing' )
             ->set( compact( 'email', 'email_message', 'bar_chart' ) );
     }
 

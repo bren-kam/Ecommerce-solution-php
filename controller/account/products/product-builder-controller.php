@@ -27,7 +27,7 @@ class ProductBuilderController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->kb( 56 )
-            ->select( 'products', 'products/product-builder' );
+            ->menu_item( 'products/product-builder/list' );
     }
 
     /**
@@ -190,7 +190,7 @@ class ProductBuilderController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 57 )
-            ->select( 'products', 'products/product-builder' )
+            ->menu_item( 'products/product-builder/add' )
             ->add_title( $title )
             ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
     }

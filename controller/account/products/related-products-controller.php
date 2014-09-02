@@ -19,7 +19,7 @@ class RelatedProductsController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 59 )
-            ->select( 'products', 'products/related-products' );
+            ->menu_item( 'products/related-products/list' );
     }
 
     /**
@@ -80,7 +80,7 @@ class RelatedProductsController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 60 )
-            ->select( 'products', 'products/related-products' )
+            ->menu_item( 'products/related-products/add' )
             ->add_title( $title . ' ' . _('Product Group') )
             ->set( compact( 'errs', 'js_validation', 'group', 'products' ) );
     }

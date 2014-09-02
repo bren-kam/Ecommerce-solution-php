@@ -148,4 +148,8 @@ class Template {
     public function get_footer() {
         // Do stuff
     }
+
+    public function in_menu_item($item) {
+        return strpos( $this->variables['__menu_item__'], $item ) === 0;
+    }
 }

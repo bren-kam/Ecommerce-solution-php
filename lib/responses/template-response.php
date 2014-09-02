@@ -197,4 +197,9 @@ class TemplateResponse extends Response {
         }
 
     }
+
+    public function menu_item($item) {
+        $this->variables['__menu_item__'] = $item;
+        return $this;
+    }
 }

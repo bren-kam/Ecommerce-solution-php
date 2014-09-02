@@ -67,7 +67,7 @@ class ProductsController extends BaseController {
 
         return $this->get_template_response( 'index')
             ->kb( 45 )
-            ->select( 'sub-products', 'view' )
+            ->menu_item( 'products/products/list' )
             ->set( compact( 'categories', 'product_count', 'coupons', 'pricing_points' ) );
     }
 
@@ -112,7 +112,7 @@ class ProductsController extends BaseController {
 
         $response = $this->get_template_response( 'add' )
             ->kb( 46 )
-            ->select( 'products', 'products/add' )
+            ->menu_item( 'products/products/add' )
             ->set( compact( 'product_count', 'categories', 'brands' ) );
 
         return $response;
@@ -131,7 +131,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'all' )
             ->kb( 47 )
             ->add_title( _('All Products') )
-            ->select( 'products', 'products/all' )
+            ->menu_item( 'products/products/all' )
             ->set( compact( 'products' ) );
 
         return $response;
@@ -197,7 +197,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'catalog-dump' )
             ->kb( 48 )
             ->add_title( _('Catalog Dump') )
-            ->select( 'products', 'products/catalog-dump' )
+            ->menu_item( 'products/products/catalog-dump' )
             ->set( compact( 'js_validation', 'errs', 'brands' ) );
 
         return $response;
@@ -248,7 +248,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'add-bulk' )
             ->kb( 49 )
             ->add_title( _('Add Bulk') )
-            ->select( 'products', 'products/add-bulk' )
+            ->menu_item( 'products/products/add-bulk' )
             ->set( compact( 'form', 'already_existed', 'not_added_skus', 'success' ) );
     }
 
@@ -278,7 +278,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'block-products' )
             ->kb( 50 )
             ->add_title( _('Block Products') )
-            ->select( 'products', 'products/block-products' )
+            ->menu_item( 'products/products/block-products' )
             ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
 
         return $response;
@@ -339,7 +339,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'hide-categories' )
             ->kb( 51 )
             ->add_title( _('Hide Categories') )
-            ->select( 'products', 'products/hide-categories' )
+            ->menu_item( 'products/products/hide-categories' )
             ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $blocked_categories ) );
     }
 
@@ -374,7 +374,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'product-prices' )
             ->kb( 52 )
             ->add_title( _('Product Prices') )
-            ->select( 'sub-products', 'price-tools' )
+            ->menu_item( 'products/products/auto-price' )
             ->set( compact( 'brands', 'categories' ) );
     }
 
@@ -391,7 +391,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'price-multiplier' )
             ->kb( 115 )
             ->add_title( _('Price Multiplier') )
-            ->select( 'sub-products', 'price-tools' );
+            ->menu_item( 'products/products/auto-price' );
     }
 
     /**
@@ -489,7 +489,7 @@ class ProductsController extends BaseController {
                 , 'auto_prices' => $auto_prices
                 , 'product' => $product
             ))
-            ->select( 'sub-products', 'pricing-tools' );
+            ->menu_item( 'products/products/auto-price' );
     }
 
     /**
@@ -584,7 +584,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 61 )
             ->add_title( _('Settings') )
-            ->select( 'products', 'settings' )
+            ->menu_item( 'products/settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
@@ -603,7 +603,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'brands' )
             ->kb( 58 )
             ->add_title( _('Brands') )
-            ->select( 'brands', 'view' )
+            ->menu_item( 'products/brands' )
             ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );
     }
 
@@ -644,7 +644,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'top-categories' )
             ->kb( 137 )
             ->add_title( _('Top Categories') )
-            ->select( 'top-categories' )
+            ->menu_item( 'products/top-categories' )
             ->set( compact( 'categories', 'top_categories', 'category_images' ) );
     }
 
@@ -1992,7 +1992,7 @@ class ProductsController extends BaseController {
         $response = $this->get_template_response( 'manually-priced' )
             ->kb( 142 )
             ->add_title( _('Manually Priced Products') )
-            ->select( 'sub-products', 'manually-priced' )
+            ->menu_item( 'products/products/manually-priced' )
             ->set( compact( 'products' ) );
 
         return $response;

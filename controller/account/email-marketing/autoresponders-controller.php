@@ -21,7 +21,7 @@ class AutorespondersController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 82 )
             ->add_title( _('Autoresponders') )
-            ->select( 'email-marketing', 'email-marketing/autoresponders' );
+            ->menu_item( 'email-marketing/autoresponders/list' );
     }
 
     /**
@@ -94,7 +94,7 @@ class AutorespondersController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 83 )
-            ->select( 'email-marketing', 'email-marketing/autoresponders' )
+            ->menu_item( 'email-marketing/autoresponders/add' )
             ->add_title( $title . ' ' . _('Email Autoresponder') )
             ->set( compact( 'email_autoresponder', 'form' ) );
     }

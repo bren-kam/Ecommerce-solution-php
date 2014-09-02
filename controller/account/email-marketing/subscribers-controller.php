@@ -24,7 +24,7 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 75 )
             ->add_title( _('Subscribers') )
-            ->select( 'email-marketing', 'email-marketing/subscribers' );
+            ->menu_item( 'email-marketing/subscribers/list' );
     }
 
     /**
@@ -36,7 +36,7 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'unsubscribed' )
             ->kb( 76 )
             ->add_title( _('Unsubscribers') )
-            ->select( 'email-marketing', 'email-marketing/subscribers' );
+            ->menu_item( 'email-marketing/subscribers/unsubscribed' );
     }
 
     /**
@@ -149,7 +149,7 @@ class SubscribersController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 77 )
-            ->select( 'email-marketing', 'email-marketing/subscribers' )
+            ->menu_item( 'email-marketing/subscribers/add' )
             ->add_title( $title . ' ' . _('Subscriber') )
             ->set( compact( 'email', 'form' ) );
     }
@@ -216,7 +216,7 @@ class SubscribersController extends BaseController {
 
         return $this->get_template_response( 'import' )
             ->kb( 78 )
-            ->select( 'email-marketing', 'email-marketing/subscribers' )
+            ->menu_item( 'email-marketing/subscribers/import' )
             ->add_title( _('Import') )
             ->set( compact( 'email_lists' ) );
     }

@@ -24,7 +24,7 @@ class EmailListsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 80 )
             ->add_title( _('Email Lists') )
-            ->select( 'email-marketing', 'email-marketing/email-lists' );
+            ->menu_item( 'email-marketing/email-lists/list' );
     }
 
     /**
@@ -129,7 +129,7 @@ class EmailListsController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 81 )
-            ->select( 'email-marketing', 'email-marketing/email-lists' )
+            ->menu_item( 'email-marketing/email-lists/add' )
             ->add_title( $title . ' ' . _('Email List') )
             ->set( compact( 'email_list', 'form' ) );
     }

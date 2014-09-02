@@ -22,7 +22,7 @@ class ReachesController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->kb( 54 )
-            ->select( 'products', 'products/reaches' );
+            ->menu_item( 'products/reaches' );
     }
 
     /**
@@ -68,7 +68,7 @@ class ReachesController extends BaseController {
         return $this->get_template_response( 'reach' )
             ->kb( 55 )
             ->add_title( _('Reach') )
-            ->select( 'products', 'products/reaches' )
+            ->menu_item( 'products/reaches' )
             ->set( compact( 'reach', 'comments', 'assignable_users' ) );
     }
 

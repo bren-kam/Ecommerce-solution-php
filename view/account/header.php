@@ -122,153 +122,178 @@
 
             <?php if ( $user->account->pages ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('website') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('website') ) echo 'class="active"' ?>>
                         <i class="fa fa-globe"></i>
                         <span>Website</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('website/index') ) echo 'class="active"'?>><a href="/website/">Pages</a></li>
-                        <li <?php if ( $template->v('website/categories') ) echo 'class="active"'?>><a href="/website/categories/">Categories</a></li>
-                        <li <?php if ( $template->v('website/brands') ) echo 'class="active"'?>><a href="/website/brands/">Brands</a></li>
-                        <li <?php if ( $template->v('website/sidebar') ) echo 'class="active"'?>><a href="/website/sidebar/">Sidebar</a></li>
-                        <li <?php if ( $template->v('website/banners') ) echo 'class="active"'?>><a href="/website/banners/">Banners</a></li>
-                        <li <?php if ( $template->v('website/home-page-layout') ) echo 'class="active"'?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
-                        <li <?php if ( $template->v('website/navigation') ) echo 'class="active"'?>><a href="/website/navigation/">Navigation</a></li>
-                        <li <?php if ( $template->v('website/header') ) echo 'class="active"'?>><a href="/website/header/">Header</a></li>
-                        <li <?php if ( $template->v('website/footer') ) echo 'class="active"'?>><a href="/website/footer/">Footer</a></li>
-                        <li <?php if ( $template->v('website/settings') ) echo 'class="active"'?>><a href="/website/settings/">Settings</a></li>
+                        <li class="submenu">
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('website/pages') ) echo 'class="active"' ?>>Pages</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('website/pages/list') ) echo 'class="active"' ?>><a href="/website/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('website/pages/add') ) echo 'class="active"' ?>><a href="/website/add/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('website/pages/categories') ) echo 'class="active"' ?>><a href="/website/categories/">Categories</a></li>
+                                <li <?php if ( $template->in_menu_item('website/pages/brands') ) echo 'class="active"' ?>><a href="/website/brands/">Brands</a></li>
+                            </ul>
+                        </li>
+                        <li <?php if ( $template->in_menu_item('website/sidebar') ) echo 'class="active"' ?>><a href="/website/sidebar/">Sidebar</a></li>
+                        <li <?php if ( $template->in_menu_item('website/banners') ) echo 'class="active"' ?>><a href="/website/banners/">Banners</a></li>
+                        <li class="submenu">
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('website/settings') ) echo 'class="active"' ?>>Settings</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('website/settings/settings') ) echo 'class="active"' ?>><a href="/website/settings/">Settings</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/home-page-layout') ) echo 'class="active"' ?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/header-navigation') ) echo 'class="active"' ?>><a href="/website/navigation/">Header Navigation</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/website-header') ) echo 'class="active"' ?>><a href="/website/header/">Website Header</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/footer-navigation') ) echo 'class="active"' ?>><a href="/website/footer-navigation/">Footer Navigation</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/website-footer') ) echo 'class="active"' ?>><a href="/website/footer/">Website Footer</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/html-head') ) echo 'class="active"' ?>><a href="/website/html-head/">HTML &lt;head&gt;</a></li>
+                                <li <?php if ( $template->in_menu_item('website/settings/custom-404') ) echo 'class="active"' ?>><a href="/website/custom-404/">Custom 404 Page</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             <?php endif; ?>
 
             <?php if ( $user->account->product_catalog ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('products') ) echo 'class="active"'?>>
-                        <i class="fa fa-cube"></i>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('products') ) echo 'class="active"' ?>>
+                        <i class="fa fa-barcode"></i>
                         <span>Products</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">My Products</a></li>
-                        <li <?php if ( $template->v('products/add') ) echo 'class="active"'?>><a href="/products/add/">Add Product</a></li>
-                        <li <?php if ( $template->v('products/all') ) echo 'class="active"'?>><a href="/products/all/">All Products</a></li>
-                        <li <?php if ( $template->v('products/catalog-dump') ) echo 'class="active"'?>><a href="/products/catalog-dump/">Catalog Dump</a></li>
-                        <li <?php if ( $template->v('products/add-bulk') ) echo 'class="active"'?>><a href="/products/add-bulk/">Add Bulk</a></li>
-                        <li <?php if ( $template->v('products/block-products') ) echo 'class="active"'?>><a href="/products/block-products/">Block Products</a></li>
-                        <li <?php if ( $template->v('products/hide-categories') ) echo 'class="active"'?>><a href="/products/hide-categories/">Hide Categories</a></li>
-                        <li <?php if ( $template->v('products/manually-priced') ) echo 'class="active"'?>><a href="/products/manually-priced/">Manually Priced</a></li>
-                        <li <?php if ( $template->v('products/auto-price') ) echo 'class="active"'?>><a href="/products/auto-price/">Pricing Tools</a></li>
-                        <li <?php if ( $template->v('products/export') ) echo 'class="active"'?>><a href="/products/export/">Export</a></li>
-                        <li <?php if ( $template->v('products/reaches') ) echo 'class="active"'?>><a href="/products/reaches/">Reaches</a></li>
                         <li class="submenu">
-                            <a href="/products/product-builder/" class="<?php if ( $template->v('products/product-builder') ) echo 'active'?>">Product Builder</a>
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('products/products') ) echo 'class="active"' ?>>Products</a>
                             <ul class="sub">
-                                <li><a href="/products/product-builder/">List</a></li>
-                                <li><a href="/products/product-builder/add-edit/">View</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/list') ) echo 'class="active"' ?>><a href="/products/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/add') ) echo 'class="active"' ?>><a href="/products/add/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/all') ) echo 'class="active"' ?>><a href="/products/all/">All Products</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/catalog-dump') ) echo 'class="active"' ?>><a href="/products/catalog-dump/">Catalog Dump</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/add-bulk') ) echo 'class="active"' ?>><a href="/products/add-bulk/">Add Bulk</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/block-products') ) echo 'class="active"' ?>><a href="/products/block-products/">Block Products</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/hide-categories') ) echo 'class="active"' ?>><a href="/products/hide-categories/">Hide Categories</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/manually-priced') ) echo 'class="active"' ?>><a href="/products/manually-priced/">Manually Priced</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/auto-price') ) echo 'class="active"' ?>><a href="/products/auto-price/">Pricing Tools</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/export') ) echo 'class="active"' ?>><a href="/products/export/">Export</a></li>
                             </ul>
                         </li>
-                        <li <?php if ( $template->v('products/brands') ) echo 'class="active"'?>><a href="/products/brands/">Brands</a></li>
-                        <li <?php if ( $template->v('products/top-categories') ) echo 'class="active"'?>><a href="/products/top-categories/">Top Categories</a></li>
-                        <li <?php if ( $template->v('products/related-products') ) echo 'class="active"'?>><a href="/products/related-products/">Releated Products</a></li>
-                        <li <?php if ( $template->v('products/settings') ) echo 'class="active"'?>><a href="/products/settings/">Settings</a></li>
+                        <li <?php if ( $template->in_menu_item('products/reaches') ) echo 'class="active"' ?>><a href="/products/reaches/">Reaches</a></li>
+                        <li class="submenu">
+                            <a href="/products/reaches" <?php if ( $template->in_menu_item('products/product-builder') ) echo 'class="active"' ?>>Product Builder</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('products/product-builder/list') ) echo 'class="active"' ?>><a href="/products/product-builder/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('products/product-builder/add') ) echo 'class="active"' ?>><a href="/products/product-builder/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
+                        <li <?php if ( $template->in_menu_item('products/brands') ) echo 'class="active"' ?>><a href="/products/brands/">Top Brands</a></li>
+                        <li <?php if ( $template->in_menu_item('products/top-categories') ) echo 'class="active"' ?>><a href="/products/top-categories/">Top Categories</a></li>
+                        <li class="submenu">
+                            <a href="/products/reaches" <?php if ( $template->in_menu_item('products/related-products') ) echo 'class="active"' ?>>Related Products</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('products/related-products/list') ) echo 'class="active"' ?>><a href="/products/related-products/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('products/related-products/add') ) echo 'class="active"' ?>><a href="/products/related-products/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
+                        <li <?php if ( $template->in_menu_item('products/settings') ) echo 'class="active"' ?>><a href="/products/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
 
             <?php if ( $user->account->live ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('analytics') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('analytics') ) echo 'class="active"'?>>
                         <i class="fa fa-bar-chart-o"></i>
                         <span>Analytics</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('analytics/index') ) echo 'class="active"'?>><a href="/analytics/">Analytics</a></li>
-                        <li <?php if ( $template->v('analytics/content-overview') ) echo 'class="active"'?>><a href="/analytics/content-overview/">Content Overview</a></li>
-                        <li <?php if ( $template->v('analytics/traffic-sources-overview') ) echo 'class="active"'?>><a href="/analytics/traffic-sources-overview/">Traffic Sources Overview</a></li>
-                        <li <?php if ( $template->v('analytics/traffic-sources') ) echo 'class="active"'?>><a href="/analytics/traffic-sources/">Sources</a></li>
-                        <li <?php if ( $template->v('analytics/keywords') ) echo 'class="active"'?>><a href="/analytics/keywords/">Keywords</a></li>
-                        <li <?php if ( $template->v('analytics/email-marketing') ) echo 'class="active"'?>><a href="/analytics/email-marketing/">Email Marketing</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/index') ) echo 'class="active"'?>><a href="/analytics/">Analytics</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/content-overview') ) echo 'class="active"'?>><a href="/analytics/content-overview/">Content Overview</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/traffic-sources-overview') ) echo 'class="active"'?>><a href="/analytics/traffic-sources-overview/">Traffic Sources Overview</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/traffic-sources') ) echo 'class="active"'?>><a href="/analytics/traffic-sources/">Sources</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/keywords') ) echo 'class="active"'?>><a href="/analytics/keywords/">Keywords</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/email-marketing') ) echo 'class="active"'?>><a href="/analytics/email-marketing/">Email Marketing</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
 
             <?php if ( $user->account->email_marketing ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('email-marketing') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('email-marketing') ) echo 'class="active"'?>>
                         <i class="fa fa-inbox"></i>
                         <span>Email Marketing</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('email-marketing/index') ) echo 'class="active"'?>><a href="/email-marketing/">Dashboard</a></li>
+                        <li <?php if ( $template->in_menu_item('email-marketing/dashboard') ) echo 'class="active"'?>><a href="/email-marketing/">Dashboard</a></li>
                         <li class="submenu">
-                            <a href="/email-marketing/campaigns/" class="<?php if ( $template->v('email-marketing/campaigns/index') || $template->v('email-marketing/campaigns/create') ) echo 'active'?>">Campaigns</a>
+                            <a href="/email-marketing/campaigns/" class="<?php if ( $template->in_menu_item('email-marketing/campaigns') ) echo 'active'?>">Campaigns</a>
                             <ul class="sub">
-                                <li <?php if ( $template->v('email-marketing/campaigns/index') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/">List</a></li>
-                                <li <?php if ( $template->v('email-marketing/campaigns/create') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/create">Create</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/campaigns/list') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/campaigns/create') ) echo 'class="active"'?>><a href="/email-marketing/campaigns/create">Create</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="/email-marketing/subscribers/" class="<?php if ( $template->v('email-marketing/subscribers') ) echo 'active'?>">Subscribers</a>
+                            <a href="/email-marketing/subscribers/" class="<?php if ( $template->in_menu_item('email-marketing/subscribers') ) echo 'active'?>">Subscribers</a>
                             <ul class="sub">
-                                <li><a href="/email-marketing/subscribers/">Subscribed</a></li>
-                                <li><a href="/email-marketing/subscribers/unsubscribed/">Unsubscribed</a></li>
-                                <li><a href="/email-marketing/subscribers/add-edit/">Add</a></li>
-                                <li><a href="/email-marketing/subscribers/import/">Import</a></li>
-                                <li><a href="/email-marketing/subscribers/export/">Export</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/list') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/">Subscribed</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/unsubscribed') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/unsubscribed/">Unsubscribed</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/add') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/add-edit/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/import') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/import/">Import</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/export') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/export/">Export</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="/email-marketing/email-lists/" class="<?php if ( $template->v('email-marketing/email-lists') ) echo 'active'?>">Email Lists</a>
+                            <a href="/email-marketing/email-lists/" class="<?php if ( $template->in_menu_item('email-marketing/email-lists') ) echo 'active'?>">Email Lists</a>
                             <ul class="sub">
-                                <li><a href="/email-marketing/email-lists/">List</a></li>
-                                <li><a href="/email-marketing/email-lists/add-edit/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/email-lists/list') ) echo 'class="active"'?>><a href="/email-marketing/email-lists/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/email-lists/add') ) echo 'class="active"'?>><a href="/email-marketing/email-lists/add-edit/">Add</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="/email-marketing/autoresponders/" class="<?php if ( $template->v('email-marketing/autoresponders') ) echo 'active'?>">Autoresponders</a>
+                            <a href="/email-marketing/autoresponders/" class="<?php if ( $template->in_menu_item('email-marketing/autoresponders') ) echo 'active'?>">Autoresponders</a>
                             <ul class="sub">
-                                <li><a href="/email-marketing/autoresponders/">List</a></li>
-                                <li><a href="/email-marketing/autoresponders/add-edit/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/autoresponders/list') ) echo 'class="active"'?>><a href="/email-marketing/autoresponders/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/autoresponders/add') ) echo 'class="active"'?>><a href="/email-marketing/autoresponders/add-edit/">Add</a></li>
                             </ul>
                         </li>
-                        <li <?php if ( $template->v('email-marketing/settings') ) echo 'class="active"'?>><a href="/email-marketing/settings/">Settings</a></li>
+                        <li <?php if ( $template->in_menu_item('email-marketing/settings') ) echo 'class="active"'?>><a href="/email-marketing/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
 
             <?php if ( $user->account->shopping_cart ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('shopping-cart') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('shopping-cart') ) echo 'class="active"'?>>
                         <i class="fa fa-shopping-cart"></i>
                         <span>Shopping Cart</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('shopping-cart/orders') ) echo 'class="active"'?>><a href="/shopping-cart/orders/">Orders</a></li>
-                        <li <?php if ( $template->v('shopping-cart/users') ) echo 'class="active"'?>><a href="/shopping-cart/users/">Users</a></li>
+                        <li <?php if ( $template->in_menu_item('shopping-cart/orders') ) echo 'class="active"'?>><a href="/shopping-cart/orders/">Orders</a></li>
+                        <li <?php if ( $template->in_menu_item('shopping-cart/users') ) echo 'class="active"'?>><a href="/shopping-cart/users/">Users</a></li>
                         <li class="submenu">
-                            <a href="/shopping-cart/shipping/" class="<?php if ( $template->v('shopping-cart/shipping') ) echo 'active'?>">Shipping</a>
+                            <a href="/shopping-cart/shipping/" class="<?php if ( $template->in_menu_item('shopping-cart/shipping') ) echo 'active'?>">Shipping</a>
                             <ul class="sub">
-                                <li><a href="/shopping-cart/shipping/">List</a></li>
-                                <li><a href="/shopping-cart/shipping/add-edit-custom/">Add Custom</a></li>
-                                <li><a href="/shopping-cart/shipping/add-edit-ups/">Add UPS</a></li>
-                                <li><a href="/shopping-cart/shipping/add-edit-fedex/">Add FedEx</a></li>
-                                <li><a href="/shopping-cart/shipping/settings/">Settings</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/shipping/list') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-custom') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-custom/">Add Custom</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-ups') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-ups/">Add UPS</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-fedex') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-fedex/">Add FedEx</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/shipping/settings') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/settings/">Settings</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="/shopping-cart/coupons/" class="<?php if ( $template->v('shopping-cart/coupons') ) echo 'active'?>">Coupons</a>
+                            <a href="/shopping-cart/coupons/" class="<?php if ( $template->in_menu_item('shopping-cart/coupons') ) echo 'active'?>">Coupons</a>
                             <ul class="sub">
-                                <li><a href="/shopping-cart/coupons/">List</a></li>
-                                <li><a href="/shopping-cart/coupons/add-edit/">Add</a></li>
-                                <li><a href="/shopping-cart/coupons/apply-to-brand/">Apply to Brand</a></li>
-                                <li><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/coupons/list') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/coupons/add') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/add-edit/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/coupons/apply-to-brand') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/apply-to-brand/">Apply to Brand</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/coupons/products') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
-                            <a href="/shopping-cart/settings/" class="<?php if ( $template->v('shopping-cart/settings') ) echo 'active'?>">Settings</a>
+                            <a href="/shopping-cart/settings/" class="<?php if ( $template->in_menu_item('shopping-cart/settings') ) echo 'active'?>">Settings</a>
                             <ul class="sub">
-                                <li><a href="/shopping-cart/settings/">General</a></li>
-                                <li><a href="/shopping-cart/settings/payment-settings/">Payment Settings</a></li>
-                                <li><a href="/shopping-cart/settings/taxes/">Taxes</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/settings/general') ) echo 'class="active"'?>><a href="/shopping-cart/settings/">General</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/settings/payment-settings') ) echo 'class="active"'?>><a href="/shopping-cart/settings/payment-settings/">Payment Settings</a></li>
+                                <li <?php if ( $template->in_menu_item('shopping-cart/settings/taxes') ) echo 'class="active"'?>><a href="/shopping-cart/settings/taxes/">Taxes</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -277,26 +302,26 @@
 
             <?php if ( $user->account->craigslist ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('craigslist') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('craigslist') ) echo 'class="active"'?>>
                         <span>Craigslist</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('craigslist/index') ) echo 'class="active"'?>><a href="/craigslist/">List All</a></li>
-                        <li <?php if ( $template->v('craigslist/add-edit') ) echo 'class="active"'?>><a href="/craigslist/add-edit/">Add</a></li>
+                        <li <?php if ( $template->in_menu_item('craigslist/list') ) echo 'class="active"'?>><a href="/craigslist/">List All</a></li>
+                        <li <?php if ( $template->in_menu_item('craigslist/add') ) echo 'class="active"'?>><a href="/craigslist/add-edit/">Add</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
 
             <?php if ( $user->account->social_media ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->v('social-media') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('social-media') ) echo 'class="active"'?>>
                         <i class="fa fa-facebook"></i>
                         <span>Social Media</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->v('social-media/facebook/index') ) echo 'class="active"'?>><a href="/social-media/">List All</a></li>
-                        <li <?php if ( $template->v('social-media/facebook/add-edit') ) echo 'class="active"'?>><a href="/social-media/facebook/add-edit/">Add</a></li>
-                        <li <?php if ( $template->v('social-media/facebook/settings') ) echo 'class="active"'?>><a href="/social-media/facebook/settings/">Settings</a></li>
+                        <li <?php if ( $template->in_menu_item('social-media/facebook/list') ) echo 'class="active"'?>><a href="/social-media/">List All</a></li>
+                        <li <?php if ( $template->in_menu_item('social-media/facebook/add') ) echo 'class="active"'?>><a href="/social-media/facebook/add-edit/">Add</a></li>
+                        <li <?php if ( $template->in_menu_item('social-media/facebook/settings') ) echo 'class="active"'?>><a href="/social-media/facebook/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>

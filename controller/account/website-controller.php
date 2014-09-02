@@ -19,7 +19,7 @@ class WebsiteController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 36 )
-            ->select( 'website', 'website/index' );
+            ->menu_item('website/pages/list');
     }
 
     /**
@@ -247,7 +247,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'edit' )
             ->kb( 37 )
-            ->select( 'website', 'website/index' )
+            ->menu_item('website/pages/add')
             ->add_title( $page->title . ' | ' . _('Pages') )
             ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title', 'product_count' ), $resources ) );
     }
@@ -290,7 +290,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response('add')
             ->kb( 34 )
-            ->select( 'pages', 'add' )
+            ->menu_item('website/pages/add')
             ->add_title( _('Add Page') )
             ->set( compact( 'form') );
     }
@@ -327,7 +327,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'categories' )
             ->kb( 38 )
-            ->select( 'website', 'website/categories' )
+            ->menu_item('website/pages/categories')
             ->set( compact( 'categories' ) );
     }
 
@@ -366,7 +366,7 @@ class WebsiteController extends BaseController {
         return $this->get_template_response('edit-category')
             ->kb( 39 )
             ->select( 'website', 'website/categories' )
-            ->add_title( _('Edit Category') )
+            ->menu_item('website/pages/categories')
             ->set( compact( 'category' ) );
     }
 
@@ -399,7 +399,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'website-sidebar' )
             ->kb( 40 )
-            ->select( 'website', 'website/sidebar' )
+            ->menu_item('website/sidebar')
             ->add_title( _('Sidebar') )
             ->set( compact( 'dimensions', 'files', 'attachments', 'page', 'images_alt' ) );
     }
@@ -447,7 +447,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'banners' )
             ->kb( 41 )
-            ->select( 'website', 'website/banners' )
+            ->menu_item('website/banners')
             ->add_title( _('Banners') )
             ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page', 'slideshow_fixed_width' ) );
     }
@@ -574,7 +574,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'home-page-layout' )
             ->kb( 135 )
-            ->select( 'website', 'website/home-page-layout' )
+            ->menu_item('website/settings/home-page-layout')
             ->add_title( _('Home Page Layout') )
             ->set( compact( 'layout' ) );
     }
@@ -628,7 +628,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'navigation' )
             ->kb( 136 )
-            ->select( 'website', 'website/navigation' )
+            ->menu_item('website/settings/header-navigation')
             ->add_title( _('Navigation') )
             ->set( compact( 'pages', 'navigation' ) );
     }
@@ -663,7 +663,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'footer-navigation' )
             ->kb( 138 )
-            ->select( 'website', 'website/navigation' )
+            ->menu_item('website/settings/footer-navigation')
             ->add_title( _('Footer Navigation') )
             ->set( compact( 'pages', 'footer_navigation' ) );
     }
@@ -822,7 +822,7 @@ class WebsiteController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 44 )
             ->add_title( _('Settings') )
-            ->select( 'settings', 'website/settings' )
+            ->menu_item('website/settings/settings')
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
@@ -2044,7 +2044,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response('header')
             ->kb( 139 )
-            ->select( 'website', 'website/header' )
+            ->menu_item('website/settings/website-header')
             ->add_title( _('Header') )
             ->set( compact( 'header', 'files' ) );
 
@@ -2065,7 +2065,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'brands' )
             ->kb( 141 )
-            ->select( 'website', 'website/brands' );
+            ->menu_item('website/pages/brands');
     }
 
     /**
@@ -2111,7 +2111,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response('edit-brand')
             ->kb( 0 )
-            ->select( 'website', 'website/brands' )
+            ->menu_item('website/pages/brands')
             ->add_title( _('Edit Brand') )
             ->set( compact( 'brand', 'files' ) );
     }
@@ -2179,7 +2179,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response('html-head')
             ->kb( 0 )
-            ->select( 'website', 'website/settings' )
+            ->menu_item('website/settings/html-head')
             ->add_title( _('HTML Head') )
             ->set( compact( 'html_header' ) );
 
@@ -2208,7 +2208,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response('custom-404')
             ->kb( 0 )
-            ->select( 'website', 'website/settings' )
+            ->menu_item('website/settings/custom-404')
             ->add_title( _('Custom 404 Page') )
             ->set( compact( 'text_404', 'files' ) );
 
@@ -2263,7 +2263,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response('footer')
             ->kb( 0 )
-            ->select( 'website', 'website/footer' )
+            ->menu_item( 'website/settings/website-footer' )
             ->add_title( _('Footer') )
             ->set( compact( 'footer', 'files' ) );
 

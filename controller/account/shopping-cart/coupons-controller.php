@@ -19,7 +19,7 @@ class CouponsController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 129 )
-            ->select( 'shopping-cart', 'shopping-cart/coupons' );
+            ->menu_item( 'shopping-cart/coupons/list' );
     }
 
     /**
@@ -87,7 +87,7 @@ class CouponsController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 130 )
-            ->select( 'shopping-cart', 'shopping-cart/coupons' )
+            ->menu_item( 'shopping-cart/coupons/add' )
             ->set( compact( 'coupon', 'shipping_methods','free_shipping_methods', 'js_validation', 'errs' ) );
     }
 
@@ -209,7 +209,7 @@ class CouponsController extends BaseController {
         return $this->get_template_response( 'apply-to-brand' )
             ->kb( 143 )
             ->add_title( _('Apply to Brand | Coupons') )
-            ->select( 'shopping-cart', 'shopping-cart/coupons' )
+            ->menu_item( 'shopping-cart/coupons/apply-to-brand' )
             ->set( array(
                 'form' => $form->generate_form()
             ) );
@@ -229,7 +229,7 @@ class CouponsController extends BaseController {
             ->css( 'shopping-cart/coupons/products' );
         return $this->get_template_response( 'products' )
             ->kb( 0 )
-            ->select( 'shopping-cart', 'shopping-cart/coupons' )
+            ->menu_item( 'shopping-cart/coupons/products' )
             ->set( compact( 'coupons' ) );
     }
 
