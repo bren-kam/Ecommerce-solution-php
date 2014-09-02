@@ -159,8 +159,8 @@ class FacebookController extends BaseController {
         }
 
         $this->resources
-            ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager' );
 
         return $this->get_template_response( 'about-us' )
             ->kb( 95 )
@@ -523,8 +523,10 @@ class FacebookController extends BaseController {
         $email_lists = $email_list->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css_url( Config::resource('bootstrap-datepicker-css'), Config::resource('timepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource('timepicker-js') )
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager' );
 
         return $this->get_template_response( 'share-and-save' )
             ->kb( 92 )
@@ -649,9 +651,10 @@ class FacebookController extends BaseController {
         }
 
         $this->resources
-            ->css( 'jquery.timepicker', 'website/pages/page' )
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.timepicker', 'fileuploader', 'gsr-media-manager', 'website/pages/page', 'social-media/facebook/dates' );
+            ->css_url( Config::resource('bootstrap-datepicker-css'), Config::resource('timepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource('timepicker-js') )
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager', 'social-media/facebook/sweepstakes' );
 
         return $this->get_template_response( 'sweepstakes' )
             ->kb( 91 )
@@ -768,9 +771,10 @@ class FacebookController extends BaseController {
         $email_lists = $email_list->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'jquery.timepicker', 'website/pages/page' )
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.timepicker', 'fileuploader', 'gsr-media-manager', 'website/pages/page', 'social-media/facebook/dates' );
+            ->css_url( Config::resource('bootstrap-datepicker-css'), Config::resource('timepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource('timepicker-js') )
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager', 'social-media/facebook/sweepstakes' );
 
         return $this->get_template_response( 'fan-offer' )
             ->kb( 90 )
