@@ -241,7 +241,10 @@ ArticlesController extends BaseController {
         $categories_array = array();
 
         foreach( $categories as $category ) {
-            $categories_array[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
+            $categories_array[] = array(
+                'id' => $category->id
+                , 'name' => str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name
+            );
         }
 
         // Add the response
