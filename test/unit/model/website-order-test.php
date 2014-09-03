@@ -14,14 +14,12 @@ class WebsiteOrderTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
-        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->website_order = new WebsiteOrder();
 
         // Define
         $this->phactory->define( 'website_orders', array( 'website_id' => self::WEBSITE_ID, 'billing_first_name' => self::BILLING_FIRST_NAME, 'status' => WebsiteOrder::STATUS_PENDING ) );
         $this->phactory->recall();
     }
-
 
     /**
      * Get
@@ -162,7 +160,6 @@ class WebsiteOrderTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
-        unset( $_SERVER['MODEL_PATH'] );
         $this->website_order = null;
     }
 }
