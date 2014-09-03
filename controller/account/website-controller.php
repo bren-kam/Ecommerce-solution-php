@@ -2266,7 +2266,7 @@ class WebsiteController extends BaseController {
             ->javascript('fileuploader', 'media-manager');
 
         return $this->get_template_response('footer')
-            ->kb( 0 )
+            ->kb( 145 )
             ->menu_item( 'website/settings/website-footer' )
             ->add_title( _('Footer') )
             ->set( compact( 'footer', 'files' ) );
