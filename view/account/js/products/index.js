@@ -20,6 +20,14 @@ var ProductSearch = {
         $('#next-page').click( ProductSearch.nextPage );
 
         $('#product-list').on( 'click', '.remove', ProductSearch.remove );
+
+        // Make the list sortable
+        $("#product-list").sortable( {
+            items: '.product',
+            update: ProductSearch.reorganize,
+            scroll: true,
+            placeholder: 'product-placeholder'
+        });
     }
     , setupAutocomplete: function() {
 
@@ -61,6 +69,15 @@ var ProductSearch = {
 
     , loadPage: function () {
         var form = $('#product-search');
+
+        // Sortable is only enabled when we are under a category
+        if( $('[name=cid]').val() ) {
+            $("#product-list").sortable('enable');
+        } else {
+            $("#product-list").sortable('disable');
+        }
+
+
         $.post(
             form.attr('action')
             , form.serialize()
@@ -82,6 +99,7 @@ var ProductSearch = {
             for ( i in response.products ) {
                 product = response.products[i];
                 ProductSearch.template.clone()
+                    .data( 'product-id', product.product_id )
                     .find( 'h3' ).text( product.name ).end()
                     .find( 'img' ).attr( 'src', product.image_url ).end()
                     .find( '.sku' ).text( product.sku ).end()
@@ -137,6 +155,20 @@ var ProductSearch = {
                 item.remove();
             }
         )
+    }
+
+    , reorganize: function() {
+        var sequence = [];
+
+        $('#product-list .product').each(function(){
+            sequence.push( $(this).data('product-id') );
+        });
+
+        $.post(
+            '/products/update-sequence/'
+            , { _nonce : $('#_update_sequence').val(), s : sequence.join('|'), p : $('[name=p]').val(), pp :$('[name=n]').val() }
+            , GSR.defaultAjaxResponse
+        );
     }
 
 };

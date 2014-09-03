@@ -15,3 +15,15 @@
 #product-list .product img {
   width: 60%;
 }
+#product-list:not(.ui-sortable-disabled) .product {
+  cursor: move;
+}
+#product-list .product-placeholder {
+  float: left;
+  width: 19%;
+  height: 375px;
+  margin-right: 1%;
+  margin-bottom: 15px;
+  padding: 5px;
+  border: 3px dashed #ddd;
+}

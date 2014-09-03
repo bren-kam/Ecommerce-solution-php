@@ -63,7 +63,7 @@ class ProductsController extends BaseController {
 
         $this->resources->javascript( 'products/index' )
             ->css( 'products/index' )
-            ->javascript_url( Config::resource( 'typeahead-js' ) );
+            ->javascript_url( Config::resource( 'typeahead-js' ), Config::resource( 'jqueryui-js' ) );
 
         return $this->get_template_response( 'index')
             ->kb( 45 )
@@ -1554,7 +1554,7 @@ class ProductsController extends BaseController {
     }
 
     /**
-     * Update Brand Sequence
+     * Update Product Sequence
      *
      * @return AjaxResponse
      */
@@ -1562,14 +1562,13 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+        $response->check( isset( $_POST['s'] ), _('Unable to update product sequence. Please contact your Online Specialist.') );
 
         // Return if there is an error
         if ( $response->has_error() )
             return $response;
 
-        $sequence = explode( '&dProduct[]=', $_POST['s'] );
-        $sequence[0] = substr( $sequence[0], 11 );
+        $sequence = explode( '|', $_POST['s'] );
 
         // Adjust them if it's not the first page
         if ( '1' != $_POST['p'] ) {

@@ -18,6 +18,7 @@ nonce::field( 'remove', '_remove' );
 nonce::field( 'edit', '_edit' );
 nonce::field( 'block', '_block' );
 nonce::field( 'set_category_image', '_set_category_image' );
+nonce::field( 'update_sequence', '_update_sequence' );
 ?>
 <div class="row-fluid">
     <div class="col-lg-12">
