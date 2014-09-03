@@ -17,6 +17,7 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        $this->resources->css('website/index');
         return $this->get_template_response( 'index' )
             ->kb( 36 )
             ->menu_item('website/pages/list');
