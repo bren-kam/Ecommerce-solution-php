@@ -3,7 +3,7 @@
         <section class="panel">
             <header class="panel-heading">
                 Website Pages
-                <a href="/website/add" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> New Page</a>
+                <a href="/website/add/" class="btn btn-primary btn-sm pull-right" data-modal><i class="fa fa-plus"></i> New Page</a>
             </header>
 
             <div class="panel-body">

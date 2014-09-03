@@ -256,7 +256,7 @@ class WebsiteController extends BaseController {
     /**
      * Add Page
      *
-     * @return TemplateResponse|RedirectResponse
+     * @return CustomResponse|RedirectResponse
      */
     protected function add() {
         // Make sure they have the right permissions
@@ -289,11 +289,9 @@ class WebsiteController extends BaseController {
 
         $this->resources->javascript('website/add');
 
-        return $this->get_template_response('add')
-            ->kb( 34 )
-            ->menu_item('website/pages/add')
-            ->add_title( _('Add Page') )
-            ->set( compact( 'form') );
+        $response = new CustomResponse( $this->resources, 'website/add' );
+        $response->set( compact( 'form' ) );
+        return $response;
     }
 
     /**

@@ -134,7 +134,6 @@
                             <a href="javascript:;" <?php if ( $template->in_menu_item('website/pages') ) echo 'class="active"' ?>>Pages</a>
                             <ul class="sub">
                                 <li <?php if ( $template->in_menu_item('website/pages/list') ) echo 'class="active"' ?>><a href="/website/">List</a></li>
-                                <li <?php if ( $template->in_menu_item('website/pages/add') ) echo 'class="active"' ?>><a href="/website/add/">Add</a></li>
                                 <li <?php if ( $template->in_menu_item('website/pages/categories') ) echo 'class="active"' ?>><a href="/website/categories/">Categories</a></li>
                                 <li <?php if ( $template->in_menu_item('website/pages/brands') ) echo 'class="active"' ?>><a href="/website/brands/">Brands</a></li>
                             </ul>
