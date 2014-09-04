@@ -388,6 +388,8 @@ var ProductForm = {
         // If it's a new product form, create product id after setting name
         $('#tName').change( ProductForm.setProductSlug );
 
+        ProductForm.setupValidation();
+
     }
 
     /**
@@ -458,6 +460,55 @@ var ProductForm = {
                 .replace( /[^-a-zA-Z0-9\s]/g, '' )
                 .replace( /[\s]/g, '-' )
                 .toLowerCase();
+    }
+
+    , setupValidation: function() {
+        $('#fAddEditProduct').bootstrapValidator({
+            fields: {
+                tName: {
+                    validators: {
+                        notEmpty: {
+                            message: 'A "Name" is required'
+                        }
+                    }
+                }
+                , sProductStatus: {
+                    validators: {
+                        notEmpty: {
+                            message: 'A "Status" is required'
+                        }
+                    }
+                }
+                , tSKU: {
+                    validators: {
+                        notEmpty: {
+                            message: 'A "SKU" is required'
+                        }
+                    }
+                }
+                , sBrand: {
+                    validators: {
+                        notEmpty: {
+                            message: 'A "Brand" is required'
+                        }
+                    }
+                }
+                , sIndustry: {
+                    validators: {
+                        notEmpty: {
+                            message: 'A "Industry" is required'
+                        }
+                    }
+                }
+                , sCategory: {
+                    validators: {
+                        notEmpty: {
+                            message: 'A "Category" is required'
+                        }
+                    }
+                }
+            }
+        });
     }
 
 }

@@ -45,6 +45,31 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
 
         <button type="button" class="btn btn-default" id="add-location">Add Location</button>
 
+        <div class="form-group">
+            <label for="tEmail">Email:</label>
+            <input type="text" class="form-control" name="tEmail" id="tEmail" value="<?php echo $email ?>" />
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="cbHideAllMaps" value="yes" <?php if ( 'true' == $hide_all_maps ) echo 'checked'; ?> />
+                Hide All Maps
+            </label>
+        </div>
+
+        <h4>Map Settings</h4>
+        <div class="radio">
+            <label>
+                <input type="radio" name="rPosition" value="1" <?php if ( $page->top == '1' ) echo 'checked="checked"'; ?> />
+                Map will be placed after content
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="rPosition" value="0" <?php if ( $page->top == '0' ) echo 'checked="checked"'; ?> />
+                Map will be placed before content
+            </label>
+        </div>
 
     </div>
 
