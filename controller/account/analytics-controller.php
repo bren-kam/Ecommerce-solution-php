@@ -534,6 +534,7 @@ class AnalyticsController extends BaseController {
         return $this->get_template_response( 'email-marketing' )
             ->add_title( _('Email Marketing') )
             ->menu_item( 'analytics/email-marketing' )
+            ->kb( 70 )
             ->set( compact( 'emails', 'stats' ) );
     }
 
