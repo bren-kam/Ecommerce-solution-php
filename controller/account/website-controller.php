@@ -2029,7 +2029,15 @@ class WebsiteController extends BaseController {
      */
     public function header() {
         if ( $this->verified() ) {
-            $header = htmlentities( $_POST['header'] );
+            $header = $_POST['header'];
+
+            // Make URLs work on SSL and non-SSL
+            $header = preg_replace( '/http(s?):\/\//i', '//', $header );
+            // Make S3 Images work on SSL and non-SSL
+            $header = preg_replace( '/\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', '//s3.amazonaws.com/$1.retailcatalog.us/$2"', $header );
+            // Encode Entities
+            $header = htmlentities( $header );
+
             $this->user->account->set_settings( array( 'header' => $header ) );
             $this->notify('Your Header settings have been saved!');
         }
@@ -2251,7 +2259,15 @@ class WebsiteController extends BaseController {
      */
     public function footer() {
         if ( $this->verified() ) {
-            $footer = htmlentities( $_POST['footer'] );
+            $footer = $_POST['footer'];
+
+            // Make URLs work on SSL and non-SSL
+            $footer = preg_replace( '/http(s?):\/\//i', '//', $footer );
+            // Make S3 Images work on SSL and non-SSL
+            $footer = preg_replace( '/\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', '//s3.amazonaws.com/$1.retailcatalog.us/$2"', $footer );
+            // Encode Entities
+            $footer = htmlentities( $footer );
+
             $this->user->account->set_settings( array( 'footer' => $footer ) );
             $this->notify('Your Footer settings have been saved!');
         }
