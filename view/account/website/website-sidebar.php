@@ -44,7 +44,11 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                     </div>
 
-                    <?php foreach ( $attachments as $attachment ): ?>
+                    <?php
+                        foreach ( $attachments as $attachment ):
+                            if ( !in_array( $attachment->key, array( 'email', 'room-planner', 'search', 'sidebar-image', 'video' ) ) )
+                                continue;
+                    ?>
 
                         <div class="sidebar-element <?php echo $attachment->key ?> <?php echo $attachment->status == '0' ? 'disabled' : '' ?>" data-attachment-id="<?php echo $attachment->id ?>">
 
