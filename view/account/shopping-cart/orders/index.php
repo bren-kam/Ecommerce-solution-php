@@ -10,7 +10,7 @@
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/shopping-cart/orders/list-orders/" perPage="30,50,100">
                         <thead>
-                            <th sort="1">Order Number</th>
+                            <th sort="1 desc">Order Number</th>
                             <th>Name</th>
                             <th>Price</th>
                             <th>Status</th>

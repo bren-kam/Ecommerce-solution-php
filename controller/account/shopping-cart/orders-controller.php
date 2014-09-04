@@ -111,8 +111,13 @@ class OrdersController extends BaseController {
 
             $date = new DateTime( $order->date_created );
 
+            $link_text = $order->id;
+            if ( $order->website_shipping_method_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+                $link_text .= " Ashley Express";
+            }
+
             $data[] = array(
-                '<a href="' . url::add_query_arg( 'woid', $order->id, '/shopping-cart/orders/view/' ) . '" title="' . _('View') . '">' . $order->id . '</a>'
+                '<a href="' . url::add_query_arg( 'woid', $order->id, '/shopping-cart/orders/view/' ) . '" title="' . _('View') . '">' . $link_text . '</a>'
                 , $order->name
                 , '$' . number_format( $order->total_cost, 2 )
                 , $status
