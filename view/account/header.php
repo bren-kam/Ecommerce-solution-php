@@ -218,7 +218,7 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $user->account->email_marketing ): ?>
+            <?php if ( $user->account->email_marketing == 1 ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('email-marketing') ) echo 'class="active"'?>>
                         <i class="fa fa-inbox"></i>
@@ -258,6 +258,32 @@
                             </ul>
                         </li>
                         <li <?php if ( $template->in_menu_item('email-marketing/settings') ) echo 'class="active"'?>><a href="/email-marketing/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php else: ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('email-marketing') ) echo 'class="active"'?>>
+                        <i class="fa fa-inbox"></i>
+                        <span>Email Marketing</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="submenu">
+                            <a href="/email-marketing/subscribers/" class="<?php if ( $template->in_menu_item('email-marketing/subscribers') ) echo 'active'?>">Subscribers</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/list') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/">Subscribed</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/unsubscribed') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/unsubscribed/">Unsubscribed</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/add') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/add-edit/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/import') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/import/">Import</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/subscribers/export') ) echo 'class="active"'?>><a href="/email-marketing/subscribers/export/">Export</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/email-marketing/autoresponders/" class="<?php if ( $template->in_menu_item('email-marketing/autoresponders') ) echo 'active'?>">Autoresponders</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('email-marketing/autoresponders/list') ) echo 'class="active"'?>><a href="/email-marketing/autoresponders/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('email-marketing/autoresponders/add') ) echo 'class="active"'?>><a href="/email-marketing/autoresponders/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             <?php endif; ?>
@@ -337,3 +363,4 @@
 <section id="main-content">
 <section class="wrapper site-min-height">
 
+<?php var_dump($user->account->email_marketing) ?>

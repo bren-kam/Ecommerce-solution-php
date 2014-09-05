@@ -8,9 +8,6 @@ class CampaignsController extends BaseController {
     public function __construct() {
         parent::__construct();
 
-//        if ( !$this->user->account->email_marketing )
-//            return new RedirectResponse('/email-marketing/subscribers/');
-
         $this->view_base = 'email-marketing/campaigns/';
         $this->section = 'email-marketing';
         $this->title = _('Campaigns') . ' | ' . _('Email Marketing');
@@ -100,6 +97,9 @@ class CampaignsController extends BaseController {
      * @return AjaxResponse
      */
     protected function delete() {
+        if ( !$this->user->account->email_marketing )
+            return new RedirectResponse('/email-marketing/subscribers/');
+
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -122,6 +122,9 @@ class CampaignsController extends BaseController {
 
 
     public function create() {
+        if ( !$this->user->account->email_marketing )
+            return new RedirectResponse('/email-marketing/subscribers/');
+
         $campaign = new EmailMessage();
         $campaign->get( $_GET['id'], $this->user->account->id );
 
