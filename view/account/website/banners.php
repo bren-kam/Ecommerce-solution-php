@@ -80,6 +80,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
 <div id="banner-template" class="banner hidden">
     <div class="banner-actions">
+        <small><?php echo $dimensions; ?></small>
         <input type="checkbox" value="active" checked/>
         <a href="javascript:;" class="remove" title="Delete this Banner"><i class="fa fa-trash-o"></i></a>
     </div>
