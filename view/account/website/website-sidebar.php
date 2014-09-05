@@ -36,6 +36,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
             <div class="panel-body">
 
+                <p><small><?php if ( $dimensions ) echo '(Max. ' . $dimensions . ')' ?></small></p>
+
                 <div id="sidebar-list">
 
                     <div class="progress progress-sm hidden" id="new-element-loader">
@@ -80,6 +82,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                 <h3>Search</h3>
                             <?php elseif ( $attachment->key == 'sidebar-image' ): ?>
                                 <h3>Image</h3>
+                                <small><?php if ( $dimensions ) echo '(Max. ' . $dimensions . ')' ?></small>
                                 <img src="<?php echo $attachment->value ?>" />
                                 <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
                                     <div class="form-group">
