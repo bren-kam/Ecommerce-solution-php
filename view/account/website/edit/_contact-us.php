@@ -11,7 +11,6 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
     </header>
 
     <div class="panel-body">
-        <?php var_dump($multiple_location_map, $hide_all_maps) ?>
         <p>Note: These locations are updated in real-time. Leaving the page will not undo a created or deleted location.</p>
 
         <div id="location-list" class="clearfix">
