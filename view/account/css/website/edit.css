@@ -24,12 +24,14 @@
 }
 #location-list .location {
   width: 32%;
-  min-height: 350px;
+  height: 350px;
+  overflow-y: auto;
   float: left;
   display: inline-block;
   border: 1px solid #ccc;
   margin: 0 10px 10px 0;
   position: relative;
+  font-size: 12px;
 }
 #location-list .location h3 {
   font-size: 18px;

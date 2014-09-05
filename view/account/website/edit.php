@@ -20,6 +20,7 @@
 $upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
 $search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
 $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
+nonce::field( 'set_pagemeta', '_set_pagemeta' );
 ?>
 
 <form id="fEditPage" action="/website/edit/?apid=<?php echo $page->id ?>" method="post" role="form" data-account-page-id="<?php echo $page->id ?>">

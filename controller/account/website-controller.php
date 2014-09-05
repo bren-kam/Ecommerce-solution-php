@@ -1557,7 +1557,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['apid'], $_POST['k'], $_POST['v'] ), _('Image failed to upload') );
+        $response->check( isset( $_POST['apid'], $_POST['k'], $_POST['v'] ), _('Bad Parameters') );
 
         if ( $response->has_error() )
             return $response;

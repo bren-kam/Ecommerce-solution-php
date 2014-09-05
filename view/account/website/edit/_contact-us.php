@@ -11,6 +11,7 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
     </header>
 
     <div class="panel-body">
+        <?php var_dump($multiple_location_map, $hide_all_maps) ?>
         <p>Note: These locations are updated in real-time. Leaving the page will not undo a created or deleted location.</p>
 
         <div id="location-list" class="clearfix">
@@ -43,21 +44,19 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
             <?php endforeach; ?>
         </div>
 
-        <button type="button" class="btn btn-default" id="add-location">Add Location</button>
+        <p>
+            <button type="button" class="btn btn-default" id="add-location">Add Location</button>
+        </p>
+
+        <h4>Contact Us Form Settings</h4>
 
         <div class="form-group">
             <label for="tEmail">Email:</label>
             <input type="text" class="form-control" name="tEmail" id="tEmail" value="<?php echo $email ?>" />
         </div>
 
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" id="cbHideAllMaps" value="yes" <?php if ( 'true' == $hide_all_maps ) echo 'checked'; ?> />
-                Hide All Maps
-            </label>
-        </div>
-
         <h4>Map Settings</h4>
+
         <div class="radio">
             <label>
                 <input type="radio" name="rPosition" value="1" <?php if ( $page->top == '1' ) echo 'checked="checked"'; ?> />
@@ -68,6 +67,20 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
             <label>
                 <input type="radio" name="rPosition" value="0" <?php if ( $page->top == '0' ) echo 'checked="checked"'; ?> />
                 Map will be placed before content
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="cbHideAllMaps" value="yes" <?php if ( 'true' == $hide_all_maps ) echo 'checked'; ?> />
+                Hide All Maps
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="cbMultipleLocationMap" value="yes" <?php if ( 'true' == $multiple_location_map ) echo 'checked'; ?> />
+                Multiple Location Map
             </label>
         </div>
 

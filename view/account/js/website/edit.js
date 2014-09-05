@@ -283,6 +283,16 @@ var ContactUsForm = {
             forcePlaceholderSize : true,
             update: ContactUsForm.updateLocationSequence
         });
+
+        // Multiple Location Map toggle
+        $('#cbMultipleLocationMap').click( function() {
+            $.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'mlm', v : $(this).is(':checked') ? true : false, apid : $('#fEditPage').data('account-page-id') }, GSR.defaultAjaxResponse );
+        });
+
+        // Hide All Maps toggle
+        $('#cbHideAllMaps').click( function() {
+            $.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'ham', v : $(this).is(':checked') ? true : false, apid : $('#fEditPage').data('account-page-id') }, GSR.defaultAjaxResponse );
+        });
     }
 
     , showLocationForm: function( e ) {
