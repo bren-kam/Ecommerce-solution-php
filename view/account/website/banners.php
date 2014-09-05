@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Sidebar
+ * @page Banners
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -9,11 +9,9 @@
  * @var User $user
  * @var AccountPage $page
  * @var string $dimensions
- * @var array $files
- * @var AccountPageAttachment[] $attachments
  * @var bool $images_alt
+ * @var bool $slideshow_fixed_width
  */
-
 nonce::field( 'update_attachment_status', '_update_attachment_status' );
 nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
 nonce::field( 'remove_attachment', '_remove_attachment');
@@ -35,6 +33,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
             <div class="panel-body">
 
+                <p><small>(<?php echo ($slideshow_fixed_width ? 'Max. image' : 'Suggested') . ' size: ' . $dimensions?>)</small></p>
+
                 <div id="banner-list">
 
                     <div class="progress progress-sm hidden" id="new-element-loader">
@@ -48,6 +48,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="banner <?php echo $attachment->status == '0' ? 'disabled' : '' ?>" data-attachment-id="<?php echo $attachment->id ?>">
 
                             <div class="banner-actions">
+                                <small><?php echo $dimensions; ?></small>
                                 <input type="checkbox" data-toggle="switch" value="active" <?php if ( $attachment->status == '1' ) echo 'checked' ?>/>
 
                                 <a href="javascript:;" class="remove" title="Delete this Banner"><i class="fa fa-trash-o"></i></a>
