@@ -4877,7 +4877,8 @@ a {
 a:hover {
   color: #2a3542;
 }
-div#uploader {
+div#uploader,
+div#ticket-uploader {
   position: absolute;
   left: -5000px;
 }
