@@ -4,10 +4,10 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Narrow your search
+                Tickets
             </header>
 
-            <div class="panel-body">
+            <div class="panel-body" id="ticket-container">
 
                 <form class="form-inline" role="form">
                     <div class="form-group">
@@ -26,22 +26,10 @@
                         </select>
                     </div>
                 </form>
-            </div>
-        </section>
-    </div>
-</div>
 
-<div class="row-fluid">
-    <div class="col-lg-12">
-        <section class="panel">
-            <header class="panel-heading">
-                Tickets
-            </header>
-
-            <div class="panel-body">
 
                 <div class="adv-table">
-                    <table class="display table table-bordered table-striped" ajax="/tickets/list-all/" perPage="30,50,100">
+                    <table class="display table table-bordered table-striped" perPage="30,50,100">
                         <thead>
                             <tr>
                                 <th>Summary</th>

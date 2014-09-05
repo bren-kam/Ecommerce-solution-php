@@ -1,0 +1,6 @@
+.adv-table {
+  margin-top: -43px;
+}
+.adv-table .dataTables_wrapper .row:first-child .col-xs-6:first-child {
+  visibility: hidden;
+}

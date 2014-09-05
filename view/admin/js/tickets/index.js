@@ -1,6 +1,20 @@
 var TicketList = {
 
     init: function() {
+
+        GSR.datatable(
+            $('#ticket-container table')
+            , {
+                bProcessing: 1
+                , bServerSide: 1
+                , sAjaxSource: '/tickets/list-all/'
+                , oLanguage: {
+                    sSearch: 'Search:'
+                }
+            }
+        )
+        ajax="/tickets/list-all/"
+
         $('#sStatus').change( function() {
             $.post( '/tickets/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'tickets', 'status' ], value : $(this).val() }, TicketList.reloadDataTable );
         });
