@@ -70,6 +70,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         endforeach;
                     else:
                 ?>
+                        <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $contact_us->fb_page_id; ?>?sk=app_245607595465926" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 
                         <form method="post" role="form">
                             <div class="form-group">
