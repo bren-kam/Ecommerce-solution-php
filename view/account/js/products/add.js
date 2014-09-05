@@ -94,5 +94,66 @@ var ProductAdd = {
     }
 }
 
+var ProductRequest = {
+
+    template: null
+
+    , init: function() {
+        ProductRequest.template = $('#request-template').clone().removeClass('hidden').removeAttr('id');
+        $('#request-template').remove();
+
+        $('#add-request').click( ProductRequest.checkSKU );
+
+        $('body').on( 'submit', '#fRequestAProduct', ProductRequest.submit );
+    }
+
+    , checkSKU: function() {
+        var tRequestSKU = $('#tRequestSKU');
+
+        // Check if the product already exists
+        $.post(
+            '/products/sku-exists/'
+            , { _nonce: $('#_sku_exists').val(), sku : tRequestSKU.val() }
+            , ProductRequest.add
+        );
+    }
+
+    , add: function( response ) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            var sRequestBrand = $('#sRequestBrand')
+                , tRequestSKU = $('#tRequestSKU')
+                , tCollection = $('#tCollection');
+
+            ProductRequest.template.clone()
+                .find('.title').text( sRequestBrand.find(':selected').text() + " | " + tRequestSKU.val() + " | " + tCollection.val() ).end()
+                .find('input').val( sRequestBrand.find(':selected').text() + "|" + tRequestSKU.val() + "|" + tCollection.val() ).end()
+                .appendTo('#request-list');
+
+            sRequestBrand.val('');
+            tRequestSKU.val('');
+            tCollection.val('');
+        }
+    }
+
+    , submit: function(e) {
+        e.preventDefault();
+
+        var url = $(this).attr('action');
+        var data = $(this).serialize();
+
+        $.post(
+            url
+            , data
+            , function( response ){
+                GSR.defaultAjaxResponse( response );
+                $('#request-list').empty();
+            }
+        );
+    }
+
+}
+
 jQuery(ProductSearch.init);
 jQuery(ProductAdd.init);
+jQuery(ProductRequest.init);

@@ -1440,13 +1440,8 @@ class ProductsController extends BaseController {
             . "\n\nhttp://admin." . $catalog_manager_user->domain . "/tickets/ticket/?tid=" . $ticket->id
         );
 
-        // Empty the list
-        jQuery('#dRequestList')->empty();
-
-        // Close Dialog
-        jQuery('#aClose')->click();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( 'You product request has been received, we will contact you soon.' );
+        $response->add_response( 'close_modal', 'close_modal' );
 
         return $response;
     }
