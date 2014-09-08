@@ -506,7 +506,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 			// Magical Query
 			// Insert website products
-			$this->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $account_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1" );
+			$this->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $account_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) AND publish_visibility = 'public' GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1" );
 		}
 	}
 
