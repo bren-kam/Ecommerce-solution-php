@@ -76,6 +76,14 @@
         margin-bottom: 0!important;
     }
 
+    .dataTables_wrapper {
+      .pagination {
+        li:not(.previous):not(.next) {
+          display: none;
+        }
+      }
+    }
+
 
 }
 
@@ -341,6 +349,36 @@
 
     .img-responsive {
         width: 100%;
+    }
+
+    .dataTables_wrapper {
+      .dataTable {
+        tr {
+          th, td {
+            display: none;
+
+            &:nth-child(1)  {
+              display: table-cell;
+            }
+          }
+        }
+      }
+
+      .pagination {
+        li:not(.previous):not(.next) {
+          display: none;
+        }
+      }
+    }
+
+    #datatable-accounts, #datatable-checklist {
+      tr {
+        th, td {
+          &:nth-child(2)  {
+            display: table-cell;
+          }
+        }
+      }
     }
 
 }

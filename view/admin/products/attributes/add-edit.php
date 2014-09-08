@@ -37,9 +37,10 @@
                         <input type="text" class="form-control" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) || !$attribute->id ) ? $template->v('tName') : $attribute->name; ?>" placeholder="Name" />
                     </div>
 
-                    <div class="form-group" id="attribute-items-list">
+                    <p><strong>Items:</strong></p>
+
+                    <div id="attribute-items-list">
                         <div class="input-group">
-                            <label for="tItem">Items</label>
                             <input type="text" class="form-control" id="tItem" placeholder="Add new item" />
                             <span class="input-group-btn">
                                 <button type="button" id="add-item" class="btn btn-success"><i class="fa fa-plus"></i></button>

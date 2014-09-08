@@ -66,6 +66,9 @@
   .chat-room .mid-side {
     margin-bottom: 0!important;
   }
+  .dataTables_wrapper .pagination li:not(.previous):not(.next) {
+    display: none;
+  }
 }
 @media (max-width: 768px) {
   .header {
@@ -291,6 +294,23 @@
   /*---*/
   .img-responsive {
     width: 100%;
+  }
+  .dataTables_wrapper .dataTable tr th,
+  .dataTables_wrapper .dataTable tr td {
+    display: none;
+  }
+  .dataTables_wrapper .dataTable tr th:nth-child(1),
+  .dataTables_wrapper .dataTable tr td:nth-child(1) {
+    display: table-cell;
+  }
+  .dataTables_wrapper .pagination li:not(.previous):not(.next) {
+    display: none;
+  }
+  #datatable-accounts tr th:nth-child(2),
+  #datatable-checklist tr th:nth-child(2),
+  #datatable-accounts tr td:nth-child(2),
+  #datatable-checklist tr td:nth-child(2) {
+    display: table-cell;
   }
 }
 @media (max-width: 480px) {
