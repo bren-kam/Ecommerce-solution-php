@@ -362,5 +362,3 @@
 <!--main content start-->
 <section id="main-content">
 <section class="wrapper site-min-height">
-
-<?php var_dump($user->account->email_marketing) ?>
