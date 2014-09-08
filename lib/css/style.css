@@ -4844,6 +4844,7 @@ a.guest-on i {
 }
 #kb-dropdown .dropdown-menu {
   width: auto!important;
+  max-width: none!important;
 }
 /* Top level alerts */
 #container > .alert {
