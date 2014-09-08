@@ -123,8 +123,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         foreach( $accounts as $account ) {
             // Need to make this not timeout and remove half the products first
             // @fix
-            $this->run( $account, $file );
             echo "Running: " . $account->title . "\n";
+            $this->run( $account, $file );
         }
     }
 
@@ -1429,7 +1429,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
             // Trick to make sure the page doesn't timeout or segfault
             set_time_limit(3600);
-            flush();
 
             /***** CHECK PRODUCT *****/
 
