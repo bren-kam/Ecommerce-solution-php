@@ -150,4 +150,26 @@ class TestController extends BaseController {
 
         return new HtmlResponse( 'All LESS sites Recompiled' );
     }
+
+    /**
+     * Reorganize Categories ALL
+     *
+     *
+     * @return HtmlResponse
+     */
+    protected function reorganize_categories_all() {
+        $account = new Account();
+        $accounts = $account->list_all( array(' AND status=1 ', '', '', 10000 ) );
+        $account_category = new AccountCategory();
+        $category = new Category();
+
+        foreach ( $accounts as $a ) {
+            echo "#{$a->id}...<br>\n";
+            flush();
+            $account_category->reorganize_categories( $a->website_id, $category );
+        }
+
+        return new HtmlResponse( 'Finished' );
+    }
+
 }
