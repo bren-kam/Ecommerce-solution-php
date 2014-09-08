@@ -159,7 +159,7 @@ class TestController extends BaseController {
      */
     protected function reorganize_categories_all() {
         $account = new Account();
-        $accounts = $account->list_all( array(' AND status=1 ', '', '', 10000 ) );
+        $accounts = $account->list_all( array(' AND a.status=1 ', '', '', 10000 ) );
         $account_category = new AccountCategory();
         $category = new Category();
 
