@@ -425,25 +425,8 @@ class SubscribersController extends BaseController {
 
         // Set variables
         $last_ten_emails = array_slice( $emails, 0, 10 );
-        $email_html = '';
 
-        // Create HTML
-        foreach ( $last_ten_emails as $e ) {
-        	$email_html .= '<tr><td>' . $e['email'] . '</td><td>' . $e['name'] . '</td></tr>';
-        }
-
-        // Assign it to the table
-        jQuery('#tUploadedSubcribers')->append( $email_html );
-
-        // Hide the main view
-        jQuery('#dDefault')->hide();
-
-        // Show the next table
-        jQuery('#dUploadedSubscribers')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->add_response( 'last_ten_emails', $last_ten_emails );
         return $response;
     }
 }
