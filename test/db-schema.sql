@@ -342,6 +342,8 @@ CREATE TABLE IF NOT EXISTS `companies` (
   `status` int(1) NOT NULL DEFAULT '1',
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `less` TEXT NULL DEFAULT NULL,
+  `css` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`company_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
