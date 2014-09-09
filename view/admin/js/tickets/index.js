@@ -24,7 +24,7 @@ var TicketList = {
         });
 
         // Refresh the page every 5 minutes
-        setInterval( TicketList.reloadDataTable(), 300000 );
+        setInterval( TicketList.reloadDataTable, 300000 );
     }
 
     , reloadDataTable: function() {
