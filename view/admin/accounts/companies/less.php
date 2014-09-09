@@ -28,6 +28,7 @@ nonce::field('save_less');
                 </div>
 
                 <p>
+                    <br />
                     <a href="<?php echo url::add_query_arg( 'cid', $company->id, '/accounts/companies/save-less/' ); ?>" class="btn btn-primary btn-lg" id="save-less" title="<?php echo _('Save'); ?>"><?php echo _('Save'); ?></a>
                 </p>
 

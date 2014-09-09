@@ -283,7 +283,7 @@ class AccountsController extends BaseController {
 
         $template_response = $this->get_template_response('edit')
             ->kb( 4 )
-            ->select( 'accounts' )
+            ->select( 'accounts', 'accounts/index' )
             ->add_title( _('Edit') )
             ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes' ) );
 
