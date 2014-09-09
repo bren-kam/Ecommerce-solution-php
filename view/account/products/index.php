@@ -93,6 +93,15 @@ nonce::field( 'update_sequence', '_update_sequence' );
             </header>
 
             <div class="panel-body">
+                <p>
+                    <select class="form-control" id="pp">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    products per page
+                </p>
+
                 <div id="product-list">
                     <div id="product-template" class="product hidden">
                         <h3></h3>

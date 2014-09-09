@@ -28,6 +28,8 @@ var ProductSearch = {
             scroll: true,
             placeholder: 'product-placeholder'
         });
+
+        $('#pp').change( ProductSearch.changePerPage );
     }
     , setupAutocomplete: function() {
 
@@ -55,6 +57,11 @@ var ProductSearch = {
             .unbind('typeahead:selected')
             .on('typeahead:selected', ProductSearch.search );
 
+    }
+
+    , changePerPage: function() {
+        $('[name=n]').val( $(this).val() );
+        ProductSearch.search();
     }
 
     , search: function( event ) {
