@@ -19,7 +19,7 @@
                     </label>
                 </div>
 
-                <div class="row schedule <?php if ( !!$scheduled_datetime ) echo 'hidden' ?>">
+                <div class="row schedule <?php if ( !$scheduled_datetime ) echo 'hidden' ?>">
                     <div class="col-lg-4">
                         <div id="schedule-datepicker"></div>
                         <input type="hidden" name="date" id="date" value="<?php echo $scheduled_datetime ? $scheduled_datetime->format('Y-m-d') : '' ?>" />
