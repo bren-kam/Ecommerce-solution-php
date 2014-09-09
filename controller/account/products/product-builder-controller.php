@@ -321,9 +321,7 @@ class ProductBuilderController extends BaseController {
         }
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -347,10 +345,7 @@ class ProductBuilderController extends BaseController {
         $product->create();
 
         // Change Form
-        jQuery('#fAddEditProduct')->attr( 'action', url::add_query_arg( 'pid', $product->id, '' ) );
-        jQuery('#hProductId')->val( $product->id );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'product_id', $product->id );
 
         return $response;
     }
@@ -376,26 +371,7 @@ class ProductBuilderController extends BaseController {
             $attribute_items[$aia->title][] = $aia;
         }
 
-        $html = '';
-
-        $attributes = array_keys( $attribute_items );
-
-        foreach ( $attributes as $attribute ) {
-            $html .= '<optgroup label="' . $attribute . '">';
-
-            foreach ( $attribute_items[$attribute] as $attribute_item ) {
-                $html .= '<option value="' . $attribute_item->id . '">' . $attribute_item->name . '</option>';
-            }
-
-            $html .= '</optgroup>';
-        }
-
-        // Change Form
-        jQuery('#sAttributes')
-            ->html( $html )
-            ->disableAttributes();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'attributes', $attribute_items );
 
         return $response;
     }
