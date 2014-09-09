@@ -69,10 +69,20 @@
   .dataTables_wrapper .pagination li:not(.previous):not(.next) {
     display: none;
   }
+  .form-inline fieldset {
+    margin-bottom: 0;
+  }
+  .form-inline .form-group {
+    margin-bottom: 5px;
+  }
 }
 @media (max-width: 768px) {
   .header {
     position: absolute;
+    min-height: 100px;
+  }
+  .wrapper {
+    margin-top: 100px;
   }
   /*sidebar*/
   #sidebar {
@@ -283,6 +293,9 @@
   /*-----*/
   .custom-bar-chart {
     margin-bottom: 40px;
+  }
+  ul.sidebar-menu {
+    margin-top: 115px;
   }
   /*menu icon plus minus*/
   .dcjq-icon {

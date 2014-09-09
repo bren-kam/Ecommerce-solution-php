@@ -95,7 +95,9 @@ class WebsiteController extends BaseController {
             if ( empty( $errs ) ) {
                 // Home page can't update their slug
                 $slug = ( 'home' == $page->slug ) ? 'home' : $_POST['tPageSlug'];
+                $slug = trim( $slug );
                 $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : $_POST['tTitle'];
+                $title = trim( $title );
 
                 // Update the page
                 $page->slug = $slug;

@@ -6,6 +6,58 @@
       .col-xs-6:first-child {
         visibility: hidden;
       }
+
+      .dataTables_filter {
+        padding: 10px 0;
+      }
+    }
+  }
+}
+
+@media( max-width: 960px ) {
+  .adv-table{
+    margin-top: 0;
+
+    .dataTables_wrapper {
+      .row:first-child {
+        .col-xs-6:first-child {
+          display: none;
+        }
+
+        & > div {
+          width: 100%;
+          .dataTables_filter {
+            width: 100%;
+            float: none;
+
+            label {
+              float: left;
+              input {
+                margin: 0;
+                float: none;
+              }
+            }
+
+          }
+        }
+      }
+    }
+  }
+}
+
+@media( max-width: 767px ) {
+  .dataTables_wrapper {
+    .row:first-child {
+      .col-xs-6:first-child {
+        display: none;
+      }
+      .dataTables_filter {
+        input {
+          float: left;
+          width: 100%!important;
+          margin: 0;
+        }
+      }
     }
   }
 }

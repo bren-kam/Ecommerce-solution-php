@@ -4,3 +4,38 @@
 .adv-table .dataTables_wrapper .row:first-child .col-xs-6:first-child {
   visibility: hidden;
 }
+.adv-table .dataTables_wrapper .row:first-child .dataTables_filter {
+  padding: 10px 0;
+}
+@media (max-width: 960px) {
+  .adv-table {
+    margin-top: 0;
+  }
+  .adv-table .dataTables_wrapper .row:first-child .col-xs-6:first-child {
+    display: none;
+  }
+  .adv-table .dataTables_wrapper .row:first-child > div {
+    width: 100%;
+  }
+  .adv-table .dataTables_wrapper .row:first-child > div .dataTables_filter {
+    width: 100%;
+    float: none;
+  }
+  .adv-table .dataTables_wrapper .row:first-child > div .dataTables_filter label {
+    float: left;
+  }
+  .adv-table .dataTables_wrapper .row:first-child > div .dataTables_filter label input {
+    margin: 0;
+    float: none;
+  }
+}
+@media (max-width: 767px) {
+  .dataTables_wrapper .row:first-child .col-xs-6:first-child {
+    display: none;
+  }
+  .dataTables_wrapper .row:first-child .dataTables_filter input {
+    float: left;
+    width: 100%!important;
+    margin: 0;
+  }
+}

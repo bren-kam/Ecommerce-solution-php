@@ -58,48 +58,56 @@
 
 <!--header start-->
 <header class="header white-bg">
-<div class="sidebar-toggle-box">
-    <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
-</div>
-<!--logo start-->
-<a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" <?php if ( LOGO_HEIGHT < 60 ) echo 'style="margin-top: '. ( (60-LOGO_HEIGHT) / 2) .'px"' ?> alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
-<!--logo end-->
-<div class="top-nav ">
-    <!--search & user info start-->
-    <ul class="nav pull-right top-menu">
-        <!-- kb support dropdown start -->
-        <li class="dropdown" id="kb-dropdown">
-            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
-                <span class="glyphicon glyphicon-question-sign"></span>
-            </a>
-            <ul class="dropdown-menu extended">
-                <div class="log-arrow-up"></div>
-                <li><a href="#" data-toggle="modal" data-target="#support-modal"><i class="fa fa-ticket"></i> Support Request</a></li>
-                <?php if ( !empty( $kbh_articles ) ): ?>
-                    <li><a href="javascript:;" class="keep-open"><i class="fa fa-book"></i> <strong>Knowledge Base</strong></a></li>
-                    <?php foreach ( $kbh_articles as $kbh_article ): ?>
-                        <li><a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo str_repeat( '&nbsp;', 8 ) . $kbh_article->title; ?></a></li>
-                    <?php endforeach ; ?>
-                <?php endif; ?>
-                <li><a href="/kb/browser/"><i class="fa fa-globe"></i> Browser Support</a></li>
-            </ul>
-        </li>
-        <!-- kb support dropdown end -->
-        <!-- user login dropdown start-->
-        <li class="dropdown">
-            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
-                <span class="username"><?php echo $user->contact_name ?></span>
-                <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu extended">
-                <div class="log-arrow-up"></div>
-                <li><a href="/logout/"><i class="fa fa-key"></i> Log Out</a></li>
-            </ul>
-        </li>
-        <!-- user login dropdown end -->
-    </ul>
-    <!--search & user info end-->
-</div>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="sidebar-toggle-box">
+                <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+            </div>
+            <!--logo start-->
+            <a href="/" class="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" <?php if ( LOGO_HEIGHT < 60 ) echo 'style="margin-top: '. ( (60-LOGO_HEIGHT) / 2) .'px"' ?> alt="<?php echo TITLE, ' ', _('Logo'); ?>" /></a>
+            <!--logo end-->
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="top-nav">
+                <!--search & user info start-->
+                <ul class="nav pull-right top-menu">
+                    <!-- kb support dropdown start -->
+                    <li class="dropdown" id="kb-dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                        <ul class="dropdown-menu extended">
+                            <div class="log-arrow-up"></div>
+                            <li><a href="#" data-toggle="modal" data-target="#support-modal"><i class="fa fa-ticket"></i> Support Request</a></li>
+                            <?php if ( !empty( $kbh_articles ) ): ?>
+                                <li><a href="javascript:;" class="keep-open"><i class="fa fa-book"></i> <strong>Knowledge Base</strong></a></li>
+                                <?php foreach ( $kbh_articles as $kbh_article ): ?>
+                                    <li><a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo str_repeat( '&nbsp;', 8 ) . $kbh_article->title; ?></a></li>
+                                <?php endforeach ; ?>
+                            <?php endif; ?>
+                            <li><a href="/kb/browser/"><i class="fa fa-globe"></i> Browser Support</a></li>
+                        </ul>
+                    </li>
+                    <!-- kb support dropdown end -->
+                    <!-- user login dropdown start-->
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                            <span class="username"><?php echo $user->contact_name ?></span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu extended">
+                            <div class="log-arrow-up"></div>
+                            <li><a href="/logout/"><i class="fa fa-key"></i> Log Out</a></li>
+                        </ul>
+                    </li>
+                    <!-- user login dropdown end -->
+                </ul>
+                <!--search & user info end-->
+            </div>
+        </div>
+    </div>
+
+
 </header>
 <!--header end-->
 <!--sidebar start-->

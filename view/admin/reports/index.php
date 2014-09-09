@@ -23,14 +23,14 @@ nonce::field( 'autocomplete', '_autocomplete' );
                 <form id="report-form" class="form-inline" role="form">
                     <fieldset>
                         <div class="form-group">
-                            <div class="form-group">
-                                <select class="form-control" id="services">
-                                    <option value="">-- Add Service --</option>
-                                    <?php foreach ( $services as $k => $v ): ?>
-                                        <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                            <select class="form-control" id="services">
+                                <option value="">-- Add Service --</option>
+                                <?php foreach ( $services as $k => $v ): ?>
+                                    <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <select class="form-control" id="type">
                                 <option value="brand">Brand</option>
                                 <option value="online_specialist">Online Specialist</option>
