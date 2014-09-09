@@ -41,7 +41,7 @@ nonce::field( 'add_product', '_add_product' );
                 </form>
 
                 <div class="adv-table">
-                    <table class="display table table-bordered table-striped" id="tAddProducts">
+                    <table class="display table table-bordered table-striped" id="tAddProducts" data-hide-filter="1">
                         <thead>
                             <tr>
                                 <th>Name</th>

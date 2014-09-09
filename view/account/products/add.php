@@ -68,7 +68,7 @@ nonce::field( 'request', '_request' );
             <div class="panel-body">
 
                 <div class="adv-table">
-                    <table id="product-search-results" class="dt manual display table table-bordered table-striped" perPage="30,50,100">
+                    <table id="product-search-results" class="dt manual display table table-bordered table-striped" perPage="30,50,100" data-hide-filter="1">
                         <thead>
                             <th sort="1">Name</th>
                             <th>Brand</th>

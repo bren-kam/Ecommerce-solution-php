@@ -48,7 +48,7 @@
             <div class="panel-body">
 
                 <div class="adv-table">
-                    <table class="display table table-bordered table-striped" ajax="/accounts/list-all/" perPage="30,50,100" id="datatable-accounts">
+                    <table class="display table table-bordered table-striped" ajax="/accounts/list-all/" perPage="30,50,100" id="datatable-accounts" data-hide-filter="1">
                         <thead>
                             <tr>
                                 <th></th>

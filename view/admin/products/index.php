@@ -92,7 +92,7 @@
             <div class="panel-body">
 
                 <div class="adv-table">
-                    <table class="display table table-bordered table-striped" ajax="/products/list-all/" perPage="30,50,100">
+                    <table class="display table table-bordered table-striped" ajax="/products/list-all/" perPage="30,50,100" data-hide-filter="1">
                         <thead>
                             <tr>
                                 <th>Name</th>
