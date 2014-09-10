@@ -54,6 +54,9 @@
     <?php } ?>
 
     <form id="form-signin" class="form-signin" action="" method="post">
+        <div id="signin-logo">
+            <img src="/images/logos/login/<?php echo DOMAIN; ?>.png" />
+        </div>
 
         <h2 class="form-signin-heading">sign in now</h2>
         <div class="login-wrap">
