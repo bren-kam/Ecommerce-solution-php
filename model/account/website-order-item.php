@@ -6,7 +6,7 @@ class WebsiteOrderItem extends ActiveRecordBase {
         , $store_sku, $warranty_length, $status;
 
     // Belongs to other tables
-    public $industry, $image;
+    public $industry, $image, $product_sku;
 
     /**
      * @var WebsiteOrderItemOption[]
@@ -32,7 +32,7 @@ class WebsiteOrderItem extends ActiveRecordBase {
      */
     public function get_by_order( $website_order_id ) {
         return $this->prepare(
-            'SELECT woi.*, i.`name` AS industry, pi.`image` FROM `website_order_items` AS woi INNER JOIN `products` AS p ON ( p.`product_id` = woi.`product_id` ) INNER JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE woi.`website_order_id` = :website_order_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL )'
+            'SELECT woi.*, i.`name` AS industry, pi.`image`, p.`sku` AS product_sku FROM `website_order_items` AS woi INNER JOIN `products` AS p ON ( p.`product_id` = woi.`product_id` ) INNER JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE woi.`website_order_id` = :website_order_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL )'
             , 'i'
             , array( ':website_order_id' => $website_order_id )
         )->get_results( PDO::FETCH_CLASS, 'WebsiteOrderItem' );

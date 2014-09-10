@@ -129,7 +129,7 @@
                         <div class="col-lg-7">
                             <p>
                                 <strong><?php echo $item->name; ?></strong> <br />
-                                SKU: <?php echo $item->sku; ?> <br />
+                                SKU: <?php echo $item->sku ? $item->sku : $item->product_sku; ?> <br />
                                 <?php if ( !empty( $item->store_sku ) ) echo 'Store SKU: ' . $item->store_sku; ?>
                             </p>
 
