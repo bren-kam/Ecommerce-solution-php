@@ -50,6 +50,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         foreach ( $attachments as $attachment ):
                             if ( !in_array( $attachment->key, array( 'email', 'room-planner', 'search', 'sidebar-image', 'video' ) ) )
                                 continue;
+
+                            if ( $attachment->key == 'room-planner' && $user->account->is_new_template() )
+                                continue;
                     ?>
 
                         <div class="sidebar-element <?php echo $attachment->key ?> <?php echo $attachment->status == '0' ? 'disabled' : '' ?>" data-attachment-id="<?php echo $attachment->id ?>">
