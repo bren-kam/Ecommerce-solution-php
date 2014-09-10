@@ -155,6 +155,7 @@ class File {
      */
     public function delete_file( $key, $dir = '' ) {
 		// Delete the object
+        $subdomain = str_replace(' ', '', $subdomain);
 		$result = $this->s3->deleteObject( $this->bucket, $dir . $key );
 		Cache::delete( $this->cache_key );
 		return $result;
