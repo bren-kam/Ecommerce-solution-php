@@ -2,7 +2,7 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Craigslist ADs
+                Facebook Pages
             </header>
 
             <div class="panel-body">
