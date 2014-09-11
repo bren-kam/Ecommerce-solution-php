@@ -51,6 +51,10 @@ nonce::field('add_auto_price', '_add_auto_price');
 
                 <p><a href="/products/download-non-autoprice-products/">Click here</a> to download a spreadsheet of all items that cannot be priced using the auto price.</p>
 
+                <p class="text-center">
+                    <img src="/images/auto-price-explanation.jpg" width="100%" />
+                </p>
+
             </div>
         </section>
     </div>
