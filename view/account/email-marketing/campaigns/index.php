@@ -11,9 +11,9 @@
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/email-marketing/campaigns/list-all/" perPage="30,50,100">
                         <thead>
-                            <th sort="1">Subject</th>
+                            <th>Subject</th>
                             <th>Status</th>
-                            <th>Created</th>
+                            <th sort="1 desc">Created</th>
                             <th>Scheduled To</th>
                         </thead>
                     </table>
