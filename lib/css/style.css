@@ -4892,3 +4892,6 @@ div#ticket-uploader {
 .dataTable .web-actions a:hover {
   color: #41cac0;
 }
+.panel-heading h3 {
+  margin-bottom: 0px;
+}
