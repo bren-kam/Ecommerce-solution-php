@@ -155,8 +155,8 @@
                             <a href="javascript:;" <?php if ( $template->in_menu_item('website/settings') ) echo 'class="active"' ?>>Settings</a>
                             <ul class="sub">
                                 <li <?php if ( $template->in_menu_item('website/settings/settings') ) echo 'class="active"' ?>><a href="/website/settings/">Settings</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/home-page-layout') ) echo 'class="active"' ?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
                                 <?php if ( $user->account->is_new_template() ): ?>
+                                    <li <?php if ( $template->in_menu_item('website/settings/home-page-layout') ) echo 'class="active"' ?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/header-navigation') ) echo 'class="active"' ?>><a href="/website/navigation/">Header Navigation</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/website-header') ) echo 'class="active"' ?>><a href="/website/header/">Website Header</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/footer-navigation') ) echo 'class="active"' ?>><a href="/website/footer-navigation/">Footer Navigation</a></li>
