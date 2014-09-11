@@ -18,8 +18,7 @@
             <header class="panel-heading">
                 Header Navigation
                 <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#add-menu-item"><i class="fa fa-plus"></i> Add Menu Item</a>
-                <a href="/website/footer-navigation" class="btn btn-default btn-sm pull-right">Switch to Footer Navigation</a>
-            </header>
+                </header>
 
             <div class="panel-body">
 

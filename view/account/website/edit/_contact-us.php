@@ -76,12 +76,14 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
             </label>
         </div>
 
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" id="cbMultipleLocationMap" value="yes" <?php if ( 'true' == $multiple_location_map ) echo 'checked'; ?> />
-                Multiple Location Map
-            </label>
-        </div>
+        <?php if ( !$user->account->is_new_template() ): ?>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="cbMultipleLocationMap" value="yes" <?php if ( 'true' == $multiple_location_map ) echo 'checked'; ?> />
+                    Multiple Location Map
+                </label>
+            </div>
+        <?php endif; ?>
 
     </div>
 

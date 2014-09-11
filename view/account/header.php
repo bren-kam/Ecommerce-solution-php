@@ -3,6 +3,7 @@
  * @var Template $template
  * @var Resources $resources
  * @var Notification[] $notifications
+ * @var User $user
  */
 ?>
 <!DOCTYPE html>
@@ -143,7 +144,9 @@
                             <ul class="sub">
                                 <li <?php if ( $template->in_menu_item('website/pages/list') ) echo 'class="active"' ?>><a href="/website/">List</a></li>
                                 <li <?php if ( $template->in_menu_item('website/pages/categories') ) echo 'class="active"' ?>><a href="/website/categories/">Categories</a></li>
-                                <li <?php if ( $template->in_menu_item('website/pages/brands') ) echo 'class="active"' ?>><a href="/website/brands/">Brands</a></li>
+                                <?php if ( $user->account->is_new_template() ): ?>
+                                    <li <?php if ( $template->in_menu_item('website/pages/brands') ) echo 'class="active"' ?>><a href="/website/brands/">Brands</a></li>
+                                <?php endif; ?>
                             </ul>
                         </li>
                         <li <?php if ( $template->in_menu_item('website/sidebar') ) echo 'class="active"' ?>><a href="/website/sidebar/">Sidebar</a></li>
@@ -153,12 +156,14 @@
                             <ul class="sub">
                                 <li <?php if ( $template->in_menu_item('website/settings/settings') ) echo 'class="active"' ?>><a href="/website/settings/">Settings</a></li>
                                 <li <?php if ( $template->in_menu_item('website/settings/home-page-layout') ) echo 'class="active"' ?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/header-navigation') ) echo 'class="active"' ?>><a href="/website/navigation/">Header Navigation</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/website-header') ) echo 'class="active"' ?>><a href="/website/header/">Website Header</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/footer-navigation') ) echo 'class="active"' ?>><a href="/website/footer-navigation/">Footer Navigation</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/website-footer') ) echo 'class="active"' ?>><a href="/website/footer/">Website Footer</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/html-head') ) echo 'class="active"' ?>><a href="/website/html-head/">HTML &lt;head&gt;</a></li>
-                                <li <?php if ( $template->in_menu_item('website/settings/custom-404') ) echo 'class="active"' ?>><a href="/website/custom-404/">Custom 404 Page</a></li>
+                                <?php if ( $user->account->is_new_template() ): ?>
+                                    <li <?php if ( $template->in_menu_item('website/settings/header-navigation') ) echo 'class="active"' ?>><a href="/website/navigation/">Header Navigation</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/website-header') ) echo 'class="active"' ?>><a href="/website/header/">Website Header</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/footer-navigation') ) echo 'class="active"' ?>><a href="/website/footer-navigation/">Footer Navigation</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/website-footer') ) echo 'class="active"' ?>><a href="/website/footer/">Website Footer</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/html-head') ) echo 'class="active"' ?>><a href="/website/html-head/">HTML &lt;head&gt;</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/custom-404') ) echo 'class="active"' ?>><a href="/website/custom-404/">Custom 404 Page</a></li>
+                                <?php endif; ?>
                             </ul>
                         </li>
                     </ul>
