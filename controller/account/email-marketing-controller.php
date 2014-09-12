@@ -44,7 +44,8 @@ class EmailMarketingController extends BaseController {
             library('sendgrid-api');
             $sendgrid = new SendGridAPI( $this->user->account );
             $sendgrid->setup_subuser();
-            $email_stats = $sendgrid->subuser->stats( $sendgrid_username, $message->id, $message->date_sent );
+            $date_send = new DateTime( $message->date_sent );
+            $email_stats = $sendgrid->subuser->stats( $sendgrid_username, $message->id, $date_send->format('Y-m-d'));
 
             // Get the bar chart
             $bar_chart = Analytics::bar_chart( $email_stats );
