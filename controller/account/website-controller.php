@@ -2289,4 +2289,48 @@ class WebsiteController extends BaseController {
 
     }
 
+    /**
+     * Header Bar Links
+     *
+     * @return TemplateResponse
+     */
+    protected function header_bar_links() {
+        if ( $this->verified() ) {
+            $header_bar_links = array();
+
+            if ( !empty( $_POST['header-bar-links'] ) ) {
+                foreach ( $_POST['header-bar-links'] as $page ) {
+                    list( $url, $name ) = explode( '|', $page );
+                    $header_bar_links[] = compact( 'url', 'name' );
+                }
+            }
+
+            $this->user->account->set_settings( array( 'header-bar-links' => json_encode( $header_bar_links ) ) );
+            $this->notify('Your Footer Navigation settings have been saved!');
+        }
+
+        $page = new AccountPage();
+        $pages = $page->get_by_account( $this->user->account->id );
+
+        $header_bar_links = $this->user->account->get_settings('header-bar-links');
+
+        if ( empty( $header_bar_links ) )
+            $header_bar_links = array(
+                (object) array( 'name' => 'Products', 'url' => 'products' )
+            );
+        else
+            $header_bar_links = json_decode( $header_bar_links );
+
+        $this->resources
+            ->css( 'jquery.nestable', 'website/header-bar-links' )
+            ->javascript( 'jquery.nestable', 'website/header-bar-links' );
+
+        return $this->get_template_response( 'header-bar-links' )
+            ->kb( 138 )
+            ->menu_item('website/settings/header-bar-links')
+            ->add_title( _('Header Bar Links') )
+            ->set( compact( 'pages', 'header_bar_links' ) );
+    }
+
+
 }
