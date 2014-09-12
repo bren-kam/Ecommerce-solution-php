@@ -130,6 +130,10 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
                             <input type="text" class="form-control" name="email" id="email" placeholder="Email" />
                         </div>
                         <div class="form-group">
+                            <label for="website">Website:</label>
+                            <input type="text" class="form-control" name="website" id="website" placeholder="Website" />
+                        </div>
+                        <div class="form-group">
                             <label for="store-hours">Store Hours:</label>
                             <textarea class="form-control" name="store-hours" id="store-hours" placeholder="Store Hours" rows="3"></textarea>
                         </div>

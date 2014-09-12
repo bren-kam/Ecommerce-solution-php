@@ -312,6 +312,7 @@ var ContactUsForm = {
             $( '#city' ).val( location.city );
             $( '#state' ).val( location.state );
             $( '#zip' ).val( location.zip );
+            $( '#website' ).val( location.website );
             $( '<input />', { type: 'hidden', name: 'wlid', id: 'wlid' } ).val( location.id ).appendTo( '#locationModal form' );
         }
 
