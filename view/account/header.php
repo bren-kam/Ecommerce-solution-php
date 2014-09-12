@@ -231,6 +231,19 @@
                 </li>
             <?php endif; ?>
 
+            <?php if ( $user->account->blog == 1 ): ?>
+                <form action="http://<?php echo $user->account->domain; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm" class="hidden">
+                    <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
+                    <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
+                </form>
+                <li>
+                    <a href="javascript:document.getElementById('fBlogForm').submit();">
+                        <i class="fa fa-wordpress"></i>
+                        <span>Blog</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
             <?php if ( $user->account->email_marketing == 1 ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('email-marketing') ) echo 'class="active"'?>>
