@@ -2326,7 +2326,7 @@ class WebsiteController extends BaseController {
             ->javascript( 'jquery.nestable', 'website/top-site-navigation' );
 
         return $this->get_template_response( 'top-site-navigation' )
-            ->kb( 138 )
+            ->kb( 146 )
             ->menu_item('website/settings/top-site-navigation')
             ->add_title( _('Header Bar Links') )
             ->set( compact( 'pages', 'top_site_navigation' ) );
