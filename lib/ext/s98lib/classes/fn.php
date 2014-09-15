@@ -98,7 +98,7 @@ class fn extends Base_Class {
 				</html>' );
 		}
 
-		return mail( $to_addresses, $subject, $message, $headers);
+		return true; //mail( $to_addresses, $subject, $message, $headers);
 }
 
 	/**

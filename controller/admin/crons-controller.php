@@ -133,6 +133,11 @@ class CronsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->remove_all_discontinued();
 
+        $website_product_view = new WebsiteProductView();
+        $website_product_view->purge_old_data();
+        unset( $website_product_view );
+        gc_collect_cycles();
+
         return new HtmlResponse( 'Daily Jobs Completed' );
     }
 
