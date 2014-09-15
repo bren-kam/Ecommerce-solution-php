@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Header Bar Links
+ * @page Top Site Navigation
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
  * @var AccountPage[] $pages
- * @var array $header_bar_links
+ * @var array $top_site_navigation
  */
 ?>
 
@@ -16,7 +16,7 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Header Bar Links
+                Top Site Navigation
                 <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#add-menu-item"><i class="fa fa-plus"></i> Add Menu Item</a>
             </header>
 
@@ -25,14 +25,14 @@
                 <form method="post" role="form">
                     <div class="dd" id="navigation">
                         <ol class="dd-list">
-                            <?php foreach ( $header_bar_links as $k => $page ): ?>
+                            <?php foreach ( $top_site_navigation as $k => $page ): ?>
                                 <li class="dd-item dd3-item" data-id="<?php echo $k ?>">
                                     <div class="dd-handle dd3-handle"></div>
                                     <div class="dd3-content">
                                         <?php echo $page->name ?>
                                         <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
                                         <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
-                                        <input type="hidden" name="header-bar-links[<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
+                                        <input type="hidden" name="top-site-navigation[<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
                                     </div>
                                 </li>
                             <?php endforeach; ?>
@@ -41,7 +41,7 @@
 
                     <p>
                         <input type="hidden" name="tree" id="tree" value="" />
-                        <?php nonce::field( 'header_bar_links' ) ?>
+                        <?php nonce::field( 'top_site_navigation' ) ?>
                         <button type="submit" class="btn btn-primary">Save</button>
                     </p>
                 </form>

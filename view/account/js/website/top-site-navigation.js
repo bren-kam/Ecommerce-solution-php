@@ -21,7 +21,7 @@ var Navigation = {
         Navigation.template.clone()
             .find('.dd3-content').prepend( $('#name').val() ).end()
             .find('.page-url').prepend( $('#link').val() ).end()
-            .find('input').attr( 'name', 'header-bar-links[' + (new Date()).getTime() + ']').val( $('#link').val() + '|' + $('#name').val() ).end()
+            .find('input').attr( 'name', 'top-site-navigation[' + (new Date()).getTime() + ']').val( $('#link').val() + '|' + $('#name').val() ).end()
             .appendTo('#navigation > .dd-list');
 
         $('#name').val( '' );

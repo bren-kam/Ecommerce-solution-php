@@ -163,7 +163,7 @@
                                     <li <?php if ( $template->in_menu_item('website/settings/website-footer') ) echo 'class="active"' ?>><a href="/website/footer/">Website Footer</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/html-head') ) echo 'class="active"' ?>><a href="/website/html-head/">HTML &lt;head&gt;</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/custom-404') ) echo 'class="active"' ?>><a href="/website/custom-404/">Custom 404 Page</a></li>
-                                    <li <?php if ( $template->in_menu_item('website/settings/header-bar-links') ) echo 'class="active"' ?>><a href="/website/header-bar-links/">Header Bar Links</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/top-site-navigation') ) echo 'class="active"' ?>><a href="/website/top-site-navigation/">Top Site Navigation</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
