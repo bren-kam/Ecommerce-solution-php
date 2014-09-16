@@ -93,9 +93,12 @@
                     <!-- kb support dropdown end -->
                     <!-- user login dropdown start-->
                     <li class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                        <a data-toggle="dropdown" class="dropdown-toggle hidden-xs" href="javascript:;">
                             <span class="username"><?php echo $user->contact_name ?></span>
                             <b class="caret"></b>
+                        </a>
+                        <a data-toggle="dropdown" class="dropdown-toggle visible-xs" href="javascript:;">
+                            <span class="visible-xs glyphicon glyphicon-user"></span>
                         </a>
                         <ul class="dropdown-menu extended">
                             <div class="log-arrow-up"></div>

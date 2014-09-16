@@ -621,6 +621,7 @@ class ProductsController extends BaseController {
         $categories_array = $category->sort_by_hierarchy();
         $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
         $top_categories_array = json_decode( $this->user->account->get_settings('top-categories') );
+        $top_categories_array = $top_categories_array ? $top_categories_array : array();
         $category_images = ar::assign_key( $account_category->get_website_category_images( $this->user->account->id, $website_category_ids ), 'category_id', true );
 
         $categories = $top_categories = array();

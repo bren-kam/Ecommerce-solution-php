@@ -4,7 +4,12 @@
 .panel-body #sParentCategoryID {
   width: auto;
   position: absolute;
-  left: 200px;
+  left: 230px;
   top: 27px;
   z-index: 1;
+}
+@media (max-width: 980px) {
+  .panel-body #sParentCategoryID {
+    position: static!important;
+  }
 }

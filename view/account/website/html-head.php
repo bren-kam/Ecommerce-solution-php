@@ -4,8 +4,6 @@
 
             <header class="panel-heading">
                 HTML &lt;Head&gt;
-                <a href="/website/settings/" class="pull-right btn btn-default btn-sm">Edit Settings</a>
-                <a href="/website/custom-404/" class="pull-right btn btn-default btn-sm">Edit 404 Page</a>
             </header>
             <div class="panel-body">
                 <form method="post" role="form">

@@ -9,8 +9,6 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
             <header class="panel-heading">
                 Custom 404 Page
-                <a href="/website/html-head/" class="pull-right btn btn-default btn-sm">Edit HTML &lt;head&gt;</a>
-                <a href="/website/settings/" class="pull-right btn btn-default btn-sm">Edit Settings</a>
             </header>
             <div class="panel-body">
                 <p>Set this text to customize the message shown when a visitor enters a non existing Page.</p>

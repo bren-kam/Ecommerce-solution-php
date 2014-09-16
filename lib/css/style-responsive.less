@@ -398,7 +398,19 @@
       }
     }
 
+    /*.dataTables_length {
+      display: none;
+    }*/
 
+}
+
+@media (min-width: 321px) and (max-width: 768px) {
+  .top-nav ul.top-menu > li .dropdown-menu.logout {
+    position: fixed;
+    right: 10px;
+    top: 100px;
+    width: 100%!important;
+  }
 }
 
 
@@ -544,6 +556,14 @@
     .chat-room .mid-side {
         margin-bottom: 0!important;
     }
+
+  .dataTables_filter {
+    label {
+      input {
+        width: 58%!important;
+      }
+    }
+  }
 }
 
 @media (max-width:320px) {
@@ -614,4 +634,21 @@
         height: 70px;
         line-height: 70px;
     }
+
+    .top-nav ul.top-menu > li .dropdown-menu.logout {
+      position: fixed;
+      left: 0px;
+      top: 100px;
+      width: 100%!important;
+      margin: 0 auto;
+    }
+
+    #kb-dropdown .dropdown-menu {
+      position: fixed;
+      width: 90%!important;
+      left: 0px;
+      top: 100px;
+      margin: 0 auto;
+    }
+
 }

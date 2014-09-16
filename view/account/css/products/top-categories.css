@@ -30,3 +30,8 @@
 #category-list .category:hover .remove {
   display: block;
 }
+@media (max-width: 980px) {
+  #category-list .category .remove {
+    display: block;
+  }
+}
