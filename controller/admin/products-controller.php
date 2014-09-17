@@ -753,6 +753,8 @@ ProductsController extends BaseController {
         $products = array();
         // Products that won't be imported
         $skipped_products = array();
+        // # of Products that will update
+        $to_update = 0;
 
         foreach ( $rows as &$values ) {
             if ( count($headers) == count($values) ) {
@@ -814,7 +816,7 @@ ProductsController extends BaseController {
             $matching_product = new Product();
             $matching_product->get_by_sku_by_brand( $r['sku'], $brand_id );
             // we will only load images for new products
-            if ( !$matching_product->id ) {
+//            if ( !$matching_product->id ) {
                 if ( !regexp::match( $r['image'], 'url' ) ) {
                     $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
                     $valid = false;
@@ -837,7 +839,10 @@ ProductsController extends BaseController {
                     $skipped_products[] = $r;
                     continue;
                 }                
-            }
+            //} else {
+            if ( $matching_product->id )
+                $to_update++;
+            //}
 
             $product = array_slice($r, 0, 9);
             
@@ -888,6 +893,7 @@ ProductsController extends BaseController {
         $response->add_response( 'count', count($rows) );
         $response->add_response( 'count_skipped', count($skipped_products) );
         $response->add_response( 'count_to_import', count($products) );
+        $response->add_response( 'count_to_update', $to_update );
         $response->add_response( 'skipped_rows', $skipped_products );
 
         return $response;
@@ -937,6 +943,13 @@ ProductsController extends BaseController {
                 $product->publish_date = date( 'Y-m-d H:i:s' );
 
                 // we only upload images if its a new product
+                $slug = f::strip_extension( f::name( $p->image ) );
+                $industry = format::slug( $p->industry_name );
+                $image_name = $product->upload_image( $p->image, $slug, $industry );
+                $product->add_images( array( $image_name ) );
+            } else {
+                // Override Images
+                $product->delete_images();
                 $slug = f::strip_extension( f::name( $p->image ) );
                 $industry = format::slug( $p->industry_name );
                 $image_name = $product->upload_image( $p->image, $slug, $industry );
