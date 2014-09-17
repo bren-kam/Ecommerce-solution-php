@@ -9,15 +9,15 @@
 
             <div class="panel-body" id="ticket-container">
 
-                <form class="form-inline" role="form">
+                <form class="form-inline col-md-offset-3" role="form">
                     <div class="form-group">
-                        <select class="form-control" id="sStatus">
+                        <select class="form-control input-sm" id="sStatus">
                             <option value="0">Open Tickets</option>
                             <option value="1">Closed Tickets</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <select class="form-control" id="sAssignedTo">
+                        <select class="form-control  input-sm" id="sAssignedTo">
                             <option value="0">All</option>
                             <option value="-1">Peers</option>
                             <?php foreach ( $assigned_to_users as $atu ): ?>

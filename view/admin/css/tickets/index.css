@@ -1,11 +1,11 @@
 .adv-table {
-  margin-top: -43px;
+  margin-top: -45px;
 }
 .adv-table .dataTables_wrapper .row:first-child .col-xs-6:first-child {
   visibility: hidden;
 }
 .adv-table .dataTables_wrapper .row:first-child .dataTables_filter {
-  padding: 10px 0;
+  padding: 15px 0 10px 0;
 }
 @media (max-width: 960px) {
   .adv-table {
