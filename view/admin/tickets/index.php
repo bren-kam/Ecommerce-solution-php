@@ -9,7 +9,7 @@
 
             <div class="panel-body" id="ticket-container">
 
-                <form class="form-inline col-md-offset-3" role="form">
+                <form class="form-inline" id="ticket-filter" role="form">
                     <div class="form-group">
                         <select class="form-control input-sm" id="sStatus">
                             <option value="0">Open Tickets</option>
