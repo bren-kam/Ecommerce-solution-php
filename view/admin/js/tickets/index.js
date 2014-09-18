@@ -8,9 +8,6 @@ var TicketList = {
                 bProcessing: 1
                 , bServerSide: 1
                 , sAjaxSource: '/tickets/list-all/'
-                , oLanguage: {
-                    sSearch: 'Search:'
-                }
             }
         )
         ajax="/tickets/list-all/"
