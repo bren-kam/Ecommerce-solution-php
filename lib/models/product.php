@@ -454,7 +454,7 @@ class Product extends ActiveRecordBase {
         $copied = @copy( $image_url, $image_path );
 
         if ( !$copied )
-            return new ErrorException( _("Could not copy    '$image_url' to '$image_path'") );
+            throw new ErrorException( _("Could not copy '$image_url' to '$image_path'") );
 
         $file->upload_image( $image_path, $new_image_name, 350, 350, $industry, "products/{$this->id}/", false, true );
         $file->upload_image( $image_path, $new_image_name, 64, 64, $industry, "products/{$this->id}/thumbnail/", false, true );

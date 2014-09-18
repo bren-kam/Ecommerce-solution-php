@@ -22,7 +22,7 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a href="#product" role="tab" data-toggle="tab">Produc &amp; Pricing</a></li>
+                    <li class="active"><a href="#product" role="tab" data-toggle="tab">Product &amp; Pricing</a></li>
                     <li><a href="#options" role="tab" data-toggle="tab">Product Options</a></li>
                     <li><a href="#shopping-cart" role="tab" data-toggle="tab">Shopping Cart</a></li>
                     <li><a target="_blank" href="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=<?php echo $product->product_id ?>">Master Catalog</a></li>

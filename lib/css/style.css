@@ -2362,6 +2362,9 @@ ul.amounts li {
   padding: 0 15px;
 }
 .dataTables_filter {
+  float: left;
+}
+.dataTables_length {
   float: right;
 }
 .dataTables_length select {
@@ -3736,11 +3739,11 @@ td.details table tr td,
   background-color: #FFFFFF;
 }
 .adv-table .dataTables_filter label input {
-  float: right;
+  /* float: left; */
   margin-left: 10px;
 }
 .adv-table .dataTables_filter label {
-  line-height: 33px;
+  /*line-height: 33px;*/
   width: 100%;
 }
 .adv-table .dataTables_length select {

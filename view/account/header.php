@@ -108,7 +108,7 @@
                             </li>
                             <li><a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a></li>
                             <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Authorized <br> Users</a></li>
-                            <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp; Phone</a></li>
+                            <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp;<br> Phone</a></li>
                             <?php if ( $online_specialist->id ): ?>
                                 <li class="big">
                                     <?php
