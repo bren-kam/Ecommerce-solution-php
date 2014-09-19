@@ -575,7 +575,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'home-page-layout' )
             ->kb( 135 )
-            ->menu_item('website/settings/home-page-layout')
+            ->menu_item('website/home-page-layout')
             ->add_title( _('Home Page Layout') )
             ->set( compact( 'layout' ) );
     }
@@ -629,7 +629,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'navigation' )
             ->kb( 136 )
-            ->menu_item('website/settings/header-navigation')
+            ->menu_item('website/navigation-menus/header-navigation')
             ->add_title( _('Navigation') )
             ->set( compact( 'pages', 'navigation' ) );
     }
@@ -664,7 +664,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'footer-navigation' )
             ->kb( 138 )
-            ->menu_item('website/settings/footer-navigation')
+            ->menu_item('website/navigation-menus/footer-navigation')
             ->add_title( _('Footer Navigation') )
             ->set( compact( 'pages', 'footer_navigation' ) );
     }
@@ -2327,7 +2327,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'top-site-navigation' )
             ->kb( 146 )
-            ->menu_item('website/settings/top-site-navigation')
+            ->menu_item('website/navigation-menus/top-site-navigation')
             ->add_title( _('Header Bar Links') )
             ->set( compact( 'pages', 'top_site_navigation' ) );
     }
