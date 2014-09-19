@@ -1257,7 +1257,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['sku'] ), _('Please type in a SKU') );
+        $response->check( isset( $_POST['sku'], $_POST['brand_id'] ) && !empty( $_POST['sku'] ) && !empty( $_POST['brand_id'] ), _('Please type in a SKU & Brand') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -1267,21 +1267,19 @@ class ProductsController extends BaseController {
         $product = new Product();
 
         // Check to see if it already exists
-        $product->get_by_sku( $_POST['sku'] );
+        $product->get_by_sku_by_brand( $_POST['sku'], $_POST['brand_id'] );
 
         if ( $product->id ) {
             $account_product = new AccountProduct();
             $account_product->get( $product->id, $this->user->account->id );
 
-            $response->check( $account_product->product_id && 1 == $account_product->active, _('A product with same SKU already exists in record and it is already added in your website.') );
+            if ( $account_product->product_id && $account_product->active )
+                $message = 'A product with same SKU already exists in record and it is already added in your website.';
+            else
+                $message = 'A product with the same SKU already exists in record.';
 
-            if ( $response->has_error() )
-                return $response;
-
-            // Now we know what to do
-            $response
-                ->add_response( 'product', array( 'product_id' => $product->id, 'name' => $product->name ) )
-                ->add_response( 'confirm', _('A product with same SKU already exists in record. Do you want to add into your product list?') );
+            $response->check( false, $message );
+            return $response;
         } else {
             $response->add_response( 'product', false );
         }

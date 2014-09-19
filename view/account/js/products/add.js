@@ -105,15 +105,18 @@ var ProductRequest = {
         $('#add-request').click( ProductRequest.checkSKU );
 
         $('body').on( 'submit', '#fRequestAProduct', ProductRequest.submit );
+
+        $('body').on( 'click', '#fRequestAProduct .remove', ProductRequest.remove );
     }
 
     , checkSKU: function() {
         var tRequestSKU = $('#tRequestSKU');
+        var sRequestBrand = $('#sRequestBrand');
 
         // Check if the product already exists
         $.post(
             '/products/sku-exists/'
-            , { _nonce: $('#_sku_exists').val(), sku : tRequestSKU.val() }
+            , { _nonce: $('#_sku_exists').val(), sku : tRequestSKU.val(), brand_id: sRequestBrand.val() }
             , ProductRequest.add
         );
     }
@@ -150,6 +153,10 @@ var ProductRequest = {
                 $('#request-list').empty();
             }
         );
+    }
+
+    , remove: function() {
+        $(this).parents('.request:first').remove();
     }
 
 }
