@@ -575,7 +575,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'home-page-layout' )
             ->kb( 135 )
-            ->menu_item('website/home-page-layout')
+            ->menu_item('website/settings/home-page-layout')
             ->add_title( _('Home Page Layout') )
             ->set( compact( 'layout' ) );
     }
