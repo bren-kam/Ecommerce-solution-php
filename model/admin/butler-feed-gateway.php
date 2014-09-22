@@ -141,7 +141,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
         $feed_product_list = $this->get_feed();
 
         foreach ( $feed_product_list as $feed_product ) {
-            echo "<hr>Getting $feed_product->item_number...<br>";
+            echo "<hr>Getting $feed_product->item_number...<br>\n";
 
             /**
              * @var Product $product
@@ -159,7 +159,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
                 $product->status = 'in-stock';
                 $product->create();
 
-                echo "Trying with Image " . self::IMAGE_URL . $feed_product->image_file_name . " <br>";
+                echo "Trying with Image " . self::IMAGE_URL . $feed_product->image_file_name . " <br>\n";
                 $image_url = self::IMAGE_URL . $feed_product->image_file_name;
                 try {
                     $full_image_name = $product->upload_image( $image_url, $product->slug, 'furniture' );
@@ -167,7 +167,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
                     $product->publish_visibility = 'public';
                 } catch ( Exception $e ) { }
             } else {
-                echo "Product found {$product->id}<br>";
+                echo "Product found {$product->id}<br>\n";
                 $product->user_id_modified = self::USER_ID;
             }
 
@@ -186,7 +186,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
                 $duplicated_slug->get_by_slug( $product->slug );
             }
 
-            $product->description = "<p>{$feed_product->story}</p>";
+            $product->description = "<p>{$feed_product->story}</p>\n";
 
             $product->brand_id = self::BRAND_ID;
             $product->category_id = $this->get_category_id( $feed_product );
@@ -212,8 +212,8 @@ class ButlerFeedGateway extends ActiveRecordBase {
                 $product->publish_visibility = 'deleted';
             }
 
-            echo json_encode($product) . "<br>";
-            echo json_encode($specifications) . "<br>";
+            echo json_encode($product) . "<br>\n";
+            echo json_encode($specifications) . "<br>\n";
 
             $product->save();
 
@@ -223,7 +223,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
             }
             flush();
         }
-        echo "Finished";
+        echo "Finished\n";
 
     }
 
