@@ -1,26 +1,31 @@
-/***********/
-/* Banners */
-/***********/
-.element-box, .box-placeholder {
-	width: 680px; max-width: 100%; padding:10px; position:relative;
-	border: 1px #D9D9D9 solid;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	cursor: n-resize
+#banner-list .banner {
+  position: relative;
+  width: 60%;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
 }
-.element-box form { display: inline }
-.element-box.disabled, .element-box.disabled .tb { background-color: #9C9C9C }
-.element-box.disabled h2, .element-box.disabled p { color: #7F7F80 }
-
-.element-box h2 { font-size: 16px; font-weight: bold }
-.element-box small { padding-bottom: 5px; font-size: 11px }
-
-.enable-disable { background: url(/images/buttons/website/show-hide.png) 0 -25px no-repeat; width: 76px; height:25px; position: absolute; top: 12px; right: 11px }
-.enable-disable.disabled { background-position: 0 0 }
-
-.box-divider { height: 18px; width:680px; padding: 0 10px; background:url(/images/divider.png) center center no-repeat; }
-.box-placeholder { border-style:dashed }
-
-.remove { float:right; position:relative; right: 2px; top: 3px }
-.banner img { max-width: 100%; }
+#banner-list .banner.disabled {
+  opacity: 0.6;
+}
+#banner-list .banner.disabled h3 {
+  color: #797979;
+}
+#banner-list .banner .banner-actions {
+  position: absolute;
+  top: 12px;
+  right: 5px;
+}
+#banner-list .banner .banner-actions .remove {
+  color: red;
+  font-size: 18px;
+}
+#banner-list .banner img {
+  width: 100%;
+  margin-top: 35px;
+}
+#banner-list .banner-placeholder {
+  height: 100px;
+  width: 60%;
+  border: 1px dashed #999;
+}

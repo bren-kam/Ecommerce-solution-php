@@ -20,7 +20,7 @@ class SettingsController extends BaseController {
     protected function index() {
         $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed', 'authorize-net-id' );
 
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         $form->add_field( 'text', _('Email Receipt'), 'tReceipt', $settings['email-receipt'] )
             ->attribute( 'maxlength', 150 )
@@ -56,7 +56,7 @@ class SettingsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 131 )
             ->set( compact( 'form' ) )
-            ->select( 'settings', 'general' );
+            ->menu_item( 'shopping-cart/settings/settings' );
     }
 
     /**
@@ -77,7 +77,7 @@ class SettingsController extends BaseController {
         );
 
         // Create Form
-        $form = new FormTable( 'fPaymentSettings' );
+        $form = new BootstrapForm( 'fPaymentSettings' );
 
 
         $form->add_field( 'row', '', _('All Payment Methods') );
@@ -139,7 +139,7 @@ class SettingsController extends BaseController {
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
             ->set( compact( 'form' ) )
-            ->select( 'settings', 'payment-settings' )
+            ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
     }
 
@@ -186,7 +186,7 @@ class SettingsController extends BaseController {
 
         return $this->get_template_response( 'taxes' )
             ->kb( 133 )
-            ->select( 'settings', 'tax-settings' )
+            ->menu_item( 'shopping-cart/settings/taxes' )
             ->set( compact( 'taxes', 'states' ) );
     }
 }

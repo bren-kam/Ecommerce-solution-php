@@ -159,4 +159,43 @@ class WebsiteProductGroup extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Copy product groups
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    public function copy_by_account( $template_account_id, $account_id ) {
+        $this->copy_groups( $template_account_id, $account_id );
+        $this->copy_group_relations( $template_account_id, $account_id );
+    }
+
+    /**
+     * Copy groups
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    protected function copy_groups( $template_account_id, $account_id ) {
+        $this->prepare(
+            'INSERT INTO `website_product_groups` (`website_id`, `name`) SELECT :account_id, wpg.`name` FROM `website_product_groups` AS wpg LEFT JOIN `website_product_groups` AS wpg2 ON ( wpg2.`name` = wpg.`name` AND wpg2.`website_id` = :account_id2 ) WHERE wpg.`website_id` = :template_account_id AND wpg2.`website_product_group_id` IS NULL GROUP BY `name`'
+            , 'iii'
+            , array( ':account_id' => $account_id, ':account_id2' => $account_id, ':template_account_id' => $template_account_id )
+        )->query();
+    }
+
+    /**
+     * Copy group relations
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    protected function copy_group_relations( $template_account_id, $account_id ) {
+        $this->prepare(
+            'INSERT INTO `website_product_group_relations` (`website_product_group_id`, `product_id`) SELECT wpg2.`website_product_group_id`, wpgr.`product_id` FROM `website_product_group_relations` AS wpgr LEFT JOIN `website_product_groups` AS wpg ON ( wpgr.`website_product_group_id` = wpg.`website_product_group_id` ) LEFT JOIN `website_product_groups` AS wpg2 ON ( wpg2.`name` = wpg.`name` ) WHERE wpg.`website_id` = :template_account_id AND wpg2.`website_id` = :account_id ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`)'
+            , 'ii'
+            , array( ':account_id' => $account_id, ':template_account_id' => $template_account_id )
+        )->query();
+    }
 }

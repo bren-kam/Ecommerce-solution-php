@@ -10,30 +10,39 @@
  * @var AccountProduct[] $products
  */
 
-echo $template->start( _('All Products') );
 ?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                All Products
+            </header>
 
-<table class="dt" width="100%" perPage="100,250,500">
-    <thead>
-        <tr>
-            <th width="30%" sort="1"><?php echo _('Product Name'); ?></th>
-            <th width="20%"><?php echo _('SKU'); ?></th>
-            <th width="25%"><?php echo _('Category'); ?></th>
-            <th width="25%"><?php echo _('Brand'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        if ( is_array( $products ) )
-        foreach ( $products as $product ) { ?>
-            <tr>
-                <td><?php echo $product->name; ?></td>
-                <td><?php echo $product->sku; ?></td>
-                <td><?php echo $product->category; ?></td>
-                <td><?php echo $product->brand; ?></td>
-            </tr>
-        <?php } ?>
-    </tbody>
-</table>
+            <div class="panel-body">
 
-<?php echo $template->end(); ?>
+                <table class="dt display table table-bordered table-striped" perPage="30,50,100">
+                    <thead>
+                        <th>Name</th>
+                        <th>SKU</th>
+                        <th sort="1">Category</th>
+                        <th>Brand</th>
+                    </thead>
+
+                    <tbody>
+                        <?php if ( is_array( $products ) ): ?>
+                            <?php foreach ( $products as $product ): ?>
+                                <tr>
+                                    <td><?php echo $product->name; ?></td>
+                                    <td><?php echo $product->sku; ?></td>
+                                    <td><?php echo $product->category; ?></td>
+                                    <td><?php echo $product->brand; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+
+            </div>
+        </section>
+    </div>
+</div>

@@ -16,7 +16,7 @@ var TicketCommentForm = {
             .removeClass('hidden')
             .filter(':not(#upload-loader)')
             .addClass('hide-on-blur');
-        $('#comment').blur( TicketCommentForm.hidForm );
+        $('#comment').blur( TicketCommentForm.hideForm );
 
         // Add Comment
         $('#add-comment-form').submit( TicketCommentForm.add );
@@ -75,7 +75,7 @@ var TicketCommentForm = {
             comment.find('.template-contact-name').text( response.contact_name );
             comment.find('[data-assign-to]').attr( 'data-assign-to', response.user_id );
             comment.find('[data-comment-id]').attr( 'data-comment-id', response.id );
-            comment.find('.comment-text').text( response.comment );
+            comment.find('.comment-text').html( response.comment );
 
             if ( response.private == 0 )
                 comment.find('.template-private-comment').remove();
@@ -193,7 +193,7 @@ var TicketView = {
         $('#sStatus').change( TicketView.updateStatus );
 
         $('#sAssignedTo').change( TicketView.assignTo );
-        $('#ticket-comments').on( 'click', '[data-assign-to]', TicketView.assignTo );
+        $('body').on( 'click', '[data-assign-to]', TicketView.assignTo );
 
     }
 

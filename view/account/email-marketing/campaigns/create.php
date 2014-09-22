@@ -17,17 +17,26 @@
  * @var boolean $overwrite_from
  * @var DateTime $scheduled_datetime
  */
-
-echo $template->start( _('Create a New Campaign'), '../sidebar' );
 ?>
 
-<ul class="progress-bar">
-    <li class="active"><a href="#" data-step="1" title="Campaign Info">Campaign Info</a></li>
-    <li><a href="#" data-step="2" title="Build">Build</a></li>
-    <li><a href="#" data-step="3" title="Preview &amp; Send">Preview &amp; Send</a></li>
-</ul><!-- .progress-bar -->
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php echo $campaign->id ? 'Edit' : 'Create a New'?> Campaign
+            </header>
+            <div class="panel-body">
+                <ul class="form-steps">
+                    <li class="active"><a href="javascript:;" data-step="1" title="Campaign Info">Campaign Info</a></li>
+                    <li><a href="javascript:;" data-step="2" title="Build">Build</a></li>
+                    <li><a href="javascript:;" data-step="3" title="Preview &amp; Send">Preview &amp; Send</a></li>
+                </ul><!-- .progress-bar -->
+            </div>
+        </section>
+    </div>
+</div>
 
-<form action="" method="post" id="fCreateCampaign">
+<form method="post" id="create-campaign">
 
     <div data-step="1">
         <?php require_once dirname( __FILE__ ) . '/_step1.php' ?>
@@ -42,4 +51,3 @@ echo $template->start( _('Create a New Campaign'), '../sidebar' );
     </div>
 
 </form>
-<?php echo $template->end(); ?>

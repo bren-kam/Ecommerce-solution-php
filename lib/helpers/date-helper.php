@@ -14,7 +14,7 @@ class DateHelper {
             'y' => 'year',
             'm' => 'month',
             'w' => 'week',
-            'd' => 'dat',
+            'd' => 'day',
             'h' => 'hr',
             'i' => 'm',
             's' => 's',

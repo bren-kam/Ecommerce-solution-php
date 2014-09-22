@@ -9,6 +9,6 @@
  */
 
 define( 'TITLE', 'Imagine Retailer' );
-define( 'LOGO_WIDTH', 314 );
-define( 'LOGO_HEIGHT', 48 );
+define( 'LOGO_WIDTH', 250 );
+define( 'LOGO_HEIGHT', 38 );
 define( 'COMPANY_ID', 1 );

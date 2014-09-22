@@ -15,3 +15,8 @@
   width: 50%;
   display: inline-block;
 }
+@media (max-width: 979px) {
+  #checklist-sections {
+    width: 100%;
+  }
+}

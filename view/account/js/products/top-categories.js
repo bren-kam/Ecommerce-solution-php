@@ -1,57 +1,58 @@
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    // Add a category
-    $('#add-category').click( function(e) {
-        e.preventDefault();
+var CategoryList = {
 
-        var sCategoryId = $('#sCategoryId'), category = sCategoryId.find('option:selected'), img = category.attr('data-img')
-            , name = category.text().trim();
+    template: null
 
-        if ( !img.length )
-            img = 'http://placehold.it/200x200&text=' + name;
+    , init: function() {
+        CategoryList.template = $('#category-template').clone().removeClass('hidden').removeAttr('id');
+        $('#category-template').remove();
 
-        // AJAX call to get the offer box
-        $('#category-template')
-            .clone()
-                .show()
-                .attr( 'id', 'dTopCategory_' + category.val() )
-                .appendTo('#top-categories')
-                    .find('img:last').attr( 'src', img )
-                    .next() // H4
-                        .text( name );
+        $('#category').change( CategoryList.add );
+        $('#category-list').on( 'click', '.remove', CategoryList.remove );
 
-        updateCategorySequence();
+        // Sortable
+        $( '#category-list' ).sortable({
+            items		: '.category',
+            cancel		: 'a',
+            placeholder	: 'category-placeholder',
+            forcePlaceholderSize : true,
+            update: CategoryList.updateSequence
+        });
+    }
 
-        // Reset
-        sCategoryId.val('');
-    });
-
-    // make them sortable
-	$('#top-categories').sortable({
-		items		: '.top-category',
-		cancel		: 'a',
-		placeholder	: 'top-category-placeholder',
-		revert		: true,
-		forcePlaceholderSize : true,
-		update		: updateCategorySequence
-	}).on( 'click', '.remove-category', function(e) { // Make them removable
-        e.preventDefault();
-
-        if ( !confirm( $(this).attr('data-confirm') ) )
+    , remove: function() {
+        if ( !confirm('Are you sure do you want to remove this Category?') )
             return;
 
-        $(this).parents('.top-category:first').remove();
-        updateCategorySequence();
-    });
-});
+        $(this).parents('.category').remove();
+        CategoryList.updateSequence();
+    }
 
-function updateCategorySequence() {
-	/**
-	 * Because numbers are invalid HTML ID attributes, we can't use .sortable('toArray'), which gives something like dAttachment_123.
-	 * This means we would have to loop through the array on the serverside to determine everything.
-	 * When it is serialized like a string, it means that we can use the PHP explode function to determine the right IDs, very easily.
-	 */
-	var idList = $('#top-categories').sortable('serialize');
+    , add: function() {
+        var select = $(this);
+        var name = select.find(':selected').text();
+        var image = select.find(':selected').data('img');
 
-	// Use Sidebar's -- it's the same thing
-	$.post( '/products/update-top-category-sequence/', { _nonce : $('#_update_top_category_sequence').val(), 's' : idList }, ajaxResponse, 'json' );
+        CategoryList.template.clone()
+            .data( 'category-id', select.val() )
+            .find('img').attr( 'src', image ).end()
+            .find('h4').text( name ).end()
+            .appendTo( '#category-list' );
+        CategoryList.updateSequence();
+    }
+
+    , updateSequence: function() {
+        var sequence = [];
+        $( '#category-list .category' ).each( function(){
+            sequence.push($( this ).data('category-id') );
+        })
+
+        $.post(
+            '/products/update-top-category-sequence/'
+            , { s: sequence.join('|'), _nonce: $('#_update_top_category_sequence' ).val() }
+            , GSR.defaultAjaxResponse
+        );
+    }
+
 }
+
+jQuery( CategoryList.init );

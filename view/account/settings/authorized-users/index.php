@@ -1,29 +1,27 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Authorized Users | Settings | Email Marketing
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Authorized Users
+                <a class="pull-right btn btn-sm btn-primary" href="/settings/authorized-users/add-edit/"><i class="fa fa-plus"></i> Add New User</a>
+            </header>
 
-echo $template->start( _('Authorized Users'), '../sidebar' );
-?>
-<table ajax="/settings/authorized-users/list-all/" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="40%" sort="1"><?php echo _('Email'); ?></th>
-            <th width="10%"><?php echo _('Pages'); ?></th>
-            <th width="10%"><?php echo _('Products'); ?></th>
-            <th width="10%"><?php echo _('Analytics' ); ?></th>
-            <th width="10%"><?php echo _('Blog'); ?></th>
-            <th width="10%"><?php echo _('Email Marketing'); ?></th>
-            <th width="10%"><?php echo _('Shopping Cart'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-<?php echo $template->end(); ?>
+            <div class="panel-body">
+
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/settings/authorized-users/list-all/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Email</th>
+                            <th>Pages</th>
+                            <th>Products</th>
+                            <th>Analytics</th>
+                            <th>Blog</th>
+                            <th>Email Marketing</th>
+                            <th>Shopping Cart</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

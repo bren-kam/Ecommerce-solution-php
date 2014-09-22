@@ -1,151 +1,134 @@
-/**
- * Craigslist - Add/Edit Page
- */
+var CraigslistForm = {
 
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-	// Setup cache
-	cache = { sku : {}, product : {} };
-	
-	// Change the text
-	$('#sAutoComplete').change( function() {
-		var tAutoComplete = $('#tAutoComplete');
-		
-		tAutoComplete.attr( 'placeholder', 'Enter ' + $(this).find('option:selected').text() + '...' ).val('').blur();
-	});
-	
-	$('#tAutoComplete').autocomplete({
-		minLength: 1,
-		select: function( event, ui ) {
-            loadProduct( ui.item.value );
-			$('#tAutoComplete').val( ui.item.label );
-			
-			return false;
-		},
-		source: function( request, response ) {
-			// Get the cache type
-			var cacheType = $('#sAutoComplete').val();
-			
-			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in cache[cacheType] ) {
-				response( $.map( cache[cacheType][request['term']], function( item ) {
-					return {
-						'label' : item['name'],
-						'value' : item['value']
-					}
-				}) );
-				
-				// If it was cached, return now
-				return;
-			}
-			
-			// It was not cached, get data
-			$.post( '/products/autocomplete/', { '_nonce' : $('#_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( autocompleteResponse ) {
-				// Assign global cache the response data
-				cache[cacheType][request['term']] = autocompleteResponse['suggestions'];
-				
-				// Return the response data
-				response( $.map( autocompleteResponse['suggestions'], function( item ) {
-					return {
-						'label' : item['name'],
-						'value' : item['value']
-					}
-				}));
-			}, 'json' );
-		}
-	});
+    init: function() {
+        // Autocomplete
+        CraigslistForm.setupAutocomplete();
+        // Autcomplete - When change search type, we must reconfigure
+        $('#sAutoComplete').change( CraigslistForm.setupAutocomplete );
 
-    // If they click create an ad, what do we do?
-	$("#aCreateAd").click( function() {
-        // Hide the preview template
-		$("#dPreviewTemplate").hide();
-		$("#hTemplateID").val('-1');
+        $('#fAddCraigslistTemplate .hidden').removeClass('hidden').hide();
 
-		openEditorAndPreview();
-	});
+        $('#show-preview').click( CraigslistForm.preview );
+        $('#post-ad').click( CraigslistForm.postAD );
 
-    // Post this ad to the Craigslist API
-    $('#aPostAd').click( function() {
+        if ( $('#hProductID').val() ) {
+            CraigslistForm.load();
+        }
+    }
+
+    , load: function() {
+        if ( typeof CKEDITOR === 'undefined')
+            return setTimeout( CraigslistForm.load, 1000 );
+
+        $.post(
+            '/craigslist/load-product/'
+            , { _nonce : $('#_load_product').val(), pid : $('#hProductID').val() }
+            , function( response ) {
+                CraigslistForm.loadProductResponse( response );
+                CraigslistForm.preview();
+            }
+        );
+    }
+
+    , setupAutocomplete: function() {
+        var searchType = $("#sAutoComplete").val();
+        var nonce = $('#_autocomplete_owned').val();
+
+        var autocomplete = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value')
+            , queryTokenizer: Bloodhound.tokenizers.whitespace
+            , remote: {
+                url: '/products/autocomplete-owned/?_nonce=' + nonce + '&type=' + searchType + '&owned=1&term=%QUERY'
+                , filter: function( list ) {
+                    return list.suggestions
+                }
+            }
+        });
+
+        autocomplete.initialize();
+        $("#tAutoComplete")
+            .typeahead('destroy')
+            .typeahead(null, {
+                displayKey: 'name'
+                , source: autocomplete.ttAdapter()
+            })
+            .unbind('typeahead:selected')
+            .on('typeahead:selected', CraigslistForm.loadProduct );
+    }
+
+    , loadProduct: function( event, item ) {
+        $.post(
+            '/craigslist/load-product/'
+            , { _nonce : $('#_load_product').val(), pid : item.value }
+            , CraigslistForm.loadProductResponse
+        );
+    }
+
+    , loadProductResponse: function( response ) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            var product = response.product;
+            
+            $('#hProductDescription').val( product.description );
+            $('#hProductName').val( product.name );
+            $('#hProductCategoryID').val( product.category_id );
+            $('#hProductID').val( product.product_id );
+            $('#hProductCategoryName').val( product.category );
+            $('#hProductSKU').val( product.sku );
+            $('#hProductBrandName').val( product.brand );
+            $('#hProductSpecifications').val( product.specifications );
+            $('#tPrice[val=""]').val( product.price );
+
+            $('#dProductPhotos').html( product.image );
+            $('#dPreviewTemplate').hide();
+            $('#dCreateAd, #dPreviewAd').show();
+        }
+    }
+
+    , preview: function() {
+
+        var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
+        var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val(), productSpecifications = $("#hProductSpecifications").val();
+
+        storeLogo = ( storeLogo.search( /http:/i ) > -1 ) ? storeLogo : storeURL + '/custom/uploads/images/' + storeLogo;
+
+        //get the contents of the tinyMCE editor and replace tags with actual stuff.
+        var newContent = CKEDITOR.instances.taDescription.getData();
+
+        newContent = newContent.replace( '[Product Name]', productName );
+        newContent = newContent.replace( '[Store Name]', storeName );
+        newContent = newContent.replace( '[Store Logo]', '<img src="' + storeLogo + '" alt="" />' );
+        newContent = newContent.replace( '[Category]', category );
+        newContent = newContent.replace( '[Brand]', brand );
+        newContent = newContent.replace( '[Product Description]', productDescription );
+        newContent = newContent.replace( '[SKU]', sku );
+        newContent = newContent.replace( '[Product Specifications]', productSpecifications );
+
+        var photos = document.getElementsByClassName( 'hiddenImage' ), photoHTML = '', index = 0;
+
+        if ( photos.length ) {
+            while ( newContent.indexOf( '[Photo]' ) >= 0 ) {
+                if ( index >= photos.length )
+                    index = 0;
+
+                photoHTML = '<img src="' + photos[index]['src'] + '" />';
+                newContent = newContent.replace( "[Photo]", photoHTML );
+                index++;
+            }
+        }
+
+        $("#preview").html( newContent );
+        $('#hCraigslistPost').val( newContent );
+    }
+
+    , postAD: function() {
         // Say we want to post it
         $('#hPostAd').val('1');
 
         // Submit the form
         $('#fAddCraigslistTemplate').submit();
-    });
-
-    // Refresh the preview
-	$("#aRefresh").click( refreshPreview );
-
-    var productID = $('#hProductID').val();
-    if ( '' != productID ) {
-        loadProduct( productID, function() {
-            setTimeout( refreshPreview, 1000 );
-        });
     }
-});
 
-/**
- *  Opens the editor area.
- */
-function openEditorAndPreview() {
-	$('#dPreviewTemplate').hide();
-	$('#dCreateAd, #dPreviewAd').show();
 }
 
-$.fn.openEditorAndPreview = openEditorAndPreview;
-
-/**
- * Load Product Information
- *
- * var productID
- * var callback
- */
-function loadProduct( productID ) {
-    $.post( '/craigslist/load-product/', { _nonce : $('#_load_product').val(), pid : productID }, ajaxResponse, 'json' );
-
-    // Call a call back if there is one
-    if ( 'function' == typeof( arguments[1] ) )
-        arguments[1]();
-}
-
-/**
- * Gets the next product in the lineup for sampling purposes
- */
-function refreshPreview() {
-    if ( 'undefined' == typeof CKEDITOR )
-        return setTimeout( refreshPreview, 500 );
-
-	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
-	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val(), productSpecifications = $("#hProductSpecifications").val();
-
-	storeLogo = ( storeLogo.search( /http:/i ) > -1 ) ? storeLogo : storeURL + '/custom/uploads/images/' + storeLogo;
-
-	//get the contents of the tinyMCE editor and replace tags with actual stuff.
-	var newContent = CKEDITOR.instances.taDescription.getData();
-
-    newContent = newContent.replace( '[Product Name]', productName );
-    newContent = newContent.replace( '[Store Name]', storeName );
-    newContent = newContent.replace( '[Store Logo]', '<img src="' + storeLogo + '" alt="" />' );
-    newContent = newContent.replace( '[Category]', category );
-    newContent = newContent.replace( '[Brand]', brand );
-    newContent = newContent.replace( '[Product Description]', productDescription );
-    newContent = newContent.replace( '[SKU]', sku );
-    newContent = newContent.replace( '[Product Specifications]', productSpecifications );
-
-	var photos = document.getElementsByClassName( 'hiddenImage' ), photoHTML = '', index = 0;
-	
-	if ( photos.length ) {
-		while ( newContent.indexOf( '[Photo]' ) >= 0 ) {
-			if ( index >= photos.length ) 
-				index = 0;
-			
-			photoHTML = '<img src="' + photos[index]['src'] + '" />';
-			newContent = newContent.replace( "[Photo]", photoHTML );
-			index++;
-		}
-	}
-	
-	$("#dCraigslistCustomPreview").html( newContent );
-    $('#hCraigslistPost').val( newContent );
-
-    return true;
-}
+jQuery( CraigslistForm.init );

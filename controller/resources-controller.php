@@ -77,6 +77,15 @@ class ResourcesController extends BaseController {
     protected function get_logged_in_user() {
         return true;
     }
+
+    /**
+     * Company CSS
+     * @return HtmlResponse
+     */
+    protected function company_css() {
+        header::css();
+        return new HtmlResponse( Company::get_current_company()->css );
+    }
 }
 
 

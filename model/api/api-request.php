@@ -310,6 +310,9 @@ class ApiRequest {
         // Create account
         $account = new Account();
 
+        $server = new Server();
+        $server->get( $title{0} < 'i' ? 1 : 2 );
+
         // Create
         $account->user_id = $user_id;
         $account->domain = $domain;
@@ -329,6 +332,7 @@ class ApiRequest {
         $account->domain_registration = $domain_registration;
         $account->additional_email_Addresses = $additional_email_addresses;
         $account->products = $products;
+        $account->server_id = $server->id;
 
         // Create and update
         $account->create(); // Doesn't add them all
@@ -368,7 +372,7 @@ class ApiRequest {
 			
             if ( $group_id ) {
                 library('whm-api');
-                $this->whm = new WHM_API();
+                $this->whm = new WHM_API( $server );
                 $company = new Company();
 				
                 // Make sure it's a unique username
@@ -379,7 +383,7 @@ class ApiRequest {
                 $password = security::generate_password();
 				
 				// Create the password
-                $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, '199.79.48.137' );
+                $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, $server->ip );
 
                 if ( !$password_id ) {
                     $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
@@ -420,7 +424,7 @@ class ApiRequest {
 				$r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
 				
 				// Add to domain.blinkyblinky.me
-		        $r53->changeResourceRecordSets( 'hostedzone/Z20FV3IPLIV928', array( $r53->prepareChange( 'CREATE', $domain . '.', 'CNAME', '14400', 'blinkyblinky.me.' ) ) );
+		        $r53->changeResourceRecordSets( 'hostedzone/Z20FV3IPLIV928', array( $r53->prepareChange( 'CREATE', $domain . '.', 'CNAME', '14400', $server->ip ) ) );
             }
 
         }

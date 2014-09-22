@@ -360,7 +360,7 @@ var ProductAttributeEditor = {
 
                 for ( i in attribute_items ) {
                     var attribute_item = attribute_items[i];
-                    var option = $( '<option />', { value: attribute_item.id } ).text( attribute_item.name );
+                    var option = $( '<option />', { value: attribute_item.id } ).html( attribute_item.name );
                     optgroup.append( option );
                 }
 
@@ -388,6 +388,11 @@ var ProductForm = {
         // If it's a new product form, create product id after setting name
         $('#tName').change( ProductForm.setProductSlug );
 
+        // Make Images sortable
+        $('#images-list').sortable({
+            forcePlaceholderSize : true
+            , placeholder: 'image-placeholder'
+        })
     }
 
     /**

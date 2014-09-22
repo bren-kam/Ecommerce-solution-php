@@ -24,7 +24,7 @@ class EmailListsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 80 )
             ->add_title( _('Email Lists') )
-            ->select( 'email-lists' );
+            ->menu_item( 'email-marketing/email-lists/list' );
     }
 
     /**
@@ -41,7 +41,7 @@ class EmailListsController extends BaseController {
         if ( $email_list_id )
             $email_list->get( $email_list_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditEmailList' );
+        $form = new BootstrapForm( 'fAddEditEmailList' );
 
         if ( !$email_list->id )
             $form->submit( _('Add') );
@@ -129,7 +129,7 @@ class EmailListsController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 81 )
-            ->select( 'email-lists', 'add-edit' )
+            ->menu_item( 'email-marketing/email-lists/add' )
             ->add_title( $title . ' ' . _('Email List') )
             ->set( compact( 'email_list', 'form' ) );
     }
@@ -213,9 +213,7 @@ class EmailListsController extends BaseController {
         $sendgrid->list->delete( $email_list->name );
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

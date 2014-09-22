@@ -61,7 +61,7 @@ var ProductImport = {
         $('#tUploadOverview')
             .append('<tr><td>Total rows read:</td><td><span class="badge bg-info">' + response.count + '</span></td></tr>')
             .append('<tr><td>Errors found:</td><td><span class="badge bg-important">' + response.count_skipped + '</span></td></tr>')
-            .append('<tr><td>Total products to insert/update:</td><td><span class="badge bg-success">' + response.count_to_import + '</span></td></tr>');
+            .append('<tr><td>Total products to insert/update:</td><td><span class="badge bg-success">' + response.count_to_import + '</span><span class="badge bg-warning">' + response.count_to_update + '</span></td></tr>');
 
 
         // Skipped Rows details

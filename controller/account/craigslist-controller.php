@@ -18,7 +18,9 @@ class CraigslistController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        return $this->get_template_response( 'index' );
+
+        return $this->get_template_response( 'index' )
+            ->menu_item( 'craigslist/list' );
     }
 
     /**
@@ -112,11 +114,11 @@ class CraigslistController extends BaseController {
         $title = ( $ad->id ) ? _('Edit') : _('Add');
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
+            ->javascript_url( Config::resource( 'typeahead-js' ) )
             ->javascript( 'craigslist/add-edit' );
 
         return $this->get_template_response( 'add-edit' )
-            ->select( 'add' )
+            ->menu_item( 'craigslist/add' )
             ->add_title( $title )
             ->set( compact( 'ad', 'markets', 'craigslist_api', 'js_validation', 'errs' ) );
     }
@@ -204,10 +206,7 @@ class CraigslistController extends BaseController {
         $craigslist_ad->save();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -239,10 +238,7 @@ class CraigslistController extends BaseController {
         $craigslist_ad->add_headlines( $craigslist_ad->headlines );
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -294,22 +290,10 @@ class CraigslistController extends BaseController {
         if ( !empty( $product_specifications ) )
             $product_specifications = "<p>$product_specifications</p>";
 
-        jQuery('#hProductDescription')->val( $product->description );
-        jQuery('#hProductName')->val( $product->name );
-        jQuery('#hProductCategoryID')->val( $product->category_id );
-        jQuery('#hProductID')->val( $product->product_id );
-        jQuery('#hProductCategoryName')->val( $product->category );
-        jQuery('#hProductSKU')->val( $product->sku );
-        jQuery('#hProductBrandName')->val( $product->brand );
-        jQuery('#hProductSpecifications')->val( $product_specifications );
-        jQuery('#tPrice[val=]')->val( $price );
-
-        jQuery('#dProductPhotos')
-        	->html( $image_html )
-        	->openEditorAndPreview(); // Needs to determine template
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $product->image = $image_html;
+        $product->specifications = $product_specifications;
+        $product->price = $price;
+        $response->add_response( 'product', $product );
 
         return $response;
     }

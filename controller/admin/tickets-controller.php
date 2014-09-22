@@ -368,23 +368,8 @@ class TicketsController extends BaseController {
         if ( is_file( $result['file_path'] ) )
             unlink( $result['file_path'] );
 
-        $confirmation = _('Are you sure you want to remove this attachment?');
-        $delete_upload = nonce::create('delete_upload');
-
-        $upload = '<div class="upload" id="upload-' . $ticket_upload->id . '">';
-        $upload .= '<a href="' . $file_url . '" class="download" target="_blank">' . $file_name . '</a>';
-        $upload .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_upload, 'tuid' => $ticket_upload->id ), '/tickets/delete-upload/' ) . '" class="delete" title="' . _('Delete') . '" ajax="1" confirm="' . $confirmation . '">';
-        $upload .= '<img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" />';
-        $upload .= '</a>';
-        $upload .= '<input type="hidden" name="uploads[]" value="' . $ticket_upload->id . '" />';
-        $upload .= '</div>';
-
-        // Clone image template
-        jQuery('#ticket-attachments-list')
-            ->append( $upload )
-            ->sparrow();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'url', $file_url );
+        $response->add_response( 'id', $ticket_upload->id );
 
         return $response;
     }

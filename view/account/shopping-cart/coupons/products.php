@@ -1,42 +1,38 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Products in Coupon | Shopping Cart
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var WebsiteCoupon[] $coupons
- */
-
-echo $template->start( _('Products in Coupon'), '../sidebar' );
-?>
-
-<div class="relative">
-    <label id="lCoupon" for="sCoupon">Showing Products in Coupon:</label>
-    <select id="sCoupon">
-        <?php
-        foreach ( $coupons as $coupon ) {
-            $selected = '';
-            ?>
-            <option value="<?php echo $coupon->id; ?>"<?php echo $selected; ?>><?php echo $coupon->name; ?></option>
-        <?php } ?>
-    </select>
-    <table ajax="/shopping-cart/coupons/list-products/" perPage="30,50,100">
-        <thead>
-            <tr>
-                <th width="40%"><?php echo _('Product'); ?></th>
-                <th width="10%"><?php echo _('Sku'); ?></th>
-                <th width="25%"><?php echo _('Brand'); ?></th>
-                <th width="25%"><?php echo _('Category'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-
 <?php nonce::field( 'store_session', '_store_session' ) ?>
 
-<?php echo $template->end(); ?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Products in Coupon
+            </header>
+
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label for="coupon">Coupon:</label>
+                            <select class="form-control" id="coupon">
+                                <?php foreach ( $coupons as $coupon ): ?>
+                                    <option value="<?php echo $coupon->id; ?>"><?php echo $coupon->name; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/shopping-cart/coupons/list-products/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Product</th>
+                            <th>SKU</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

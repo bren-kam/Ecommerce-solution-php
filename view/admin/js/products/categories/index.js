@@ -20,6 +20,14 @@ var CategoryEditor = {
         $('body').on( 'click', '.delete-attribute', CategoryEditor.deleteAttribute );
         $('body').on( 'submit', '#fAddEditCategory', CategoryEditor.submitAddEdit );
 
+        // Make categories sortable
+        $("#categories-list").sortable({
+            update: CategoryEditor.updateSequence,
+            placeholder: 'category-placeholder',
+            forcePlaceholderSize: true,
+            cancel: 'a'
+        });
+
     }
 
     , getCategory: function() {
@@ -216,6 +224,24 @@ var CategoryEditor = {
         if ( slugInput.val() == '' ) {
             slugInput.val($('#tName').val().slug());
         }
+    }
+
+    , updateSequence: function() {
+        var sequence = [];
+
+        $('#categories-list .category').each(function() {
+            sequence.push( $(this).data( 'category-id' ) );
+        });
+
+        $.post(
+            '/products/categories/update-sequence/'
+            , {
+                _nonce : $('#_update_sequence').val()
+                , pcid: $('.breadcrumb li:last a').data('category-id')
+                , sequence : sequence.join('|')
+            }, GSR.defaultAjaxResponse
+        );
+
     }
 
 }

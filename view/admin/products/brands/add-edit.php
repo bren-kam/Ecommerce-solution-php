@@ -24,7 +24,7 @@
 
             <div class="panel-body">
 
-                <form name="fAddEditBrand" id="fAddEditBrand" method="post" <?php if ( $brand->id ) echo 'action="?aid='. $brand->id .'"' ?>>
+                <form name="fAddEditBrand" id="fAddEditBrand" method="post" <?php if ( $brand->id ) echo 'action="?bid='. $brand->id .'"' ?>>
 
                     <?php nonce::field( 'add_edit' ); ?>
 
@@ -50,7 +50,6 @@
                             <option value="">Select Product Option</option>
                             <?php
                             $product_options = array();
-
                             foreach ( $product_options_array as $po ):
                                 $product_options[$po->id] = $po;
                                 $disabled = ( in_array( $po->id, $product_option_ids ) ) ? ' disabled="disabled"' : '';

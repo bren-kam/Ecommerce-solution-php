@@ -20,7 +20,7 @@ class OrdersController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 120 )
-            ->select( 'orders' );
+            ->menu_item( 'shopping-cart/orders' );
     }
 
     /**
@@ -45,7 +45,7 @@ class OrdersController extends BaseController {
         return $this->get_template_response( 'view' )
             ->kb( 121 )
             ->add_title( _('View Order') )
-            ->select( 'orders' )
+            ->menu_item( 'shopping-cart/orders' )
             ->set( compact( 'order' ) );
     }
 
@@ -96,6 +96,14 @@ class OrdersController extends BaseController {
                     $status = 'Delivered';
                 break;
 
+                case WebsiteOrder::STATUS_RECEIVED:
+                    $status = 'Received';
+                    break;
+
+                case WebsiteOrder::STATUS_SHIPPED:
+                    $status = 'Shipped';
+                    break;
+
                 default:
                     $status = 'Error';
                 break;
@@ -103,8 +111,13 @@ class OrdersController extends BaseController {
 
             $date = new DateTime( $order->date_created );
 
+            $link_text = '';
+            if ( $order->website_shipping_method_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+                $link_text = " - Ashley Express";
+            }
+
             $data[] = array(
-                '<a href="' . url::add_query_arg( 'woid', $order->id, '/shopping-cart/orders/view/' ) . '" title="' . _('View') . '">' . $order->id . '</a>'
+                '<a href="' . url::add_query_arg( 'woid', $order->id, '/shopping-cart/orders/view/' ) . '" title="' . _('View') . '">' . $order->id . '</a>' . $link_text
                 , $order->name
                 , '$' . number_format( $order->total_cost, 2 )
                 , $status

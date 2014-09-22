@@ -19,6 +19,7 @@ class CategoriesController extends BaseController {
      */
     protected function index() {
         $this->resources
+            ->javascript_url( Config::resource( 'jqueryui-js' ) )
             ->javascript( 'products/categories/index' )
             ->css( 'products/categories/index' );
 
@@ -218,7 +219,7 @@ class CategoriesController extends BaseController {
             return $response;
 
         $category = new Category();
-        $category->update_sequence( $_POST['pcid'], explode( '&cat[]=', substr( $_POST['sequence'], 6 ) ) );
+        $category->update_sequence( $_POST['pcid'], explode( '|', $_POST['sequence'] ) );
 
         return $response;
     }

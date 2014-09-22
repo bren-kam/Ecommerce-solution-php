@@ -1,92 +1,107 @@
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
-	// Cache
-	var cache = { sku : {}, product : {}, brand : {} };
-	
-	// Change the text
-	$('#sAutoComplete').change( function() {
-		var tAutoComplete = $('#tAutoComplete');
-		
-		tAutoComplete.attr( 'placeholder', 'Enter ' + $(this).find('option:selected').text() + '...' ).val('').blur();
-	});
-	
-	$('#tAutoComplete').autocomplete({
-		minLength: 1,
-		source: function( request, response ) {
-			// Get the cache type
-			var cacheType = $('#sAutoComplete').val();
-			
-			// Find out if they are already cached so we don't have to do another ajax called
-			if ( request['term'] in cache[cacheType] ) {
-				response( $.map( cache[cacheType][request['term']], function( item ) {
-					return {
-						'label' : item['name'],
-						'value' : item['name']
-					}
-				}) );
-				
-				// If it was cached, return now
-				return;
-			}
-			
-			// It was not cached, get data
-			$.post( '/products/autocomplete-owned/', { '_nonce' : $('#_autocomplete_owned').val(), type : cacheType, term: request['term'] }, function( autocompleteResponse ) {
-				// Assign global cache the response data
-				cache[cacheType][request['term']] = autocompleteResponse['suggestions'];
-				
-				// Return the response data
-				response( $.map( autocompleteResponse['suggestions'], function( item ) {
-					return {
-						'label' : item['name'],
-						'value' : item['name']
-					}
-				}));
-			}, 'json' );
-		}
-	});
-	
-	// Create the search functionality
-	$('#aSearch').click( function() {
-		$('#tAddProducts').dataTable().fnDraw();
-	});
-	
-	// Remove product
-	$('#subcontent').on( 'click', '.remove-product', function() {
-		$(this).parents('.product').remove().next().remove();
-	});
-	
-	setTimeout( function() {
-		$('#tAddProducts').addClass('dt').dataTable({
-				aaSorting: [[0,'asc']],
-				bAutoWidth: false,
-				bProcessing : 1,
-				bServerSide : 1,
-				iDisplayLength : 20,
-				sAjaxSource : '/products/related-products/list-products/',
-				sDom : '<"top"lr>t<"bottom"pi>',
-				oLanguage: {
-                    sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>'
-                    , sInfo: "_START_ - _END_ of _TOTAL_"
-                    , oPaginate: {
-                        sNext : ''
-                        , sPrevious : ''
-                    }
-				},
-				fnDrawCallback : function() {
-					// Run Sparrow on new content and add the class last to the last row
-					sparrow( $(this).find('tr:last').addClass('last').end() );
-				},
-				fnServerData: function ( sSource, aoData, fnCallback ) {
-					aoData.push({ name : 's', value : $('#tAutoComplete').val() });
-					aoData.push({ name : 'sType', value : $('#sAutoComplete').val() });
-					
-					// Get the data
-					$.ajax({
-						url: sSource,
-						dataType: 'json',
-						data: aoData,
-						success: fnCallback
-					});
-				}
-			});
-	}, 500 );
-});
+var RelatedProductsSearch = {
+
+    template: null
+
+    , init: function() {
+        // Autocomplete
+        RelatedProductsSearch.setupAutocomplete();
+        // Autcomplete - When change search type, we must reconfigure
+        $('#sAutoComplete').change( RelatedProductsSearch.setupAutocomplete );
+
+        // Search button
+        $('#aSearch').click( RelatedProductsSearch.search );
+
+        $('#product-search').submit( RelatedProductsSearch.search );
+
+        RelatedProductsSearch.template = $('#product-template').clone().removeClass('hidden').removeAttr('id');
+        $('#product-template').remove();
+
+        $('#product-list').on( 'click', '.remove', RelatedProductsSearch.remove );
+
+        $('#tAddProducts').addClass('dt').dataTable({
+            aaSorting: [[0,'asc']],
+            bAutoWidth: false,
+            bProcessing : 1,
+            bServerSide : 1,
+            iDisplayLength : 10,
+            sAjaxSource : '/products/related-products/list-products/',
+            fnServerData: function ( sSource, aoData, fnCallback ) {
+                aoData.push({ name : 's', value : $('#tAutoComplete').val() });
+                aoData.push({ name : 'sType', value : $('#sAutoComplete').val() });
+                $.get( sSource, aoData, fnCallback );
+            }
+        });
+
+        $('#tAddProducts').on( 'click', '.add-product', RelatedProductsSearch.add );
+    }
+    , setupAutocomplete: function() {
+
+        var searchType = $("#sAutoComplete").val();
+        var nonce = $('#_autocomplete_owned').val();
+
+        var autocomplete = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value')
+            , queryTokenizer: Bloodhound.tokenizers.whitespace
+            , remote: {
+                url: '/products/autocomplete-owned/?_nonce=' + nonce + '&type=' + searchType + '&term=%QUERY'
+                , filter: function( list ) {
+                    return list.suggestions
+                }
+            }
+        });
+
+        autocomplete.initialize();
+        $("#tAutoComplete")
+            .typeahead('destroy')
+            .typeahead(null, {
+                displayKey: 'name'
+                , source: autocomplete.ttAdapter()
+            })
+            .unbind('typeahead:selected')
+            .on('typeahead:selected', RelatedProductsSearch.search );
+
+    }
+
+    , search: function( event ) {
+        if ( event )
+            event.preventDefault();
+
+        $('#tAddProducts').dataTable().fnDraw();
+    }
+
+    , remove: function(e) {
+        if (e) e.preventDefault();
+        var item = $(this).parents('.product');
+
+        if ( !confirm('Are you sure you want to remove this product?') )
+            return;
+
+        item.remove();
+    }
+
+    , add: function(e) {
+        if (e) e.preventDefault();
+        var anchor = $(this);
+        $.get(
+            anchor.attr('href')
+            , RelatedProductsSearch.addResponse
+        )
+    }
+
+    , addResponse: function( response ) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            var product = response.product;
+            RelatedProductsSearch.template.clone()
+                .find('h4').text( product.name.substring(0, 40) ).end()
+                .find('img').attr( 'src', product.image_url ).end()
+                .find('.brand-name').append( product.brand ).end()
+                .find('input').val( product.id ).end()
+                .appendTo('#product-list');
+        }
+    }
+
+};
+
+
+jQuery(RelatedProductsSearch.init);

@@ -33,7 +33,7 @@ class CronsController extends BaseController {
 			foreach ( $keys as $key ) {
 				$file->delete_file( "attachments/{$key}" );
 			}
-	
+
 			// Delete everything relating to them
 			$ticket->deleted_uncreated_tickets();
 		}
@@ -80,6 +80,18 @@ class CronsController extends BaseController {
         $email_marketing = new EmailMarketing();
         $email_marketing->mark_sent();
 
+        // Ashley Express Feed - Order Acknowledgement
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_acknowledgement_all();
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Ashley Express Feed - Order ASN
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_asn_all();
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
 
         return new HtmlResponse( 'Hourly Jobs Completed');
     }
@@ -93,6 +105,12 @@ class CronsController extends BaseController {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
+
+        // Ashley Express Feed
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_flag_products_all();
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
 
         /** Run Ashley Feed */
         $ashley = new AshleyMasterProductFeedGateway();
@@ -114,6 +132,11 @@ class CronsController extends BaseController {
         // Remove Discontinued products
         $account_product = new AccountProduct();
         $account_product->remove_all_discontinued();
+
+        $website_product_view = new WebsiteProductView();
+        $website_product_view->purge_old_data();
+        unset( $website_product_view );
+        gc_collect_cycles();
 
         return new HtmlResponse( 'Daily Jobs Completed' );
     }

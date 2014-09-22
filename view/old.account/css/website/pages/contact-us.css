@@ -1,0 +1,28 @@
+.location, .location-placeholder {
+	border: 1px solid #eee;
+	display: block;
+	float: left;
+	line-height: 19px;
+	margin: 10px 10px 0 0;
+	padding: 5px 10px;
+	position:relative;
+	width: 300px;
+}
+
+.location-placeholder { border: 1px dashed #eee }
+
+.actions { display: none; }
+.location:hover { background-color: #EFFCFF; border-color: #ddd; cursor: move }
+.location:hover .actions { display: block }
+
+.location-left, .location-right { width: 150px; float:left; }
+.location-right { text-align:right; }
+
+.delete-location { position: absolute; top: 5px; right: 5px; }
+.edit-location { position: absolute; top: 5px; right: 27px; }
+span.name { font-size: 19px }
+
+#store-image-preview { position: relative; max-width: 200px; }
+#store-image-preview .image { width: 200px; }
+#aRemoveStoreImage { position: absolute; top: 0px; right: 0px; display: none; }
+#store-image-preview:hover img[src]+#aRemoveStoreImage{ display: block; }

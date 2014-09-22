@@ -21,8 +21,8 @@ var PageForm = {
             for ( i in response.categories ) {
                 var category = response.categories[i];
                 $('<option />')
-                    .val( i )
-                    .html( category )
+                    .val(category.id )
+                    .html( category.name )
                     .appendTo('#sCategory');
             }
 

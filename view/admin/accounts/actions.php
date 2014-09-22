@@ -39,6 +39,7 @@
                             <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
                             <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
                             <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
+                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=<?php echo $account->id ?>">Ashley Express - Shipping Prices</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -67,7 +68,9 @@
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reset-product-prices/' ); ?>" title="<?php echo _('Set all product prices to zero.'); ?>"><?php echo _('Reset all product prices'); ?></a></p>
 
-                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" ajax="1" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-express-feed/' ); ?>" title="<?php echo _('Run Express Ashley Feed'); ?>"><?php echo _('Run Ashley Express Feed'); ?></a></p>
 
             </div>
         </section>

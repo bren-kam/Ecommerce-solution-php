@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="adv-table">
-                    <table class="display table table-bordered table-striped" ajax="/checklists/list-all/" perPage="30,50,100">
+                    <table class="display table table-bordered table-striped" ajax="/checklists/list-all/" perPage="30,50,100" id="datatable-checklist">
                         <thead>
                             <th sort="1">Days Left</th>
                             <th>Account</th>

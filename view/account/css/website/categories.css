@@ -1,1 +1,15 @@
-#sParentCategoryID { position: absolute; left: 417px; top: -43px; width: 200px; }
+.panel-body {
+  position: relative;
+}
+.panel-body #sParentCategoryID {
+  width: auto;
+  position: absolute;
+  left: 230px;
+  top: 27px;
+  z-index: 1;
+}
+@media (max-width: 980px) {
+  .panel-body #sParentCategoryID {
+    position: static!important;
+  }
+}

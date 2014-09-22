@@ -42,4 +42,134 @@ class TestController extends BaseController {
 //
 //        return false;
 //    }
+
+    protected function route53_replace() {
+
+        $replace_search_1 = '199.79.48.137';
+        $replace_search_2 = '199.79.48.138';
+
+        if ( $this->verified() ) {
+
+            $domain_list = explode("\n", trim( $_POST['domains'] ) );
+
+            library('r53');
+            $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
+
+            $marker = null;
+			$account = new Account();
+			
+            foreach ($domain_list as $domain) {
+				$account = new Account();
+				$account = $account->prepare( 'SELECT *, `website_id` AS id FROM `websites` WHERE `domain` LIKE :domain', 'i', array( ':domain' => trim( '%' . $domain ) ) )->get_row( PDO::FETCH_INTO, $account );
+				
+				if ( !$account->id )
+					continue;
+				
+				$zone_id = $account->get_settings( 'r53-zone-id' );
+				$records_result = $r53->listResourceRecordSets( $zone_id  );
+				$dns_changes = array();
+				
+				foreach ( $records_result['ResourceRecordSets'] as $record ) {
+					$changed = false;
+					foreach ( $record['ResourceRecords'] as &$record_value ) {
+						if ( strpos( $record_value, $replace_search_1 ) !== false ) {
+							$record_value = str_replace( $replace_search_1, $_POST['replace-1'], $record_value ) ;
+							$changed = true;
+						} else if ( strpos( $record_value, $replace_search_2 ) !== false ) {
+							$record_value = str_replace( $replace_search_2, $_POST['replace-2'], $record_value ) ;
+							$changed = true;
+						}
+					}
+					
+					if ( $changed ) {
+						$dns_changes[] = $r53->prepareChange( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  );
+
+						echo "Update for {$domain}: " . json_encode( array( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  ) ) . "<br />";
+					}
+					
+				}
+				
+				if ( !empty( $dns_changes ) ) {
+					echo "...running all from {$domain}...";
+					$change_result = $r53->changeResourceRecordSets( $zone_id, $dns_changes, 'gsr/route53-replace ' . date('Y-m-d H:i:s') );
+					echo json_encode( $change_result ) . "<br /><hr />";
+				} else {
+					echo "No matching records found for {$domain}<br /><hr />";
+				}
+            }
+			
+            die('Finished!');
+
+        }
+
+        return $this->get_template_response( 'route53-replace' )->set( compact( 'replace_search_1', 'replace_search_2' ) );
+    }
+
+    /**
+     * Recompile All LESS
+     * @return HtmlResponse
+     */
+    protected function recompile_all_less() {
+        set_time_limit(3600);
+
+        // Get account
+        $unlocked = new Account();
+        $unlocked->get( Account::TEMPLATE_UNLOCKED );
+        $unlocked_less = $unlocked->get_settings('less');
+
+        library('lessc.inc');
+
+        $account = new Account();
+        $less_accounts = $account->get_less_sites();
+
+        /**
+         * @var Account $less_account
+         * @var string $unlocked_less
+         */
+        foreach ( $less_accounts as $less_account ) {
+            if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
+                continue;
+
+            echo "Compiling LESS for {$less_account->website_id} {$less_account->title}...<br>\n";
+            flush();
+
+            $less = new lessc;
+            $less->setFormatter("compressed");
+
+            $site_less = $less_account->get_settings('less');
+
+            $less_account->set_settings( array(
+                'css' => $less->compile( $unlocked_less . $site_less )
+            ));
+
+            unset( $less );
+            unset( $site_less );
+            unset( $less_account );
+            gc_collect_cycles();
+        }
+
+        return new HtmlResponse( 'All LESS sites Recompiled' );
+    }
+
+    /**
+     * Reorganize Categories ALL
+     *
+     *
+     * @return HtmlResponse
+     */
+    protected function reorganize_categories_all() {
+        $account = new Account();
+        $accounts = $account->list_all( array(' AND a.status=1 ', '', '', 10000 ) );
+        $account_category = new AccountCategory();
+        $category = new Category();
+
+        foreach ( $accounts as $a ) {
+            echo "#{$a->id}...<br>\n";
+            flush();
+            $account_category->reorganize_categories( $a->website_id, $category );
+        }
+
+        return new HtmlResponse( 'Finished' );
+    }
+
 }

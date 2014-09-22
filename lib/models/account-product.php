@@ -12,7 +12,7 @@ class AccountProduct extends ActiveRecordBase {
         , $additional_shipping_amount, $weight, $additional_shipping_type
         , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $price_note
         , $product_note, $ships_in, $store_sku, $warranty_length, $alternate_price_strikethrough
-        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated;
+        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
 
     // Artificial columns
     public $link, $industry, $coupons, $product_options, $created_by, $count;
@@ -64,7 +64,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_auto_price_count( $account_id ) {
         return $this->prepare(
-            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND wp.`manual_price` = 0 GROUP BY b.`brand_id`"
+            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) INNER JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND wp.`manual_price` = 0 GROUP BY b.`brand_id`"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -196,12 +196,21 @@ class AccountProduct extends ActiveRecordBase {
         $set = implode( ',', $set );
         $category_ids_string = implode( ',', $category_ids );
 
-        // Add the where
-        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+
+        $where = '';
+        $inner_join = '';
+        // Add the where by Brand
+        if ( $brand_id > 0 && $brand_id != WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+            $where = ' AND p.`brand_id` = ' . (int) $brand_id;
+        } else if ( $brand_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+            // Ashley Express Products
+            $inner_join = 'INNER JOIN `website_product_shipping_method` wpsm ON ( p.`product_id` = wpsm.`product_id` AND wpsm.`website_id` = wp.`website_id` ) ';
+            $where = " AND wpsm.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
+        }
 
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wp.`manual_price` = 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) {$inner_join} SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wp.`manual_price` = 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -272,12 +281,22 @@ class AccountProduct extends ActiveRecordBase {
         $new_category_ids_string = implode( ',', $new_category_ids );
 
         // Add the where
-        // 2pc only applied to Ashley products
-        $where = ( 0 == $brand_id ) ? ( ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ' ) : ( ' AND p.`brand_id` = ' . (int) $brand_id);
+        $inner_join = '';
+        // Add the where by Brand
+        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+            $where = ' AND p.`brand_id` = ' . (int) $brand_id;
+        } else if ( is_numeric($brand_id) && $brand_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+            // Ashley Express Products
+            $inner_join = 'INNER JOIN `website_product_shipping_method` wpsm ON ( p.`product_id` = wpsm.`product_id` AND wpsm.`website_id` = wp.`website_id` ) ';
+            $where = " AND wpsm.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
+        } else {
+            // 2pc only applied to Ashley products
+            $where = ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ';
+        }
 
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wp.`manual_price` = 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)" . $where
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) {$inner_join} SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wp.`manual_price` = 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -340,10 +359,11 @@ class AccountProduct extends ActiveRecordBase {
             , 'store_sku' => strip_tags($this->store_sku)
             , 'active' => $this->active
             , 'manual_price' => $this->manual_price
+            , 'setup_fee' => $this->setup_fee
         ), array(
             'website_id' => $this->website_id
             , 'product_id' => $this->product_id
-        ), 'iiiissssiiisssiiiissssi', 'ii' );
+        ), 'iiiissssiiisssiiiissssii', 'ii' );
     }
 
     /**
@@ -453,9 +473,12 @@ class AccountProduct extends ActiveRecordBase {
                 'website_id' => $account_id
                 , 'product_id' => NULL
                 , 'status' => NULL
+                , 'price' => NULL
+                , 'sale_price' => NULL
+                , 'alternate_price' => NULL
                 , 'on_sale' => NULL
                 , 'sequence' => NULL
-                , 'active' => 1
+                , 'active' => NULL
             ), array( 'website_id' => $template_account_id )
         );
     }

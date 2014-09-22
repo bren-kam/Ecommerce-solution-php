@@ -4,20 +4,20 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Narrow your search
+                Tickets
             </header>
 
-            <div class="panel-body">
+            <div class="panel-body" id="ticket-container">
 
-                <form class="form-inline" role="form">
+                <form class="form-inline" id="ticket-filter" role="form">
                     <div class="form-group">
-                        <select class="form-control" id="sStatus">
+                        <select class="form-control input-sm" id="sStatus">
                             <option value="0">Open Tickets</option>
                             <option value="1">Closed Tickets</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <select class="form-control" id="sAssignedTo">
+                        <select class="form-control  input-sm" id="sAssignedTo">
                             <option value="0">All</option>
                             <option value="-1">Peers</option>
                             <?php foreach ( $assigned_to_users as $atu ): ?>
@@ -26,22 +26,10 @@
                         </select>
                     </div>
                 </form>
-            </div>
-        </section>
-    </div>
-</div>
 
-<div class="row-fluid">
-    <div class="col-lg-12">
-        <section class="panel">
-            <header class="panel-heading">
-                Tickets
-            </header>
-
-            <div class="panel-body">
 
                 <div class="adv-table">
-                    <table class="display table table-bordered table-striped" ajax="/tickets/list-all/" perPage="30,50,100">
+                    <table class="display table table-bordered table-striped" perPage="30,50,100">
                         <thead>
                             <tr>
                                 <th>Summary</th>

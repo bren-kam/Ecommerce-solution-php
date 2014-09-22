@@ -37,9 +37,10 @@
                         <input type="text" class="form-control" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) || !$attribute->id ) ? $template->v('tName') : $attribute->name; ?>" placeholder="Name" />
                     </div>
 
-                    <div class="form-group" id="attribute-items-list">
+                    <p><strong>Items:</strong></p>
+
+                    <div id="attribute-items-list">
                         <div class="input-group">
-                            <label for="tItem">Items</label>
                             <input type="text" class="form-control" id="tItem" placeholder="Add new item" />
                             <span class="input-group-btn">
                                 <button type="button" id="add-item" class="btn btn-success"><i class="fa fa-plus"></i></button>
@@ -53,7 +54,10 @@
                             <div class="input-group attribute-item">
                                 <input type="text" class="form-control" name="list-items[ai<?php echo $attribute_item->id; ?>]" value="<?php echo $attribute_item->name; ?>" />
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></button>
+                                    <a href="javascript:;" id="add-item" class="btn btn-default move-attribute-item move"><i class="fa fa-arrows"></i></a>
+                                </span>
+                                <span class="input-group-btn">
+                                    <a href="javascript:;" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></a>
                                 </span>
                             </div>
                         <?php endforeach; ?>
@@ -61,6 +65,7 @@
                     </div>
 
                     <p>
+                        <br />
                         <button type="submit" class="btn btn-lg btn-primary">Save</button>
                     </p>
 
@@ -76,6 +81,9 @@
 <div class="input-group attribute-item hidden" id="attribute-item-template">
     <input type="text" class="form-control" name="list-items[]" value="<?php echo $attribute_item->name; ?>" />
     <span class="input-group-btn">
-        <button type="button" id="add-item" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></button>
+        <a href="javascript:;" class="btn btn-default move-attribute-item move"><i class="fa fa-arrows"></i></a>
+    </span>
+    <span class="input-group-btn">
+        <a href="javascript:;" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></a>
     </span>
 </div>

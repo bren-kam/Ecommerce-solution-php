@@ -33,6 +33,8 @@
     <!-- Bootstrap Validator -->
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=bootstrapValidator" />
 
+    <link type="text/css" rel="stylesheet" href="/resources/company-css/" />
+
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -51,6 +53,9 @@
     <?php } ?>
 
     <form id="form-signin" class="form-signin" action="" method="post">
+        <div id="signin-logo">
+            <img src="/images/logos/login/<?php echo DOMAIN; ?>.png" />
+        </div>
 
         <h2 class="form-signin-heading">sign in now</h2>
         <div class="login-wrap">

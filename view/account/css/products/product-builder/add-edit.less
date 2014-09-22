@@ -1,0 +1,22 @@
+#images-list {
+  .image {
+    float: left;
+    position: relative;
+
+    a.remove-image {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      display: none;
+
+    }
+    &:hover a.remove-image {
+      display: block;
+    }
+
+  }
+}
+#upload-image {
+  position: absolute;
+  left: -5000px;
+}

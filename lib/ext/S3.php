@@ -1059,8 +1059,8 @@ class S3 {
 			finfo_close($finfo);
 
 		// If anyone is still using mime_content_type()
-		} elseif (function_exists('mime_content_type'))
-			$type = trim(mime_content_type($file));
+		} /*elseif (function_exists('mime_content_type'))
+			$type = trim(mime_content_type($file));*/
 
 		if ($type !== false && strlen($type) > 0) return $type;
 
@@ -1219,8 +1219,8 @@ final class S3Request {
 		curl_setopt($curl, CURLOPT_USERAGENT, 'S3/php');
 
 		if (S3::$useSSL) {
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 1);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		}
 
 		curl_setopt($curl, CURLOPT_URL, $url);

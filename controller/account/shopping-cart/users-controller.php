@@ -20,7 +20,7 @@ class UsersController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 122 )
-            ->select( 'users' );
+            ->menu_item( 'shopping-cart/users' );
     }
 
     /**
@@ -39,7 +39,7 @@ class UsersController extends BaseController {
             return new RedirectResponse('/shopping-cart/users/');
 
         /***** CREATE FORM *****/
-        $form = new FormTable( 'fEditUser' );
+        $form = new BootstrapForm( 'fEditUser' );
 
         // Personal Information
         $form->add_field( 'title', _('Personal Information') );
@@ -123,7 +123,7 @@ class UsersController extends BaseController {
 
         $response = $this->get_template_response( 'edit' )
             ->kb( 123 )
-            ->select( 'users' )
+            ->menu_item( 'shopping-cart/users' )
             ->add_title( _('Edit User') )
             ->set( array( 'form' => $form->generate_form() ) );
 
@@ -250,9 +250,7 @@ class UsersController extends BaseController {
         $website_user->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

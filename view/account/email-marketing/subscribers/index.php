@@ -1,26 +1,22 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Subscribers | Email Marketing
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Subscribers
+            </header>
 
-echo $template->start( _('Subscribers'), '../sidebar' );
-?>
-<table ajax="/email-marketing/subscribers/list-all/?s=1<?php if ( isset( $_GET['elid'] ) ) echo '&elid=' . $_GET['elid']; ?>" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="45%" sort="1"><?php echo _('Email'); ?></th>
-            <th width="35%"><?php echo _('Name'); ?></th>
-            <th width="20%"><?php echo _('Date Signed Up'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+            <div class="panel-body">
 
-<?php echo $template->end(); ?>
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/email-marketing/subscribers/list-all/?s=1<?php if ( isset( $_GET['elid'] ) ) echo '&elid=' . $_GET['elid']; ?>" perPage="30,50,100">
+                        <thead>
+                        <th sort="1">Email</th>
+                        <th>Name</th>
+                        <th>Signup Date</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+.category {
+  border-bottom: 1px solid #ddd;
+}
+.category:not(a) {
+  cursor: move;
+}
+.category-placeholder {
+  margin: 3px;
+  border: 2px dashed #999;
+}

@@ -51,23 +51,61 @@ class Config {
     );
 
     /**
+     * Servers
+     * @access private
+     * @var array
+     */
+    private static $servers = array(
+        'legacy' => array(
+            'ip'            => '199.79.48.137'
+            , 'username'    => 'root'
+            , 'password'    => 'WIxp2sDfRgLMDTL5'
+        )
+        , '162.218.139.218' => array(
+            'ip'            => '162.218.139.218'
+            , 'username'    => 'root'
+            , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+        )
+        , 'mail09.blinkyblinky.me' => array(
+            'ip'            => '162.218.139.218'
+            , 'username'    => 'root'
+            , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+        )
+        , '162.218.139.219' => array(
+            'ip'            => '162.218.139.219'
+            , 'username'    => 'root'
+            , 'password'    => 'IlkWJGkM8e75uYxh'
+        )
+        , 'mail10.blinkyblinky.me' => array(
+            'ip'            => '162.218.139.219'
+            , 'username'    => 'root'
+            , 'password'    => 'IlkWJGkM8e75uYxh'
+        )
+    );
+
+    /**
      * Resource links
      * @access private
      * @var array
      */
     private static $resources = array(
         /* CSS */
-        'bootstrap-datepicker-css' => '//cdn.jsdelivr.net/bootstrap.datepicker/0.1/css/datepicker.css'
+        'bootstrap-datepicker-css' => '//cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/css/datepicker3.css'
         , 'jquery-ui' => '//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
+        , 'videojs-css' => '//vjs.zencdn.net/4.6/video-js.css'
+        , 'timepicker-css' => '//cdn.jsdelivr.net/jquery.timepicker/1.3.7/jquery.timepicker.css'
 
         /* JS */
         , 'ace-js' => '//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js'
-        , 'bootstrap-datepicker-js' => '//cdn.jsdelivr.net/bootstrap.datepicker/0.1/js/bootstrap-datepicker.js'
+        , 'bootstrap-datepicker-js' => '//cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/bootstrap-datepicker.js'
         , 'bootstrap-validator-js' => '//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.4.5/js/bootstrapValidator.min.js'
         , 'jqueryui-js' => '//code.jquery.com/ui/1.11.0/jquery-ui.min.js'
         , 'typeahead-js' => '//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.bundle.js'
+        , 'videojs-js' => '//vjs.zencdn.net/4.6/video.js'
+        , 'timepicker-js' => '//cdn.jsdelivr.net/jquery.timepicker/1.3.7/jquery.timepicker.js'
+        , 'ckeditor-js' => '/ckeditor/ckeditor.js'
     );
-		
+
 	/**
 	 * Returns a key
 	 *
@@ -86,6 +124,20 @@ class Config {
 	 */
 	public static function setting( $setting ) {
 		return self::$settings[$setting];
+	}
+
+	/**
+	 * Returns a setting
+	 *
+	 * @param string $setting
+     * @param string $server
+	 * @return mixed
+	 */
+	public static function server( $setting, $server = NULL ) {
+        if ( is_null( $server ) )
+            $server = $_SERVER['HOSTNAME'];
+
+		return self::$servers[$server][$setting];
 	}
 
 	/**

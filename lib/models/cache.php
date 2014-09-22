@@ -17,7 +17,7 @@ class Cache {
 	 */
 	public static function get( $key ) {
 
-		return apc_fetch( $key );
+		//return apc_fetch( $key );
 	}
 
 	/**
@@ -30,7 +30,7 @@ class Cache {
 	 */
 	public static function set( $key, $value, $ttl = 0 ) {
 
-		return apc_store( $key, $value, $ttl );
+		//return apc_store( $key, $value, $ttl );
 	}
 
 	/**
@@ -41,7 +41,7 @@ class Cache {
 	 */
 	public static function exists( $key ) {
 
-		return apc_exists( $key );
+		//return apc_exists( $key );
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Cache {
 	 */
 	public static function delete( $key ) {
 
-		return apc_delete( $key );
+		//return apc_delete( $key );
 	}
 
 }

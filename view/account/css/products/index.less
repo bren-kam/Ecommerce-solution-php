@@ -1,0 +1,39 @@
+#product-list {
+  .product {
+    float: left;
+    width: 19%;
+    height: 375px;
+    margin-right: 1%;
+    margin-bottom: 15px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    text-align: center;
+
+    h3 {
+      font-size: 16px;
+      margin: 3px 0;
+    }
+    img {
+      width: 60%;
+    }
+  }
+
+  &:not(.ui-sortable-disabled) .product {
+    cursor: move;
+  }
+
+  .product-placeholder {
+    float: left;
+    width: 19%;
+    height: 375px;
+    margin-right: 1%;
+    margin-bottom: 15px;
+    padding: 5px;
+    border: 3px dashed #ddd;
+  }
+}
+
+#pp {
+  width: auto;
+  display: inline;
+}

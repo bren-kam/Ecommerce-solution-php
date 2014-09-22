@@ -123,6 +123,7 @@ class AttributesController extends BaseController {
         }
 
         $this->resources
+            ->javascript_url( Config::resource( 'jqueryui-js' ) )
             ->javascript( 'products/attributes/add-edit' )
             ->css('products/attributes/add-edit');
 

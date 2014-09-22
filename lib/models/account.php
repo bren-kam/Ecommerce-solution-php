@@ -9,7 +9,7 @@ class Account extends ActiveRecordBase {
     const TEMPLATE_UNLOCKED = 1352;
     
     // The columns we will have access to
-    public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
+    public $id, $website_id, $company_package_id, $user_id, $os_user_id, $server_id, $title, $domain, $plan_name
         , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog, $link_brands
         , $room_planner, $blog, $craigslist, $email_marketing, $auth_user_email_marketing, $domain_registration, $mobile_marketing
         , $additional_email_Addresses, $social_media, $ftp_username, $ga_profile_id, $ga_tracking_key
@@ -38,7 +38,7 @@ class Account extends ActiveRecordBase {
     public function get( $account_id ) {
         // Get the account
 		$this->prepare(
-            "SELECT w.`website_id`, w.`company_package_id`, w.`user_id`, w.`os_user_id`, w.`domain`, w.`subdomain`, w.`title`, w.`plan_name`, w.`plan_description`, w.`theme`, w.`logo`, w.`phone`, w.`pages`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`blog`, w.`email_marketing`, w.`mobile_marketing`, w.`shopping_cart`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`domain_registration`, w.`additional_email_addresses`, w.`ftp_username`, w.`ga_profile_id`, w.`ga_tracking_key`, w.`wordpress_username`, w.`wordpress_password`, w.`type`, w.`version`, w.`live`, w.`date_created`, w.`date_updated`, w.`status`, w.`user_id_updated`, u.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE w.`website_id` = :account_id"
+            "SELECT w.`website_id`, w.`company_package_id`, w.`user_id`, w.`os_user_id`, w.`server_id`, w.`domain`, w.`subdomain`, w.`title`, w.`plan_name`, w.`plan_description`, w.`theme`, w.`logo`, w.`phone`, w.`pages`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`blog`, w.`email_marketing`, w.`mobile_marketing`, w.`shopping_cart`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`domain_registration`, w.`additional_email_addresses`, w.`ftp_username`, w.`ga_profile_id`, w.`ga_tracking_key`, w.`wordpress_username`, w.`wordpress_password`, w.`type`, w.`version`, w.`live`, w.`date_created`, w.`date_updated`, w.`status`, w.`user_id_updated`, u.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE w.`website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -55,7 +55,7 @@ class Account extends ActiveRecordBase {
      */
     public function get_by_user( $user_id ) {
         return $this->prepare(
-            'SELECT `website_id`, `os_user_id`, `domain`, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `ga_profile_id`, `live`, `user_id_updated`, `company_package_id` FROM `websites` WHERE `user_id` = :user_id AND `status` = :status'
+            'SELECT `website_id`, `os_user_id`, `server_id`, `domain`, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `ga_profile_id`, `live`, `user_id_updated`, `company_package_id` FROM `websites` WHERE `user_id` = :user_id AND `status` = :status'
             , 'ii'
             , array( ':user_id' => $user_id, ':status' => self::STATUS_ACTIVE )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
@@ -96,7 +96,7 @@ class Account extends ActiveRecordBase {
     public function get_by_domain( $domain ) {
         // Get the account
         $this->prepare(
-            "SELECT w.`website_id`, w.`company_package_id`, w.`user_id`, w.`os_user_id`, w.`domain`, w.`subdomain`, w.`title`, w.`plan_name`, w.`plan_description`, w.`theme`, w.`logo`, w.`phone`, w.`pages`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`blog`, w.`email_marketing`, w.`mobile_marketing`, w.`shopping_cart`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`domain_registration`, w.`additional_email_addresses`, w.`ftp_username`, w.`ga_profile_id`, w.`ga_tracking_key`, w.`wordpress_username`, w.`wordpress_password`, w.`type`, w.`version`, w.`live`, w.`date_created`, w.`date_updated`, w.`status`, w.`user_id_updated`, u.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE w.`domain` LIKE :domain"
+            "SELECT w.`website_id`, w.`company_package_id`, w.`user_id`, w.`os_user_id`, w.`server_id`, w.`domain`, w.`subdomain`, w.`title`, w.`plan_name`, w.`plan_description`, w.`theme`, w.`logo`, w.`phone`, w.`pages`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`blog`, w.`email_marketing`, w.`mobile_marketing`, w.`shopping_cart`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`domain_registration`, w.`additional_email_addresses`, w.`ftp_username`, w.`ga_profile_id`, w.`ga_tracking_key`, w.`wordpress_username`, w.`wordpress_password`, w.`type`, w.`version`, w.`live`, w.`date_created`, w.`date_updated`, w.`status`, w.`user_id_updated`, u.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE w.`domain` LIKE :domain"
             , 's'
             , array( ':domain' => '%' . $domain . '%' )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -144,6 +144,7 @@ class Account extends ActiveRecordBase {
             'company_package_id' => $this->company_package_id
             , 'user_id' => $this->user_id
             , 'os_user_id' => $this->os_user_id
+            , 'server_id' => $this->server_id
             , 'domain' => strip_tags($this->domain)
             , 'title' => strip_tags($this->title)
             , 'plan_name' => strip_tags($this->plan_name)
@@ -174,7 +175,7 @@ class Account extends ActiveRecordBase {
             , 'status' => $this->status
             , 'user_id_updated' => $this->user_id_updated
         ), array( 'website_id' => $this->id )
-        , 'iiisssssssiiiiiiiiiiiisissssiii', 'i' );
+        , 'iiiisssssssiiiiiiiiiiiisissssiii', 'i' );
     }
 
     /**
@@ -435,17 +436,7 @@ class Account extends ActiveRecordBase {
      * @return boolean TRUE if it's GSR Site
      */
     public function is_new_template() {
-        $new_template_company_package_ids = array(
-            26      // Butler
-            , 27    // GSR - Unlocked
-            , 28    // Signature Design - A (Updated)
-            , 29    // Signature Design - B (Updated)
-            , 30    // Signature Design - C (Updated)
-            , 31    // Signature Design - D (Updated)
-            , 32    // IR - Theme 4 (updated)
-        );
-        
-        return in_array($this->company_package_id, $new_template_company_package_ids);
+        return $this->company_package_id >= 26;
     }
 
     /**

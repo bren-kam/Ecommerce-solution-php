@@ -1,0 +1,39 @@
+/********/
+/* Page */
+/********/
+#title-container { margin-right:18px; }
+#tTitle { width:100%; }
+
+#dPageSlug { margin-top: 10px; margin-bottom:10px; display:block; }
+#tPageSlug { border: 1px solid #D4D0C8; width: 100px; margin: 0 2px; }
+
+#tFileName { width: 250px }
+#tCurrentLink { width: 350px }
+#ulUploadFile { max-height: 250px; overflow: auto; padding-right: 5px; }
+
+/** Products - Narrow Your Search **/
+#dNarrowSearchContainer { margin-right: 30px }
+#dNarrowSearch { padding: 13px 14px 31px; border: 1px solid #AFAFAF; background:#E9E9E9; width: 100%; position:relative }
+#dNarrowSearch h2 { font-size: 24px; font-weight: bold; padding-bott: 7px; }
+#dNarrowSearch h2, #dNarrowSearch td, #dNarrowSearch label { color: #606060 }
+#iNYSArrow { position:absolute; top: 100%; left: 94px }
+
+#tAddProducts_length { left: 0; text-align:right }
+/* Products */
+.product { min-height: inherit;  }
+.product, .product_heading , .product-placeholder {
+	background-color: #FFFFFF; margin: 10px 15px 0 0; height:200px; padding:5px 0 48px; display: block; float:left; width:190px; text-align:center; cursor:move; border: 1px solid #e2e2e2; position: relative;
+}
+.product-placeholder { height: 253px; margin: 10px 15px 0 0; padding:0; border-style: dashed; }
+
+.product h4 { font-weight: bold; margin-top: 0px; margin-left: 5px; display: inline-block;}
+.product p { padding-bottom: 0; }
+.product a { margin-left: 0; }
+.product .product-actions { display: inline-block; position: absolute; left: 75px; color: #9E9E9E; }
+.product a.tb { font-weight: normal; margin: 0; }
+
+/** Bottom 5 **/
+.product .product-actions {
+	bottom: 5px;
+}
+.product input, .product label { display: none }

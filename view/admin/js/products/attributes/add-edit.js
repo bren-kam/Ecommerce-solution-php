@@ -13,6 +13,12 @@ AttributeEditor = {
         $('#add-item').click( AttributeEditor.add );
         $('body').on( 'click', '.delete-attribute-item', AttributeEditor.remove );
 
+        // Make attributes sortable
+        $("#attribute-items-list").sortable({
+            forcePlaceholderSize : true
+            , placeholder: 'list-item-placeholder'
+            , handle : '.move'
+        });
     }
 
     , add: function(e) {
@@ -35,6 +41,8 @@ AttributeEditor = {
         }
 
         item.val('').trigger('blur');
+
+        $("#attribute-items-list" ).sortable('refresh');
     }
 
     , remove: function(e) {

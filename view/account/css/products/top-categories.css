@@ -1,14 +1,37 @@
-#top-categories { position: relative }
-.top-category h4 { font-weight: bold; margin: 5px 0 5px 5px; }
-.top-category img { border: 1px solid #ccc }
-
-/* Rounded Corners */
-.top-category, .top-category-placeholder {
-	background-color: #FFFFFF; margin: 10px 15px 0 0; padding:5px 0 48px; display: block; float:left; width:220px; height: 240px; text-align:center; cursor:move; border: 1px solid #e2e2e2; position: relative;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
+#category-list .category-placeholder {
+  width: 240px;
+  height: 250px;
+  float: left;
+  display: inline;
+  margin: 0 10px 10px 0;
+  border: 3px dashed #ccc;
 }
-
-.top-category-placeholder { height: 293px; margin: 10px 15px 0 0; padding:0; border-style: dashed; }
-.remove { position: absolute; bottom:5px; left: 75px; }
+#category-list .category {
+  width: 240px;
+  height: 250px;
+  float: left;
+  display: inline;
+  margin: 0 10px 10px 0;
+  border: 1px solid #eee;
+  text-align: center;
+  position: relative;
+}
+#category-list .category img {
+  max-width: 200px;
+  max-height: 200px;
+}
+#category-list .category .remove {
+  position: absolute;
+  display: none;
+  top: 0px;
+  right: 0px;
+  color: red;
+}
+#category-list .category:hover .remove {
+  display: block;
+}
+@media (max-width: 980px) {
+  #category-list .category .remove {
+    display: block;
+  }
+}

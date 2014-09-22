@@ -31,7 +31,7 @@ class PostingController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->kb( 85 )
-            ->select( 'posting', 'view' )
+            ->menu_item( 'social-media/facebook/list' )
             ->set( compact( 'page' ) );
     }
 
@@ -70,7 +70,7 @@ class PostingController extends BaseController {
         $now = new DateTime( dt::adjust_timezone( 'now', Config::setting('server-timezone'), $timezone ) );
 
         // Add validation
-        $v = new Validator('fFBPost');
+        $v = new BootstrapValidator('fFBPost');
         $v->trigger = true;
         $v->add_validation( 'taPost', 'req', _('The Post field is required') );
 
@@ -197,7 +197,7 @@ class PostingController extends BaseController {
         return $this->get_template_response( 'post' )
             ->kb( 86 )
             ->add_title( _('Post') )
-            ->select( 'posting' )
+            ->menu_item( 'social-media/facebook/list' )
             ->set( compact( 'sm_posting', 'errs', 'js_validation', 'page', 'pages', 'now', 'new_date_posted', 'post' ) );
     }
 
@@ -316,9 +316,7 @@ class PostingController extends BaseController {
             $post->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
