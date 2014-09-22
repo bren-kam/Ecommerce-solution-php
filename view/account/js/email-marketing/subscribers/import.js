@@ -1,50 +1,75 @@
-jQuery(function(){
-    // Setup File Uploader
-    var uploader = new qq.FileUploader({
-        action: '/email-marketing/subscribers/import-subscribers/'
-        , allowedExtensions: ['csv', 'xls']
-        , element: $('#import-subscribers')[0]
-        , sizeLimit: 26214400 // 25 mb's
-        , onSubmit: function( id, fileName ) {
-            uploader.setParams({
-                _nonce : $('#_import_subscribers').val()
-            })
-        }
-        , onComplete: function( id, fileName, responseJSON ) {
-            ajaxResponse( responseJSON );
-        }
-    });
 
-    /**
-     * Make the uploader work
-     */
-    $('#aImportSubscribers').click( function() {
+var ImportSubscribers = {
+
+    uploader: null
+
+    , init: function() {
+        // Setup File Uploader
+        ImportSubscribers.uploader = new qq.FileUploader({
+            action: '/email-marketing/subscribers/import-subscribers/'
+            , allowedExtensions: ['csv', 'xls']
+            , element: $('#uploader')[0]
+            , sizeLimit: 10485760 // 10 mb's
+            , onSubmit: ImportSubscribers.uploaderSubmit
+            , onComplete: ImportSubscribers.uploaderComplete
+        });
+
+        // Upload file trigger
+        $('#upload').click( ImportSubscribers.uploaderOpen );
+
+        $('.email-list').change( ImportSubscribers.updateEmailListValue );
+        ImportSubscribers.updateEmailListValue();
+    }
+
+
+    , uploaderSubmit: function( id, fileName ) {
+        ImportSubscribers.uploader.setParams({
+            _nonce : $('#_import_subscribers').val()
+        });
+
+        $('#upload').hide();
+        $('#upload-loader').removeClass('hidden').show();
+    }
+
+    , uploaderComplete: function( id, fileName, response ) {
+        $('#upload-loader').hide();
+        $('#upload').show();
+
+        GSR.defaultAjaxResponse( response );
+
+        if ( response.success ) {
+            var lastTenEmails = response.last_ten_emails;
+            for ( i in lastTenEmails ) {
+                var contact = lastTenEmails[i];
+
+                $('#subscriber-list tbody').append( '<tr><td>' + contact.email + '</td><td>' + contact.name + '</td></tr>' );
+            }
+
+            $('#step-1').hide();
+            $('#step-2').removeClass('hidden').show();
+        }
+    }
+
+    , uploaderOpen: function(e) {
+        if ( e )
+            e.preventDefault();
+
         if ( $.support.cors ) {
-            $('#import-subscribers input:first').click();
+            $('#uploader input:first').click();
         } else {
             alert( $('#err-support-cors').text() );
         }
-    });
+    }
 
-    // Change the email lists
-    $('#dDefault input.cb').change( updateEmailLists );
+    , updateEmailListValue: function() {
+        var emailLists = [];
+        $('.email-list:checked').each(function() {
+            emailLists.push( $(this).val() );
+        });
+        $('#hEmailLists').val( emailLists.join('|') );
+    }
 
-    // To start off with
-    updateEmailLists();
-});
 
-/**
- * Update email lists function
- */
-function updateEmailLists() {
-	var emailLists = '';
-
-	// Make a string
-	$('#dDefault input.cb').each( function() {
-		if( $(this).is(':checked') )
-			emailLists += ( '' == emailLists ) ? $(this).val() : '|' + $(this).val();
-	});
-
-	// Assign it to hidden value
-	$('#hEmailLists').val( emailLists );
 }
+
+jQuery( ImportSubscribers.init );

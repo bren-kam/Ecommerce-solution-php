@@ -1,0 +1,4 @@
+.dataTables_wrapper > .row:first-child {
+  display: none;
+  visibility: hidden;
+}

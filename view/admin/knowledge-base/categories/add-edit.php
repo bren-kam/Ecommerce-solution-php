@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Knowledge Base Add/Edit Category -- Dialog
+ * @page Add/Edit Category -- Dialog
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -9,46 +9,48 @@
  * @var User $user
  * @var Category $category
  * @var array $categories
- * @var int $parent_id
+ * @var string $section
  */
 
-
-$add_edit_url = url::add_query_arg( 's', $_GET['s'], '/knowledge-base/categories/add-edit/' );
+$add_edit_url = '/knowledge-base/categories/add-edit/?s=' . $section;
 
 if ( $category->id )
-    $add_edit_url = url::add_query_arg( array( 'cid' => $category->id, 'pcid' => $_GET['pcid'] ) );
-?>
-<form name="fAddEditCategory" class="form-add-edit-category" id="fAddEditCategory" action="<?php echo $add_edit_url; ?>" method="post" ajax="1">
-<table>
-    <tr>
-        <td><label><?php echo _('Section'); ?>:</label></td>
-        <td><?php echo ucwords( $_GET['s'] ); ?></td>
-    </tr>
-    <tr>
-        <td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tName" id="tName" value="<?php echo $template->v('name'); ?>" /></td>
-    </tr>
-    <tr>
-        <td><label for="sParentID"><?php echo _('Parent Category'); ?>:</label></td>
-        <td>
-            <select name="sParentID" id="sParentID">
-                <option value="">-- <?php echo _('Select Category'); ?> --</option>
-                <?php
-                foreach ( $categories as $c ) {
-                    if ( $category->id == $c->id || $category->id == $c->parent_id )
-                        continue;
+    $add_edit_url = url::add_query_arg( array( 'kbcid' => $category->id ) );
 
-                    $selected = ( $parent_id == $c->id ) ? ' selected="selected"' : '';
-                ?>
-                    <option value="<?php echo $c->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $c->depth * 5 ), $c->name; ?></option>
-                <?php } ?>
-            </select>
-        </td>
-    </tr>
-</table>
-<div class="boxy-footer hidden">
-    <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
-    <p class="text-right col-2 float-right"><input type="submit" class="button" value="<?php echo ( $category->id ) ? _('Save') : _('Add'); ?>" rel="fAddEditCategory" /></p>
-</div>
-<?php nonce::field('add_edit'); ?>
+?>
+
+<form name="fAddEditCategory" id="fAddEditCategory" action="<?php echo $add_edit_url; ?>" method="post" role="form">
+
+    <!-- Modal -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="modalLabel"><?php echo $category->id ? 'Edit' : 'Add'?> Category</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="tName">Name:</label>
+                    <input type="text" class="form-control" name="tName" id="tName" value="<?php echo $name ?>" placeholder="Category Name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="sParentID">Parent Category</label>
+                    <select class="form-control" name="sParentID" id="sParentID">
+                        <option value="">Select Category</option>
+                        <?php foreach ( $categories as $c ): ?>
+                            <option value="<?php echo $c->id; ?>" <?php if ( $parent_id == $c->id ) echo ' selected="selected"' ?>><?php echo str_repeat( '&nbsp;', $c->depth * 5 ), $c->name; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+
 </form>

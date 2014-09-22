@@ -52,7 +52,8 @@ class CustomizeController extends BaseController {
 
         $this->resources
             ->css('accounts/customize/css')
-            ->javascript('accounts/customize/css');
+            ->javascript('accounts/customize/css')
+            ->javascript_url( Config::resource('ace-js') );
 
         return $this->get_template_response( 'css' )
             ->kb( 10 )
@@ -75,7 +76,7 @@ class CustomizeController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Setup objects
-        $ft = new FormTable( _('fCustomizeSettings') );
+        $ft = new BootstrapForm( _('fCustomizeSettings') );
 
         // Get variables
         $settings = $account->get_settings(
@@ -88,7 +89,7 @@ class CustomizeController extends BaseController {
         $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
         $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
-         
+
         if ( $ft->posted() ) {
             // Update settings
             $account->set_settings( array(
@@ -120,13 +121,14 @@ class CustomizeController extends BaseController {
     protected function favicon() {
          if (!$this->user->has_permission(User::ROLE_ADMIN) || !isset($_GET['aid']))
             return new RedirectResponse('/accounts/');
-         
+
         // Get Account
         $account = new Account();
         $account->get($_GET['aid']);
 
         $favicon = $account->get_settings("favicon");
-        $this->resources->javascript('fileuploader', 'accounts/customize/favicon');
+        $this->resources->javascript('fileuploader', 'accounts/customize/favicon')
+            ->css( 'accounts/customize/favicon' );
 
         return $this->get_template_response('favicon')
             ->select('customize', 'favico')
@@ -142,9 +144,11 @@ class CustomizeController extends BaseController {
      * @return AjaxResponse
      */
     protected function save_less() {
+        set_time_limit(3600);
+
         // Make sure it's a valid ajax call
         $response = new AjaxResponse($this->verified());
-       
+
         // Get account
         if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_css = $_POST['less'];
@@ -157,7 +161,7 @@ class CustomizeController extends BaseController {
 
         $account = new Account();
         $account->get($_GET['aid']);
-        
+
         // If there is an error or now user id, return
         if ( $response->has_error() )
              return $response;
@@ -180,7 +184,7 @@ class CustomizeController extends BaseController {
         // Update all other LESS sites
         if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_accounts = $account->get_less_sites();
-			
+
             /**
              * @var Account $less_account
              * @var string $unlocked_less
@@ -189,10 +193,19 @@ class CustomizeController extends BaseController {
             foreach ( $less_accounts as $less_account ) {
                 if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
                     continue;
-				
+
+                $less = new lessc;
+                $less->setFormatter("compressed");
+                $site_less = $less_account->get_settings('less');
+
                 $less_account->set_settings( array(
-                    'css' => $less->compile( $less_css . $less_account->get_settings('less') )
+                    'css' => $less->compile( $less_css . $site_less )
                 ));
+
+                unset( $less );
+                unset( $site_less );
+                unset( $less_account );
+                gc_collect_cycles();
             }
         }
 
@@ -256,14 +269,34 @@ class CustomizeController extends BaseController {
         $account_file->file_path = $file_url;
         $account_file->create();
 
-        $response->add_response( 'file', $account_file->file_path );
-        // Update account favicon
-        $account->set_settings( array( 'favicon' => $account_file->file_path ) );
-        jQuery('#dFaviconContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Favicon') . '" /><br />');
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'refresh', true );
 
         return $response;
+    }
+
+    public function ashley_express_shipping_prices() {
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( $this->verified() ) {
+
+            $file = $_FILES['file'];
+            $filename = tempnam( sys_get_temp_dir(), 'ae_' ) . '.' . f::extension( $file['name'] );
+
+            move_uploaded_file( $file['tmp_name'], $filename );
+            $ae = new AshleyExpressFeedGateway();
+            try {
+                $updated = $ae->run_shipping_prices( $account, $filename );
+                $this->notify( "Updated $updated products" );
+            } catch( Exception $e ) {
+                $this->notify( $e->getMessage(), false );
+            }
+
+        }
+
+        return $this->get_template_response( 'ashley-express-shipping-prices' )
+            ->set( compact( 'account' ) )
+            ->kb( 0 );
     }
 }

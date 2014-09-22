@@ -1,0 +1,52 @@
+/*************************/
+/* Label - RAWebPlus.com */
+/*************************/
+body { background-color: #A2AAB0 }
+#log-out, #log-out a { color: #4B4F51 }
+#nav { border-bottom-color: #D26627; }
+#nav-right a, .highlight { color: #D26627 }
+#footer, #footer a { color: #DADFE3 }
+#footer a:hover { color:  #fff }
+#sidebar a.sub, aside#right-sidebar a { color: #D26627 }
+#sidebar a.sub:hover, #sidebar a.sub.selected, aside#right-sidebar a:hover, .service img:hover, #support-drop-down a.article:hover { background-color: #D26627 !important; border-top-color: #ACDB00; border-bottom-color: #AD5500; }
+.boxy-wrapper .title-bar, .boxy-footer { background-color: #3C3D40 }
+
+.button { 
+	background-color: #414141;
+	border: 1px solid #343537;
+
+    /* Setup Gradient */
+    background-image: linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
+    / -o-linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
+    / -moz-linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
+    / -webkit-linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
+    / -ms-linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
+    / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(73,74,78)), color-stop(0.56, rgb(59,60,63)) );
+    text-shadow: 0px 1px 0px #000000;
+    filter: dropshadow(color=#000000, offx=0, offy=1);
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(108, 110, 115, 1);
+    box-shadow: inset 0px 1px 0px 0px rgba(108, 110, 115, 1);
+}
+
+.login-button {
+	background-color: #414141;
+	border: 1px solid #A0CA0D;
+
+    /* Setup Gradient */
+    background-image: linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -o-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -moz-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -webkit-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -ms-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(159,199,6)), color-stop(0.56, rgb(130,165,3)) );
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(213, 239, 123, 1);
+    box-shadow: inset 0px 1px 0px 0px rgba(213, 239, 123, 1);
+}
+
+#login-logo { margin-bottom: 0; margin-top: 90px }
+
+/**** OLD ****/
+a { color: #8ea800; }
+a:hover, #breadcrumb a:hover { color: #a9c800 }
+#nav, .box h2 { background-color: #7a7b7d }
+#description { color: #a9c800 }

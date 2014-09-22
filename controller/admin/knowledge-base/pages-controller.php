@@ -22,11 +22,13 @@ class PagesController extends BaseController {
         $uc_section = ucwords( $kb_section );
         $link = '<a href="' . url::add_query_arg( 's', $kb_section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
+        $this->resources->javascript( 'knowledge-base/pages/index' );
+
         return $this->get_template_response( 'index' )
             ->kb( 30 )
             ->add_title( _('Pages') )
             ->set( compact( 'link', 'kb_section' ) )
-            ->select( 'pages', 'view' );
+            ->select( 'knowledge-base', 'knowledge-base/pages/index' );
     }
 
     /**
@@ -52,7 +54,7 @@ class PagesController extends BaseController {
         }
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditPage', url::add_query_arg( array( 's' => $_GET['s'], 'kbpid' => $kb_page->id ), '/knowledge-base/pages/add-edit/' ) );
+        $ft = new BootstrapForm( 'fAddEditPage', url::add_query_arg( array( 's' => $_GET['s'], 'kbpid' => $kb_page->id ), '/knowledge-base/pages/add-edit/' ) );
 
         $ft->submit( ( $kb_page->id ) ? _('Save') : _('Add') );
 
@@ -105,7 +107,7 @@ class PagesController extends BaseController {
         // Get Page
         return $this->get_template_response( 'add-edit' )
             ->kb( 31 )
-            ->select( 'pages', 'add' )
+            ->select( 'knowledge-base', 'knowledge-base/pages/add' )
             ->add_title( ( ( $kb_page->id ) ? _('Edit') : _('Add') ) . ' ' . _('Page') )
             ->set( compact( 'form' ) );
     }
@@ -135,7 +137,6 @@ class PagesController extends BaseController {
 
         // Set initial data
         $data = false;
-        $confirm_delete = _('Are you sure you want to delete this page? This cannot be undone.');
         $delete_nonce = nonce::create( 'delete' );
 
         /**
@@ -146,7 +147,7 @@ class PagesController extends BaseController {
             $data[] = array(
                 $page->name . '<div class="actions">' .
                     '<a href="' . url::add_query_arg( array( 's' => $_GET['section'], 'kbpid' => $page->id ), '/knowledge-base/pages/add-edit/' ) . '" title="' . $page->name . '">' . _('Edit') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( array( 'kbpid' => $page->id, '_nonce' => $delete_nonce ), '/knowledge-base/pages/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
+                    '<a href="' . url::add_query_arg( array( 'kbpid' => $page->id, '_nonce' => $delete_nonce ), '/knowledge-base/pages/delete/' ) . '" title="' . _('Delete') . '" class="delete-page">' . _('Delete') . '</a></div>'
                 , $page->category
             );
         }
@@ -177,20 +178,14 @@ class PagesController extends BaseController {
         $categories_array = array();
 
         foreach( $categories as $category ) {
-            $categories_array[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
+            $categories_array[] = array(
+                'id' => $category->id
+                , 'name' => str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name
+            );
         }
 
-         // Create new form table
-        $ft = new FormTable( 'fAddEditPage' );
-
-        $html = $ft->add_field( 'select', _('Category'), 'sCategory' )
-            ->options( $categories_array )
-            ->generate();
-
-        jQuery('#sCategory')->replaceWith( $html );
-
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'categories', $categories_array );
 
         return $response;
     }
@@ -212,12 +207,6 @@ class PagesController extends BaseController {
         $kb_page = new KnowledgeBasePage();
         $kb_page->get( $_GET['kbpid'] );
         $kb_page->remove();
-
-        // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

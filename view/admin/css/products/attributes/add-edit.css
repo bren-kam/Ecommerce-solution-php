@@ -1,5 +1,0 @@
-#items-list { margin-top: 7px }
-.list-item, .list-item-placeholder { margin-bottom: 7px; position: relative }
-.list-item-placeholder { border: 1px dashed #b3b3b3; height: 32px; width: 384px; }
-.handle { position: absolute; left: -21px; top: 9px; }
-.delete-list-item { margin-left: 5px; position: relative; top: 3px; }

@@ -141,6 +141,8 @@ class File {
 	 * @return bool
 	 */
 	public function delete_image( $image_path, $subdomain ) {
+        // remove whitespaces from subdomain
+        $subdomain = str_replace(' ', '', $subdomain);
 		return $this->s3->deleteObject( $subdomain . $this->bucket, $image_path );
 	}
 

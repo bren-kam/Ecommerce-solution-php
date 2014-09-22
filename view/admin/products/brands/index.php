@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page List Brands
+ * @page List Attributes
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -9,18 +9,25 @@
  * @var User $user
  */
 
-echo $template->start( _('Brands'), '../sidebar' );
 ?>
 
-<table ajax="/products/brands/list-all/" perPage="30,50,100">
-    <thead>
-        <tr>
-           <th width="30%" sort="1"><?php echo _('Brand Name'); ?></th>
-            <th width="70%"><?php echo _('URL'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Brands
+            </header>
 
-<?php echo $template->end(); ?>
+            <div class="panel-body">
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/products/brands/list-all/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1">Brand Name</th>
+                            <th>URL</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

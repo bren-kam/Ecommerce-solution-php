@@ -1,50 +1,62 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Manually Priced Products
+ * @page Products
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var AccountProduct[] $products
+ * @var Category[] $categories
+ * @var int $product_count
+ * @var WebsiteCoupon[] $coupons
+ * @var array $pricing_points
  */
 
-echo $template->start( _('Manually Priced Products') );
+$remove_nonce = nonce::create( 'manually_priced_remove' );
 ?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Manually Priced Products
 
+                <span class="pull-right">
+                    <a class="btn btn-sm btn-default" href="/products/manually-priced-remove-all/?_nonce=<?php echo nonce::create( 'manually_priced_remove_all' ) ?>">Clear All</a>
+                    <a class="btn btn-sm btn-default" href="/products/manually-priced-lock-all/?_nonce=<?php echo nonce::create( 'manually_priced_lock_all' ) ?>">Lock All Products</a>
+                </span>
+            </header>
 
-<p class="float-right">
-    <a class="button" id="remove-all" href="/products/manually-priced-remove-all/?_nonce=<?php echo nonce::create( 'manually_priced_remove_all' ) ?>">Clear All</a>
-    <a class="button" id="lock-all-products" href="/products/manually-priced-lock-all/?_nonce=<?php echo nonce::create( 'manually_priced_lock_all' ) ?>">Lock All Products</a>
-</p>
-<table class="dt" width="100%" perPage="100,250,500">
-    <thead>
-        <tr>
-            <th width="30%" sort="1"><?php echo _('Product Name'); ?></th>
-            <th width="20%"><?php echo _('SKU'); ?></th>
-            <th width="25%"><?php echo _('Category'); ?></th>
-            <th width="25%"><?php echo _('Brand'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        if ( is_array( $products ) )
-        foreach ( $products as $product ) { ?>
-            <tr>
-                <td>
-                    <?php echo $product->name; ?> <br>
-                    <div class="actions">
-                        <a class="manually-priced-remove" href="/products/manually-priced-remove/?product-id=<?php echo $product->product_id ?>"">Remove</a>
-                    </div>
-                </td>
-                <td><?php echo $product->sku; ?></td>
-                <td><?php echo $product->category; ?></td>
-                <td><?php echo $product->brand; ?></td>
-            </tr>
-        <?php } ?>
-    </tbody>
-</table>
-<?php nonce::field( 'manually_priced_remove' ) ?>
-
-<?php echo $template->end(); ?>
+            <div class="panel-body">
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped dt" perPage="30,50,100">
+                        <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>SKU</th>
+                            <th>Category</th>
+                            <th>Brand</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                            foreach ( $products as $product ): ?>
+                                <tr>
+                                    <td>
+                                        <?php echo $product->name; ?> <br>
+                                        <div class="actions">
+                                            <a href="/products/manually-priced-remove/?product-id=<?php echo $product->product_id ?>&_nonce=<?php echo $remove_nonce ?>" confirm="Are you sure you want to make this product Auto Priced?" ajax="1">Remove</a>
+                                        </div>
+                                    </td>
+                                    <td><?php echo $product->sku; ?></td>
+                                    <td><?php echo $product->category; ?></td>
+                                    <td><?php echo $product->brand; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

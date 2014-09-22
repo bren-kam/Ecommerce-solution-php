@@ -1,40 +1,28 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page List Website Pages
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var array $categories
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Categories
+            </header>
 
-echo $template->start( _('Website Categories') );
-?>
+            <div class="panel-body">
 
-<div class="relative">
-    <select id="sParentCategoryID">
-        <option value="0">-- <?php echo _('Parent Category (Top) '); ?> --</option>
-        <?php
-        foreach ( $categories as $category ) {
-            ?>
-            <option value="<?php echo $category->id; ?>"><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
-        <?php } ?>
-    </select>
-    <table ajax="/website/list-categories/" perPage="30,50,100">
-        <thead>
-            <tr>
-                <th width="65%"><?php echo _('Title'); ?></th>
-                <th width="35%"><?php echo _('Last Updated'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+                <select id="sParentCategoryID" class="form-control">
+                    <option value="0">--Parent Category (Top) --</option>
+                    <?php foreach ( $categories as $category ): ?>
+                        <option value="<?php echo $category->id; ?>"><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <?php nonce::field( 'store_session', '_store_session' ) ?>
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/website/list-categories/" perPage="30,50,100">
+                        <thead>
+                        <th sort="1">Title</th>
+                        <th>Updated</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
-
-<?php
-nonce::field( 'store_session', '_store_session' );
-echo $template->end();
-?>

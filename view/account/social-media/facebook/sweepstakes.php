@@ -8,214 +8,155 @@
  * @var Template $template
  * @var User $user
  * @var SocialMediaFacebookPage $page
- * @var SocialMediaSweepstakes $sm_sweepstakes
- * @var AccountFile[] $files
- * @var EmailList[] $email_lists
- * @var string $errs
- * @var string $js_validation
- * @var AccountPage[] $pages
+ * @var SocialMediaSweepstakes $sweepstakes
  */
 
-$start_date = new DateTime( $sm_sweepstakes->start_date );
-$end_date = new DateTime( $sm_sweepstakes->end_date );
+$upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+$search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+$delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
-echo $template->start( _('Sweepstakes') . ' - ' . $page->name, 'sidebar' );
+$start_date = new DateTime( $sweepstakes->start_date );
+$end_date = new DateTime( $sweepstakes->end_date );
+?>
 
-if ( !$sm_sweepstakes->fb_page_id ) {
-    // Define instructions
-    $instructions = array(
-        1 => array(
-           'title' => _('Go to the Sweepstakes application')
-           , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-sweepstakes/" title="' . _('Online Platform - Sweepstakes') . '" target="_blank">' . _('Sweepstakes') . '</a> ' . _('application page') . '.'
-           , 'image' => false
-        )
-        , 2 => array(
-           'title' => _('Install The App')
-           , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
-        )
-        , 3 => array(
-           'title' => _('Choose Your Page')
-           , 'text' => _('(Note - You must first be an admin of the page to install the App)')
-        )
-        , 4 => array(
-           'title' => _('Click Add Online Platform - Sweepstakes')
-        )
-        , 5 => array(
-           'title' => _('Click on the Sweepstakes App')
-           , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the Sweepstakes")
-        )
-        , 6 => array(
-           'title' => _('Click on the Update Settings')
-        )
-        , 7 => array(
-           'title' => _('Click Add Online Platform - Sweepstakes')
-           , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $sm_sweepstakes->key
-        )
-    );
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
 
-    foreach ( $instructions as $step => $data ) {
-       echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
-
-       if ( isset( $data['text'] ) )
-           echo '<p>', $data['text'], '</p>';
-
-       if ( !isset( $data['image'] ) || $data['image'] != false )
-           echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
-
-       echo '<br /><br />';
-    }
-} else {
-    ?>
-    <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $sm_sweepstakes->fb_page_id; ?>?sk=app_113993535359575" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
-    <?php
-    if ( !empty( $errs ) )
-        echo "<p class='error'>$errs</p>";
-    ?>
-    <form name="fSweepstakes" action="<?php echo url::add_query_arg( 'smfbpid', $page->id, '/social-media/facebook/sweepstakes/' ); ?>" method="post">
-        <h2 class="title"><label for="taBefore"><?php echo _('What Non-Fans See'); ?>:</label></h2>
-        <textarea name="taBefore" id="taBefore" cols="50" rows="3" rte="1"><?php echo $sm_sweepstakes->before; ?></textarea>
-        <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
-        <br />
-
-        <h2 class="title"><label for="taAfter"><?php echo _('What Fans See After Liking the Page'); ?>:</label></h2>
-        <textarea name="taAfter" id="taAfter" cols="50" rows="3" rte="1"><?php echo $sm_sweepstakes->after; ?></textarea>
-        <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
-        <br />
-
-        <h2 class="title"><label for="tStartDate"><?php echo _('Start of Sweepstakes'); ?>:</label></h2>
-        <p>
-            <input type="text" class="tb" name="tStartDate" id="tStartDate" value="<?php echo $start_date->format( 'm/d/Y' ); ?>" />
-            <input type="text" class="tb" name="tStartTime" id="tStartTime" value="<?php echo $start_date->format( 'h:i a' ); ?>" style="width:75px" />
-        </p>
-        <br />
-
-        <h2 class="title"><label for="tEndDate"><?php echo _('End of Sweepstakes'); ?>:</label></h2>
-        <p>
-            <input type="text" class="tb" name="tEndDate" id="tEndDate" value="<?php echo $end_date->format( 'm/d/Y' ); ?>" />
-            <input type="text" class="tb" name="tEndTime" id="tEndTime" value="<?php echo $end_date->format( 'h:i a' ); ?>" style="width:75px" />
-        </p>
-        <br />
-
-        <h2 class="title"><label for="sEmailList"><?php echo _('Email List'); ?>:</label></h2>
-        <p>
-            <select name="sEmailList" id="sEmailList">
-                <option value="0">-- <?php echo _('Select Email List'); ?> --</option>
+            <header class="panel-heading">
+                Sweepstakes - <?php echo $page->name ?>
+            </header>
+            <div class="panel-body">
                 <?php
-                foreach ( $email_lists as $el ) {
-                    $selected = ( $el->id == $sm_sweepstakes->email_list_id ) ? ' selected="selected"' : '';
-                    ?>
-                <option value="<?php echo $el->id; ?>"<?php echo $selected; ?>><?php echo $el->name; ?></option>
-                <?php } ?>
-            </select>
-            <?php if ( $user->account->email_marketing ) { ?>
-            <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
-            <?php } ?>
-        </p>
-        <br />
+                    if ( !$sweepstakes->fb_page_id ) :
+                        // Define instructions
+                        $instructions = array(
+                            1 => array(
+                                'title' => _('Go to the Sweepstakes application')
+                            , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-sweepstakes/" title="' . _('Online Platform - Sweepstakes') . '" target="_blank">' . _('Sweepstakes') . '</a> ' . _('application page') . '.'
+                            , 'image' => false
+                            )
+                        , 2 => array(
+                                'title' => _('Install The App')
+                            , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
+                            )
+                        , 3 => array(
+                                'title' => _('Choose Your Page')
+                            , 'text' => _('(Note - You must first be an admin of the page to install the App)')
+                            )
+                        , 4 => array(
+                                'title' => _('Click Add Online Platform - Sweepstakes')
+                            )
+                        , 5 => array(
+                                'title' => _('Click on the Sweepstakes App')
+                            , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the Sweepstakes")
+                            )
+                        , 6 => array(
+                                'title' => _('Click on the Update Settings')
+                            )
+                        , 7 => array(
+                                'title' => _('Click Add Online Platform - Sweepstakes')
+                            , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $sm_sweepstakes->key
+                            )
+                        );
 
-        <h2 class="title"><label for="contest-rules"><?php echo ( $user->account->pages ) ? _('Contest Rules Page') : _('Contest Rules Link'); ?>:</label></h2>
-        <?php if ( $user->account->pages ) { ?>
-            <p>
-                <select name="contest-rules" id="contest-rules">
-                    <option value="">-- <?php echo _('Contest Rule Page'); ?> --</option>
-                    <?php
-                    foreach ( $pages as $p ) {
-                        $link = 'http://' . $user->account->domain . '/' . $p->slug . '/';
+                        foreach ( $instructions as $step => $data ):
+                            echo "<h3>Step $step: {$data['title']}</h3>";
 
-                        $selected = ( $link == $sm_sweepstakes->contest_rules_url ) ? ' selected="selected"' : '';
-                        ?>
-                        <option value="<?php echo $link; ?>"<?php echo $selected; ?>><?php echo $p->title; ?></option>
-                    <?php } ?>
-                </select>
-            </p>
-        <?php } else { ?>
-            <p><input type="text" class="tb" name="contest-rules" id="contest-rules" value="<?php echo $sm_sweepstakes->contest_rules_url; ?>" /></p>
-        <?php } ?>
-        <br />
+                            if ( isset( $data['text'] ) )
+                                echo '<p>', $data['text'], '</p>';
 
-        <h1 class="float-none padding-bottom"><?php echo _('Share Settings'); ?></h1>
-        <table>
-            <tr>
-                <td><label for="tShareTitle"><?php echo _('Share Title'); ?>:</label></td>
-                <td><input type="text" class="tb" name="tShareTitle" id="tShareTitle" value="<?php echo $sm_sweepstakes->share_title; ?>" maxlength="100" /></td>
-            </tr>
-            <tr>
-                <td><label for="tShareImageURL"><?php echo _('Share Image Link'); ?>:</label></td>
-                <td>
-                    <input type="text" class="tb" name="tShareImageURL" id="tShareImageURL" value="<?php echo $sm_sweepstakes->share_image_url; ?>" maxlength="200" /> <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload'); ?></a>
-                    <br />
-                    (<?php echo _('image must be 64x64'); ?>)
-                </td>
-            </tr>
-            <tr>
-                <td class="top"><label for="taShareText"><?php echo _('Share Text'); ?>:</label></td>
-                <td><textarea name="taShareText" id="taShareText" cols="50" rows="3"><?php echo $sm_sweepstakes->share_text; ?></textarea></td>
-            </tr>
-        </table>
+                            if ( !isset( $data['image'] ) || $data['image'] != false )
+                                echo '<p><a href="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png" alt="', $data['title'], '" /></a></p>';
 
-        <br /><br />
-        <input type="submit" class="button" value="<?php echo _('Save'); ?>" />
-        <?php nonce::field('sweepstakes'); ?>
-    </form>
-    <?php echo $js_validation; ?>
+                            echo '<hr />';
+                        endforeach;
+                    else:
+                ?>
 
-    <div id="dUploadFile" class="hidden">
-        <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
-        <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
-        <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-        <div class="hidden-fix position-absolute" id="upload-file"></div>
-        <br /><br />
+                        <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $sm_sweepstakes->fb_page_id; ?>?sk=app_113993535359575" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 
-        <div id="file-list">
-        <?php
-        if ( empty( $files ) ) {
-            echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>';
-        } else {
-            // Set variables
-            $delete_file_nonce = nonce::create('delete_file');
-            $confirm = _('Are you sure you want to delete this file?');
+                        <form method="post" role="form">
+                            <div class="form-group">
+                                <label for="taBefore">What Non-Fans See:</label>
+                                <textarea class="form-control" id="taBefore" name="taBefore" rte="1" rows="10"><?php echo $sweepstakes->before ?></textarea>
+                            </div>
+                            <p>
+                                <button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>">Upload File</button>
+                            </p>
 
-            /**
-             * @var AccountFile $file
-             */
-            foreach ( $files as $file ) {
-                $file_name = f::name( $file->file_path );
-                $extension = f::extension( $file->file_path );
-                $date = new DateTime( $file->date_created );
+                            <div class="form-group">
+                                <label for="taAfter">What Fans See After Linking the Page:</label>
+                                <textarea class="form-control" id="taAfter" name="taAfter" rte="1" rows="10"><?php echo $sweepstakes->after ?></textarea>
+                            </div>
+                            <p>
+                                <button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>">Upload File</button>
+                            </p>
 
-                if ( in_array( $extension, image::$extensions ) ) {
-                    // It's an image!
-                    echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file img" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-                } else {
-                    // It's not an image!
-                    echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-                }
-            }
-        }
-        ?>
-        </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <label for="tStartDate">Start of Sweepstakes:</label>
+                                    <input type="text" class="form-control" name="tStartDate" id="tStartDate" value="<?php echo $start_date->format('Y-m-d') ?>" />
+                                </div>
+                                <div class="col-lg-2">
+                                    <label for="tStartTime">At</label>
+                                    <input type="text" class="form-control" name="tStartTime" id="tStartTime" value="<?php echo $start_date->format('h:i a') ?>" />
+                                </div>
+                            </div>
 
-        <br /><br />
-        <div id="dCurrentLink" class="hidden">
-            <p><strong><?php echo _('Current Link'); ?>:</strong></p>
-            <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" /></p>
-            <br />
-            <table class="col-1">
-                <tr>
-                    <td class="col-3"><strong><?php echo _('Date'); ?>:</strong></td>
-                    <td class="col-3"><strong><?php echo _('Size'); ?>:</strong></td>
-                    <td class="col-3">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td id="tdDate"></td>
-                    <td id="tdSize"></td>
-                    <td class="text-right"><a href="#" class="button close"><?php echo _('Close'); ?></a></td>
-                </tr>
-            </table>
-        </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <label for="tEndDate">End of Sweepstakes:</label>
+                                    <input type="text" class="form-control" name="tEndDate" id="tEndDate" value="<?php echo $end_date->format('Y-m-d') ?>" />
+                                </div>
+                                <div class="col-lg-2">
+                                    <label for="tEndTime">At</label>
+                                    <input type="text" class="form-control" name="tEndTime" id="tEndTime" value="<?php echo $end_date->format('h:i a') ?>" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sEmailList">Email List:</label>
+                                <select name="sEmailList" id="sEmailList" class="form-control">
+                                    <option value="0">-- Select Email List --</option>
+                                    <?php foreach ( $email_lists as $el ): ?>
+                                        <option value="<?php echo $el->id; ?>"<?php if ( $el->id == $sweepstakes->email_list_id ) echo 'selected' ; ?>><?php echo $el->name; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <?php if ( $user->account->email_marketing ) : ?>
+                                <p>
+                                    <a href="/email-marketing/email-lists/add-edit/" target="_blank">Add New Email List</a>
+                                </p>
+                            <?php endif; ?>
+
+                            <div class="form-group">
+                                <label for="tShareTitle">Share Title:</label>
+                                <input type="text" class="form-control" name="tShareTitle" id="tShareTitle" value="<?php echo $sweepstakes->share_title ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tShareImageURL">Share Image Link:</label>
+                                <input type="text" class="form-control" name="tShareImageURL" id="tShareImageURL" value="<?php echo $sweepstakes->share_image_url ?>">
+                            </div>
+                            <p>
+                                <button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>">Upload File</button>
+                            </p>
+
+                            <div class="form-group">
+                                <label for="taShareText">Share Text:</label>
+                                <textarea class="form-control" id="taShareText" name="taShareText" rows="3"><?php echo $sweepstakes->share_text ?></textarea>
+                            </div>
+
+                            <p>
+                                <?php nonce::field('sweepstakes') ?>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </p>
+                        </form>
+
+                <?php endif; ?>
+            </div>
+        </section>
     </div>
-    <?php nonce::field( 'upload_file', '_upload_file' ); ?>
-<?php } ?>
-
-
-<?php echo $template->end(); ?>
+</div>

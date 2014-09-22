@@ -8,7 +8,7 @@
 class Ftp {
 	// Connection settings
     public $host, $username, $password, $port, $cwd, $conn_id;
-	
+
 	/**
 	 * An array of file extensions that should be uploaded in binary
 	 * @param array $binary_extensions
@@ -39,10 +39,10 @@ class Ftp {
 	public function change_port( $port ) {
 		$this->port = $port;
 		ftp_close( $this->conn_id );
-		
+
 		return $this->connect();
 	}
-	
+
 	/**
 	 * Add a file to the server
      *
@@ -53,19 +53,19 @@ class Ftp {
 	 */
 	public function add( $file_path, $remote_dir, $new_file_name = '' ) {
 		if ( !$this->chdir( $this->cwd . $remote_dir ) )
-			$this->mkdir( $this->cwd . $remote_dir );		
-		
+			$this->mkdir( $this->cwd . $remote_dir );
+
 		if ( empty( $new_file_name ) )
 			$new_file_name = $this->get_file_name( $file_path );
-		
+
 		$pathinfo = pathinfo( $file_path );
-		
+
 		$transfer_mode = ( in_array( strtolower( $pathinfo['extension'] ), $this->binary_extensions ) ) ? FTP_BINARY : FTP_ASCII;
-		
+
 		return $this->put( $file_path, $this->cwd . $remote_dir . $new_file_name, $transfer_mode );
 	}
 
-	
+
 	/**
 	 * Delete a file on server
 	 *
@@ -79,7 +79,7 @@ class Ftp {
 
     	return $this->_delete( $this->cwd . $remote_dir . $file_name );
 	}
-	
+
 	/**
 	 * Get a remote file
 	 *
@@ -95,7 +95,7 @@ class Ftp {
 
 		return $this->_get( $local_dir . $file_name , $this->cwd . $remote_dir . $file_name );
 	}
-	
+
 	/**
 	 * Get remote file contents and return it as a string
 	 *
@@ -106,7 +106,7 @@ class Ftp {
 	public function ftp_get_contents( $file_name, $mode = FTP_ASCII ) {
 		// Create temp handler:
 		$temp_handle = fopen('php://temp', 'r+');
-		
+
 		// Try both methods
 		if ( !ftp_fget( $this->conn_id, $temp_handle, $this->cwd . $file_name, $mode, 0 ) ) {
 			// Get the other mode
@@ -114,10 +114,10 @@ class Ftp {
 
 			ftp_fget( $this->conn_id, $temp_handle, $this->cwd . $file_name, $alternate_mode, 0 );
 		}
-		
+
 		// Start at the beginning
 		rewind( $temp_handle );
-		
+
 		// Return the data
         return stream_get_contents( $temp_handle );
 	}
@@ -133,7 +133,7 @@ class Ftp {
 		return $this->exec( "cp -R $remote_path $remote_new_path" );
 	}
 
-	
+
 	/***** Original Class *****/
 
 	/**
@@ -170,7 +170,7 @@ class Ftp {
 			$this->errors[] = 'FTP credentials are invalid';
 			return false;
 		}
-		
+
  		// Set how many seconds should go by before it times out
 		if ( !@ftp_set_option( $this->conn_id, FTP_TIMEOUT_SEC, $this->timeout ) )
 			$this->errors[] = 'Could not set option "FTP_TIMEOUT_SEC"';
@@ -187,7 +187,7 @@ class Ftp {
 			$this->mkdir( $this->cwd );
 			$this->chdir( $this->cwd );
 		}
-		
+
 		return true;
 	}
 
@@ -218,18 +218,18 @@ class Ftp {
 	private function put( $local_file_path, $remote_file_path, $mode = FTP_ASCII ) {
 		if ( !$this->maintain_connection() )
 			return false;
-		
+
 		// Try both methods
 		if ( !ftp_put( $this->conn_id, $remote_file_path, $local_file_path, $mode ) ) {
 			// Get the other mode
 			$alternate_mode = ( FTP_ASCII == $mode ) ? FTP_BINARY : FTP_ASCII;
-	
+
 			return ftp_put( $this->conn_id, $remote_file_path, $local_file_path, $alternate_mode );
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Gets a file from FTP Server
 	 *
@@ -249,7 +249,7 @@ class Ftp {
 
 			return ftp_get( $this->conn_id, $remote_file_path, $local_file_path, $alternate_mode );
 		}
-		
+
 		return true;
 	}
 
@@ -280,7 +280,7 @@ class Ftp {
 	private function chdir( $remote_directory ) {
 		if ( !$this->maintain_connection() )
 			return false;
-		
+
 		return @ftp_chdir( $this->conn_id, $remote_directory );
 	}
 
@@ -330,7 +330,7 @@ class Ftp {
 	 * @param string $new_name the new name of the file/directory
 	 * @return bool
 	 */
-	private function rename( $old_name, $new_name ) {
+	public function rename( $old_name, $new_name ) {
 		if ( !$this->maintain_connection() )
 			return false;
 
@@ -346,7 +346,7 @@ class Ftp {
 	public function dir_list( $remote_directory = '' ) {
 		if ( !$this->maintain_connection() )
 			return false;
-		
+
 		return ftp_nlist( $this->conn_id, $this->cwd . $remote_directory );
 	}
 
@@ -414,7 +414,7 @@ class Ftp {
 
 		return false;
 	}
-	
+
 	/**
 	 * Get the local filename for any path
 	 */
@@ -425,9 +425,9 @@ class Ftp {
 
     /**
      * Parse Raw List
-     * 
+     *
      * @url http://www.php.net/manual/en/function.ftp-rawlist.php
-     * 
+     *
      * @param $raw_list
      * @return array
      */
@@ -437,17 +437,17 @@ class Ftp {
 
         // Declare variables
         $parsed_list = array();
-        
+
         //if you want the dots (. & ..) set this variable to 0
         $start = 0;
-        
+
         //specify the order of the contents here
         //currently set to first directories "d"
         //second links "l"
         //and last the files "-"
         //change it to your convenience but don't touch the value names!
         $order_list = array("d", "l", "-");
-        
+
         //the name and the order of the columns
         //change it to your convenience
         //but don't increase/reduce the number of columns
@@ -457,7 +457,7 @@ class Ftp {
 
         foreach ( $raw_list as $key => $value ) {
             $parser = null;
-            
+
             if ( $key < $start )
                 continue;
 
@@ -473,15 +473,15 @@ class Ftp {
 
                     unset( $parser[$key] );
                 }
-                
+
                 $parsed_list[] = $parser;
             }
         }
-        
+
         foreach ( $order_list as $order ) {
             foreach ( $parsed_list as $key => $parsed_item ) {
                 $type = substr( current( $parsed_item ), 0, 1 );
-                
+
                 if ( $type == $order ) {
                     $parsed_item[$typeCol] = $type;
                     unset( $parsed_list[$key] );
@@ -489,7 +489,7 @@ class Ftp {
                 }
             }
         }
-        
+
         return array_values( $parsed_list );
     }
 

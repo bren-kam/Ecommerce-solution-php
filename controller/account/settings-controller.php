@@ -17,7 +17,7 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
         $form->submit( _('Update') );
 
         $form->add_field( 'title', _('Login Information') );
@@ -151,12 +151,8 @@ class SettingsController extends BaseController {
         $this->user->account->user_id_updated = $this->user->id;
         $this->user->account->save();
 
-        jQuery('#dLogoContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Logo') . '" /><br />' );
-
-        $response->notify( 'Your logo has been successfully updated!' );
-
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'image', $account_file->file_path );
 
         return $response;
     }

@@ -24,7 +24,7 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 75 )
             ->add_title( _('Subscribers') )
-            ->select( 'subscribers', 'subscribed' );
+            ->menu_item( 'email-marketing/subscribers/list' );
     }
 
     /**
@@ -36,7 +36,7 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'unsubscribed' )
             ->kb( 76 )
             ->add_title( _('Unsubscribers') )
-            ->select( 'subscribers', 'unsubscribed' );
+            ->menu_item( 'email-marketing/subscribers/unsubscribed' );
     }
 
     /**
@@ -54,7 +54,7 @@ class SubscribersController extends BaseController {
         if ( $email_id )
             $email->get( $email_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditSubscriber' );
+        $form = new BootstrapForm( 'fAddEditSubscriber' );
 
         if ( !$email->id )
             $form->submit( _('Add') );
@@ -149,7 +149,7 @@ class SubscribersController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 77 )
-            ->select( 'subscribers', 'add-edit' )
+            ->menu_item( 'email-marketing/subscribers/add' )
             ->add_title( $title . ' ' . _('Subscriber') )
             ->set( compact( 'email', 'form' ) );
     }
@@ -216,7 +216,7 @@ class SubscribersController extends BaseController {
 
         return $this->get_template_response( 'import' )
             ->kb( 78 )
-            ->select( 'subscribers', 'import' )
+            ->menu_item( 'email-marketing/subscribers/import' )
             ->add_title( _('Import') )
             ->set( compact( 'email_lists' ) );
     }
@@ -314,10 +314,7 @@ class SubscribersController extends BaseController {
             $sendgrid->email->delete( $email_list->name, $email->email );
         }
 
-        // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }
@@ -428,25 +425,8 @@ class SubscribersController extends BaseController {
 
         // Set variables
         $last_ten_emails = array_slice( $emails, 0, 10 );
-        $email_html = '';
 
-        // Create HTML
-        foreach ( $last_ten_emails as $e ) {
-        	$email_html .= '<tr><td>' . $e['email'] . '</td><td>' . $e['name'] . '</td></tr>';
-        }
-
-        // Assign it to the table
-        jQuery('#tUploadedSubcribers')->append( $email_html );
-
-        // Hide the main view
-        jQuery('#dDefault')->hide();
-
-        // Show the next table
-        jQuery('#dUploadedSubscribers')->show();
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->add_response( 'last_ten_emails', $last_ten_emails );
         return $response;
     }
 }

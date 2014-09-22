@@ -10,33 +10,55 @@
  * @var string $form
  * @var int $user_id
  */
-
-echo $template->start( ( isset( $_GET['uid'] ) ? _('Edit User') : _('Add User') ) );
-echo $form;
-
-if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && isset( $_GET['uid'] ) ) {
 ?>
-<br><br>
-<hr>
-<br>
-<h2><?php echo _('Knowledge Base Articles'); ?></h2>
-<br>
-<table ajax="<?php echo url::add_query_arg( 'uid', $user_id, '/users/list-articles/' ); ?>" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="25%" sort="1"><?php echo _('Article'); ?></th>
-            <th width="15%"><?php echo _('Section'); ?></th>
-            <th width="25%"><?php echo _('Category'); ?></th>
-            <th width="15%"><?php echo _('Page'); ?></th>
-            <th width="10%"><?php echo _('Views'); ?></th>
-            <th width="10%"><?php echo _('Helpful'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-<?php
-}
 
-echo $template->end();
-?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+
+            <header class="panel-heading">
+                Add/Edit User
+            </header>
+            <div class="panel-body">
+
+                <?php echo $form; ?>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+<?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && isset( $_GET['uid'] ) ): ?>
+
+    <div class="row-fluid">
+        <div class="col-lg-12">
+            <section class="panel">
+
+                <header class="panel-heading">
+                    Knowledge Base Articles
+                </header>
+
+                <div class="panel-body">
+
+                    <div class="adv-table">
+                        <table class="display table table-bordered table-striped" ajax="<?php echo url::add_query_arg( 'uid', $user_id, '/users/list-articles/' ); ?>" perPage="30,50,100">
+                            <thead>
+                                <tr>
+                                    <th sort="1">Article</th>
+                                    <th>Section</th>
+                                    <th>Category</th>
+                                    <th>Page</th>
+                                    <th>Views</th>
+                                    <th>Helpful</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+<?php endif; ?>

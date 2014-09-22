@@ -20,15 +20,15 @@ class ChecklistsController extends BaseController {
     protected function index() {
 
         $this->resources
-            ->css( 'checklists/list' )
-            ->javascript( 'checklists/list' );
+            ->css( 'checklists/index' )
+            ->javascript( 'checklists/index' );
 
         // Reset any defaults
         unset( $_SESSION['checklists'] );
 
         return $this->get_template_response( 'index' )
             ->kb( 134 )
-            ->select( 'checklists', 'view' );
+            ->select( 'checklists', 'checklists/index' );
     }
 
     /**
@@ -68,7 +68,7 @@ class ChecklistsController extends BaseController {
         return $this->get_template_response( 'checklist' )
             ->kb( 22 )
             ->add_title( _('View') )
-            ->select( 'checklists', 'edit' )
+            ->select( 'checklists', 'checklists/index' )
             ->set( compact( 'checklist', 'items' ) );
     }
 
@@ -191,14 +191,15 @@ class ChecklistsController extends BaseController {
         }
 
         $this->resources
-            ->css( 'checklists/manage' )
-            ->javascript( 'checklists/manage' );
+            ->css( 'jquery.nestable', 'checklists/manage' )
+            ->javascript( 'jquery.nestable', 'checklists/manage' )
+            ->javascript_url( Config::resource( 'jqueryui-js') );
 
         // Get response
         return $this->get_template_response( 'manage' )
             ->kb( 23 )
             ->set( compact( 'sections', 'items' ) )
-            ->select( 'checklists', 'manage' );
+            ->select( 'checklists', 'checklists/manage' );
 
     }
 
@@ -254,27 +255,7 @@ class ChecklistsController extends BaseController {
         $checklist_website_item_note->note = $_POST['note'];
         $checklist_website_item_note->create();
 
-        // Add it on
-        $date = new DateTime( $checklist_website_item_note->date_created );
-        $confirmation = _('Are you sure you want to delete this note? This cannot be undone.');
-
-        $note = '<div id="note-' . $checklist_website_item_note->id . '" class="note">';
-        $note .= '<div class="title">';
-        $note .= '<strong>' . $this->user->contact_name . '</strong>';
-        $note .= '<br />' . $date->format( 'F j, Y g:ia' ) . '<br />';
-        $note .= '<a href="' . url::add_query_arg( array( '_nonce' => nonce::create('delete_note'), 'cwinid' => $checklist_website_item_note->id ), '/checklists/delete-note/' ) . '" class="delete-note" title="' . _('Delete') . '" ajax="1" confirm="' . $confirmation . '">' . _('Delete') . '</a>';
-        $note .= '</div>';
-        $note .= '<div class="note-note">' . $checklist_website_item_note->note . '</div>';
-        $note .= '</div>';
-
-        jQuery('#notes')->prepend( $note );
-
-        // Reset form
-        jQuery("#note")->val('');
-
-        // Add jQuery response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->add_response( 'cwiid', $checklist_website_item_note->checklist_website_item_id );
         return $response;
     }
 
@@ -296,14 +277,10 @@ class ChecklistsController extends BaseController {
         $checklist_website_item_note = new ChecklistWebsiteItemNote();
         $checklist_website_item_note->get( $_GET['cwinid'] );
 
-        // Delete note from page
-        jQuery('#note-' . $checklist_website_item_note->id )->remove();
-
         // Delete note
         $checklist_website_item_note->remove();
 
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'cwinid', $checklist_website_item_note->id );
 
         return $response;
     }
@@ -336,10 +313,8 @@ class ChecklistsController extends BaseController {
 
         $checklist_website_item->save();
 
-        // Add jQuery Response
-        jQuery('#item-' . $checklist_website_item->id)->toggleClass('done');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'cwiid', $checklist_website_item->id );
+        $response->add_response( 'checked', $checklist_website_item->checked );
 
         return $response;
     }
@@ -379,15 +354,15 @@ class ChecklistsController extends BaseController {
             // Determined which color should be used for days left
             switch ( $c->days_left ) {
                 case ( $c->days_left < 10 ):
-                    $color = 'red';
+                    $color = 'badge bg-important';
                 break;
 
                 case ( $c->days_left < 20 ):
-                    $color = 'orange';
+                    $color = 'badge bg-warning';
                 break;
 
                 default:
-                    $color = 'green';
+                    $color = 'badge bg-success';
                 break;
             }
 
@@ -458,29 +433,7 @@ class ChecklistsController extends BaseController {
         $checklist_section->status = 0;
         $checklist_section->create();
 
-        jQuery('#section-template')
-            ->clone()
-            ->attr( 'id', 'section-' . $checklist_section->id )
-            ->find( 'input:first' )
-                ->attr( 'name', 'sections[' . $checklist_section->id . ']' )
-            ->parents( '.section:first' )
-            ->find( 'a.add-section-item:first')
-                ->attr( 'href', url::add_query_arg( array( '_nonce' => nonce::create( 'add_item' ), 'csid' => $checklist_section->id ), '/checklists/add-item/' ) )
-                ->attr( 'ajax', '1' )
-            ->parents( '.section:first' )
-            ->sortable( array(
-		        'items' => '.item'
-                , 'cancel' => 'input'
-                , 'cursor' => 'move'
-                , 'placeholder' => 'item-placeholder'
-                , 'forcePlaceholderSize' => true
-                , 'handle' => 'a.handle'
-	            )
-            )
-            ->sparrow()
-            ->appendTo( '#checklist-sections' );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'section_id', $checklist_section->id );
 
         return $response;
     }
@@ -509,19 +462,8 @@ class ChecklistsController extends BaseController {
         $checklist_item->status = 0;
         $checklist_item->create();
 
-        // Now add it on
-        jQuery('#item-template')
-            ->clone()
-            ->removeAttr('id')
-            ->find('input:first')
-                ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][name]')
-            ->next()
-                ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][assigned_to]')
-            ->parents('.item:first')
-            ->sparrow()
-            ->appendTo( '#section-' . $checklist_item->checklist_section_id . ' .section-items:first');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'id', $checklist_item->id );
+        $response->add_response( 'section_id', $checklist_item->checklist_section_id );
 
         return $response;
     }

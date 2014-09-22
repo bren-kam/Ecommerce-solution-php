@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Page | Content Overview | Analytics
+ * @page Dashboard | Analytics
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -12,52 +12,79 @@
  * @var string $date_end
  */
 
-require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
+nonce::field( 'get_graph', '_get_graph' );
 ?>
-<div id="content">
-<div id="subcontent-wrapper">
-<div id="subcontent">
-<div class="dates">
-    <input type="text" id="tDateStart" name="ds" class="tb" value="<?php echo $date_start; ?>" />
-    -
-    <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
-</div>
-<h1><?php echo _('Keyword'), ': ', $_GET['k']; ?></h1>
-<br clear="all" /><br />
 
-<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
-<br />
-<div class="info-box col-1">
-    <p class="info-box-title"><?php echo _('Site Usage'); ?></p>
-    <div class="info-box-content">
-        <table id="sparklines">
-            <tr>
-                <td width="15%"><a href="#visits" class="sparkline" title="<?php echo _('Visits Sparkline'); ?>"><img src="<?php echo $sparklines['visits']; ?>" width="150" height="36" alt="<?php echo _('Visits Sparkline'); ?>" /></a></td>
-                <td width="35%"><span class="data"><?php echo number_format( $total['visits'] ); ?></span> <span class="label"><?php echo _('Visits'); ?></span></td>
-                <td width="15%"><a href="#pages_by_visits" class="sparkline" title="<?php echo _('Pages/Visits Sparkline'); ?>"><img src="<?php echo $sparklines['pages_by_visits']; ?>" width="150" height="36" alt="<?php echo _('Pages/Visits Sparkline'); ?>" /></a></td>
-                <td><span class="data"><?php echo $total['pages_by_visits']; ?></span> <span class="label"><?php echo _('Pages/Visits'); ?></span></td>
-            </tr>
-            <tr>
-                <td><a href="#time_on_site" class="sparkline" title="<?php echo _('Avg. Time On Site Sparkline'); ?>"><img src="<?php echo $sparklines['time_on_site']; ?>" width="150" height="36" alt="<?php echo _('Avg. Time On a Page Sparkline'); ?>" /></a></td>
-                <td><span class="data"><?php echo $total['time_on_site']; ?></span> <span class="label"><?php echo _('Avg. Time on Site'); ?></span></td>
-                <td><a href="#new_visits" class="sparkline" title="<?php echo _('New Visits Sparkline'); ?>"><img src="<?php echo $sparklines['new_visits']; ?>" width="150" height="36" alt="<?php echo _('New Visits Sparkline'); ?>" /></a></td>
-                <td><span class="data"><?php echo number_format( $total['new_visits'], 2 ); ?>%</span> <span class="label"><?php echo _('New Visits'); ?></span></td>
-            </tr>
-            <tr>
-                <td><a href="#bounce_rate" class="sparkline" title="<?php echo _('Bounce Rate Sparkline'); ?>"><img src="<?php echo $sparklines['bounce_rate']; ?>" width="150" height="36" alt="<?php echo _('Bounce Rate Sparkline'); ?>" /></a></td>
-                <td><span class="data"><?php echo number_format( $total['bounce_rate'], 2 ); ?>%</span> <span class="label"><?php echo _('Bounce Rate'); ?></span></td>
-            </tr>
-        </table>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Keyword: <?php echo $_GET['k'] ?>
+            </header>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12 text-right">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="date-start" value="<?php echo $date_start ?>" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="date-end" value="<?php echo $date_end ?>" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="large-graph"></div>
+            </div>
+        </section>
     </div>
 </div>
-<br clear="both" /><br />
 
-<script type="text/javascript">
-    plotting_data = [<?php echo $visits_plotting; ?>];
-    plotting_label = 'Visits';
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Site Usage
+            </header>
+
+            <div class="panel-body small-graphs">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <a href="javascript:;" data-report="visits" data-title="Visits"><img src="<?php echo $sparklines['visits']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['visits'] ); ?></span> Visits
+                    </div>
+                    <div class="col-lg-6">
+                        <a href="javascript:;" data-report="pages_by_visits" data-title="Pages/Visit"><img src="<?php echo $sparklines['pages_by_visits']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['pages_by_visits'] ); ?></span> Pages/Visit
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <a href="javascript:;" data-report="time_on_site" data-title="Time on Site"><img src="<?php echo $sparklines['time_on_site']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['time_on_site'] ); ?></span> Time on Site
+                    </div>
+                    <div class="col-lg-6">
+                        <a href="javascript:;" data-report="new_visits" data-title="Direct Traffic"><img src="<?php echo $sparklines['new_visits']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['new_visits'], 2 ); ?>%</span> New Visits
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="javascript:;" data-report="bounce_rate" data-title="Search Engines"><img src="<?php echo $sparklines['bounce_rate']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['bounce_rate'], 2); ?>%</span> Bounce Rate
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+</div>
+
+
+<script>
+    var AnalyticsSettings = <?php echo json_encode( array( 'plotting_data' => $visits_plotting_array, 'plotting_label' => 'Visits' ) ); ?>;
 </script>
-<?php
-nonce::field( 'get_graph', '_get_graph');
-
-echo $template->end();
-?>

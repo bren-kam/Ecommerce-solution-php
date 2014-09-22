@@ -1,25 +1,18 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Choose | Facebook | Social Media
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var SocialMediaFacebookPage $page
- * @var bool $has_permission
- * @var string $form
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
 
-$title = ( $page->id ) ? _('Edit') : _('Add');
-echo $template->start( $title . ' ' . _('Facebook Page'), 'sidebar' );
-
-if ( $has_permission ) {
-    echo $form;
-} else {
-    echo '<p>', _('You have reached your maximum amount of facebook pages, please see your online specialist about getting more.'), '</p>';
-}
-
-echo $template->end();
-?>
+            <header class="panel-heading">
+                <?php echo $page->id ? 'Edit' : 'Add' ?> Facebook Page
+            </header>
+            <div class="panel-body">
+                <?php
+                    if ( $has_permission ): echo $form; else: ?>
+                        <div class="alert alert-warning">
+                            You have reached your maximum amount of facebook pages, please see your online specialist about getting more.
+                        </div>
+                    <?php endif; ?>
+            </div>
+        </section>
+    </div>
+</div>

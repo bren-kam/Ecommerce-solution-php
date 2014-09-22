@@ -27,7 +27,7 @@ class FacebookController extends BaseController {
         
         return $this->get_template_response( 'index' )
             ->kb( 85 )
-            ->select( 'facebook-pages', 'view' );
+            ->menu_item( 'social-media/facebook/list' );
     }
 
     /**
@@ -47,7 +47,7 @@ class FacebookController extends BaseController {
         $facebook_page_count = $page->count_all( array( ' AND `website_id` = ' . (int) $this->user->account->id, '' ) );
         $has_permission = $page->id || $facebook_page_count < $facebook_page_limit || empty( $facebook_page_count );
 
-        $form = new FormTable( 'fAddEditFacebookPage' );
+        $form = new BootstrapForm( 'fAddEditFacebookPage' );
         $submit_text = ( $page->id ) ? _('Save') : _('Add');
         $form->submit( $submit_text );
 
@@ -75,7 +75,7 @@ class FacebookController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 86 )
-            ->select( 'facebook-pages', 'add' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'page', 'has_permission', 'form' ) );
     }
 
@@ -103,7 +103,7 @@ class FacebookController extends BaseController {
 
         return $this->get_template_response( 'choose' )
             ->kb( 88 )
-            ->select( 'facebook-pages' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'settings' ) );
     }
 
@@ -159,13 +159,13 @@ class FacebookController extends BaseController {
         }
 
         $this->resources
-            ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager' );
 
         return $this->get_template_response( 'about-us' )
             ->kb( 95 )
             ->add_title( _('About Us') )
-            ->select( 'about-us' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'about_us', 'page', 'files' ) );
     }
 
@@ -227,7 +227,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'contact-us' )
             ->kb( 94 )
             ->add_title( _('Contact Us') )
-            ->select( 'contact-us' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'contact_us', 'page', 'files' ) );
     }
 
@@ -296,7 +296,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'email-sign-up' )
             ->kb( 89 )
             ->add_title( _('Email Sign Up') )
-            ->select( 'email-sign-up' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'email_sign_up', 'page', 'js_validation', 'errs', 'files', 'email_lists' ) );
     }
 
@@ -348,7 +348,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'products' )
             ->kb( 96 )
             ->add_title( _('Products') )
-            ->select( 'products' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'products', 'page', 'files' ) );
     }
 
@@ -410,7 +410,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'current-ad' )
             ->kb( 97 )
             ->add_title( _('Current Ad') )
-            ->select( 'current-ad' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'current_ad', 'page', 'files' ) );
     }
 
@@ -458,7 +458,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'facebook-site' )
             ->kb( 93 )
             ->add_title( _('Facebook Site') )
-            ->select( 'facebook-site' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'facebook_site', 'page', 'files' ) );
     }
 
@@ -523,13 +523,15 @@ class FacebookController extends BaseController {
         $email_lists = $email_list->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+            ->css_url( Config::resource('bootstrap-datepicker-css'), Config::resource('timepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource('timepicker-js') )
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager' );
 
         return $this->get_template_response( 'share-and-save' )
             ->kb( 92 )
             ->add_title( _('Share And Save') )
-            ->select( 'share-and-save' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'share_and_save', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
     }
 
@@ -649,14 +651,15 @@ class FacebookController extends BaseController {
         }
 
         $this->resources
-            ->css( 'jquery.timepicker', 'website/pages/page' )
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.timepicker', 'fileuploader', 'gsr-media-manager', 'website/pages/page', 'social-media/facebook/dates' );
+            ->css_url( Config::resource('bootstrap-datepicker-css'), Config::resource('timepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource('timepicker-js') )
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager', 'social-media/facebook/sweepstakes' );
 
         return $this->get_template_response( 'sweepstakes' )
             ->kb( 91 )
             ->add_title( _('Sweepstakes') )
-            ->select( 'sweepstakes' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'sm_sweepstakes', 'page', 'files', 'errs', 'js_validation', 'email_lists', 'pages' ) );
     }
 
@@ -768,14 +771,15 @@ class FacebookController extends BaseController {
         $email_lists = $email_list->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'jquery.timepicker', 'website/pages/page' )
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.timepicker', 'fileuploader', 'gsr-media-manager', 'website/pages/page', 'social-media/facebook/dates' );
+            ->css_url( Config::resource('bootstrap-datepicker-css'), Config::resource('timepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource('timepicker-js') )
+            ->css( 'media-manager' )
+            ->javascript( 'media-manager', 'social-media/facebook/sweepstakes' );
 
         return $this->get_template_response( 'fan-offer' )
             ->kb( 90 )
             ->add_title( _('Fan Offer') )
-            ->select( 'fan-offer' )
+            ->menu_item( 'social-media/facebook/add' )
             ->set( compact( 'fan_offer', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
     }
 
@@ -786,7 +790,7 @@ class FacebookController extends BaseController {
      */
     protected function settings() {
         // Instantiate classes
-        $form = new FormTable( 'fSettings' );
+        $form = new BootstrapForm( 'fSettings' );
 
         // Get settings
         $settings_array = array( 'timezone' );
@@ -813,7 +817,7 @@ class FacebookController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 87 )
             ->add_title( _('Settings') )
-            ->select( 'settings' )
+            ->menu_item( 'social-media/facebook/settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
@@ -891,9 +895,7 @@ class FacebookController extends BaseController {
         $page->save();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

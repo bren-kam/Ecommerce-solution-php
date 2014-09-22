@@ -20,6 +20,13 @@ class Resources {
     private $_javascript = array();
 
     /**
+     * Private Javascript URLs
+     *
+     * @vary array
+     */
+    private $_javascript_urls = array();
+
+    /**
      * Allow people to include whatever CSS files they want without duplicates
      *
      * @return Resources
@@ -171,7 +178,6 @@ class Resources {
         // Compression is on by default
         $compression = true;
 
-        // Define the paths to check
         $paths = array( VIEW_PATH . 'js/', LIB_PATH . 'js/' );
 
         // We can take adding random files if we need to
@@ -222,4 +228,33 @@ class Resources {
 
         return $cached_file;
     }
+
+    /**
+     * Javascript URL
+     *
+     * @return Resources
+     */
+    public function javascript_url() {
+        $files = func_get_args();
+
+        foreach ( $files as $f ) {
+            if ( !in_array( $f, $this->_javascript_urls ) )
+                array_unshift( $this->_javascript_urls, $f );
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get Javascript URLs
+     *
+     * @return string
+     */
+    public function get_javascript_urls() {
+        if ( 0 == count( $this->_javascript_urls ) )
+            return false;
+
+        return '<script src="' . implode( '"></script><script src="', $this->_javascript_urls ) . '"></script>';
+    }
+
 }

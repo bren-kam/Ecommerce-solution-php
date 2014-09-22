@@ -21,12 +21,13 @@ class AccountsController extends BaseController {
         unset( $_SESSION['accounts'] );
 
         $this->resources
-            ->javascript('accounts/list')
-            ->css_url( Config::resource('jquery-ui') );
+            ->css('accounts/index')
+            ->javascript('accounts/index')
+            ->javascript_url( Config::resource('typeahead-js') );
 
         return $this->get_template_response( 'index' )
             ->kb( 1 )
-            ->select( 'accounts', 'view' );
+            ->select( 'accounts', 'accounts/index' );
     }
 
     /**
@@ -53,7 +54,7 @@ class AccountsController extends BaseController {
         }
 
         // Create new form table
-        $ft = new FormTable( 'fAddAccount' );
+        $ft = new BootstrapForm( 'fAddAccount' );
 
         $ft->submit( _('Add') );
 
@@ -107,7 +108,7 @@ class AccountsController extends BaseController {
         return $this->get_template_response( 'add' )
             ->kb( 2 )
             ->add_title( _('Add') )
-            ->select( 'accounts', 'add' )
+            ->select( 'accounts', 'accounts/add' )
             ->set( 'form', $ft->generate_form() );
     }
 
@@ -230,41 +231,9 @@ class AccountsController extends BaseController {
             $users[$user->id] = $user->contact_name;
         }
 
-        // Create form elements
-        $account_title = new FormTable_Text( false, _('tTitle'), $account->title );
-
-        $fts = new FormTable_Select( false, 'sUserID', $account->user_id );
-        $users = $fts->options( $users );
-
-        $phone = new FormTable_Text( false, _('tPhone'), $account->phone );
-
-        $products = new FormTable_Text( false, _('tProducts'), $account->products );
-
-        $fts = new FormTable_Select( false, 'sOSUserID', $account->os_user_id );
-        $os_users = $fts->options( $os_users );
-
-        $plan = new FormTable_Text( _('Plan'), 'tPlan', $account->plan_name );
-        $plan_description = new FormTable_Textarea( _('Plan Description'), 'taPlanDescription', $account->plan_description );
-
         // Address
-        $address_settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
-
-        $address = new FormTable_Text( _('Address'), 'tAddress', $address_settings['address'] );
-        $address->attribute( 'placeholder', _('Address') );
-
-        $city = new FormTable_Text( _('City'), 'tCity', $address_settings['city'] );
-        $city->attribute( 'placeholder', _('City') );
-
-        $state = new FormTable_Select( _('State'), 'sState', $address_settings['state'] );
-        $state->options( data::states( false ) );
-
-        $zip = new FormTable_Text( _('Zip'), 'tZip', $address_settings['zip'] );
-        $zip->attribute( 'placeholder', _('Zip') );
-
-        // Validation
-        foreach ( $fields as $field ) {
-            $$field->validation( $v );
-        }
+        $address = $account->get_settings( 'address', 'city', 'state', 'zip' );
+        $states = data::states( false );
 
         $owner = new User();
         $owner->get( $account->user_id );
@@ -302,25 +271,21 @@ class AccountsController extends BaseController {
             $checkboxes[$feature] = array(
                 'name' => $checkbox_name
                 , 'form_name' => $checkbox_form_name
-                , 'checkbox' => '<input type="checkbox" name="' . $checkbox_form_name . '" id="' . $checkbox_form_name . '" class="hidden" value="1"' . $checked . ' />'
                 , 'selected' => $selected
             );
         }
 
         // Include Resources
         $this->resources
-            ->javascript('accounts/edit')
+            ->javascript_url( Config::resource( 'bootstrap-validator-js' ) )
+            ->javascript('accounts/edit', 'bootstrap-switch.min')
             ->css('accounts/edit');
 
         $template_response = $this->get_template_response('edit')
             ->kb( 4 )
-            ->select( 'accounts' )
+            ->select( 'accounts', 'accounts/index' )
             ->add_title( _('Edit') )
-            ->set( compact( 'account', 'owner', 'checkboxes', 'errs' ) );
-
-        foreach ( $fields as $field ) {
-            $template_response->set( $field, $$field->generate() );
-        }
+            ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes' ) );
 
         return $template_response;
     }
@@ -346,7 +311,7 @@ class AccountsController extends BaseController {
         // Setup objects
         $cp = new CompanyPackage();
         $industry = new Industry();
-        $ft = new FormTable( 'fWebsiteSettings' );
+        $ft = new BootstrapForm( 'fWebsiteSettings' );
 
         // Get variables
         $industries = $industry->get_all();
@@ -359,7 +324,7 @@ class AccountsController extends BaseController {
 
         // Start adding fields
         $ft->add_field( 'text', _('Domain'), 'tDomain', $account->domain )
-            ->add_validation( 'tDomain', 'req', _('The "Domain" field is required') );
+            ->add_validation( 'req', _('The "Domain" field is required') );
 
         $ft->add_field( 'text', _('Theme'), 'tTheme', $account->theme )
             ->add_validation( 'req', _('The "Theme" field is required') );
@@ -383,7 +348,7 @@ class AccountsController extends BaseController {
         }
 
         $ft->add_field( 'select', _('Industries'), 'sIndustries[]', $account_industries )
-            ->attribute( 'multiple', 'multiple')
+            ->attribute( 'multiple', 'multiple' )
             ->options( $industry_list );
 
         // Max Image Size
@@ -400,9 +365,13 @@ class AccountsController extends BaseController {
             $account->theme = $_POST['tTheme'];
 
             if ( !$account->live && isset( $_POST['cbLive'] ) && $_POST['cbLive'] ) {
+                // Get Server
+                $server = new Server();
+                $server->get( $account->server_id );
+
                 // SSH Connection
-                $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
-                ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+                $ssh_connection = ssh2_connect( $server->ip, 22 );
+                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
                 $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
                 $domain = url::domain( $account->domain, false );
@@ -441,7 +410,7 @@ class AccountsController extends BaseController {
         return $this->get_template_response('website-settings')
             ->kb( 5 )
             ->add_title( _('Website Settings') )
-            ->select('accounts')
+            ->select( 'accounts' )
             ->set( compact( 'account', 'form' ) );
     }
 
@@ -464,7 +433,7 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         // Setup objects
-        $ft = new FormTable( _('fOtherSettings') );
+        $ft = new BootstrapForm( _('fOtherSettings') );
 
         // Get variables
         $settings = $account->get_settings(
@@ -475,15 +444,17 @@ class AccountsController extends BaseController {
             , 'ashley-ftp-username'
             , 'ashley-ftp-password'
             , 'ashley-alternate-folder'
+            , 'ashley-express-buyer-id'
             , 'facebook-url'
             , 'advertising-url'
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
+            , 'ashley-express'
         );
 
-        $test_ashley_feed_url = url::add_query_arg( 'aid', $account->id, '/accounts/test-ashley-feed/' );
-        $test_ashley_feed = ' (<a href="' . $test_ashley_feed_url . '#dTestAshleyFeed" title="' . _('Test') . '" rel="dialog" ajax="1">' . _('Test') . '</a>)';
+        $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
+        $test_ashley_feed = ' (<a href="' . $test_ashley_feed_url . '" title="' . _('Test') . '" ajax="1">' . _('Test') . '</a>)';
 
         // Start adding fields
         $ft->add_field( 'text', _('FTP Username'), 'tFTPUsername', security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY ) );
@@ -498,13 +469,27 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Ashley FTP Username') . $test_ashley_feed, 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
+        $ft->add_field( 'text', _('Ashley Express - Ashley Account #'), 'tAshleyExpressBuyerCode', $settings['ashley-express-buyer-id'] );
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
+        $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
+
+        $server = new Server();
+        $servers = $server->get_all();
+        $server_array = array( '' => '-- Select Server --' );
+
+        foreach ( $servers as $server ) {
+            $server_array[$server->id] = $server->name . ' (' . $server->ip . ')';
+        }
+
+        $ft->add_field( 'select', 'Server Host/IP', 'sServerId', $account->server_id )
+            ->options( $server_array );
 
         if ( $ft->posted() ) {
+            $account->server_id = $_POST['sServerId'];
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
             $account->ga_profile_id = $_POST['tGAProfileID'];
             $account->ga_tracking_key = $_POST['tGATrackingKey'];
@@ -523,11 +508,13 @@ class AccountsController extends BaseController {
                 , 'ashley-ftp-username' => security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
                 , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
                 , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']
+                , 'ashley-express-buyer-id' => $_POST['tAshleyExpressBuyerCode']
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
+                , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -912,7 +899,7 @@ class AccountsController extends BaseController {
         $account_note = new AccountNote();
 
         // More setup
-        $v = new Validator( 'fAddNote' );
+        $v = new BootstrapValidator( 'fAddNote' );
         $v->add_validation( 'taNote', 'req', _('The note may not be empty') );
 
         if ( $this->verified() ) {
@@ -925,7 +912,9 @@ class AccountsController extends BaseController {
         // Get notes
         $notes = $account_note->get_all( $_GET['aid'] );
 
-        $this->resources->css('accounts/notes');
+        $this->resources
+            ->javascript('accounts/notes')
+            ->css('accounts/notes');
 
         return $this->get_template_response('notes')
             ->kb( 3 )
@@ -1100,7 +1089,7 @@ class AccountsController extends BaseController {
         $this->notify( _('The website package has been successfully installed') );
 
         // Redirect them to accounts page
-        return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'], '/accounts/edit/' ) );
+        return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'], '/accounts/actions/' ) );
     }
 
     /**
@@ -1204,9 +1193,13 @@ class AccountsController extends BaseController {
     /**
      * Test Ashley Feed
      *
-     * @return HtmlResponse
+     * @return AjaxResponse
      */
     protected function test_ashley_feed() {
+        $response = new AjaxResponse( $this->verified() );
+        if ($response->has_error())
+            return $response;
+
         // Get the account
         $account = new Account();
         $account->get( $_GET['aid'] );
@@ -1221,9 +1214,11 @@ class AccountsController extends BaseController {
         $file_count = count( $files );
 
         // Create response
-        $response = new CustomResponse( $this->resources, 'accounts/ashley-files' );
-
-        $response->set( compact( 'files', 'file_count' ) );
+        $message = "Got {$file_count} file(s):";
+        foreach ($files as $f) {
+            $message .= "<br> {$f['name']} - {$f['size']}";
+        }
+        $response->notify( $message );
 
         return $response;
     }
@@ -1320,7 +1315,7 @@ class AccountsController extends BaseController {
             $response->notify( _('Please specify your Address, City, State and ZIP code before creating an Email Marketing Account'), false );
             return $response;
         }
-        
+
         $phone = ( empty( $user->work_phone ) ) ? $user->cell_phone : $user->work_phone;
         if ( empty( $phone ) )
             $phone = '8185551234';
@@ -1504,15 +1499,7 @@ class AccountsController extends BaseController {
 
         // Deactivate user
         if ( $account_note->id ) {
-            // Delete the note
-            jQuery('#dNote' . $account_note->id )->remove();
-            jQuery('#dNotes .note.first')->removeClass('first');
-            jquery('#dNotes .note:first')->addClass('first');
-
             $account_note->remove();
-
-            // Add the response
-            $response->add_response( 'jquery', jQuery::getResponse() );
         }
 
         return $response;
@@ -1575,17 +1562,17 @@ class AccountsController extends BaseController {
         $ajax_response = new AjaxResponse( $this->verified() );
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'domain':
                 $account = new Account();
 
                 $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
 
-                $results = $account->autocomplete( $_POST['term'], 'domain', $this->user, $status );
+                $results = $account->autocomplete( $_GET['term'], 'domain', $this->user, $status );
             break;
 
             case 'store_name':
-                $results = $this->user->autocomplete( $_POST['term'], 'store_name' );
+                $results = $this->user->autocomplete( $_GET['term'], 'store_name' );
 
                 if ( is_array( $results ) )
                 foreach ( $results as &$result ) {
@@ -1598,7 +1585,7 @@ class AccountsController extends BaseController {
 
                 $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
 
-                $results = $account->autocomplete( $_POST['term'], 'title', $this->user, $status );
+                $results = $account->autocomplete( $_GET['term'], 'title', $this->user, $status );
             break;
         }
 
@@ -1643,5 +1630,100 @@ class AccountsController extends BaseController {
 
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
+
+    /**
+     * Run Ashley Express Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_express_feed() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_flag_products( $account );
+
+        // Give them a notification
+        $this->notify( _('The Ashley Express Feed has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    /**
+     * Install New Theme
+     *
+     * @throws Exception
+     */
+    public function install_new_theme() {
+        $sources = array(
+            'unlocked' => 1352
+            , 'upgrade' => 1415
+            , 'upgrade2' => 1422
+        );
+
+        // Template account
+        $source_account = new Account();
+        $source_account->get( $sources[$_GET['source']] );
+
+        // Where are we installing the new Theme
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( !$source_account->id || !$account->id ) {
+            throw new Exception( "Account #{$_GET['aid']} or Source Account #{$_GET['source']} not found." );
+        }
+
+        // Copy LESS
+        $less = $source_account->get_settings( 'css' );
+        $account->set_settings( array( 'css' => $less ) );
+
+        // If they have a custom config for Home Page Layout
+        // We need to install Trending Products Feature
+        $layout = $account->get_settings( 'layout' );
+        $layout = json_decode( $layout );
+        if ( $layout ) {
+            $found = false;
+            foreach ( $layout as $element ) {
+                if ( $element->name == 'popular-items' ) {
+                    $found = true;
+                }
+            }
+            if ( !$found ) {
+                $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
+                $account->set_settings( array(
+                    'layout' => json_encode( $layout )
+                ) );
+            }
+        }
+
+        // Add Index
+        $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
+        if ( !$username )
+            throw new Exception( "Can't find username for this account. You will need to set new index.php manually." );
+
+        // Get where is hosted
+        $server = new Server;
+        $server->get( $account->server_id );
+
+        // SSH Connection
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+        ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+        ssh2_exec( $ssh_connection, "mv /home/$username/public_html/index.php /home/$username/public_html/index.php.old" );
+        ssh2_exec( $ssh_connection, "cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
+        ssh2_exec( $ssh_connection, "sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
+
+        echo 'Finished!'; die;
+    }
+
+
+
 
 }

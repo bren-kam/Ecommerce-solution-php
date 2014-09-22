@@ -14,88 +14,69 @@
  */
 ?>
 
-<div id="content">
-    <div id="kb-search">
-        <form name="fKBSearch" action="/kb/search/">
-            <img src="/images/kb/search.png" width="48" height="35">
-            <input type="text" id="kbs" name="kbs" placeholder="<?php echo _('Enter a question or keyword to search'); ?>">
-            <input type="submit" id="kbs-button" value="<?php echo _('Search'); ?>">
-        </form>
-    </div>
-    <div id="subcontent-wrapper">
-        <div id="breadcrumb">
-            <a href="/kb/" title="<?php echo _('Home'); ?>"><img src="/images/kb/icons/home.png" width="14" height="12" alt="<?php echo _('Home'); ?>"></a> >
-            <span class="last"><?php echo _('Search'); ?></span>
-        </div>
-        <div id="subcontent">
-            <h1><?php echo _('Search') . ': ' . $search; ?></h1>
-            <br />
-            <?php if ( empty( $categories ) && empty( $pages ) && empty( $articles ) ) { ?>
-                <p><?php echo _("We weren't able to find anything under your search criteria. Please try broadening your search"); ?></p>
-            <?php
-            }
 
-            if ( !empty( $categories ) ) {
-                $hr_needed = true;
-                ?>
-                <hr />
-                <br />
-                <section>
-                    <h2><?php echo _('Categories'); ?></h2>
-                    <ul>
-                        <?php foreach ( $categories as $category ) { ?>
-                            <li><a href="<?php echo url::add_query_arg( 'cid', $category->id, '/kb/category/' ); ?>" title="<?php echo $category->name; ?>"><?php echo $category->name; ?></a></li>
-                        <?php } ?>
-                    </ul>
-                </section>
-                <br />
-            <?php
-            }
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <ul class="breadcrumb">
+            <li><a href="/kb/"><i class="fa fa-home"></i></a></li>
 
-            if ( !empty( $pages ) ) {
-                if ( $hr_needed )
-                    echo '<hr />';
-
-                $hr_needed = true;
-                ?>
-                <br />
-                <section>
-                    <h2><?php echo _('Pages'); ?></h2>
-                    <ul>
-                        <?php foreach ( $pages as $page ) { ?>
-                            <li><a href="<?php echo url::add_query_arg( 'pid', $page->id, '/kb/page/' ); ?>" title="<?php echo $page->name; ?>"><?php echo $page->name; ?></a></li>
-                        <?php } ?>
-                    </ul>
-                </section>
-                <br />
-            <?php
-            }
-
-            if ( !empty( $articles ) ) {
-                if ( $hr_needed )
-                    echo '<hr />';
-                ?>
-                <br />
-                <section id="articles">
-                    <h2><?php echo _('Articles'); ?></h2>
-                    <?php foreach ( $articles as $article ) { ?>
-                        <section>
-                            <h3><a href="<?php echo url::add_query_arg( 'aid', $article->id, '/kb/article/' ); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h3>
-                            <p><?php echo format::limit_words( strip_tags( $article->content ) ); ?></p>
-                            <p class="text-right"><a href="<?php echo url::add_query_arg( 'aid', $article->id, '/kb/article/' ); ?>" title="<?php echo $article->title; ?>"><?php echo _('Read more'); ?>...</a></p>
-                        </section>
-                    <?php } ?>
-                </section>
-            <?php
-            }
-            ?>
-            <br><br>
-            <hr>
-            <br>
-            <p><?php echo _("Can't find what you're looking for?"); ?> <a href="#" class="support-ticket" title="<?php echo _('Support Request'); ?>"><?php echo _('Submit a support request'); ?></a>. <?php echo _("We'll get back to you as soon as possible."); ?></p>
-            <br class="clr" />
-        </div>
+            <li class="active">Search</li>
+        </ul>
     </div>
 </div>
 
-<?php echo $template->end(0); ?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <div class="panel-body">
+
+                <form class="form-inline" action="/kb/search" role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="kbs" placeholder="Enter question or search..." />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i> Search</button>
+                    </div>
+                </form>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Search Result for: <?php echo $search ?>
+            </header>
+
+            <div class="panel-body">
+
+                <?php foreach( $categories as $category ): ?>
+                    <div class="classic-search">
+                        <h4><a href="<?php echo url::add_query_arg( 'cid', $category->id, '/kb/category/' ); ?>">Category: <?php echo $category->name ?></a></h4>
+                    </div>
+                <?php endforeach; ?>
+
+                <?php foreach( $pages as $page ): ?>
+                    <div class="classic-search">
+                        <h4><a href="<?php echo url::add_query_arg( 'pid', $page->id, '/kb/page/' ); ?>">Page: <?php echo $page->name ?></a></h4>
+                    </div>
+                <?php endforeach; ?>
+
+                <?php foreach( $articles as $article ): ?>
+                    <div class="classic-search">
+                        <h4><a href="<?php echo url::add_query_arg( 'aid', $article->id, '/kb/article/' ); ?>">Article: <?php echo $article->title ?></a></h4>
+                        <p><?php echo format::limit_words( strip_tags( $article->content ) ); ?></p>
+                    </div>
+                <?php endforeach; ?>
+
+
+                <p>Can't find what you're looking for? <a href="#" data-toggle="modal" data-target="#support-modal">Submit a support request</a>. We'll get back to you as soon as possible.</p>
+            </div>
+
+        </section>
+    </div>
+
+</div>

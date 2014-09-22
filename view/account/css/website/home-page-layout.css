@@ -1,16 +1,22 @@
-.element-box, .box-placeholder {
-	width: 406px; padding:10px; position:relative;
-	border: 1px #D9D9D9 solid;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	cursor: n-resize;
-    margin-bottom: 20px;
+#layout-list .layout {
+  position: relative;
+  width: 500px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
 }
-.element-box.disabled { background-color: #9C9C9C }
-.element-box.disabled h2 { color: #7F7F80 }
-
-.element-box h2 { font-size: 16px; font-weight: bold }
-.enable-disable { background: url(/images/buttons/website/show-hide.png) 0 -25px no-repeat; width: 76px; height:25px; position: absolute; top: 12px; right: 11px }
-.enable-disable.disabled { background-position: 0 0 }
-.box-placeholder { border-style:dashed }
+#layout-list .layout.disabled {
+  opacity: 0.6;
+}
+#layout-list .layout.disabled h3 {
+  color: #797979;
+}
+#layout-list .layout .layout-actions {
+  position: absolute;
+  top: 12px;
+  right: 5px;
+}
+#layout-list .layout .layout-actions .remove {
+  color: red;
+  font-size: 18px;
+}

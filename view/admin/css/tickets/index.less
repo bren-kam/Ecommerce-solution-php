@@ -1,0 +1,78 @@
+.adv-table{
+  .dataTables_wrapper {
+    .row:first-child {
+      .col-xs-6:first-child {
+        visibility: hidden;
+      }
+
+      /*.dataTables_filter {
+        padding: 15px 0 15px 0;
+      }*/
+    }
+  }
+}
+
+#ticket-container {
+  position: relative;
+
+  #ticket-filter {
+    position: absolute;
+    z-index: 1000;
+    left: 250px;
+    top: 30px;
+  }
+}
+
+@media( max-width: 1120px ) {
+  #ticket-filter {
+    position: static!important;
+  }
+}
+
+@media( max-width: 960px ) {
+  .adv-table{
+    margin-top: 0;
+
+    .dataTables_wrapper {
+      .row:first-child {
+        .col-xs-6:first-child {
+          display: none;
+        }
+
+        & > div {
+          width: 100%;
+          .dataTables_filter {
+            width: 100%;
+            float: none;
+
+            label {
+              float: left;
+              input {
+                margin: 0;
+                float: none;
+              }
+            }
+
+          }
+        }
+      }
+    }
+  }
+}
+
+@media( max-width: 767px ) {
+  .dataTables_wrapper {
+     .row:first-child {
+       .col-xs-6:first-child {
+         display: none;
+       }
+       .dataTables_filter {
+         input {
+           float: left;
+           width: 100%!important;
+           margin: 0;
+         }
+       }
+     }
+   }
+}

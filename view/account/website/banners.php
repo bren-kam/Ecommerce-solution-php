@@ -12,89 +12,90 @@
  * @var bool $images_alt
  * @var bool $slideshow_fixed_width
  */
-
-echo $template->start( _('Banners') );
-?>
-
-<a href="#" id="aUploadBanner" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
-<a href="#" class="button loader hidden" id="upload-banner-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-<div class="hidden-fix position-absolute" id="upload-banner"></div>
-<p><small>(<?php echo ($slideshow_fixed_width ? 'Max. image' : 'Suggested') . ' size: ' . $dimensions?>)</small></p>
-<br /><br />
-<p class="red"><?php echo _('(Note: The changes you make to your banners are immediately live on your website)'); ?></p>
-<br />
-<input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
-<?php
-nonce::field( 'upload_banner', '_upload_banner' );
+nonce::field( 'update_attachment_status', '_update_attachment_status' );
 nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
+nonce::field( 'remove_attachment', '_remove_attachment');
+nonce::field( 'create_banner', '_create_banner');
+$update_extra_nonce = nonce::field( 'update_attachment_extra', '_nonce', false );
+$upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+$search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+$delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 ?>
-<div id="dElementBoxes">
-    <?php
-    $remove_attachment_nonce = nonce::create('remove_attachment');
-    $update_status_nonce = nonce::create('update_attachment_status');
-    $confirm_disable = _('Are you sure you want to deactivate this banner?');
-    $confirm_remove = _('Are you sure you want to remove this banner?');
+<input type="hidden" id="page-id" value="<?php echo current($attachments)->website_page_id ?>" />
 
-    /**
-     * @var AccountPageAttachment $a
-     */
-    foreach ( $attachments as $a ) {
-        if ( '0' == $a->status ) {
-            $disabled = ' disabled';
-            $confirm = '';
-        } else {
-            $disabled = '';
-            $confirm = ' confirm="' . $confirm_disable . '"';
-        }
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Banners
+                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-media-manager title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>"><i class="fa fa-plus"></i> Upload or Select an Image</a>
+            </header>
 
-        if ( stristr( $a->value, 'http:' ) ) {
-                $banner_url = $a->value;
-            } else {
-                $banner_url = 'http://' . $user->account->domain . $a->value;
-            }
+            <div class="panel-body">
 
-            $enable_disable_url = url::add_query_arg( array(
-                '_nonce' => $update_status_nonce
-                , 'apaid' => $a->id
-                , 's' => ( '0' == $a->status ) ? '1' : '0'
-            ), '/website/update-attachment-status/' );
-        ?>
-        <div class="element-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a->id; ?>">
-            <h2><?php echo _('Banner'); ?></h2>
-            <p><small><?php echo $dimensions; ?></small></p>
-            <a href="<?php echo $enable_disable_url; ?>" id="aEnableDisable<?php echo $a->id; ?>" class="enable-disable<?php echo $disabled; ?>" title="<?php echo _('Enable/Disable'); ?>" ajax="1"<?php echo $confirm; ?>><img src="/images/trans.gif" width="26" height="28" alt="<?php echo _('Enable/Disable'); ?>" /></a>
+                <p><small>(<?php echo ($slideshow_fixed_width ? 'Max. image' : 'Suggested') . ' size: ' . $dimensions?>)</small></p>
 
-            <div id="dBanner<?php echo $a->id; ?>" class="text-center banner">
-                <img src="<?php echo $banner_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" />
+                <div id="banner-list">
+
+                    <div class="progress progress-sm hidden" id="new-element-loader">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+
+                    <?php foreach ( $attachments as $attachment ): ?>
+
+                        <div class="banner <?php echo $attachment->status == '0' ? 'disabled' : '' ?>" data-attachment-id="<?php echo $attachment->id ?>">
+
+                            <div class="banner-actions">
+                                <small><?php echo $dimensions; ?></small>
+                                <input type="checkbox" data-toggle="switch" value="active" <?php if ( $attachment->status == '1' ) echo 'checked' ?>/>
+
+                                <a href="javascript:;" class="remove" title="Delete this Banner"><i class="fa fa-trash-o"></i></a>
+                            </div>
+
+                            <img src="<?php echo $attachment->value ?>" />
+                            <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+                                <div class="form-group">
+                                    <label>Image Link:</label>
+                                    <input type="text" class="form-control" name="extra" value="<?php echo $attachment->extra ?>" placeholder="Link URL" />
+                                </div>
+                                <p>
+                                    <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $attachment->id ?>" />
+                                    <?php echo $update_extra_nonce ?>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </p>
+                            </form>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
             </div>
-            <br />
-
-            <form action="/website/update-attachment-extra/" method="post" ajax="1">
-                <p id="pTempSuccess<?php echo $a->id; ?>" class="success hidden"><?php echo _('Your banner has been successfully updated.'); ?></p>
-                <input type="text" class="tb" name="extra" placeholder="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a->extra ) ) ? 'http://' : $a->extra; ?>" />
-
-                <?php if ( $images_alt ) { ?>
-                    <input type="text" class="tb" name="meta" placeholder="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a->meta ) ) echo $a->meta; ?>" />
-                <?php } ?>
-
-                <input type="submit" class="button" value="<?php echo _('Save'); ?>" />
-
-                <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $a->id; ?>" />
-                <input type="hidden" name="target" value="pTempSuccess<?php echo $a->id; ?>" />
-                <?php nonce::field( 'update_attachment_extra', '_nonce' ); ?>
-            </form>
-            <?php
-            $remove_attachment_url = url::add_query_arg( array(
-                '_nonce' => $remove_attachment_nonce
-                , 'apaid' => $a->id
-                , 't' => 'dAttachment_' . $a->id
-                , 'si' => '1'
-            ), '/website/remove_attachment/' );
-            ?>
-            <a href="<?php echo $remove_attachment_url; ?>" class="remove" title="<?php echo _('Remove Banner'); ?>" ajax="1" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a>
-            <br clear="all" />
-        </div>
-    <?php } ?>
+        </section>
+    </div>
 </div>
 
-<?php echo $template->end(); ?>
+<div id="banner-template" class="banner hidden">
+    <div class="banner-actions">
+        <small><?php echo $dimensions; ?></small>
+        <input type="checkbox" value="active" checked/>
+        <a href="javascript:;" class="remove" title="Delete this Banner"><i class="fa fa-trash-o"></i></a>
+    </div>
+
+    <h3>Image</h3>
+    <img src="" />
+    <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+        <div class="form-group">
+            <label>Image Link:</label>
+            <input type="text" class="form-control" name="extra" placeholder="Link URL" />
+        </div>
+        <p>
+            <input type="hidden" name="hAccountPageAttachmentId" />
+            <?php echo $update_extra_nonce ?>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </p>
+    </form>
+</div>

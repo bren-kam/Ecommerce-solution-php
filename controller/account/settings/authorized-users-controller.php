@@ -39,7 +39,7 @@ class AuthorizedUsersController extends BaseController {
         if ( $user_id )
             $auth_user_website->get( $user_id, $this->user->account->id );
 
-        $form = new FormTable( 'fAddEditAuthUser' );
+        $form = new BootstrapForm( 'fAddEditAuthUser' );
 
         if ( !$auth_user_website->user_id )
             $form->submit( _('Add') );
@@ -234,9 +234,7 @@ class AuthorizedUsersController extends BaseController {
         $auth_user_website->remove();
 
         // Redraw the table
-        jQuery('.dt:first')->dataTable()->fnDraw();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         return $response;
     }

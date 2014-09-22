@@ -17,75 +17,94 @@
  * @var string $js_validation
  */
 
-echo $template->start( _('Posting') . ' - ' . $page->name, '../sidebar' );
 
-if ( !$sm_posting->fb_page_id  ) {
-    // Define instructions
-    $instructions = array(
-        1 => array(
-            'title' => _('Go to the Posting application')
-            , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-posting/" title="' . _('Online Platform - Posting') . '" target="_blank">' . _('Posting') . '</a> ' . _('application page') . '.'
-            , 'image' => false
-        )
-        , 2 => array(
-            'title' => _('Install The App')
-            , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $sm_posting->key
-        )
-    );
+$upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+$search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+$delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
-    foreach ( $instructions as $step => $data ) {
-        echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
-
-        if ( isset( $data['text'] ) )
-            echo '<p>', $data['text'], '</p>';
-
-        if ( !isset( $data['image'] ) || $data['image'] != false )
-            echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/posting/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/posting/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
-
-        echo '<br /><br />';
-    }
-} else {
-    ?>
-    <?php
-    if ( !empty( $errs ) )
-        echo "<p class='red'>$errs</p>";
-
-    if ( is_array( $pages ) ) {
-        ?>
-        <form action="" method="post" name="fFBPost" id="fFBPost">
-            <table>
-                <tr>
-                    <td><strong><?php echo _('Page'); ?>:</strong></td>
-                    <td><?php echo $pages[$sm_posting->fb_page_id]['name']; ?></td>
-                </tr>
-                <tr>
-                    <td class="top"><label for="taPost"><?php echo _('Post'); ?>:</label></td>
-                    <td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
-                </tr>
-                <tr>
-                    <td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-                    <td><input type="text" class="tb" name="tDate" id="tDate" style="width: 100px;" value="<?php echo ( !empty( $_POST['tDate'] ) && !$post->id ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
-                </tr>
-                <tr>
-                    <td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-                    <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 100px;" value="<?php echo ( empty( $_POST['tTime'] ) && !$post->id ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" maxlength="8" /></td>
-                </tr>
-                <tr><td colspan="2">&nbsp;</td></tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td><input type="submit" class="button" id="sSubmit" value="<?php echo _('Post to Facebook'); ?>" /></td>
-                </tr>
-            </table>
-            <?php nonce::field('post'); ?>
-        </form>
-        <?php echo $js_validation; ?>
-    <?php } elseif ( empty( $errs ) ) { ?>
-        <p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?></p>
-        <p><strong><?php echo _('Connection key'), ': '; ?></strong> <?php echo $sm_posting->key; ?></p>
-        <p><a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
-<?php
-    }
-}
-
-echo $template->end();
+$new_date_posted = new DateTime( $post->date_posted );
 ?>
+
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+
+            <header class="panel-heading">
+                Posting - <?php echo $page->name ?>
+                <div class="pull-right">
+                    <a class="btn btn-default btn-sm" href="/social-media/facebook/posting/?smfbpid=<?php echo $page->id ?>">List Posts</a>
+                </div>
+            </header>
+            <div class="panel-body">
+                <?php
+                if ( !$post->fb_page_id ) :
+                    // Define instructions
+                    $instructions = array(
+                        1 => array(
+                            'title' => _('Go to the Posting application')
+                           , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-posting/" title="' . _('Online Platform - Posting') . '" target="_blank">' . _('Posting') . '</a> ' . _('application page') . '.'
+                           , 'image' => false
+                        )
+                        , 2 => array(
+                            'title' => _('Install The App')
+                          , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $sm_posting->key
+                        )
+                    );
+
+                    foreach ( $instructions as $step => $data ):
+                        echo "<h3>Step $step: {$data['title']}</h3>";
+
+                        if ( isset( $data['text'] ) )
+                            echo '<p>', $data['text'], '</p>';
+
+                        if ( !isset( $data['image'] ) || $data['image'] != false )
+                            echo '<p><a href="http://account.imagineretailer.com/images/social-media/facebook/posting/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png" alt="', $data['title'], '" /></a></p>';
+
+                        echo '<hr />';
+                    endforeach;
+                else:
+                    ?>
+
+                    <?php if ( is_array( $pages ) ) : ?>
+
+                        <form method="post" role="form">
+
+                            <p>
+                                <label>Page:</label>
+                                <?php echo $pages[$sm_posting->fb_page_id]['name']; ?>
+                            </p>
+
+                            <div class="form-group">
+                                <label for="taPost">Post:</label>
+                                <textarea class="form-control" id="taPost" name="taPost" rows="10"></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <label for="tDate">Send Date:</label>
+                                    <input type="text" class="form-control" name="tDate" id="tDate" value="<?php echo ( !empty( $_POST['tDate'] ) && !$post->id ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" />
+                                </div>
+                                <div class="col-lg-2">
+                                    <label for="tTime">At</label>
+                                    <input type="text" class="form-control" name="tTime" id="tTime" value="<?php echo ( empty( $_POST['tTime'] ) && !$post->id ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" />
+                                </div>
+                            </div>
+
+                            <p>
+                                <?php nonce::field('post') ?>
+                                <button type="submit" class="btn btn-primary">Post in Facebook</button>
+                            </p>
+                        </form>
+                        <?php echo $js_validation; ?>
+
+                    <?php else: ?>
+                        <p>In order to post to one of your Facebook pages you will need to connect them first.</p>
+                        <p><strong>Connection key</strong> <?php echo $sm_posting->key; ?></p>
+                        <p><a href="http://apps.facebook.com/op-posting/" title="Online Platform - Posting" target="_blank">Connect your Facebook pages here.</a></p>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+            </div>
+        </section>
+    </div>
+</div>

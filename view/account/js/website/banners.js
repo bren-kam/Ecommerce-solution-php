@@ -1,76 +1,109 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+var Banner = {
 
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
-	// On load put the dividers in
-	updateDividers();
-	
-	// Make the elements sortable
-	$('#dElementBoxes').sortable({
-		'items'			: '.element-box',
-		'placeholder'	: 'box-placeholder',
-		'revert'		: true,
-		'forcePlaceholderSize' : true,
-		'stop'			: updateDividers,
-		'update'		: updateElementOrder
-	});
-	
-    // Setup File Uploader
-    var uploader = new qq.FileUploader({
-        action: '/website/upload_banner/'
-        , allowedExtensions: ['jpg', 'jpeg', 'gif', 'png']
-        , element: $('#upload-banner')[0]
-        , sizeLimit: 6291456 // 6 mb's
-        , onSubmit: function( id, fileName ) {
-            uploader.setParams({
-                _nonce : $('#_upload_banner').val()
-                , apid : $('#hAccountPageId').val()
-            });
+    init: function() {
+        $('#banner-list').on( 'switchChange.bootstrapSwitch', ':checkbox', Banner.changeStatus );
 
-            $('#aUploadBanner').hide();
-            $('#upload-banner-loader').show();
+        $('#banner-list').sortable({
+            items		: '.banner',
+            cancel		: 'input, button, a',
+            placeholder	: 'banner-placeholder',
+            revert		: true,
+            forcePlaceholderSize : true,
+            update		: Banner.reorder
+        });
+
+        $('#banner-list').on( 'click', '.remove', Banner.remove );
+
+        // Overwrite MediaManager submit to Create Banner Element
+        MediaManager.submit = Banner.create;
+
+        Banner.template = $('#banner-template').clone().removeClass('hidden').removeAttr('id');
+        $('#banner-template').remove();
+    }
+
+    , changeStatus: function( event, state ) {
+        var element = $(this).parents('.banner');
+
+        if ( state )
+            element.removeClass('disabled');
+        else
+            element.addClass('disabled');
+
+        $.get(
+            '/website/update-attachment-status/'
+            , { _nonce: $('#_update_attachment_status').val(), apaid: element.data('attachment-id'), s: state ? 1 : 0 }
+            , Banner.changeStatusResponse
+        );
+    }
+
+    , changeStatusResponse: function( response ) {
+        GSR.defaultAjaxResponse( response );
+
+        if ( response.success ) {
+            var element = $('.banner[data-attachment-id=' + response.id + ']');
+            element.find('input, a, button, textarea').prop( 'disabled', element.hasClass('disabled') );
+            Banner.reorder();
         }
-        , onComplete: function( id, fileName, responseJSON ) {
-            ajaxResponse( responseJSON );
-        }
-    });
+    }
 
-    /**
-     * Make the uploader work
-     */
-    $('#aUploadBanner').click( function() {
-        if ( $.support.cors ) {
-            $('#upload-banner input:first').click();
-        } else {
-            alert( $('#err-support-cors').text() );
-        }
-    });
-});
+    , reorder: function() {
+        var sequence = [];
 
-// Update the banner_order
-function updateElementOrder() {
-	/**
-	 * Because numbers are invalid HTML ID attributes, we can't use .sortable('toArray'), which gives something like dAttachment_123. 
-	 * This means we would have to loop through the array on the serverside to determine everything.
-	 * When it is serialized like a string, it means that we can use the PHP explode function to determine the right IDs, very easily.
-	 */
-	var idList = $('#dElementBoxes').sortable('serialize');
-	
-	// Use Sidebar's -- it's the same thing
-	$.post( '/website/update_attachment_sequence/', { _nonce : $('#_update_attachment_sequence').val(), 's' : idList }, ajaxResponse, 'json' );
-	
-	return this;
+        $('.banner').each(function(){
+            sequence.push( $(this).data( 'attachment-id' ) );
+        });
+
+        $.post(
+            '/website/update-attachment-sequence/'
+            , { _nonce: $('#_update_attachment_sequence').val(), s: sequence.join( '|' ) }
+            , GSR.defaultAjaxResponse
+        );
+    }
+
+    , remove: function() {
+        if ( !confirm( 'Do you want to delete this Banner Element? It cannot be undone' ) )
+            return;
+
+        var element = $(this).parents('.banner');
+
+        $.get(
+            '/website/remove-attachment/'
+            , { _nonce: $('#_remove_attachment').val(), apaid: element.data('attachment-id') }
+            , function ( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success )
+                    element.remove();
+            }
+        )
+    }
+
+    , create: function() {
+        var file = MediaManager.view.find('.mm-file.selected:first').parents('li:first').data();
+
+        if ( file && MediaManager.isImage( file ) ) {
+
+            $('#new-element-loader').removeClass('hidden').show();
+
+            $.post(
+                '/website/create-banner/'
+                , { _nonce: $('#_create_banner').val(), fn: file.url, apid: $('#page-id').val() }
+                , function( response ) {
+                    Banner.template.clone()
+                        .attr('data-attachment-id', response.id)
+                        .find('img').attr('src', response.url).end()
+                        .find('input[type=hidden]').val( response.id ).end()
+                        .find('input[type=checkbox]').bootstrapSwitch().end()
+                        .prependTo('#banner-list');
+
+                    $('#new-element-loader').hide();
+                }
+            );
+
+
+
+        }
+    }
+
 }
 
-$.fn.updateElementOrder = updateElementOrder;
-
-// Update dividers
-function updateDividers() {
-	$('#dElementBoxes').find('.box-divider').remove().end().find('.element-box:not(:last)').after('<div class="box-divider"></div>');
-	
-	return this;
-}
-
-$.fn.updateDividers = updateDividers;
+jQuery( Banner.init );

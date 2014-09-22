@@ -14,34 +14,54 @@
 $confirmation = _('Are you sure you want to delete this note? This cannot be undone.');
 $delete_nonce = nonce::create('delete_note');
 ?>
-<div id="notes">
-    <?php
-    /**
-     * @var ChecklistWebsiteItemNote $note
-     */
-    if ( is_array( $notes ) )
-    foreach( $notes as $note ) {
-        $date = new DateTime( $note->date_created );
-        ?>
-        <div id="note-<?php echo $note->id; ?>" class="note">
-            <div class="title">
-                <strong><?php echo $note->user; ?></strong>
-                <br /><?php echo $date->format( 'F j, Y g:ia' ); ?>
-                <br />
-                <a href="<?php echo url::add_query_arg( array( '_nonce' => $delete_nonce, 'cwinid' => $note->id ), '/checklists/delete-note/' ); ?>" class="delete-note" title="<?php echo _('Delete'); ?>" ajax="1" confirm="<?php echo $confirmation; ?>"><?php echo _('Delete'); ?></a>
-            </div>
-            <div class="note-note"><?php echo $note->note; ?></div>
+
+<!-- Modal -->
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="modalLabel">Notes</h4>
         </div>
-    <?php } ?>
+        <div class="modal-body">
+
+            <div class="timeline">
+                <?php
+                    if ( is_array( $notes ) )
+                        foreach( $notes as $note ):
+                            $date = new DateTime( $note->date_created );
+                ?>
+
+                    <article class="timeline-item alt" data-note-id="<?php echo $note->id ?>">
+                        <div class="timeline-desk">
+                            <div class="panel">
+                                <div class="panel-body">
+                                    <span class="arrow"></span>
+                                    <span class="timeline-icon green"></span>
+                                    <span class="timeline-date"><?php echo $date->format( 'F j, Y g:ia' ) ?></span>
+                                    <h1 class="green"><?php echo $note->user ?> | <a href="<?php echo url::add_query_arg( array( '_nonce' => $delete_nonce, 'cwinid' => $note->id ), '/checklists/delete-note/' ); ?>" class="delete-note" title="Delete this note"><i class="fa fa-trash-o"></i></a></h1>
+                                    <p><?php echo $note->note ?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                <?php endforeach; ?>
+            </div>
+
+            <form id="fNewNote" method="post" action="/checklists/add-note/" role="form">
+                <div class="form-group">
+                    <label for="note">Note:</label>
+                    <textarea class="form-control" name="note" id="note" rows="3" cols="40" placeholder="Add a new Note"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="bSendNote">Add Note</button>
+                <input type="hidden" name="hChecklistWebsiteItemId" id="hChecklistWebsiteItemId" value="<?php echo $checklist_website_item_id; ?>" />
+                <?php nonce::field( 'add_note' ); ?>
+            </form>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
 </div>
-<br />
-<form id="fNewNote" method="post" action="/checklists/add-note/" ajax="1">
-	<textarea name="note" id="note" rows="3" cols="40"></textarea>
-    <br />
-	<input type="submit" class="button" id="bSendNote" value="<?php echo _('Add Note'); ?>" />
-    <input type="hidden" name="hChecklistWebsiteItemId" id="hChecklistWebsiteItemId" value="<?php echo $checklist_website_item_id; ?>" />
-	<?php nonce::field( 'add_note' ); ?>
-</form>
-<div class="boxy-footer hidden">
-    <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
-</div>
+

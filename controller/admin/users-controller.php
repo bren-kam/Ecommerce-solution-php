@@ -20,7 +20,7 @@ class UsersController extends BaseController {
     protected function index() {
         return $this->get_template_response( 'index' )
             ->kb( 20 )
-            ->select( 'users', 'view' );
+            ->select( 'users', 'users/index' );
     }
 
     /**
@@ -56,7 +56,7 @@ class UsersController extends BaseController {
         }
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditUser' );
+        $ft = new BootstrapForm( 'fAddEditUser' );
 
         $ft->submit( ( $user_id ) ? _('Save') : _('Add') );
 
@@ -226,7 +226,8 @@ class UsersController extends BaseController {
 
         // Generate the form
         $template_response
-            ->set( array( 'form' => $ft->generate_form(), 'user_id' => $user_id ) );
+            ->set( array( 'form' => $ft->generate_form(), 'user_id' => $user_id ) )
+            ->select( 'users', 'users/add' );
 
         return $template_response;
     }

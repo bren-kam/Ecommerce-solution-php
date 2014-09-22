@@ -17,12 +17,12 @@ class ReachesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $this->resources->css( 'products/reaches/list' )
-            ->javascript( 'products/reaches/list' );
+        $this->resources->css( 'products/reaches/index' )
+            ->javascript( 'products/reaches/index' );
 
         return $this->get_template_response( 'index' )
             ->kb( 54 )
-            ->select( 'reaches' );
+            ->menu_item( 'products/reaches' );
     }
 
     /**
@@ -68,7 +68,7 @@ class ReachesController extends BaseController {
         return $this->get_template_response( 'reach' )
             ->kb( 55 )
             ->add_title( _('Reach') )
-            ->select( 'reaches' )
+            ->menu_item( 'products/reaches' )
             ->set( compact( 'reach', 'comments', 'assignable_users' ) );
     }
 
@@ -194,39 +194,11 @@ class ReachesController extends BaseController {
 
         /***** Add comment *****/
 
-        // Declare variables
-        $date = new DateTime( $reach_comment->date_created );
-        $confirmation = _('Are you sure you want to delete this comment? This cannot be undone.');
-
-        // Create Comment HTML
-        $comment = '<div class="comment" id="comment-' . $reach_comment->id . '">';
-        $comment .= '<p class="name">';
-
-        if ( '1' == $reach_comment->private )
-            $comment .= '<img src="/images/icons/lock.gif" width="11" height="15" alt="' . _('Private') . '" class="private" />';
-
-        $comment .= '<a href="#" class="assign-to" rel="' . $this->user->id . '">' . $this->user->contact_name . '</a> ';
-        $comment .= '<span class="date">' . $date->format( 'F jS, Y g:ia' ) . '</span>';
-        $comment .= '<a href="#" class="delete-comment" title="' . _('Delete') . '" confirm="' .  $confirmation . '">';
-        $comment .= '<img src="/images/icons/x.png" alt="' . _('X') . '" width="15" height="17" />';
-        $comment .= '</a>';
-        $comment .= '</p>';
-        $comment .= '<p class="message">' . $reach_comment->comment . '</p>';
-        $comment .= '<br clear="left" />';
-        $comment .= '</div>';
-
-        // Add comment
-        jQuery('#comments-list')->prepend( $comment );
-
-        // Also need to reset the form
-        jQuery('#comment')
-            ->val('')
-            ->trigger('blur');
-
-        jQuery('#private')->prop( 'checked', false );
-
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'contact_name', $this->user->contact_name );
+        $response->add_response( 'id', $reach_comment->id );
+        $response->add_response( 'user_id', $this->user->id );
+        $response->add_response( 'comment', $reach_comment->comment );
+        $response->add_response( 'private', $reach_comment->private );
 
         return $response;
     }
@@ -241,7 +213,7 @@ class ReachesController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_GET['wrcid'] ), _('Failed to delete comment') );
+        $response->check( isset( $_POST['wrcid'] ), _('Failed to delete comment') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -249,16 +221,13 @@ class ReachesController extends BaseController {
 
         // Get reach comment
         $reach_comment = new WebsiteReachComment();
-        $reach_comment->get( $_GET['wrcid'], $this->user->account->id );
+        $reach_comment->get( $_POST['wrcid'], $this->user->account->id );
 
         // Remove from page
         jQuery('#comment-' . $reach_comment->id)->remove();
 
         // Then delete ticket
         $reach_comment->remove();
-
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -307,12 +276,6 @@ class ReachesController extends BaseController {
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
         fn::mail( $assigned_user->email, 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ' (' . $priorities[$reach->priority] . ')', $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
-
-        // Change who it's assigned to
-        jQuery('#sAssignedTo')->val( $assigned_user->id );
-
-        // Add jQuery
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

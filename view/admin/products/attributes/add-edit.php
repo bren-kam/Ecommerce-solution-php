@@ -12,70 +12,78 @@
  * @var bool|string $errs
  * @var string $validation
  */
-
-$confirm_delete = _('Are you sure you want to delete this attribute? This cannot be undone.');
-
-if ( $attribute->id ) {
-    $title = _('Edit Attribute');
-    $button = _('Save');
-} else {
-    $title = _('Add Attribute');
-    $button = _('Add');
-}
-
-echo $template->start( $title, '../sidebar' );
-
-if ( $errs )
-    echo '<p class="red">' . $errs . '</p><br />';
 ?>
 
-<form name="fAddEditAttribute" action="" method="post">
-    <table>
-        <tr>
-            <td><label for="tTitle"><?php echo _('Title'); ?></label> <span class="red">*</span>:</td>
-            <td><input type="text" class="tb" name="tTitle" id="tTitle" value="<?php echo ( isset( $_POST['tTitle'] ) || !$attribute->id ) ? $template->v('tTitle') : $attribute->title; ?>" /></td>
-        </tr>
-        <tr>
-            <td><label for="tName"><?php echo _('Name'); ?></label> <span class="red">*</span>:</td>
-            <td><input type="text" class="tb" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) || !$attribute->id ) ? $template->v('tName') : $attribute->name; ?>" /></td>
-        </tr>
-        <tr>
-            <td><strong><?php echo _('Items'); ?></strong></td>
-            <td>
-                <input type="text" class="tb" id="list-item-value" placeholder="<?php echo _('Item Name'); ?>" />
-                <a href="#" id="add-list-item" title="<?php echo _('Add Item'); ?>"><?php echo _('Add Item...'); ?></a>
-                <br />
-                <div id="items-list">
-                    <?php
-                    /**
-                     * @var AttributeItem $attribute_item
-                     */
-                    if ( is_array( $attribute_items ) )
-                    foreach ( $attribute_items as $attribute_item ) {
-                    ?>
-                        <div class="list-item">
-                            <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
-                            <input type="text" class="tb" name="list-items[ai<?php echo $attribute_item->id; ?>]" value="<?php echo $attribute_item->name; ?>" />
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php echo $attribute->id ? 'Edit' : 'Add' ?> Attribute
+            </header>
 
-                            <a href="#" class="delete-list-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirm_delete; ?>"><img src="/images/icons/x.png" alt="<?php echo _('Delete'); ?>" width="15" height="17" /></a>
+            <div class="panel-body">
+
+                <form name="fAddEditAttribute" id="fAddEditAttribute" method="post" <?php if ( $attribute->id ) echo 'action="?aid='. $attribute->id .'"' ?>>
+
+                    <?php nonce::field( 'add_edit' ); ?>
+
+                    <div class="form-group">
+                        <label for="tTitle">Title</label>
+                        <input type="text" class="form-control" name="tTitle" id="tTitle" value="<?php echo ( isset( $_POST['tTitle'] ) || !$attribute->id ) ? $template->v('tTitle') : $attribute->title; ?>" placeholder="Title" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tName">Name</label>
+                        <input type="text" class="form-control" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) || !$attribute->id ) ? $template->v('tName') : $attribute->name; ?>" placeholder="Name" />
+                    </div>
+
+                    <p><strong>Items:</strong></p>
+
+                    <div id="attribute-items-list">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="tItem" placeholder="Add new item" />
+                            <span class="input-group-btn">
+                                <button type="button" id="add-item" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                            </span>
                         </div>
-                    <?php } ?>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td><input type="submit" class="button" value="<?php echo $button; ?>" /></td>
-        </tr>
-    </table>
-    <?php nonce::field( 'add_edit' ); ?>
-</form>
-<?php echo $validation; ?>
-<div class="list-item hidden" id="list-item-template">
-    <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
-    <input type="text" class="tb" name="list-items[]" />
 
-    <a href="#" class="delete-list-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirm_delete; ?>"><img src="/images/icons/x.png" alt="<?php echo _('Delete'); ?>" width="15" height="17" /></a>
+                        <?php
+                            if ( is_array( $attribute_items ) )
+                                foreach ( $attribute_items as $attribute_item ):
+                        ?>
+                            <div class="input-group attribute-item">
+                                <input type="text" class="form-control" name="list-items[ai<?php echo $attribute_item->id; ?>]" value="<?php echo $attribute_item->name; ?>" />
+                                <span class="input-group-btn">
+                                    <a href="javascript:;" id="add-item" class="btn btn-default move-attribute-item move"><i class="fa fa-arrows"></i></a>
+                                </span>
+                                <span class="input-group-btn">
+                                    <a href="javascript:;" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></a>
+                                </span>
+                            </div>
+                        <?php endforeach; ?>
+
+                    </div>
+
+                    <p>
+                        <br />
+                        <button type="submit" class="btn btn-lg btn-primary">Save</button>
+                    </p>
+
+                </form>
+
+                <?php echo $validation ?>
+
+            </div>
+        </section>
+    </div>
 </div>
 
-<?php echo $template->end(); ?>
+<div class="input-group attribute-item hidden" id="attribute-item-template">
+    <input type="text" class="form-control" name="list-items[]" value="<?php echo $attribute_item->name; ?>" />
+    <span class="input-group-btn">
+        <a href="javascript:;" class="btn btn-default move-attribute-item move"><i class="fa fa-arrows"></i></a>
+    </span>
+    <span class="input-group-btn">
+        <a href="javascript:;" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></a>
+    </span>
+</div>

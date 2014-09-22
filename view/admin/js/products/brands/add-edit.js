@@ -1,76 +1,53 @@
-// When the page has loaded
-jQuery(function($) {
-    // Auto adjust slug
-    $('#tName').click( function() {
-        $('#tSlug').val( $(this).val().slug() );
-    });
+var BrandEdit = {
 
-    // Add items to the list
-    $('#sProductOptions').change( function() {
-        var productOption = $(this).find('option:selected'), productOptionId = $(this).val();
+    /**
+     * Product Option Template
+     */
+    template: null
 
-		if ( '' == productOptionId )
-			return;
+    , init: function() {
 
-		// Create new div
-		var newListItem = '<div class="product-option"><span class="product-option-name">' + productOption.text() + '</span>';
+        // Get Product Option Template
+        BrandEdit.template = $('#product-option-template').clone()
+            .removeClass('hidden')
+            .removeAttr('id');
+        $('#product-option-template').remove();
 
-		// Add 'X'
-		newListItem += '<a href="#" class="delete-product-option" title="Delete"><img src="/images/icons/x.png" width="15" height="17" alt="" /></a>';
+        // Product Option events
+        $('#sProductOptions').change( BrandEdit.addProductOption );
+        $('body').on( 'click', '.delete-product-option', BrandEdit.deleteProductOption );
 
-        // Add on hidden element
-        newListItem += '<input type="hidden" name="product-options[]" value="' + productOptionId + '" /></div>';
+        // Set slug based on name
+        $('#tName').change( function() {
+            $('#tSlug').val( $(this).val().slug() );
+        });
 
-		// Disable that option in the drop down
-		productOption.attr('disabled', true);
+    }
 
-        $('#product-options-list').append( newListItem );
+    , addProductOption: function() {
+        var productOption = $(this).find('option:selected')
+        var productOptionId = $(this).val();
 
-        // Select first index
-		$(this).val('');
-    });
+        if ( productOptionId == '' )
+            return;
 
-    // Remove items from the list
-    $('#product-options-list').on( 'click', 'a.delete-product-option', function() {
-        var parent = $(this).parent(), productOptionId = $('input:first', parent).val();
+        var item = BrandEdit.template.clone();
+        item.find('span:first').text( productOption.text() );
+        item.find('input:first').val( productOptionId );
+        item.appendTo('#product-option-list');
 
-        parent.remove();
-        $('#sProductOptions option[value=' + productOptionId + ']').attr( 'disabled', false );
-    });
+        $('#sProductOptions option[value=' + productOptionId + ']').prop( 'disabled', true );
+    }
 
-    // Make our upload button work
-    $('#aUpload, #tImage').click( function() {
-        $('#fImage').trigger('click');
-        $('#aUpload').focus();
-    });
+    , deleteProductOption: function() {
+        var productOption = $(this).parents('p:first');
+        var productOptionId = productOption.find('input:first').val();
 
-    // Change the file name
-    $('#fImage').change( function() {
-        var fileName = $(this).val().split('\\');
-        fileName = fileName[fileName.length-1];
-        var ext = fileName.split('.');
+        $('#sProductOptions option[value=' + productOptionId + ']').prop( 'disabled', false );
 
-        // We don't want to focus on the textbox
-        $('#aUpload').focus();
+        productOption.remove();
+    }
 
-        switch ( ext[ext.length-1] ) {
-            case 'jpeg':
-            case 'jpg':
-            case 'gif':
-            case 'png':
-            break;
+}
 
-            default:
-                $(this).val('');
-                $('#tImage').val('');
-                alert( $(this).attr('err') );
-                return;
-            break;
-        }
-
-        $('#tImage').val( fileName );
-    });
-});
-
-// Turns text into a slug
-String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); };
+jQuery( BrandEdit.init );

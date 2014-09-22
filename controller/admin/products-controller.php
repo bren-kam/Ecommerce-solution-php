@@ -29,12 +29,13 @@ ProductsController extends BaseController {
         $product_users = $this->user->get_product_users();
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript('products/list');
+            ->javascript('products/index')
+            ->javascript_url( Config::resource('typeahead-js') )
+            ->css('products/index');
 
         return $this->get_template_response( 'index' )
             ->kb( 11 )
-            ->select( 'sub-products', 'view' )
+            ->select( 'products', 'products/index' )
             ->set( compact( 'categories', 'product_users' ) );
     }
 
@@ -47,7 +48,7 @@ ProductsController extends BaseController {
         // Determine if we're adding or editing the product
         $product_id = ( isset( $_GET['pid'] ) ) ? (int) $_GET['pid'] : false;
 
-        $product = new Product;
+        $product = new Product();
         $industry = new Industry();
         $brand = new Brand();
         $category = new Category();
@@ -97,7 +98,7 @@ ProductsController extends BaseController {
             $industries[$industry->id] = $industry;
         }
 
-        $validation = new Validator('fAddEditProduct');
+        $validation = new BootstrapValidator('fAddEditProduct');
         $validation->add_validation('sCategory', 'req', 'Category is required');
         $validation->add_validation('sBrand', 'req', 'Brand is required');
         $validation->add_validation('sIndustry', 'req', 'Industry is required');
@@ -109,7 +110,7 @@ ProductsController extends BaseController {
 
         if ( $this->verified() && $product->id ) {
             $errors = $validation->validate();
-            if ( empty( $errors) ) {
+            if ( empty( $errors ) ) {
                 // Need to delete it from all websites
                 if ( 'deleted' == $_POST['sStatus'] ) {
                     // We need to remove it from all user websites
@@ -207,12 +208,13 @@ ProductsController extends BaseController {
 
         $this->resources
             ->javascript( 'fileuploader', 'products/add-edit' )
+            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ), Config::resource( 'jqueryui-js' ) )
             ->css('products/add-edit')
-            ->css_url( Config::resource('jquery-ui') );
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 12 )
-            ->select( 'sub-products', 'add' )
+            ->select( 'products', 'products/add-edit' )
             ->add_title( $title )
             ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts', 'validation' ) );
     }
@@ -257,11 +259,7 @@ ProductsController extends BaseController {
         $product->user_id_created = $this->user->id;
         $product->create();
 
-        // Change Form
-        jQuery('#fAddEditProduct')->attr( 'action', url::add_query_arg( 'pid', $product->id, '' ) );
-        jQuery('#hProductId')->val( $product->id );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'product_id', $product->id );
 
         return $response;
     }
@@ -287,26 +285,7 @@ ProductsController extends BaseController {
             $attribute_items[$aia->title][] = $aia;
         }
 
-        $html = '';
-
-        $attributes = array_keys( $attribute_items );
-
-        foreach ( $attributes as $attribute ) {
-            $html .= '<optgroup label="' . $attribute . '">';
-
-            foreach ( $attribute_items[$attribute] as $attribute_item ) {
-                $html .= '<option value="' . $attribute_item->id . '">' . $attribute_item->name . '</option>';
-            }
-
-            $html .= '</optgroup>';
-        }
-
-        // Change Form
-        jQuery('#sAttributes')
-            ->html( $html )
-            ->disableAttributes();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'attributes', $attribute_items );
 
         return $response;
     }
@@ -372,20 +351,8 @@ ProductsController extends BaseController {
         // Get image url
         $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";
 
-        // Clone image template
-        jQuery('#image-template')->clone()
-            ->removeAttr('id')
-            ->find('a:first')
-                ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
-                ->find('img:first')
-                    ->attr( 'src', $image_url )
-                    ->parents('.image:first')
-            ->find('input:first')
-                ->val($image_name)
-                ->parent()
-            ->appendTo('#images-list');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'image_url', $image_url );
+        $response->add_response( 'image_name', $image_name );
 
         return $response;
     }
@@ -481,7 +448,7 @@ ProductsController extends BaseController {
                 $category_ids[] = (int) $category->id;
             }
 
-            $dt->add_where(' AND pc.`category_id` IN(' . implode( ',', $category_ids ) . ')');
+            $dt->add_where(' AND p.`category_id` IN(' . implode( ',', $category_ids ) . ')');
         }
 
         // Get accounts
@@ -498,7 +465,7 @@ ProductsController extends BaseController {
          */
         if ( is_array( $products ) )
         foreach ( $products as $p ) {
-            $created_by = ( 0 == $p->website_id ) ? $p->created_by : '<span class="highlight">' . $p->created_by . '</span>';
+            $created_by = ( 0 == $p->website_id ) ? $p->created_by : '<span class="label label-primary">' . $p->created_by . '</span>';
 
             $data[] = array(
                 $p->name .
@@ -637,17 +604,17 @@ ProductsController extends BaseController {
 
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'products':
-                $results = $product->autocomplete( $_POST['term'] , 'p.`name`', 'products', $where );
+                $results = $product->autocomplete( $_GET['term'] , 'p.`name`', 'products', $where );
             break;
 
             case 'sku':
-                $results = $product->autocomplete( $_POST['term'], 'p.`sku`', 'sku', $where );
+                $results = $product->autocomplete( $_GET['term'], 'p.`sku`', 'sku', $where );
             break;
 
             case 'brands':
-                $results = $product->autocomplete( $_POST['term'], 'b.`name`', 'brands', $where );
+                $results = $product->autocomplete( $_GET['term'], 'b.`name`', 'brands', $where );
             break;
         }
 
@@ -672,7 +639,7 @@ ProductsController extends BaseController {
 
         return $this->get_template_response( 'import' )
             ->kb( 0 )
-            ->select( 'sub-products', 'import' )
+            ->select( 'products', 'products/import' )
             ->add_title( _('Import') )
             ->set( compact( 'brands' ) );
     }
@@ -786,6 +753,8 @@ ProductsController extends BaseController {
         $products = array();
         // Products that won't be imported
         $skipped_products = array();
+        // # of Products that will update
+        $to_update = 0;
 
         foreach ( $rows as &$values ) {
             if ( count($headers) == count($values) ) {
@@ -847,7 +816,7 @@ ProductsController extends BaseController {
             $matching_product = new Product();
             $matching_product->get_by_sku_by_brand( $r['sku'], $brand_id );
             // we will only load images for new products
-            if ( !$matching_product->id ) {
+//            if ( !$matching_product->id ) {
                 if ( !regexp::match( $r['image'], 'url' ) ) {
                     $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
                     $valid = false;
@@ -870,7 +839,10 @@ ProductsController extends BaseController {
                     $skipped_products[] = $r;
                     continue;
                 }                
-            }
+            //} else {
+            if ( $matching_product->id )
+                $to_update++;
+            //}
 
             $product = array_slice($r, 0, 9);
             
@@ -915,37 +887,14 @@ ProductsController extends BaseController {
             $product_import->image = $pi['image'];
             $product_import->create();
         }
-        
 
-        // Add operation overview report
-        $html =  '<tr><td>Total rows read:</td><td>' . count($rows) . '</td></tr>';
-        $html .= '<tr><td>Errors found:</td><td>' . count($skipped_products) . '</td></tr>';
-        $html .= '<tr><td>Total products to insert/update:</td><td>' . count($products) . '</td></tr>';
-        jQuery('#tUploadOverview')->append( $html );
-
-        // Add skipped rows report
-        if ( !empty( $skipped_products ) ) {
-            $html = '';
-            foreach ( $skipped_products as $p ) {
-                $p['image'] = "<a href=\"{$p['image']}\">Image</a>";
-                $html .= '<tr><td>' . implode('</td><td>', $p) . '</td></tr>';
-            }
-            jQuery('#tSkippedProducts')->append( $html );
-            jQuery('#dSkippedProducts')->show();
-        }
-
-        // Hide the main view
-        jQuery('#dDefault')->hide();
-
-        if ( empty( $products ) ) {
-            jQuery('[type=submit]')->hide();
-        }
-
-        // Show the next table
-        jQuery('#dConfirm')->show();
 
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'count', count($rows) );
+        $response->add_response( 'count_skipped', count($skipped_products) );
+        $response->add_response( 'count_to_import', count($products) );
+        $response->add_response( 'count_to_update', $to_update );
+        $response->add_response( 'skipped_rows', $skipped_products );
 
         return $response;
     }
@@ -994,6 +943,13 @@ ProductsController extends BaseController {
                 $product->publish_date = date( 'Y-m-d H:i:s' );
 
                 // we only upload images if its a new product
+                $slug = f::strip_extension( f::name( $p->image ) );
+                $industry = format::slug( $p->industry_name );
+                $image_name = $product->upload_image( $p->image, $slug, $industry );
+                $product->add_images( array( $image_name ) );
+            } else {
+                // Override Images
+                $product->delete_images();
                 $slug = f::strip_extension( f::name( $p->image ) );
                 $industry = format::slug( $p->industry_name );
                 $image_name = $product->upload_image( $p->image, $slug, $industry );

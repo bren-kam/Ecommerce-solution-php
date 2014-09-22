@@ -1,28 +1,25 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Posting - Facebook | Social Media
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- * @var SocialMediaFacebookPage $page
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Facebook Posts
+                <div class="pull-right">
+                    <a class="btn btn-success btn-sm" href="/social-media/facebook/posting/post/?smfbpid=<?php echo $page->id ?>">Add Post</a>
+                </div>
+            </header>
 
-echo $template->start( _('Posts') . ' - ' . $page->name, '../sidebar' );
-?>
+            <div class="panel-body">
 
-<table perPage="25,50,100" ajax="/social-media/facebook/posting/list-posts/">
-    <thead>
-        <tr>
-            <th width="50%"><?php echo _('Summary'); ?></th>
-            <th width="20%"><?php echo _('Status'); ?></th>
-            <th width="30%" sort="1 desc"><?php echo _('Date Posted'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-
-<?php echo $template->end(); ?>
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/social-media/facebook/posting/list-posts/" perPage="30,50">
+                        <thead>
+                            <th>Summary</th>
+                            <th>Status</th>
+                            <th sort="1 desc">Date Created</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

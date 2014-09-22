@@ -29,6 +29,37 @@ if ( isset( $argv ) ) {
     }
 }
 
+if ( ( strpos( $_SERVER['REQUEST_URI'], 'flatlab' ) !== false ) || ( strpos( $_SERVER['REQUEST_URI'], '/public/' ) !== false ) ) {
+
+    $path = ABS_PATH . $_SERVER['REQUEST_URI'];
+    if (strpos( $path, '?' ) !== false )
+        $path = strstr($path, '?', true);
+    if ( is_dir( $path ) ) {
+        $path .= '/index.html';
+    }
+    if ( substr( $path, -1 ) == '/' )
+        $path = substr( $path, 0, -1 );
+
+    if ( file_exists( $path ) ) {
+        $extension = @array_pop( explode ( '.', $path ));
+        if ( stripos($extension, 'js') !== FALSE ) {
+            header( "Content-type: text/javascript" );
+        } else if ( stripos($extension, 'css') !== FALSE ) {
+            header( "Content-type: text/css" );
+        } else if ( stripos($path, '.svg') !== FALSE ) {
+            header( "Content-type: image/svg+xml" );
+        } else if ( stripos($path, '.woff') !== FALSE ) {
+            header( "Content-type: application/font-woff" );
+        } else if ( stripos($path, '.ttf') !== FALSE ) {
+            header( "Content-type: application/x-font-ttf" );
+        } else {
+            header( "Content-type:" . mime_content_type( $path ) );
+        }
+        require $path;
+        exit;
+    }
+}
+
 // If it's the home page
 if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) {
     // Set the transaction name

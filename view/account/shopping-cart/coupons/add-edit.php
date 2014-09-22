@@ -14,107 +14,113 @@
  * @var string $js_validation
  */
 
-$title = ( $coupon->id ) ? _('Edit') : _('Add');
-$title .= ' ' . _('Coupon');
+$coupon_type = ( empty( $_POST['rType'] ) ) ? $coupon->type : $_POST['rType'];
 
-echo $template->start( $title, '../sidebar' );
+if ( empty( $_POST ) && $coupon->id ) {
+    $check_shipping_methods = $free_shipping_methods;
+} elseif ( isset( $_POST['cbFreeShippingMethods'] ) ) {
+    $check_shipping_methods = $_POST['cbFreeShippingMethods'];
+} else {
+    $check_shipping_methods = '';
+}
 
-if ( isset( $errs ) )
-    echo "<p class='red'>$errs</p>";
+// Make sure it's the right type
+if ( !is_array( $check_shipping_methods ) )
+    $check_shipping_methods = array();
 ?>
-<form name="fAddEditCoupon" action="<?php if ( $coupon->id ) echo '?wcid=' . $coupon->id; ?>" method="post">
-<table>
-    <tr>
-        <td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tName" id="tName" value="<?php echo ( empty( $_POST['tName'] ) ) ? $coupon->name : $_POST['tName']; ?>" maxlength="50" /></td>
-    </tr>
-    <tr>
-        <td><label for="tCode"><?php echo _('Code'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tCode" id="tCode" value="<?php echo ( empty( $_POST['tCode'] ) ) ? $coupon->code : $_POST['tCode']; ?>" maxlength="20" /></td>
-    </tr>
-    <tr>
-        <td><label for="rType"><?php echo _('Type'); ?>:</label></td>
-        <td>
-            <?php
-            $coupon_type = ( empty( $_POST['rType'] ) ) ? $coupon->type : $_POST['rType'];
 
-            if ( 'Flat Rate' == $coupon_type ) {
-                $flat_rate = true;
-                $percentage = false;
-            } else {
-                $flat_rate = false;
-                $percentage = true;
-            }
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php echo $coupon->id ? 'Edit' : 'Add'?> Coupon
+            </header>
 
-            // @Fix Flat Rate uses the english lange -- need to make it language independent
-            ?>
-            <p style="padding-bottom:7px"><input type="radio" name="rType" id="rType" class="rb" value="Flat Rate"<?php if ( $flat_rate ) echo ' checked="checked"'; ?> /> <label for="rType"><?php echo _('Dollar Amount'); ?></label></p>
-            <p><input type="radio" name="rType" id="rType2" class="rb" value="Percentage"<?php if ( $percentage ) echo ' checked="checked"'; ?> /> <label for="rType2"><?php echo _('Percentage'); ?></label></p>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="tAmount"><?php echo _('Amount Discounted'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tAmount" id="tAmount" value="<?php echo ( empty( $_POST['tAmount'] ) ) ? $coupon->amount : $_POST['tAmount']; ?>" maxlength="20" /></td>
-    </tr>
-    <tr>
-        <td><label for="tMinimumPurchaseAmount"><?php echo _('Minimum Purchase'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tMinimumPurchaseAmount" id="tMinimumPurchaseAmount" value="<?php echo ( empty( $_POST['tMinimumPurchaseAmount'] ) ) ? $coupon->minimum_purchase_amount : $_POST['tMinimumPurchaseAmount']; ?>" maxlength="20" /></td>
-    </tr>
-    <tr>
-        <td><label for="cbStoreWide"><?php echo _('Store-Wide'); ?>:</label></td>
-        <td><input type="checkbox" name="cbStoreWide" id="cbStoreWide" class="cb" value="1"<?php if ( !empty( $_POST ) && isset( $_POST['cbStoreWide'] ) || ( empty( $_POST ) && $coupon->store_wide ) ) echo ' checked="checked"'; ?> /> <label for="cbStoreWide"><?php echo _('Store-Wide Coupon?'); ?></label></td>
-    </tr>
-    <tr>
-        <td><label for="cbBuyOneGetOneFree"><?php echo _('Buy One Get One Free'); ?>:</label></td>
-        <td><input type="checkbox" name="cbBuyOneGetOneFree" id="cbBuyOneGetOneFree" class="cb" value="1"<?php if ( !empty( $_POST ) && isset( $_POST['cbBuyOneGetOneFree' ]) || ( empty( $_POST ) && $coupon->buy_one_get_one_free ) ) echo ' checked="checked"'; ?> /> <label for="cbBuyOneGetOneFree"><?php echo _('Buy One Get One Free'); ?></label></td>
-    </tr>
-    <tr>
-        <td><label for="cbFreeShippingOptions"><?php echo _('Free Shipping Methods'); ?>:</label></td>
-        <td>
-            <?php
-            if ( empty( $_POST ) && $coupon->id ) {
-                $check_shipping_methods = $free_shipping_methods;
-            } elseif ( isset( $_POST['cbFreeShippingMethods'] ) ) {
-                $check_shipping_methods = $_POST['cbFreeShippingMethods'];
-            } else {
-                $check_shipping_methods = '';
-            }
+            <div class="panel-body">
 
-            // Make sure it's the right type
-            if ( !is_array( $check_shipping_methods ) )
-                $check_shipping_methods = array();
+                <form method="post" action="<?php if ( $coupon->id ) echo '?wcid=' . $coupon->id; ?>" role="form">
 
-            foreach ( $shipping_methods as $method ) {
-                $checked = ( in_array( $method->id, $check_shipping_methods ) ) ? ' checked="checked"' : '';
+                    <div class="form-group">
+                        <label for="tName">Name:</label>
+                        <input type="text" class="form-control" id="tName" name="tName" value="<?php echo ( empty( $_POST['tName'] ) ) ? $coupon->name : $_POST['tName']; ?>" />
+                    </div>
 
-                echo '<p><input type="checkbox" class="cb" name="cbFreeShippingMethods[]" id="cbFreeShippingMethod' . $method->id . '" value="' . $method->id . '"' . $checked . '> <label for="cbFreeShippingMethod' . $method->id . '">' . $method->name . '</label></p>';
-            }
-            ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="tItemLimit"><?php echo _('Item Limit'); ?>:</label></td>
-        <td><input type="text" class="tb" name="tItemLimit" id="tItemLimit" maxlength="10" value="<?php echo ( empty( $_POST['tItemLimit'] ) ) ? $coupon->item_limit : $_POST['tItemLimit']; ?>" /></td>
-    </tr>
-    <tr>
-        <td>
-            <label for="tStartDate"><?php echo _('Start &amp; End Date'); ?>:</label><br />
-            <small>(<?php echo _('optional'); ?>)</small>
-        </td>
-        <td>
-            <input type="text" name="tStartDate" id="tStartDate" class="tb date" maxlength="10" value="<?php echo ( empty( $_POST['tStartDate'] ) && '0000-00-00' != $coupon->date_start ) ? $coupon->date_start : $_POST['tStartDate']; ?>" style="width:75px" />
-            <input type="text" name="tEndDate" id="tEndDate" class="tb date" maxlength="10" value="<?php echo ( empty( $_POST['tEndDate'] ) && '0000-00-00' != $coupon->date_end ) ? $coupon->date_end : $_POST['tEndDate']; ?>" style="width:75px" />
-        </td>
-    </tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
-    <tr>
-        <td>&nbsp;</td>
-        <td><input type="submit" class="button" value="<?php echo ( $coupon->id ) ? _('Update Coupon') : _('Add Coupon'); ?>" /></td>
-    </tr>
-</table>
-<?php nonce::field('add_edit'); ?>
-</form>
-<?php
-echo $js_validation;
-echo $template->end();
-?>
+                    <div class="form-group">
+                        <label for="tCode">Code:</label>
+                        <input type="text" class="form-control" id="tCode" name="tCode" value="<?php echo ( empty( $_POST['tCode'] ) ) ? $coupon->code : $_POST['tCode']; ?>" />
+                    </div>
+
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="rType" value="Flat Rate" <?php if ( $coupon_type == 'Flat Rate' ) echo 'checked' ?> />
+                            Discount as Fixed Dollar Amount
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="rType" value="Percentage" <?php if ( $coupon_type == 'Percentage' ) echo 'checked' ?> />
+                            Discount as Percentage on Cart Price
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tAmount">Discount Amount:</label>
+                        <input type="text" class="form-control" id="tAmount" name="tAmount" value="<?php echo ( empty( $_POST['tAmount'] ) ) ? $coupon->amount : $_POST['tAmount']; ?>" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tMinimumPurchaseAmount">Minimum Purchase Amount:</label>
+                        <input type="text" class="form-control" id="tMinimumPurchaseAmount" name="tMinimumPurchaseAmount" value="<?php echo ( empty( $_POST['tMinimumPurchaseAmount'] ) ) ? $coupon->minimum_purchase_amount : $_POST['tMinimumPurchaseAmount']; ?>" />
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cbStoreWide" value="1" <?php if ( !empty( $_POST ) && isset( $_POST['cbStoreWide'] ) || ( empty( $_POST ) && $coupon->store_wide ) ) echo 'checked="checked"'; ?> />
+                            This is a Store Wide Coupon
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="cbBuyOneGetOneFree" value="1" <?php if ( !empty( $_POST ) && isset( $_POST['cbBuyOneGetOneFree'] ) || ( empty( $_POST ) && $coupon->buy_one_get_one_free ) ) echo 'checked="checked"'; ?> />
+                            This is a "Buy One Get One Free" Coupon
+                        </label>
+                    </div>
+
+                    <br />
+
+                    <?php
+                    foreach ( $shipping_methods as $method ) :
+                        $checked = ( in_array( $method->id, $check_shipping_methods ) ) ? ' checked="checked"' : '';
+                        echo '<div class="checkbox"><label><input type="checkbox" name="cbFreeShippingMethods[]" value="' . $method->id . '"' . $checked . '>Free Shipping Method Coupon: ' . $method->name . '</label></div>';
+                    endforeach;
+                    ?>
+
+                    <div class="form-group">
+                        <label for="tItemLimit">Item Limit:</label>
+                        <input type="text" class="form-control" id="tItemLimit" name="tItemLimit" value="<?php echo ( empty( $_POST['tItemLimit'] ) ) ? $coupon->item_limit : $_POST['tItemLimit']; ?>" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tStartDate">Start &amp; End Date <small>(optional)</small>:</label>
+                        <div class="input-daterange input-group" id="datepicker">
+                            <input type="text" class="input-sm form-control" name="tStartDate" value="<?php echo ( empty( $_POST['tStartDate'] ) && '0000-00-00' != $coupon->date_start ) ? $coupon->date_start : $_POST['tStartDate']; ?>"/>
+                            <span class="input-group-addon">to</span>
+                            <input type="text" class="input-sm form-control" name="tEndDate" value="<?php echo ( empty( $_POST['tEndDate'] ) && '0000-00-00' != $coupon->date_end ) ? $coupon->date_end : $_POST['tEndDate']; ?>" />
+                        </div>
+
+<!--                        <input type="text" class="form-control" id="tStartDate" name="tStartDate" />
+                        <input type="text" class="form-control" id="tEndDate" name="tEndDate" value="<?php echo $coupon->name ?>" /> -->
+                    </div>
+
+                    <p class="text-right">
+                        <?php echo nonce::field('add_edit') ?>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </p>
+
+                </form>
+
+            </div>
+        </section>
+    </div>
+</div>

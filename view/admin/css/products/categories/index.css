@@ -1,31 +1,10 @@
-/* Categories */
-
-#breadcrumb { width:100%; padding: 3px 5px 7px 0px; font-size: 11px; font-weight: bold; }
-#current-category { float: left; width: 100%; font-size: 15px; font-weight: bold; }
-#current-url { float: left; padding-bottom:0; }
-#current-url a.url { margin-left: 0; color: #9E9E9E; font-size: 0.9em; }
-#no-sub-categories a { margin: 0; }
-
-#categories-list { padding: 0 5px; }
-.category, .category-placeholder { height: 45px !important; margin: 5px 0; clear:both; float:left; display: block; width:100%; cursor: n-resize; border: 1px solid #e2e2e2; position: relative; padding: 3px; }
-.category { background-color: #fff }
-.category:hover { background-color: #f0f0f0 }
-
-.category h4 { font-weight: bold; margin-top: 5px; margin-left: 5px;}
-.category p { padding-bottom: 0; }
-.category a.url { font-size: 0.8em; color: #9E9E9E; position: absolute; bottom: 6px; right: 6px; }
-.category a.url:hover, #current-url a.url:hover { text-decoration: underline; }
-.category a, #breadcrumb a { margin-left: 0; }
-.category-placeholder { background-color: #DDDDDD; height: 46px; border: #c8c8c8; }
-.category-actions { position: absolute; left: 8px; color: #9E9E9E; bottom: 0; }
-.parent-category {
-    margin-left: 5;
-    font-size: 14px;
-    font-weight: bold;
+.category {
+  border-bottom: 1px solid #ddd;
 }
-
-.gray-small { position: relative; bottom: 1px; color: #9E9E9E; font-size: 11px; font-weight:normal; }
-
-#sAttributes { height: 150px; }
-.attribute { padding: 5px 21px 5px 5px; margin: 5px 0; border: 1px solid; width: 358px; position: relative; }
-.delete-attribute { position: absolute; top: 4px; right: 4px; }
+.category:not(a) {
+  cursor: move;
+}
+.category-placeholder {
+  margin: 3px;
+  border: 2px dashed #999;
+}

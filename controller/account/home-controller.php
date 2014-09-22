@@ -16,6 +16,8 @@ class HomeController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        return new RedirectResponse( '/website/' );
+
         $this->resources->css('dashboard/dashboard');
         $advertising_url = $this->user->account->get_settings('advertising-url');
 

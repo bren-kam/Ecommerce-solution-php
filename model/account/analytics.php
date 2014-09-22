@@ -288,7 +288,7 @@ class Analytics {
     public function get_content_overview( $limit = 5 ) {
         // Make sure we can get any number we want
         if ( 0 == $limit )
-            $limit = 10000;
+            $limit = 4000;
 
         // Declare variables
         $content_overview = array();

@@ -22,7 +22,7 @@ class AttributesController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 14 )
             ->add_title( _('Attributes') )
-            ->select( 'attributes', 'view' );
+            ->select( 'products', 'products/attributes' );
     }
 
     /**
@@ -33,7 +33,6 @@ class AttributesController extends BaseController {
     protected function add_edit() {
         // Get the attribute_id if there is one
         $attribute_id = ( isset( $_GET['aid'] ) ) ? (int) $_GET['aid'] : false;
-
         // Get Attribute
         $attribute = new Attribute();
 
@@ -47,7 +46,7 @@ class AttributesController extends BaseController {
             $attribute_items = array();
         }
 
-        $v = new Validator( _('fAddEditAttribute') );
+        $v = new BootstrapValidator( _('fAddEditAttribute') );
 
         $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
         $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
@@ -94,7 +93,7 @@ class AttributesController extends BaseController {
                         $attribute_item = new AttributeItem();
                         $attribute_item->name = $ai;
                         $attribute_item->sequence = $sequence;
-                        $attribute_item->attribute_id = $attribute_id;
+                        $attribute_item->attribute_id = $attribute->id;
 
                         // Create the attribute
                         $attribute_item->create();
@@ -124,12 +123,13 @@ class AttributesController extends BaseController {
         }
 
         $this->resources
+            ->javascript_url( Config::resource( 'jqueryui-js' ) )
             ->javascript( 'products/attributes/add-edit' )
             ->css('products/attributes/add-edit');
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 15 )
-            ->select( 'attributes', 'add' )
+            ->select( 'products', 'products/attributes/add' )
             ->add_title( ( $attribute_id ) ? _('Edit') : _('Add') )
             ->set( compact( 'attribute', 'attribute_items', 'validation', 'errs' ) );
     }
@@ -196,13 +196,9 @@ class AttributesController extends BaseController {
         // Delete attribute
         if ( $attribute->id ) {
             $attribute->remove();
-
-            // Redraw the table
-            jQuery('.dt:first')->dataTable()->fnDraw();
-
-            // Add the response
-            $response->add_response( 'jquery', jQuery::getResponse() );
         }
+
+        $response->add_response( 'reload_datatable', true );
 
         return $response;
     }

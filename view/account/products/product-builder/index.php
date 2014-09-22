@@ -1,58 +1,28 @@
 <?php
-/**
- * @package Grey Suit Retail
- * @page Product Builder | Products
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- */
-
-require VIEW_PATH . $this->variables['view_base'] . '../sidebar.php';
+nonce::field( 'store_session', '_store_session' );
 ?>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                My Custom Products
+            </header>
 
-<div id="content">
-    <div id="narrow-your-search-wrapper">
-    <div id="narrow-your-search">
-        <?php
-        nonce::field( 'autocomplete', '_autocomplete' );
-        ?>
-        <h2><?php echo _('Narrow Your Search'); ?></h2>
-        <br />
-        <form action="" id="fSearch">
-        <table class="formatted">
-            <tr>
-                <td>
-                    <select id="sAutoComplete">
-                        <option value="sku"><?php echo _('SKU'); ?></option>
-                        <option value="product"><?php echo _('Product Name'); ?></option>
-                        <option value="brand"><?php echo _('Brand'); ?></option>
-                    </select>
-                </td>
-                <td><input type="text" class="tb" id="tAutoComplete" placeholder="<?php echo _('Enter SKU...'); ?>" style="position: relative; top: 1px;" /></td>
-                <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
-            </tr>
-        </table>
-        </form>
+            <div class="panel-body">
+
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/products/product-builder/list-products/" perPage="30,50,100">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Brand</th>
+                                <th>SKU</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
-
-<div id="subcontent-wrapper" class="narrow-your-search">
-    <div id="subcontent">
-        <table perPage="100,250,500" id="tViewProducts">
-            <thead>
-                <tr>
-                    <th width="45%" sort="1"><?php echo _('Name'); ?></th>
-                    <th width="20%"><?php echo _('Brand'); ?></th>
-                    <th width="10%"><?php echo _('SKU'); ?></th>
-                    <th width="25%"><?php echo _('Category'); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<?php echo $template->end(); ?>

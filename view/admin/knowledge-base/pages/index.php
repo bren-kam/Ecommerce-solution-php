@@ -10,19 +10,25 @@
  * @var string $link
  * @var string $kb_section
  */
-
-echo $template->start( ucwords( $_GET['s'] ) . ' ' . _('Pages') . ' ' . $link, '../sidebar' );
 ?>
 
-<table ajax="<?php echo url::add_query_arg( 'section', $_GET['s'], '/knowledge-base/pages/list-all/' ); ?>" perPage="30,50,100">
-    <thead>
-        <tr>
-            <th width="45%" sort="2"><?php echo _('Page'); ?></th>
-            <th width="55%" sort="1"><?php echo _('Category'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php echo ucwords( $_GET['s'] ) . ' Pages ' . $link;  ?>
+            </header>
 
-<?php echo $template->end(); ?>
+            <div class="panel-body">
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="<?php echo url::add_query_arg( 'section', $_GET['s'], '/knowledge-base/pages/list-all/' ); ?>" perPage="30,50,100">
+                        <thead>
+                        <th sort="2">Page</th>
+                        <th sort="1">Category</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

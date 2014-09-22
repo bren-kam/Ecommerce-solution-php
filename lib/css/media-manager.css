@@ -1,0 +1,47 @@
+#mm-select-file:disabled {
+  background-color: #bec3c7;
+  border-color: #bec3c7;
+}
+#mm-uploader {
+  position: absolute;
+  left: -5000px;
+}
+#mm-search {
+  margin-top: 15px;
+}
+#mm-file-container {
+  padding: 15px;
+  max-height: 280px;
+  overflow-y: scroll;
+}
+#mm-file-container li {
+  width: 125px;
+  height: 125px;
+  margin: 10px 10px 0 0;
+  border: 1px solid #ccc;
+  position: relative;
+  vertical-align: top;
+  /* File - type Images */
+  /* File - other types */
+}
+#mm-file-container li .mm-file {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#mm-file-container li img {
+  width: 100%;
+}
+#mm-file-container li a a {
+  word-wrap: break-word;
+}
+#mm-file-container li .mm-delete-file {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  color: red;
+  display: none;
+}
+#mm-file-container li:hover .mm-delete-file {
+  display: block;
+}

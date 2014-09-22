@@ -1,44 +1,55 @@
-// When the page has loaded
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-	// Make attributes sortable
-	$("#items-list").sortable({
-        forcePlaceholderSize : true
-        , placeholder: 'list-item-placeholder'
-        , handle : '.handle'
-    });
+AttributeEditor = {
 
-    // The 'Add List Item' link
-	$('#add-list-item').click( function() {
-		var listItemValue = $('#list-item-value'), itemNames = listItemValue.val().split(','), listItemTemplate = $('#list-item-template'), itemsList = $('#items-list');
+    template: null
 
-		for ( var i in itemNames ) {
-			var itemName = itemNames[i];
+    , init: function() {
 
-			// If they entered nothing, do nothing
-			if ( !itemName.length )
-				return;
+        // Template
+        AttributeEditor.template = $('#attribute-item-template').clone();
+        AttributeEditor.template.removeClass('hidden').removeAttr('id');
+        $('#attribute-item-template').remove();
 
-			// Start creating new div
-			var newListItem = listItemTemplate
+        // Events
+        $('#add-item').click( AttributeEditor.add );
+        $('body').on( 'click', '.delete-attribute-item', AttributeEditor.remove );
+
+        // Make attributes sortable
+        $("#attribute-items-list").sortable({
+            forcePlaceholderSize : true
+            , placeholder: 'list-item-placeholder'
+            , handle : '.move'
+        });
+    }
+
+    , add: function(e) {
+        if (e) e.preventDefault();
+
+        var item = $('#tItem');
+        var itemNames = item.val().split(',');
+        var itemsList = $('#attribute-items-list');
+
+        for ( var i in itemNames ) {
+            var itemName = itemNames[i];
+
+            if ( !itemName.length )
+                return;
+
+            AttributeEditor.template
                 .clone()
-                .removeClass('hidden')
-                .removeAttr('id');
+                .find( 'input:first' ).val( itemName ).end()
+                .appendTo( itemsList );
+        }
 
-            newListItem.find('input:first').val( itemName );
+        item.val('').trigger('blur');
 
-			// Append it
-			itemsList.append( newListItem );
-		}
+        $("#attribute-items-list" ).sortable('refresh');
+    }
 
-		// Reset to default values
-        listItemValue.val('').trigger('blur');
-	});
+    , remove: function(e) {
+        if (e) e.preventDefault();
 
-    /**
-     * Delete an item from the list
-     */
-    $('#items-list').on( 'click', 'a.delete-list-item', function() {
-        if ( confirm( $(this).attr('confirm') ) )
-            $(this).parent().remove();
-    });
-});
+        $(this).parents('.attribute-item:first').remove();
+    }
+}
+
+jQuery( AttributeEditor.init );

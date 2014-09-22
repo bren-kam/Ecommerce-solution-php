@@ -177,10 +177,29 @@ class TemplateResponse extends Response {
             }
         }
 
-        require VIEW_PATH . $this->sub_path . 'header.php';
+        if ( !file_exists( VIEW_PATH . $this->_file_to_render . '.php' ) ) {
+            $view_path = $this->_file_to_render;
+            $this->_file_to_render = '../error/no-view';
+        }
 
-        require VIEW_PATH . $this->_file_to_render . '.php';
+        if ( in_array( $this->_file_to_render, array( '../error/404', '../error/no-view' ) ) ) {
 
-        require VIEW_PATH . $this->sub_path . 'footer.php';
+            require VIEW_PATH . $this->_file_to_render . '.php';
+
+        } else {
+
+            require VIEW_PATH . $this->sub_path . 'header.php';
+
+            require VIEW_PATH . $this->_file_to_render . '.php';
+
+            require VIEW_PATH . $this->sub_path . 'footer.php';
+
+        }
+
+    }
+
+    public function menu_item($item) {
+        $this->variables['__menu_item__'] = $item;
+        return $this;
     }
 }

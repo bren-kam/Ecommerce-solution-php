@@ -9,6 +9,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
     const USER_ID = 353; // Ashley
     const COMPLETE_CATALOG_MINIMUM = 10485760; // 10mb In bytes
+    const ASHLEY_EXPRESS_FLAG = 'ashley-express';
 
     // Not used
     protected $testing_sites = array( 78, 123, 124, 134, 158, 168, 175, 186, 190, 218, 228, 243, 291, 292, 293, 317, 318
@@ -110,7 +111,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		// Get the file if there is one
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
-		
+
         // SSH Connection
         $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
@@ -122,14 +123,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         foreach( $accounts as $account ) {
             // Need to make this not timeout and remove half the products first
             // @fix
-            $this->run( $account, $file );
             echo "Running: " . $account->title . "\n";
+            $this->run( $account, $file );
         }
     }
 
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
-	 * 
+	 *
 	 * @param Account $account
 	 * @param string $file (optional|)
 	 * @return bool
@@ -155,11 +156,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
                 $size = f::size2bytes( $f['size'] );
 
-                if ( empty( $file ) && $size >= self::COMPLETE_CATALOG_MINIMUM ) {
-                    $file = $f['name'];
-                } else {
-                    $delete_files[] = $f['name'];
-                }
+                $file_name = f::name( $f['name'] );
+                if ( strpos( $file_name, '888-' ) === false )
+                    continue;
+
+                if ( $size < self::COMPLETE_CATALOG_MINIMUM )
+                    continue;
+
+                $file = $f['name'];
             }
 		}
 
@@ -175,7 +179,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         // Make sure the folder has been created
 		$local_folder = "/gsr/systems/backend/admin/media/downloads/ashley/$ftp->username/";
-        
+
 		if ( !file_exists( $local_folder ) ) {
             // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 			mkdir( $local_folder, 0777 );
@@ -193,7 +197,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         // Declare array
         $packages = $this->get_ashley_packages();
-        $skus = $remove_products = $new_product_skus = $all_skus = $new_products = array();
+        $skus = $remove_products = $new_product_skus = $all_skus = $new_products = $ashley_express_skus = array();
 
         // Check #1 - Stop mass deletion
         if ( 0 == count( $this->xml->items->item ) ) {
@@ -238,6 +242,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( !array_key_exists( $sku, $products ) )
                 $new_product_skus[] = $sku;
 
+            // Ashley Express detection
+            if ( $item->attributes()->itemIsAvailable == "true" ) {
+                $ashley_express_skus[$sku] = true;
+            } else {
+                $ashley_express_skus[$sku] = false;
+            }
+
             // Setup packages
 			if ( stristr( $sku, '-' ) ) {
                 list( $series, $item ) = explode( '-', $sku, 2 );
@@ -268,7 +279,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                         $group_items[$series] = true;
 						continue;
                     }
-                    
+
 					if ( in_array( $series . $item, $all_skus ) ) {
                         $group_items[$series] = true;
 						continue;
@@ -308,12 +319,19 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             return;
         }
 
+        // Add missing products to Master Catalog
         if ( !empty( $new_products ) ) {
             // Get groups
             $groups = $this->get_groups();
             // Add new products to System
             $this->add_products( $new_products, $groups );
         }
+
+        // set/unset Ashley Express flag
+        // Update 2014-07-30 this was changed to flag manually, NOT via xml
+        // if ( !empty( $ashley_express_skus ) ) {
+        //     $this->set_bulk_ashley_express( $ashley_express_skus );
+        // }
 
 		// Add new products to Account
         $industries = $account->get_industries();
@@ -323,14 +341,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         if ( !in_array( $account->id, $this->omit_sites ) ) {
             $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
-            $this->add_product_groups( $account->id, array_keys( $group_items ) );
+
+            $series = array_merge( array_keys( $group_items ), array_keys( $skus ) );
+            $this->add_product_groups( $account->id, array_unique( $series ) );
         }
 
 		// Deactivate old products
         $account_product = new AccountProduct();
 
         $account_product->remove_bulk( $account->id, $remove_products );
-		
+
 		// Reorganize Categories
         $account_category = new AccountCategory();
 		$account_category->reorganize_categories( $account->id, new Category() );
@@ -363,7 +383,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Make sure they didn't go below a minimum price
             $account_product->adjust_to_minimum_price( $account->id );
 	}
-	
+
 	/**
 	 * Gets the products SKUs of a website to determine what products they have
 	 *
@@ -486,7 +506,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 			// Magical Query
 			// Insert website products
-			$this->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $account_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1" );
+			$this->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $account_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) AND publish_visibility = 'public' GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1" );
 		}
 	}
 
@@ -1409,7 +1429,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
             // Trick to make sure the page doesn't timeout or segfault
             set_time_limit(3600);
-            flush();
 
             /***** CHECK PRODUCT *****/
 
@@ -1602,6 +1621,53 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 
         return $new_product;
+
+    }
+
+    /**
+     * Set Bulk Ashley Express
+     * @param array $products key=SKU value=boolean
+     */
+    private function set_bulk_ashley_express( $products ) {
+        $to_insert = $to_remove = array();
+        foreach ( $products as $sku => $ashley_express_flag ) {
+            if ( $ashley_express_flag )
+                $to_insert[] = $sku;
+            else {
+                $to_remove[] = $sku;
+            }
+        }
+        if ( !empty( $to_remove ) ) {
+            $this->prepare("
+                    DELETE t
+                    FROM `tags` t
+                    INNER JOIN `products` p ON ( t.`object_id` = p.`product_id` )
+                    WHERE  p.`user_id_created` = :user_id_created AND p.`sku` IN ('". implode("','", $to_remove) ."') AND t.`type` = :type  AND t.`value` = :value"
+                , 'iss'
+                , array(
+                    ':user_id_created' => self::USER_ID
+                    , ':type' => 'product'
+                    , ':value' => self::ASHLEY_EXPRESS_FLAG
+                )
+            )->query();
+        }
+
+        if ( !empty( $to_insert ) ) {
+            $this->prepare("
+                INSERT INTO tags(`object_id`, `type`, `value`)
+                SELECT p.`product_id`, 'product', 'ashley-express'
+                FROM `products` p
+                LEFT JOIN `tags` t ON ( t.`type` = :type AND t.`object_id` = p.`product_id` AND t.`value` = :value )
+                WHERE  p.`user_id_created` = :user_id_created AND p.`sku` IN ('". implode("','", $to_insert) ."') AND p.`publish_visibility` = :publish_visibility AND t.`tag_id` IS NULL"
+                , 'ssis'
+                , array(
+                    ':type' => 'product'
+                    , ':value' => self::ASHLEY_EXPRESS_FLAG
+                    , ':user_id_created' => self::USER_ID
+                    , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+                )
+            )->query();
+        }
 
     }
 

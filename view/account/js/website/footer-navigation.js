@@ -1,44 +1,56 @@
-// When the page has loaded
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    $('#navigation-menu-list').sortable({
-        update: function() {},
-        placeholder: 'menu-item-placeholder'
-    }).on( 'click', 'a.delete-item', function() {
-        if( confirm( $(this).attr('data-confirm') ) )
-            $(this).parents('.menu-item:first').remove();
-    });
+var Navigation = {
 
-    $('#add-menu-item').click( function(e) {
-        e.preventDefault();
+    template: null
 
-        var navigationBox = $('#dAddEditNavigation'), menuItemName = $('#menu-item-name'), clone = $('#dMenuItem').clone(), url = $('#' + navigationBox.find('input[name="menu-link"]:checked').val()).val();
+    , init: function() {
+        $('#navigation').nestable( {
+            maxDepth: 1
+        }).on( 'change', Navigation.updateTree ).change();
 
-        displayUrl = ( -1 == url.indexOf('http') ) ? '/' + url + '/' : url;
+        $('#save-menu-item').click( Navigation.create );
+        $('#navigation').on( 'click', '.delete', Navigation.deleteItem );
+        $('#link-select').change( Navigation.setLink );
+        $('#link').keyup( Navigation.resetLinkSelect );
 
-        if ( '//' == displayUrl )
-            displayUrl = '/';
+        Navigation.template = $('#item-template').clone().removeClass('hidden').removeAttr('id');
+        $('#item-template').parents('ul').remove();
+    }
 
-        clone
-            .find('h4:first').text( menuItemName.val() ).end()
-            .find('a.url:first').text( displayUrl ).end()
-            .removeAttr('id')
-            .append('<input type="hidden" name="footer-navigation[]" value="' + url + '|' + menuItemName.val() + '">')
-            .appendTo( $('#navigation-menu-list') );
+    , create: function() {
 
-        $('.close:visible').click();
+        Navigation.template.clone()
+            .find('.dd3-content').prepend( $('#name').val() ).end()
+            .find('.page-url').prepend( $('#link').val() ).end()
+            .find('input').attr( 'name', 'footer-navigation[' + (new Date()).getTime() + ']').val( $('#link').val() + '|' +  $('#name').val() ).end()
+            .appendTo('#navigation > .dd-list');
 
-        menuItemName.val('');
-        navigationBox.find('input[name="menu-link"]:first').click();
-        $('#menu-url').val('');
-        $('#menu-page option:first').attr( 'selected', true );
-    });
+        $('#name').val( '' );
+        $('#link').val( '' );
+        $('#link-select').val( '' );
+        $('#add-menu-item').modal('hide');
+    }
 
-    // Make sure the right one is selected
-    $('#menu-url').keyup( function() {
-        $('#dAddEditNavigation input[name="menu-link"]:first').click();
-    });
+    , deleteItem: function() {
+        $(this).parents('.dd-item:first').remove();
+        $('#navigation').change();
+    }
 
-    $('#menu-page').change( function() {
-        $('#dAddEditNavigation input[name="menu-link"]:last').click();
-    });
-});
+    , setLink: function() {
+        if ( $(this).val() != '' ) {
+            $('#link').val( $(this).val() );
+        }
+    }
+
+    , resetLinkSelect: function() {
+        if ( $(this).val() != '' ) {
+            $('#link-select').val( '' );
+        }
+    }
+
+    , updateTree: function(e){
+        $('#tree').val( JSON.stringify( $(e.target).nestable('serialize') ) );
+    }
+
+}
+
+jQuery( Navigation.init );

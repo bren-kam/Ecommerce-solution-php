@@ -1,29 +1,24 @@
-<?php
-/**
- * @package Grey Suit Retail
- * @page Shopping Cart - List Orders
- *
- * Declare the variables we have available from other sources
- * @var Resources $resources
- * @var Template $template
- * @var User $user
- */
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Orders
+            </header>
 
-echo $template->start( _('Orders'), '../sidebar' );
-?>
+            <div class="panel-body">
 
-<table ajax="/shopping-cart/orders/list-orders/" perPage="30,50,100" sort="1">
-    <thead>
-        <tr>
-            <th width="15%" sort="1 desc"><?php echo _('Order Number'); ?></th>
-            <th width="20%"><?php echo _('Name'); ?></th>
-            <th width="20%"><?php echo _('Price'); ?></th>
-            <th width="20%"><?php echo _('Status'); ?></th>
-            <th width="25%"><?php echo _('Date'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-
-<?php echo $template->end(); ?>
+                <div class="adv-table">
+                    <table class="display table table-bordered table-striped" ajax="/shopping-cart/orders/list-orders/" perPage="30,50,100">
+                        <thead>
+                            <th sort="1 desc">Order Number</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

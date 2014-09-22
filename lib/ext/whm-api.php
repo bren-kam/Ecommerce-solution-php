@@ -8,40 +8,12 @@
  */
 class WHM_API {
     /**
-	 * Constant paths to include files
+	 * Endpoint configuration
 	 */
-	const URL_API = 'https://199.79.48.137:2087/json-api/';
-	const DEBUG = false;
-    const USERNAME = 'root';
-    const HASH = '9943eb7e9b6bfa89d7ddea127cdb0b6a
-493a235756c165c95f009d1256aa66a2
-89f9cb5ac3d47cdc326c6f44b921918a
-3c606a91c08715af6903dc3625192ac2
-52778a5c4e6c08a2e81e2e91df1a9169
-2950db9b6be4cee7c81022a530e5033f
-beccd34cd80db9c5c9a3931a3a574986
-94c67ef677908feeaa062fe95b9795f7
-98a79efee3afa8ddcff8319f552f63ba
-aa055b0f1af87a3f11f8bb49e3703fbd
-f66469c6b1f5ab56f8ccbc83206b2de4
-85412c9dd23fa8ae6237cfdfb2991f14
-010b1ade0436a3e058a3b375b593826b
-563966df1dbc50f4f00b4e55483a2cc7
-c856e7110145d0a7d4afe0380a63fc30
-a8add9eae50d38cd428f3d765adb3e6a
-2bcfe70caff0174418e8fc4314581831
-7b21bf086bc769eb1d0b07015abf171d
-e83e1e3d1c3fe57a68be4baabf4c8e6c
-b9625d900559c72003c557f931d0643b
-8fb9448f1b0cde9f0c80550f94135558
-d6d041ffd56a3369f493556895548372
-c2377908426a7a215b3ff13ba8453493
-609555163237e1b714d34f3cb87fbf89
-d2d1eea3b3e14b0eea236a336800777b
-8a3d4497e453b665a39165085e35c6c3
-6549cdd220216be2627ec41601a2d89f
-44e96947c379d9ded9303fd4482cc3cc
-e530ebbdf4dacc8e383b51e1d3009c5d';
+    protected $debug = false;
+    protected $username = 'root';
+    protected $url_api;
+    protected $hash;
 
     /**
 	 * A few variables that will determine the basic status
@@ -54,6 +26,16 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
 	protected $response = NULL;
     protected $error = NULL;
 	protected $params = array();
+
+    /**
+     * Constructor
+     *
+     * @param Server $server Where we are connecting to
+     */
+    public function __construct( Server $server ) {
+        $this->url_api = "https://{$server->ip}:2087/json-api/";
+        $this->hash = $server->whm_hash;
+    }
 	
 	/**************************/
 	/* Start: WHM API Methods */
@@ -218,14 +200,14 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
 	 */
 	protected function _execute( $method, $params = array() ) {
         // Authorization
-		$header[0] = "Authorization: WHM " . self::USERNAME . ':'  . preg_replace( "'(\r|\n)'", "", self::HASH );
+		$header[0] = "Authorization: WHM " . $this->username . ':'  . preg_replace( "'(\r|\n)'", "", $this->hash );
 
         // Set Request Parameters
 		$this->request = $params;
         $this->raw_request = http_build_query( $this->request );
 
         // Set URL
-        $url = self::URL_API . "$method";
+        $url = $this->url_api . "$method";
 
         if ( count( $this->request ) > 0 )
             $url .= '?' . $this->raw_request;
@@ -264,7 +246,7 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
 		$this->error = ( $this->success ) ? NULL : true;
 		
         // If we're debugging lets give as much info as possible
-        if ( self::DEBUG ) {
+        if ( $this->debug ) {
             echo "<h1>URL</h1>\n<p>", $url, "</p>\n<hr />\n<br /><br />\n";
             echo "<h1>Raw Request</h1>\n<pre>", $this->raw_request, "</pre>\n<hr />\n<br /><br />\n";
             echo "<h1>Request</h1>\n\n<pre>", var_export( $this->request, true ), "</pre>\n<hr />\n<br /><br />\n";

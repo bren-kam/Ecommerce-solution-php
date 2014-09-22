@@ -1,7 +1,7 @@
 <?php
 class Company extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $company_id, $name, $domain, $email, $date_created;
+    public $id, $company_id, $name, $domain, $email, $less, $css, $date_created;
 
     /**
      * Setup the account initial data
@@ -20,7 +20,7 @@ class Company extends ActiveRecordBase {
      * @param int $company_id
      */
     public function get( $company_id ) {
-        $this->prepare( 'SELECT `company_id`, `name`, `domain`, `email` FROM `companies` WHERE `company_id` = :company_id', 'i', array( ':company_id' => $company_id ) )->get_row( PDO::FETCH_INTO, $this );
+        $this->prepare( 'SELECT `company_id`, `name`, `domain`, `email`, `less`, `css` FROM `companies` WHERE `company_id` = :company_id', 'i', array( ':company_id' => $company_id ) )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->company_id;
     }
@@ -61,7 +61,9 @@ class Company extends ActiveRecordBase {
             'name' => strip_tags($this->name)
             , 'domain' => strip_tags($this->domain)
             , 'email' => strip_tags($this->email)
-        ), array( 'company_id' => $this->id ), 'sss', 'i' );
+            , 'less' => $this->less
+            , 'css' => $this->css
+        ), array( 'company_id' => $this->id ), 'sssss', 'i' );
     }
 
     /**
@@ -101,4 +103,14 @@ class Company extends ActiveRecordBase {
 
 		return $count;
 	}
+
+    /**
+     * Get Current Company
+     * @return Company
+     */
+    public static function get_current_company() {
+        $company = new Company();
+        $company->get( COMPANY_ID );
+        return $company;
+    }
 }

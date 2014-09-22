@@ -13,112 +13,107 @@
  * @var string $validation
  * @var string $errs
  */
-
-$confirm_delete = _('Are you sure you want to delete this item? This cannot be undone.');
-
-if ( $product_option->id ) {
-    $title = _('Edit Product Option');
-} else {
-    $title = _('Add Product Option');
-}
-
-echo $template->start( $title, '../sidebar' );
 ?>
 
-<div class="screen<?php if ( $product_option->id ) echo ' hidden'; ?>" id="choose">
-    <div class="box">
-        <h2><?php echo _('Drop Down List'); ?></h2>
-        <img src="/images/icons/product-options/drop-down-list.png" width="73" height="73" alt="" align="left" />
-        <p><?php echo _('This is an option that can be added to a product where the user would be able to select one of multiple options. Examples are Colors and Sizes.'); ?></p>
-        <p><a href="#" class="button screen" rel="drop-down-list" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
-    </div>
-    <div class="box">
-        <h2><?php echo _('Checkbox'); ?></h2>
-        <img src="/images/icons/product-options/checkbox.png" width="69" height="69" alt="" align="left" />
-        <p><?php echo _('This is an option that can be added to a product for a yes/no type question. Example: Insurance.'); ?></p>
-        <p><a href="#" class="button screen" rel="checkbox" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
-    </div>
-    <?php /*
-    <div class="box last">
-        <h2><?php echo _('Text'); ?></h2>
-        <img src="/images/icons/product-options/text.png" width="68" height="68" alt="" align="left" />
-        <p><?php echo _('This is an option that can be added if you want to give the user the ability to provide you with some information.'); ?></p>
-        <p><a href="#" class="button screen" rel="text" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
-    </div>
-    */?>
 
-    <br clear="left" />
+<div class="row-fluid state-overview">
+    <div class="col-lg-4 col-sm-6">
+        <section class="panel">
+            <div class="symbol terques">
+                <a href="#drop-down-list" class="switch-form">
+                    <i class="fa fa-th-list"></i>
+                </a>
+            </div>
+            <div class="value">
+                <p>On this option users would select one of multiple options, like Colors and Sizes</p>
+            </div>
+        </section>
+    </div>
+    <div class="col-lg-4 col-sm-6">
+        <section class="panel">
+            <div class="symbol terques">
+                <a href="#checkbox" class="switch-form">
+                    <i class="fa fa-check-square-o"></i>
+                </a>
+            </div>
+            <div class="value">
+                <p>On this option the user would response a yes/no type question, like Insurance.</p>
+            </div>
+        </section>
+    </div>
 </div>
-<div class="screen<?php if ( 'select' != $product_option->type ) echo ' hidden'; ?>" id="drop-down-list">
-    <p><a href="#" class="screen" title="<?php echo _('Back'); ?>" rel="choose">&laquo; <?php echo _('Back'); ?></a></p>
-    <h3><?php echo _('Drop Down List'); ?></h3>
-    <br />
-    <?php
-    if ( $errs )
-        echo '<p class="red">' . $errs . '</p><br />';
-    ?>
-    <form name="fAddEditDropDownList" action="" method="post">
-        <table>
-            <tr>
-                <td><label for="tDropDownListTitle"><?php echo _('Title'); ?></label> <span class="red">*</span>:</td>
-                <td><input type="text" class="tb" name="tDropDownListTitle" id="tDropDownListTitle" value="<?php echo ( isset( $_POST['tDropDownListTitle'] ) || !$product_option->id ) ? $template->v('tDropDownListTitle') : $product_option->title; ?>" maxlength="50" /></td>
-            </tr>
-            <tr>
-                <td><label for="tDropDownListName"><?php echo _('Name'); ?></label> <span class="red">*</span>:</td>
-                <td><input type="text" class="tb" name="tDropDownListName" id="tDropDownListName" value="<?php echo ( isset( $_POST['tDropDownListName'] ) || !$product_option->id ) ? $template->v('tDropDownListName') : $product_option->name; ?>" maxlength="200" /></td>
-            </tr>
-            <tr>
-                <td><strong><?php echo _('Items'); ?></strong></td>
-                <td>
-                    <input type="text" class="tb" id="list-item-value" placeholder="<?php echo _('Item Name'); ?>" />
-                    <a href="#" id="add-list-item" title="<?php echo _('Add Item'); ?>"><?php echo _('Add Item...'); ?></a>
-                    <br />
-                    <div id="items-list">
-                        <?php
-                        /**
-                         * @var ProductOptionListItem $product_option_list_item
-                         */
-                        if ( is_array( $product_option_list_items ) )
-                        foreach ( $product_option_list_items as $product_option_list_item ) {
-                        ?>
-                            <div class="list-item">
-                                <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
-                                <input type="text" class="tb" name="list-items[poli<?php echo $product_option_list_item->id; ?>]" value="<?php echo $product_option_list_item->value; ?>" />
 
-                                <a href="#" class="delete-list-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirm_delete; ?>"><img src="/images/icons/x.png" alt="<?php echo _('Delete'); ?>" width="15" height="17" /></a>
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <?php echo $product_option->id ? 'Edit' : 'Add' ?> Product Option <span id="form-type"></span>
+            </header>
+
+            <div class="panel-body">
+
+                <!-- Dropdown List Form -->
+                <div id="drop-down-list" class="switchable-form <?php if ( empty( $product_option->id ) ||$product_option->type != 'select' ) echo ' hidden' ?>">
+
+                    <form id="fAddEditDropDownList" method="post" role="form">
+
+                        <div class="form-group">
+                            <label for="tDropDownListTitle">Title:*</label>
+                            <input type="text" class="form-control" name="tDropDownListTitle" id="tDropDownListTitle" value="<?php echo ( isset( $_POST['tDropDownListTitle'] ) || !$product_option->id ) ? $template->v('tDropDownListTitle') : $product_option->title; ?>" maxlength="50" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tDropDownListName">Name:*</label>
+                            <input type="text" class="form-control" name="tDropDownListName" id="tDropDownListName" value="<?php echo ( isset( $_POST['tDropDownListName'] ) || !$product_option->id ) ? $template->v('tDropDownListName') : $product_option->name; ?>" maxlength="200" /></td>
+                        </div>
+
+                        <div class="form-group" id="product-option-item-list">
+                            <div class="input-group">
+                                <label for="tItem">Items</label>
+                                <input type="text" class="form-control" id="tItem" placeholder="Add new item" />
+                            <span class="input-group-btn">
+                                <button type="button" id="add-item" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                            </span>
                             </div>
-                        <?php } ?>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="submit" class="button" value="<?php echo $button; ?>" /></td>
-            </tr>
-        </table>
-        <input type="hidden" name="hType" value="drop-down-list" />
-        <?php nonce::field('add_edit'); ?>
-    </form>
-    <?php echo $validation; ?>
-</div>
-<div class="screen<?php if ( 'checkbox' != $product_option->type ) echo ' hidden'; ?>" id="checkbox">
-    <p><a href="#" class="screen" title="<?php echo _('Back'); ?>" rel="choose">&laquo; <?php echo _('Back'); ?></a></p>
-    <h3><?php echo _('Checkbox'); ?></h3>
-    <br />
-    <?php echo $forms['checkbox']; ?>
-</div>
-<div class="screen<?php if ( 'text' != $product_option->type && 'textarea' != $product_option->type ) echo ' hidden'; ?>" id="text">
-    <p><a href="#" class="screen" title="<?php echo _('Back'); ?>" rel="choose">&laquo; <?php echo _('Back'); ?></a></p>
-    <h3><?php echo _('Text'); ?></h3>
-    <br />
-    <?php echo $forms['text']; ?>
+
+                            <?php
+                            if ( is_array( $product_option_list_items ) )
+                                foreach ( $product_option_list_items as $product_option_list_item ):
+                            ?>
+                                    <div class="input-group product-option-item">
+                                        <input type="text" class="form-control" name="list-items[poli<?php echo $product_option_list_item->id; ?>]" value="<?php echo $product_option_list_item->value; ?>" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-danger delete-product-option-item"><i class="fa fa-trash-o"></i></button>
+                                </span>
+                                    </div>
+                          <?php endforeach; ?>
+
+                        </div>
+
+                        <input type="hidden" name="hType" value="drop-down-list" />
+                        <?php nonce::field('add_edit'); ?>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+
+                    </form>
+                    <?php echo $validation; ?>
+
+                </div>
+
+                <!-- Checkbox Form -->
+                <div id="checkbox" class="switchable-form <?php if ( empty( $product_option->id ) || $product_option->type != 'checkbox' ) echo ' hidden' ?>">
+                    <?php echo $forms['checkbox']; ?>
+                </div>
+
+
+            </div>
+        </section>
+    </div>
 </div>
 
-<div class="list-item hidden" id="list-item-template">
-    <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
-    <input type="text" class="tb" name="list-items[]" />
-
-    <a href="#" class="delete-list-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirm_delete; ?>"><img src="/images/icons/x.png" alt="<?php echo _('Delete'); ?>" width="15" height="17" /></a>
+<div class="input-group product-option-item hidden" id="product-option-item-template">
+    <input type="text" class="form-control" name="list-items[]" />
+    <span class="input-group-btn">
+        <button type="button" id="add-item" class="btn btn-danger delete-product-option-item"><i class="fa fa-trash-o"></i></button>
+    </span>
 </div>
-
-<?php echo $template->end(); ?>

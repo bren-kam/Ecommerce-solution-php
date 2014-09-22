@@ -24,7 +24,7 @@ class CompaniesController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->kb( 9 )
-            ->select( 'companies', 'view' );
+            ->select( 'companies', 'companies/index' );
     }
 
     /**
@@ -45,7 +45,7 @@ class CompaniesController extends BaseController {
             $company->get( $company_id );
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditCompany' );
+        $ft = new BootstrapForm( 'fAddEditCompany' );
 
         $ft->submit( ( $company_id ) ? _('Save') : _('Add') );
 
@@ -81,7 +81,7 @@ class CompaniesController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 10 )
-            ->select( 'companies', 'add' )
+            ->select( 'companies', 'companies/add' )
             ->set( 'form', $ft->generate_form() )
             ->add_title( ( $company_id ) ? _('Edit') : _('Add') );
     }
@@ -119,7 +119,7 @@ class CompaniesController extends BaseController {
             $date = new DateTime( $company->date_created );
 
             $data[] = array(
-                '<a href="/accounts/companies/add-edit/?cid=' . $company->id . '" title="' . _('Edit Company') . '">' . $company->name . '</a>'
+                '<a href="/accounts/companies/add-edit/?cid=' . $company->id . '" title="' . _('Edit Company') . '">' . $company->name . '</a><br><small><a href="/accounts/companies/less/?cid='. $company->id .'">Edit LESS</a></small>'
                 , $company->domain
                 , $date->format( 'F jS, Y' )
             );
@@ -129,5 +129,58 @@ class CompaniesController extends BaseController {
         $dt->set_data( $data );
 
         return $dt;
+    }
+
+    /**
+     * LESS
+     * @return RedirectResponse|TemplateResponse
+     */
+    function less() {
+        $company = new Company();
+        $company->get( $_GET['cid'] );
+
+        if ( !$company->id )
+            return new RedirectResponse( '/' );
+
+        $this->resources
+            ->css('accounts/companies/less')
+            ->javascript('accounts/companies/less')
+            ->javascript_url( Config::resource('ace-js') );
+
+        return $this->get_template_response( 'less' )
+            ->set( compact( 'company') );
+    }
+
+    /**
+     * Save LESS
+     * @return AjaxResponse|RedirectResponse
+     */
+    function save_less() {
+        $response = new AjaxResponse( $this->verified() );
+        if ( $response->has_error() )
+            return $response;
+
+        $company = new Company();
+        $company->get( $_GET['cid'] );
+
+        $response->check( $company->id, 'No company specified ' );
+        if ( $response->has_error() )
+            return $response;
+
+        library('lessc.inc');
+        $less = new lessc;
+        $less->setFormatter("compressed");
+
+        try {
+            $css = $less->compile( $_POST['less'] );
+            $company->less = $_POST['less'];
+            $company->css = $css;
+            $company->save();
+            $response->notify( "LESS saved for {$company->name}!" );
+        } catch (exception $e) {
+            $response->notify( 'Error: ' . $e->getMessage(), false );
+        }
+
+        return $response;
     }
 }

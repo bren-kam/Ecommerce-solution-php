@@ -11,21 +11,38 @@
  * @var string $js_validation
  */
 
-echo $template->start( _('Catalog Dump') );
-
-if ( !empty( $errs ) )
-    echo "<p class='red'>$errs</p>";
-?>
-<p><?php echo _('NOTE: This will add <em>every</em> item in a selected brand into your product catalog.'); ?></p>
-<p><input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" placeholder="<?php echo _('Enter Brand'); ?>..." /></p>
-<form action="/products/catalog-dump/" method="post" name="fCatalogDump">
-    <p><input type="submit" class="button" value="<?php echo _('Dump Brand'); ?>" /></p>
-    <input type="hidden" id="hBrandID" name="hBrandID" />
-    <?php nonce::field('catalog_dump'); ?>
-</form>
-<?php
-echo $js_validation;
 nonce::field( 'autocomplete', '_autocomplete' );
-
-echo $template->end();
 ?>
+
+<div class="row-fluid">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                Catalog Dump
+            </header>
+
+            <div class="panel-body">
+
+                <p>NOTE: This will add <em>every</em> item in a selected brand into your product catalog.</p>
+
+                <form method="post" role="form">
+                    <div class="form-group">
+                        <label for="brand">Brand:</label>
+                        <select name="hBrandID" class="form-control">
+                            <option>-- Select a Brand --</option>
+                            <?php foreach ( $brands as $brand ): ?>
+                                <option value="<?php echo $brand->id ?>"><?php echo $brand->name ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <p>
+                        <?php nonce::field( 'catalog_dump' ) ?>
+                        <button type="submit" class="btn btn-primary">Dump Brand</button>
+                    </p>
+                </form>
+            </div>
+
+        </section>
+    </div>
+</div>

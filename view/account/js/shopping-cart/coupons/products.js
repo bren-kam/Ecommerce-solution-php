@@ -1,7 +1,7 @@
 // When the page has loaded
 jQuery(function($) {
 
-    $('#sCoupon').change( function() {
+    $('#coupon').change( function() {
         $.post( '/shopping-cart/coupons/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'coupons', 'wcid' ], value : $(this).val() }, endStoreSession );
     }).change();
 

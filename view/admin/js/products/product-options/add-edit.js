@@ -1,49 +1,56 @@
-// When the page has loaded
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    // Change Screens
-    $('#subcontent a.screen').click( function() {
-        $('#subcontent div.screen').hide();
-        $('#' + $(this).attr('rel')).show();
-    });
+ProductOptionEditor = {
 
-    // Make attributes sortable
-	$("#items-list").sortable({
-        forcePlaceholderSize : true
-        , placeholder: 'list-item-placeholder'
-    });
+    template: null
 
-    // The 'Add List Item' link
-	$('#add-list-item').click( function() {
-		var listItemValue = $('#list-item-value'), itemNames = listItemValue.val().split(','), listItemTemplate = $('#list-item-template'), itemsList = $('#items-list');
+    , init: function() {
 
-		for ( var i in itemNames ) {
-			var itemName = itemNames[i];
+        // Template
+        ProductOptionEditor.template = $('#product-option-item-template').clone();
+        ProductOptionEditor.template.removeClass('hidden').removeAttr('id');
+        $('#product-option-item-template').remove();
 
-			// If they entered nothing, do nothing
-			if ( !itemName.length )
-				return;
+        // Events For Product Option Dropdown Items
+        $('#add-item').click( ProductOptionEditor.add );
+        $('body').on( 'click', '.delete-product-option-item', ProductOptionEditor.remove );
 
-			// Start creating new div
-			var newListItem = listItemTemplate
-                .clone()
-                .removeClass('hidden')
-                .removeAttr('id');
+        $('.switch-form').click( ProductOptionEditor.show );
+        $('.switchable-form.hidden').removeClass('hidden').hide();
+    }
 
-            newListItem.find('input:first').val( itemName );
+    , show: function(e) {
+        e.preventDefault();
 
-			// Append it
-			itemsList.append( newListItem );
-		}
+        var target = $(this).attr('href');
+        var title = '- ' + target.replace( /-/g, ' ' ).substring( 1 );
 
-		// Reset to default values
-        listItemValue.val('').trigger('blur');
-	});
+        $('.switchable-form').hide();
+        $( target ).show();
 
-    /**
-     * Delete an item from the list
-     */
-    $('#items-list').on( 'click', 'a.delete-list-item', function() {
-        if ( confirm( $(this).attr('confirm') ) )
-            $(this).parent().remove();
-    });
-});
+        $('#form-type').text( title );
+    }
+
+    , add: function(e) {
+        if (e) e.preventDefault();
+
+        var item = $('#tItem');
+        var itemsList = $('#product-option-item-list');
+
+        if ( item.val() == '')
+            return;
+
+        ProductOptionEditor.template
+            .clone()
+            .find( 'input:first' ).val( item.val() ).end()
+            .appendTo( itemsList );
+
+        item.val('').trigger('blur');
+    }
+
+    , remove: function(e) {
+        if (e) e.preventDefault();
+
+        $(this).parents('.product-option-item:first').remove();
+    }
+}
+
+jQuery( ProductOptionEditor.init );
