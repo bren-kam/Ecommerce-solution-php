@@ -222,6 +222,17 @@ class PipeController extends BaseController {
         $subject = $email['Headers']['subject:'];
         $from = $email['ExtractedAddresses']['from:'][0];
         $to = preg_replace( '/.+for ([^;]+).+/', '$1', $email['Headers']['received:'] );
+
+        // if Headers Received is array, $to is an array too, we have to get the email from there
+        if ( is_array( $to ) ) {
+            foreach ( $to as $t ) {
+                if ( stripos( $t, 'notes' ) !== false ) {
+                    $to = $t;
+                    break;
+                }
+            }
+        }
+
         list( $username, $domain ) = explode ( '@', $to );
         list ( $username, $tag_domain ) = explode( '+', $username );
 
