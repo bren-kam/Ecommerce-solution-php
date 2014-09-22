@@ -172,4 +172,57 @@ class TestController extends BaseController {
         return new HtmlResponse( 'Finished' );
     }
 
+    protected function route53_spf() {
+
+        library('r53');
+        $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
+
+        $marker = null;
+        do {
+            $response = $r53->listHostedZones( $marker, 100 );
+            $hosted_zones = $response['HostedZone'];
+            $marker = $hosted_zones['NextMarker'];
+
+            foreach ( $hosted_zones as $zone ) {
+
+                $zone_id = $zone['Id'];
+                $records_result = $r53->listResourceRecordSets( $zone_id  );
+                $dns_changes = array();
+
+                echo $zone['Name'].'<br>';
+
+                foreach ( $records_result['ResourceRecordSets'] as $record ) {
+
+                    if ( $record['Type'] == 'TXT' ) {
+                        foreach( $record['ResourceRecords'] as $rr_key => $rr_value ) {
+                            if ( stripos($rr_value, 'spf') !== FALSE ) {
+                                echo $record['ResourceRecords'][$rr_key] . "<br>" . '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"<br>';
+                                $record['ResourceRecords'][$rr_key] = '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"';
+                                $dns_changes[] = $r53->prepareChange( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  );
+                            }
+                        }
+                    }
+                }
+
+                if ( !empty( $dns_changes ) ) {
+                    echo "...running " . count($dns_changes) . " changes from {$zone['Name']}...";
+                    $change_result = array(); // $r53->changeResourceRecordSets( $zone_id, $dns_changes, 'gsr/route53-spf-update ' . date('Y-m-d H:i:s') );
+                    echo json_encode( $change_result ) . "<hr />";
+                } else {
+                    echo "No matching records found for {$zone['Name']}<hr />";
+                }
+
+            }
+
+        } while ( $response['IsTruncated'] );
+
+        die('Finished!');
+
+    }
+
+    public function butler() {
+        $butler = new ButlerFeedGateway();
+        $butler->run();
+    }
+
 }
