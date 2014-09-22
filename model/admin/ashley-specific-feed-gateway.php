@@ -1498,6 +1498,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( $new_product || empty( $product->slug ) ) {
                 $product->name = $name;
                 $product->slug = str_replace( '---', '-', format::slug( $name ) );
+
+                // Check if slug already exists
+                $duplicated_slug = new Product();
+                $duplicated_slug->get_by_slug( $product->slug );
+                // If slug exists, append random number and check again
+                while ( $duplicated_slug->id != null ) {
+                    $product->slug = str_replace( '---', '-', format::slug( $name ) ) . '-' . rand( 1000, 9999 );
+                    $duplicated_slug = new Product();
+                    $duplicated_slug->get_by_slug( $product->slug );
+                }
             }
 
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
@@ -1621,53 +1631,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 
         return $new_product;
-
-    }
-
-    /**
-     * Set Bulk Ashley Express
-     * @param array $products key=SKU value=boolean
-     */
-    private function set_bulk_ashley_express( $products ) {
-        $to_insert = $to_remove = array();
-        foreach ( $products as $sku => $ashley_express_flag ) {
-            if ( $ashley_express_flag )
-                $to_insert[] = $sku;
-            else {
-                $to_remove[] = $sku;
-            }
-        }
-        if ( !empty( $to_remove ) ) {
-            $this->prepare("
-                    DELETE t
-                    FROM `tags` t
-                    INNER JOIN `products` p ON ( t.`object_id` = p.`product_id` )
-                    WHERE  p.`user_id_created` = :user_id_created AND p.`sku` IN ('". implode("','", $to_remove) ."') AND t.`type` = :type  AND t.`value` = :value"
-                , 'iss'
-                , array(
-                    ':user_id_created' => self::USER_ID
-                    , ':type' => 'product'
-                    , ':value' => self::ASHLEY_EXPRESS_FLAG
-                )
-            )->query();
-        }
-
-        if ( !empty( $to_insert ) ) {
-            $this->prepare("
-                INSERT INTO tags(`object_id`, `type`, `value`)
-                SELECT p.`product_id`, 'product', 'ashley-express'
-                FROM `products` p
-                LEFT JOIN `tags` t ON ( t.`type` = :type AND t.`object_id` = p.`product_id` AND t.`value` = :value )
-                WHERE  p.`user_id_created` = :user_id_created AND p.`sku` IN ('". implode("','", $to_insert) ."') AND p.`publish_visibility` = :publish_visibility AND t.`tag_id` IS NULL"
-                , 'ssis'
-                , array(
-                    ':type' => 'product'
-                    , ':value' => self::ASHLEY_EXPRESS_FLAG
-                    , ':user_id_created' => self::USER_ID
-                    , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
-                )
-            )->query();
-        }
 
     }
 
