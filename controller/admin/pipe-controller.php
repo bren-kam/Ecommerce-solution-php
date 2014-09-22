@@ -236,6 +236,8 @@ class PipeController extends BaseController {
         list( $username, $domain ) = explode ( '@', $to );
         list ( $username, $tag_domain ) = explode( '+', $username );
 
+        fn::mail('gabriel@greysuitretail.com', 'Note PIPE', json_encode(array("from" => $from, "to" => $to, "subject" => $subject, "username" => $username, "domain" => $domain, "tag_domain" => $tag_domain)));
+
         $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
         $length = strpos( $body, '>> ' );
         $body = ( $length ) ? substr( $body, 0, $length ) : substr( $body, 0 );
