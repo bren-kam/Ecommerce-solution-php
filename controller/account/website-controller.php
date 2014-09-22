@@ -693,7 +693,7 @@ class WebsiteController extends BaseController {
         }
         if ( $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link', 'sm-instagram-link' )
+                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link', 'sm-instagram-link', 'price-decimals' )
             );
         }
 
@@ -807,6 +807,9 @@ class WebsiteController extends BaseController {
             ->add_validation( 'url', _('The "Logo Link" must be a valid link') );
 
         $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
+
+        $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] )
+            ->add_validation( 'gt=0', '"Product Price Max. Decimals" must be greater than 0' );
 
         if ( $form->posted() ) {
             $new_settings = array();
