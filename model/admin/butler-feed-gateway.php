@@ -135,6 +135,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
     }
 
     public function run() {
+        set_time_limit( 3600 );
 
         $current_product_list = $this->get_current_products();
         $feed_product_list = $this->get_feed();
