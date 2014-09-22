@@ -15,7 +15,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
     const IMAGE_URL = 'http://supercat.supercatsolutions.com/data/14/image/';
 
     const BRAND_ID = 120;
-    const USER_ID = 1;
+    const USER_ID = 2605;
 
     private $category_map = array(
         'AT' => 'Tables > Accent Tables',
@@ -155,6 +155,7 @@ class ButlerFeedGateway extends ActiveRecordBase {
                 $product->website_id = 0;  // Global Product
                 $product->user_id_created = self::USER_ID;
                 $product->publish_visibility = 'private';
+                $product->status = 'in-stock';
                 $product->create();
 
                 echo "Trying with Image " . self::IMAGE_URL . $feed_product->image_file_name . " <br>";
@@ -171,7 +172,19 @@ class ButlerFeedGateway extends ActiveRecordBase {
 
             $product->sku = $feed_product->item_number;
             $product->name = ucwords( strtolower ( $feed_product->plist_description ) );
+
             $product->slug = format::slug( $product->name );
+
+            // Check if slug already exists
+            $duplicated_slug = new Product();
+            $duplicated_slug->get_by_slug( $product->slug );
+            // If slug exists, append random number and check again
+            while ( $duplicated_slug->id != null ) {
+                $product->slug = str_replace( '---', '-', format::slug( $product->name ) ) . '-' . rand( 1000, 9999 );
+                $duplicated_slug = new Product();
+                $duplicated_slug->get_by_slug( $product->slug );
+            }
+
             $product->description = "<p>{$feed_product->story}</p>";
 
             $product->brand_id = self::BRAND_ID;
