@@ -50,6 +50,7 @@ var ProductForm = {
         // Page's products sortable
         $("#product-list").sortable( {
             scroll: true,
+            cancel: "h4,p",
             placeholder: 'product-placeholder'
         });
     }
