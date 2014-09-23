@@ -132,7 +132,7 @@ class CustomizeController extends BaseController {
 
         return $this->get_template_response('favicon')
             ->select('customize', 'favico')
-            ->set('favicon', $favicon)
+            ->set(compact('favicon', 'account'))
             ->add_title(_('Favicon'));
     }
 
@@ -268,6 +268,8 @@ class CustomizeController extends BaseController {
         $account_file->website_id = $account->id;
         $account_file->file_path = $file_url;
         $account_file->create();
+
+        $account->set_settings( array( 'favicon' => $file_url ) );
 
         $response->add_response( 'refresh', true );
 

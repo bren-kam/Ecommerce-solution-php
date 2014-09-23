@@ -45,6 +45,11 @@ var TicketCommentForm = {
 
         if ( textarea.val() == '' ) {
             textarea.attr( 'rows', '3' );
+            // Textarea Autogrowth
+            textarea.keyup( function() {
+                var lines = $(this).val().split('\n').length;
+                textarea.attr( 'rows', lines > 3 ? lines : 3 );
+            } );
             $('#add-comment-form .hide-on-blur').show();
         }
     }
@@ -54,6 +59,7 @@ var TicketCommentForm = {
 
         if ( textarea.val() == '' ) {
             textarea.attr( 'rows', '1' );
+            textarea.unbind( 'keydown' );
             $('#add-comment-form .hide-on-blur').hide();
         }
     }
