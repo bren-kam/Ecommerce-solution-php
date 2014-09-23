@@ -30,6 +30,8 @@ $statuses = array(
     WebsiteReach::STATUS_CLOSED => _('Closed')
 );
 
+$reach->get_info();
+
 ?>
 
 <div class="row-fluid">
@@ -91,6 +93,11 @@ $statuses = array(
                         </div>
                     </div>
                 </div>
+
+                <?php if ( $reach->info['SKU'] ): ?>
+                    <h4>Product - Information</h4>
+                    <p><?php echo "Brand: " . $reach->info['Brand'] . ' <br> Product: ' . $reach->info['SKU'] . ' - ' . $reach->info['Product'] . ' <br> Location: ' . $reach->info['Location'] ?></p>
+                <?php endif; ?>
 
                 <?php if ( $reach->message ): ?>
                     <h4>Message:</h4>

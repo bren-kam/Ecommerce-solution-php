@@ -47,6 +47,12 @@ var ProductForm = {
         // Remove Product
         $( '#product-list' ).on( 'click', '.remove', ProductForm.removeProduct );
 
+        // Page's products sortable
+        $("#product-list").sortable( {
+            scroll: true,
+            cancel: "h4,p",
+            placeholder: 'product-placeholder'
+        });
     }
     , setupAutocomplete: function() {
 

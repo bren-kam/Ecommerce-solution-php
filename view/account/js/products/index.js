@@ -102,6 +102,9 @@ var ProductSearch = {
             var block_nonce = $('#_block').val();
             var category_image_nonce = $('#_set_category_image').val();
 
+            var category_id = $('[name=cid]').val();
+            var is_category_selected = category_id > 0;
+
             $('#product-list').empty();
             for ( i in response.products ) {
                 product = response.products[i];
@@ -118,7 +121,7 @@ var ProductSearch = {
                     .find( '.remove' ).attr( 'href', '/products/remove/?_nonce=' + remove_nonce + '&pid=' + product.product_id ).end()
                     .find( '.edit' ).attr( 'href', '/products/edit/?_nonce=' + edit_nonce + '&pid=' + product.product_id ).end()
                     .find( '.block' ).attr( 'href', '/products/block/?_nonce=' + block_nonce + '&pid=' + product.product_id ).end()
-                    .find( '.set-category-image' ).attr( 'href', '/products/set-category-image/?_nonce=' + category_image_nonce + '&cid=' + product.category_id + '&i=' + encodeURIComponent(product.image_url) ).end()
+                    .find( '.set-category-image' ).attr( 'href', '/products/set-category-image/?_nonce=' + category_image_nonce + '&cid=' + ( is_category_selected ? category_id : product.category_id ) + '&i=' + encodeURIComponent(product.image_url) ).end()
                     .appendTo('#product-list');
             }
 
