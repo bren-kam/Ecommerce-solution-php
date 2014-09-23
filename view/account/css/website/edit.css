@@ -1,5 +1,6 @@
 #product-list .product {
   width: 200px;
+  height: 300px;
   float: left;
   position: relative;
 }
@@ -18,20 +19,25 @@
   right: 0;
   color: red;
 }
+#product-list .product-placeholder {
+  width: 200px;
+  height: 300px;
+  float: left;
+  position: relative;
+  border: 2px dashed #ccc;
+}
 #uploader {
   position: absolute;
   left: -5000px;
 }
 #location-list .location {
   width: 32%;
-  height: 350px;
-  overflow-y: auto;
+  min-height: 350px;
   float: left;
   display: inline-block;
   border: 1px solid #ccc;
   margin: 0 10px 10px 0;
   position: relative;
-  font-size: 12px;
 }
 #location-list .location h3 {
   font-size: 18px;
