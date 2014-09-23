@@ -5,7 +5,7 @@
  * @package Grey Suit Retail
  * @since 1.0
  */
-class ButlerFeedGateway extends ProductFeedGateway {
+class ButlerXLSFeedGateway extends ProductFeedGateway {
     const USER_ID = 2605; // Butler
     const BRAND_ID = 120;// Butler
     const FILE_PATH = 'butler.xls';
