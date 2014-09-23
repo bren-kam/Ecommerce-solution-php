@@ -181,13 +181,14 @@ class TestController extends BaseController {
         do {
             $response = $r53->listHostedZones( $marker, 100 );
             $hosted_zones = $response['HostedZone'];
-            $marker = $hosted_zones['NextMarker'];
+            $marker = $response['NextMarker'];
 
             foreach ( $hosted_zones as $zone ) {
 
                 $zone_id = $zone['Id'];
                 $records_result = $r53->listResourceRecordSets( $zone_id  );
                 $dns_changes = array();
+                $mail_record_in_our_servers = false;
 
                 echo $zone['Name'].'<br>';
 
@@ -196,25 +197,40 @@ class TestController extends BaseController {
                     if ( $record['Type'] == 'TXT' ) {
                         foreach( $record['ResourceRecords'] as $rr_key => $rr_value ) {
                             if ( stripos($rr_value, 'spf') !== FALSE && ( stripos( $rr_value, '162.218.139.218' ) !== FALSE ||stripos( $rr_value, '162.218.139.219' ) !== FALSE ) ) {
-                                echo $record['ResourceRecords'][$rr_key] . "<br>" . '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"<br>';
+                                // echo $record['ResourceRecords'][$rr_key] . "<br>" . '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"<br>';
                                 $record['ResourceRecords'][$rr_key] = '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"';
                                 $dns_changes[] = $r53->prepareChange( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  );
                             }
                         }
                     }
+
+                    if ( stripos( $record['Name'], 'mail.' ) === 0 ) {
+                        $mail_record_values = implode(',', $record['ResourceRecords']);
+                        $mail_record_in_our_servers =
+                            strpos( $mail_record_values, '199.79.48.137' ) !== FALSE ||
+                            strpos( $mail_record_values, '208.53.48.135' ) !== FALSE ||
+                            strpos( $mail_record_values, '199.79.48.25' ) !== FALSE ||
+                            strpos( $mail_record_values, '162.218.139.218' ) !== FALSE ||
+                            strpos( $mail_record_values, '162.218.139.219' ) !== FALSE;
+                    }
                 }
 
-                if ( !empty( $dns_changes ) ) {
-                    echo "...running " . count($dns_changes) . " changes from {$zone['Name']}...";
-                    $change_result = array(); // $r53->changeResourceRecordSets( $zone_id, $dns_changes, 'gsr/route53-spf-update ' . date('Y-m-d H:i:s') );
-                    echo json_encode( $change_result ) . "<hr />\n";
+                if ( $mail_record_in_our_servers ) {
+                    if ( !empty( $dns_changes ) ) {
+                        echo "Value for mail.[domain]: {$mail_record_values}<br>\n";
+                        echo "Update TXT SPF Record required running " . count($dns_changes) . " changes from {$zone['Name']}...";
+                        $change_result = array(); // $r53->changeResourceRecordSets( $zone_id, $dns_changes, 'gsr/route53-spf-update ' . date('Y-m-d H:i:s') );
+                        echo json_encode( $change_result ) . "<hr />\n";
+                    } else {
+                        echo "No matching records found for {$zone['Name']}<hr />\n";
+                    }
                 } else {
-                    echo "No matching records found for {$zone['Name']}<hr />\n";
+                    echo "mail.{$zone['Name']} record NOT in our servers - {$mail_record_values}<br><hr>\n";
                 }
                 flush();
             }
 
-        } while ( $response['IsTruncated'] );
+        } while ( $marker != NULL );
 
         die('Finished!');
 
