@@ -195,9 +195,9 @@ class TestController extends BaseController {
 
                     if ( $record['Type'] == 'TXT' ) {
                         foreach( $record['ResourceRecords'] as $rr_key => $rr_value ) {
-                            if ( stripos($rr_value, 'spf') !== FALSE ) {
-                                echo $record['ResourceRecords'][$rr_key] . "<br>" . '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"<br>';
-                                $record['ResourceRecords'][$rr_key] = '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"';
+                            if ( stripos($rr_value, 'spf') !== FALSE && ( stripos( $rr_value, '162.218.139.218' ) !== FALSE ||stripos( $rr_value, '162.218.139.219' ) !== FALSE ) ) {
+                                echo $record['ResourceRecords'][$rr_key] . "<br>" . '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"<br>';
+                                $record['ResourceRecords'][$rr_key] = '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"';
                                 $dns_changes[] = $r53->prepareChange( 'UPSERT', $record['Name'], $record['Type'], $record['TTL'], $record['ResourceRecords']  );
                             }
                         }
@@ -207,11 +207,11 @@ class TestController extends BaseController {
                 if ( !empty( $dns_changes ) ) {
                     echo "...running " . count($dns_changes) . " changes from {$zone['Name']}...";
                     $change_result = array(); // $r53->changeResourceRecordSets( $zone_id, $dns_changes, 'gsr/route53-spf-update ' . date('Y-m-d H:i:s') );
-                    echo json_encode( $change_result ) . "<hr />";
+                    echo json_encode( $change_result ) . "<hr />\n";
                 } else {
-                    echo "No matching records found for {$zone['Name']}<hr />";
+                    echo "No matching records found for {$zone['Name']}<hr />\n";
                 }
-
+                flush();
             }
 
         } while ( $response['IsTruncated'] );
