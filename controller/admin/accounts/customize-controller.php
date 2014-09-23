@@ -269,6 +269,8 @@ class CustomizeController extends BaseController {
         $account_file->file_path = $file_url;
         $account_file->create();
 
+        $account->set_settings( array( 'favicon' => $file_url ) );
+
         $response->add_response( 'refresh', true );
 
         return $response;
