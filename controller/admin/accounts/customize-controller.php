@@ -132,7 +132,7 @@ class CustomizeController extends BaseController {
 
         return $this->get_template_response('favicon')
             ->select('customize', 'favico')
-            ->set('favicon', $favicon)
+            ->set(compact('favicon', 'account'))
             ->add_title(_('Favicon'));
     }
 
