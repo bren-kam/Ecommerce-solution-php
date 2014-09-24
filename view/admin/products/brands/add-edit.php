@@ -24,7 +24,7 @@
 
             <div class="panel-body">
 
-                <form name="fAddEditBrand" id="fAddEditBrand" method="post" <?php if ( $brand->id ) echo 'action="?bid='. $brand->id .'"' ?>>
+                <form name="fAddEditBrand" id="fAddEditBrand" method="post" <?php if ( $brand->id ) echo 'action="?bid='. $brand->id .'"' ?> enctype="multipart/form-data">
 
                     <?php nonce::field( 'add_edit' ); ?>
 
