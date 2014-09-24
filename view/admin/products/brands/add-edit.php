@@ -40,7 +40,7 @@
 
                     <div class="form-group">
                         <label for="tWebsite">Website</label>
-                        <input type="text" class="form-control" name="tWebsite" id="tWebsite" value="<?php echo ( isset( $_POST['tWebsite'] ) || !$brand->website ) ? $template->v('tWebsite') : $brand->website; ?>" placeholder="Website" />
+                        <input type="text" class="form-control" name="tWebsite" id="tWebsite" value="<?php echo ( isset( $_POST['tWebsite'] ) || !$brand->link ) ? $template->v('tWebsite') : $brand->link; ?>" placeholder="Website" />
                     </div>
 
                     <div class="form-group" id="product-option-list">
