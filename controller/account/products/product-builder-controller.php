@@ -184,7 +184,7 @@ class ProductBuilderController extends BaseController {
 
         $this->resources
             ->javascript( 'fileuploader', 'products/product-builder/add-edit' )
-            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ) )
+            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ), Config::resource( 'jqueryui-js' ) )
             ->css('products/product-builder/add-edit')
             ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
