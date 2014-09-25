@@ -232,7 +232,9 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $all_skus[] = $sku;
 
             // Create the products if we don't have it in the system
-            if ( !array_key_exists( $sku, $this->existing_products ) ) {
+            // If it's base site (#1352) lets run this on all products
+            // So we can ensure all products are up to date
+            if ( $account->website_id == 1352 || !array_key_exists( $sku, $this->existing_products ) ) {
                 $new_product = $this->get_product_info( $item );
                 if ( $new_product )
                     $new_products[$sku] = $new_product;
@@ -1466,10 +1468,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
                 // Set publish date
                 $product->publish_date = dt::now();
-
-                // Increment product count
-                // -- Used for report --
-                // $this->new_product( format::convert_characters( $groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
             } else {
                 $new_product = false;
                 $product->user_id_modified = self::USER_ID;
