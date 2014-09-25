@@ -95,7 +95,10 @@ var Banner = {
                         .find('input[type=checkbox]').bootstrapSwitch().end()
                         .prependTo('#banner-list');
 
-                    $('#new-element-loader').hide();
+                    $('#new-element-loader').hide()
+                        .prependTo('#banner-list');
+
+                    Banner.reorder();
                 }
             );
 

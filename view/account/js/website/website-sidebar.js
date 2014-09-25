@@ -95,7 +95,10 @@ var Sidebar = {
                         .find('input[type=checkbox]').bootstrapSwitch().end()
                         .prependTo('#sidebar-list');
 
-                    $('#new-element-loader').hide();
+                    $('#new-element-loader').hide()
+                        .prependTo('#sidebar-list');
+
+                    Sidebar.reorder();
                 }
             );
 
