@@ -26,7 +26,7 @@
 #sidebar-list .sidebar-element img {
   width: 100%;
 }
-#sidebar-list .sidebar-element video {
+#sidebar-list .sidebar-element #sidebar-video {
   margin-bottom: 15px;
 }
 #sidebar-list .sidebar-element-placeholder {
