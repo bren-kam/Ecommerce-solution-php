@@ -1723,7 +1723,21 @@ class AccountsController extends BaseController {
         echo 'Finished!'; die;
     }
 
+    public function reactivate() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
 
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $account->status = 1;
+            $account->save();
+        }
+
+        $this->notify( _("Account reactivated") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
 
 
 }
