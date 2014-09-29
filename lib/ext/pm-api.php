@@ -9,7 +9,7 @@ class PM_API {
 	/**
 	 * Constant paths to include files
 	 */
-	const URL_API = 'http://pm.studio98.com/api/';
+	const URL_API = 'https://www.studio98.com/pmapi/';
 	const DEBUG = false;
 	
 	/**
