@@ -28,7 +28,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
         <section class="panel">
             <header class="panel-heading">
                 Banners
-                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-media-manager title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>"><i class="fa fa-plus"></i> Upload or Select an Image</a>
+                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-media-manager title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>" data-submit-text="Use Image as Banner"><i class="fa fa-plus"></i> Upload or Select an Image</a>
             </header>
 
             <div class="panel-body">
