@@ -91,11 +91,14 @@ var Sidebar = {
                     Sidebar.template.clone()
                         .attr('data-attachment-id', response.id)
                         .find('img').attr('src', response.url).end()
-                        .find('input[type=hidden]').val( response.id ).end()
+                        .find('[name=hAccountPageAttachmentId]]').val( response.id ).end()
                         .find('input[type=checkbox]').bootstrapSwitch().end()
                         .prependTo('#sidebar-list');
 
-                    $('#new-element-loader').hide();
+                    $('#new-element-loader').hide()
+                        .prependTo('#sidebar-list');
+
+                    Sidebar.reorder();
                 }
             );
 

@@ -17,17 +17,21 @@ var Navigation = {
     }
 
     , create: function() {
+        var element_id = (new Date()).getTime().toString().substring(8);
 
         Navigation.template.clone()
+            .data('id', element_id )
             .find('.dd3-content').prepend( $('#name').val() ).end()
             .find('.page-url').prepend( $('#link').val() ).end()
-            .find('input').attr( 'name', 'navigation[' + (new Date()).getTime() + ']').val( $('#link').val() + '|' + $('#name').val() ).end()
+            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( $('#link').val() + '|' + $('#name').val() ).end()
             .appendTo('#navigation > .dd-list');
 
         $('#name').val( '' );
         $('#link').val( '' );
         $('#link-select').val( '' );
         $('#add-menu-item').modal('hide');
+
+        Navigation.updateTree();
     }
 
     , deleteItem: function() {
@@ -48,7 +52,7 @@ var Navigation = {
     }
 
     , updateTree: function(e){
-        $('#tree').val( JSON.stringify( $(e.target).nestable('serialize') ) );
+        $('#tree').val( JSON.stringify( $('#navigation').nestable('serialize') ) );
     }
 
 }

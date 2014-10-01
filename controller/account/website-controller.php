@@ -808,8 +808,7 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
 
-        $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] )
-            ->add_validation( 'gt=0', '"Product Price Max. Decimals" must be greater than 0' );
+        $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] );
 
         if ( $form->posted() ) {
             $new_settings = array();

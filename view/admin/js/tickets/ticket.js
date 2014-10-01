@@ -45,6 +45,13 @@ var TicketCommentForm = {
 
         if ( textarea.val() == '' ) {
             textarea.attr( 'rows', '3' );
+            // Textarea Autogrowth
+            textarea.keyup( function() {
+                var height = textarea.get(0).scrollHeight + 2;
+                if ( textarea.val() == '' )
+                    height = 74;
+                textarea.css( 'height', height > 74 ? height : 74 );
+            } );
             $('#add-comment-form .hide-on-blur').show();
         }
     }
@@ -53,7 +60,9 @@ var TicketCommentForm = {
         var textarea = $('#comment');
 
         if ( textarea.val() == '' ) {
-            textarea.attr( 'rows', '1' );
+            textarea.attr( 'rows', '1');
+            textarea.removeAttr('style');
+            textarea.unbind( 'keyup' );
             $('#add-comment-form .hide-on-blur').hide();
         }
     }

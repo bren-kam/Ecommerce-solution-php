@@ -48,7 +48,7 @@ var Analytics = {
 
             var date = new Date();
             date.setTime( item.datapoint[0] );
-            var date_str = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
+            var date_str = (date.getMonth()+1) + '/' + date.getDate() + '/' + date.getFullYear();
 
             $('<div class="graph-tooltip"><span class="tooltip-text">' + date_str + '</span><span class="tooltip-value">' + contents + ' ' + item.series.label + '</span></div>').css( {
                 position: 'absolute',

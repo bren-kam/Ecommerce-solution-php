@@ -24,7 +24,7 @@ $upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
 $search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
 $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 ?>
-<input type="hidden" id="page-id" value="<?php echo current($attachments)->website_page_id ?>" />
+<input type="hidden" id="page-id" value="<?php echo $page->id ?>" />
 
 <div class="row-fluid">
     <div class="col-lg-12">
