@@ -21,14 +21,14 @@ $upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
 $search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
 $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 ?>
-<input type="hidden" id="page-id" value="<?php echo current($attachments)->website_page_id ?>" />
+<input type="hidden" id="page-id" value="<?php echo $page->id ?>" />
 
 <div class="row-fluid">
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
                 Banners
-                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-media-manager title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>"><i class="fa fa-plus"></i> Upload or Select an Image</a>
+                <a href="javascript:;" class="btn btn-primary btn-sm pull-right" data-media-manager title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>" data-submit-text="Use Image as Banner"><i class="fa fa-plus"></i> Upload or Select an Image</a>
             </header>
 
             <div class="panel-body">
