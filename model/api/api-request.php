@@ -434,7 +434,7 @@ class ApiRequest {
                     $r53 = new Route53(Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key'));
 
                     // Add to domain.blinkyblinky.me
-                    $r53->changeResourceRecordSets('hostedzone/Z20FV3IPLIV928', array($r53->prepareChange('CREATE', $domain . '.', 'CNAME', '14400', $server->ip)));
+                    $r53->changeResourceRecordSets('hostedzone/Z20FV3IPLIV928', array($r53->prepareChange('CREATE', $domain . '.', 'A', '14400', $server->ip)));
                 }
 
             }
