@@ -2,15 +2,9 @@
 class Analytics {
     /**
      * Hold Google analytics
-     * @var GAPI
+     * @var GoogleAnalyticsAPI
      */
     public $ga;
-
-    /**
-     * Hold Google Analytics profile ID
-     * @var int
-     */
-    public $ga_profile_id;
 
     /**
      * Hold a filter to be used for every other part
@@ -55,8 +49,6 @@ class Analytics {
 
         $this->set_ga_profile(
             $account->ga_profile_id
-            , security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY )
-            , security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY )
         );
     }
 
@@ -86,29 +78,42 @@ class Analytics {
         $ga_metrics = ( is_null( $ga_metric ) ) ? NULL : array( $ga_metric );
 
         // Handle the GA Filter
-        if ( !is_null( $this->ga_filter ) )
+        if ( !is_null( $this->ga_filter ) ) {
             $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
+        }
+
+        // Prepare Parameters
+        foreach ( $ga_dimensions as &$v )
+            $v = "ga:$v";
+        $ga_dimensions_str = implode( ',', $ga_dimensions );
+
+        foreach ( $ga_metrics as &$v )
+            $v = "ga:$v";
+        $ga_metrics_str = implode( ',', $ga_metrics );
 
         // API Call
         try {
-            $this->ga->requestReportData( $this->ga_profile_id, $ga_dimensions, $ga_metrics, array('date'), $ga_filter, $this->date_start, $this->date_end, 1, 10000 );
+            $response = $this->ga->query( array(
+                'dimensions' => $ga_dimensions_str
+                , 'metrics' => $ga_metrics_str
+                , 'sort' => 'ga:date'
+                , 'filters' => $ga_filter_str
+            ) );
         } catch ( Exception $e ) {
             throw new ModelException( $e->getMessage(), $e->getCode(), $e );
         }
-
-        // Process results
-        $results = $this->ga->getResults();
 
         // Declare values
         $values = array();
 
         // Get the values
-        if ( is_array( $results ) )
-        foreach( $results as $result ) {
-            $metrics = $result->getMetrics();
-            $dimensions = $result->getDimensions();
-            $values[strtotime($dimensions['date']) . '000'] = $metrics[$ga_metric];
-        }
+        if ( is_array( $response ) )
+            foreach( $response['rows'] as $row )
+                $values[strtotime($row[0]) . '000'] = $row[1];
 
         return $values;
     }
@@ -122,27 +127,33 @@ class Analytics {
         // Declare variables
         $totals = array();
 
-        // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, NULL, array( 'visitBounceRate', 'pageviews', 'visits', 'avgTimeOnSite', 'avgTimeOnPage', 'exitRate', 'pageviewsPerVisit', 'percentNewVisits' ), NULL, $this->ga_filter, $this->date_start, $this->date_end, 1, 10000 );
-
-        // See if there were any results
-        $results = $this->ga->getResults();
-
-        if ( is_array( $results ) )
-        foreach ( $this->ga->getResults() as $result ) {
-            $metrics = $result->getMetrics();
-
-            $totals = array(
-                'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
-                , 'page_views' => $metrics['pageviews']
-                , 'visits' => $metrics['visits']
-                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
-                , 'time_on_page' => dt::sec_to_time( $metrics['avgTimeOnPage'] )
-                , 'exit_rate' => number_format( $metrics['exitRate'], 2 )
-                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
-                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
-            );
+        if ( !is_null( $this->ga_filter ) ) {
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
         }
+
+        // Get data
+        $response = $this->ga->query( array(
+            'metrics' => 'ga:visitBounceRate,ga:pageviews,ga:visits,ga:avgTimeOnSite,ga:avgTimeOnPage,ga:exitRate,ga:pageviewsPerVisit,ga:percentNewVisits'
+            , 'filters' => $ga_filter_str
+        ) );
+
+        if ( is_array( $response ) )
+            foreach ( $response['rows'] as $row ) {
+                $totals = array(
+                    'bounce_rate' => number_format( $row[0], 2 )
+                    , 'page_views' => $row[1]
+                    , 'visits' => $row[2]
+                    , 'time_on_site' => dt::sec_to_time( (float)$row[3] )
+                    , 'time_on_page' => dt::sec_to_time( (float)$row[4] )
+                    , 'exit_rate' => number_format( $row[5], 2 )
+                    , 'pages_by_visits' => number_format( $row[6], 2 )
+                    , 'new_visits' => number_format( $row[7], 2 )
+                );
+            }
 
         return $totals;
     }
@@ -156,38 +167,45 @@ class Analytics {
         // Declare variables
         $traffic_sources_totals = array();
 
-        // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array('medium'), array( 'visits' ), NULL, $this->ga_filter, $this->date_start, $this->date_end, 1, 10000 );
+        if ( !is_null( $this->ga_filter ) ) {
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
+        }
 
-        // See if there were any results
-        $results = $this->ga->getResults();
+        // Get data
+        $response = $this->ga->query( array(
+            'dimensions' => 'ga:medium'
+            , 'metrics' => 'ga:visits'
+            , 'filters' => $ga_filter_str
+        ) );
 
         // Initialize variable
         $traffic_sources_totals['total'] = 0;
 
-        if ( is_array( $results ) )
-        foreach ( $this->ga->getResults() as $result ) {
-            $metrics = $result->getMetrics();
-            $dimensions = $result->getDimensions();
+        if ( is_array( $response ) )
+        foreach ( $response['rows'] as $row ) {
 
-            $traffic_sources_totals['total'] += $metrics['visits'];
+            $traffic_sources_totals['total'] += $row[1];
 
-            switch ( $dimensions['medium'] ) {
+            switch ( $row[0] ) {
                 case 'email':
-                    $traffic_sources_totals['email'] = $metrics['visits'];
+                    $traffic_sources_totals['email'] = $row[1];
                 break;
 
                 case 'organic':
-                     $traffic_sources_totals['search_engines'] = $metrics['visits'];
+                     $traffic_sources_totals['search_engines'] = $row[1];
                 break;
 
                 case 'referral':
-                     $traffic_sources_totals['referring'] = $metrics['visits'];
+                     $traffic_sources_totals['referring'] = $row[1];
                 break;
 
                 case '(none)':
                 default:
-                     $traffic_sources_totals['direct'] = $metrics['visits'];
+                     $traffic_sources_totals['direct'] = $row[1];
                 break;
             }
         }
@@ -209,25 +227,32 @@ class Analytics {
         // Declare variables
         $traffic_sources = array();
 
+        if ( !is_null( $this->ga_filter ) ) {
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
+        }
+
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array( 'source', 'medium' ), array( 'visits', 'pageviewsPerVisit', 'avgTimeOnSite', 'percentNewVisits', 'visitBounceRate' ), array( '-visits' ), $this->ga_filter, $this->date_start, $this->date_end, 1, $limit );
+        $response = $this->ga->query( array(
+            'dimensions' => 'ga:source,ga:medium'
+            , 'metrics' => 'ga:visits,ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visitBounceRate'
+            , 'sort' => '-ga:visits'
+            , 'filters' => $ga_filter_str
+        ) );
 
-        // See if there were any results
-        $results = $this->ga->getResults();
-
-        if ( is_array( $results ) )
-        foreach ( $this->ga->getResults() as $result ) {
-            $metrics = $result->getMetrics();
-            $dimensions = $result->getDimensions();
-
+        if ( is_array( $response ) )
+        foreach ( $response['rows'] as $row ) {
             $traffic_sources[] = array(
-                'source' => $dimensions['source']
-                , 'medium' => $dimensions['medium']
-                , 'visits' => $metrics['visits']
-                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
-                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
-                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
-                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+                'source' => $row[0]
+                , 'medium' => $row[1]
+                , 'visits' => $row[2]
+                , 'pages_by_visits' => number_format( $row[3], 2 )
+                , 'time_on_site' => dt::sec_to_time( $row[4] )
+                , 'new_visits' => number_format( $row[5], 2 )
+                , 'bounce_rate' => number_format( $row[6], 2 )
             );
         }
 
@@ -256,23 +281,32 @@ class Analytics {
             $ga_filter .= ',' . $this->ga_filter;
 
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array( 'keyword' ), array( 'visits', 'pageviewsPerVisit', 'avgTimeOnSite', 'percentNewVisits', 'visitBounceRate' ), array( '-visits' ), $ga_filter, $this->date_start, $this->date_end, 1, $limit );
+        if ( !is_null( $this->ga_filter ) ) {
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
+        }
 
-        // See if there were any results
-        $results = $this->ga->getResults();
+        // Get data
+        $response = $this->ga->query( array(
+            'dimensions' => 'ga:keyword'
+            , 'metrics' => 'ga:visits,ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visitBounceRate'
+            , 'sort' => '-ga:visits'
+            , 'filters' => $ga_filter_str
+        ) );
 
-        if ( is_array( $results ) )
-        foreach ( $this->ga->getResults() as $result ) {
-            $metrics = $result->getMetrics();
-            $dimensions = $result->getDimensions();
+        if ( is_array( $response ) )
+        foreach ( $response['rows'] as $row ) {
 
             $keywords[] = array(
-                'keyword' => $dimensions['keyword']
-                , 'visits' => $metrics['visits']
-                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
-                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
-                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
-                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+                'keyword' => $row[0]
+                , 'visits' => $row[1]
+                , 'pages_by_visits' => number_format( $row[2], 2 )
+                , 'time_on_site' => dt::sec_to_time( $row[3] )
+                , 'new_visits' => number_format( $row[4], 2 )
+                , 'bounce_rate' => number_format( $row[5], 2 )
             );
         }
 
@@ -293,23 +327,31 @@ class Analytics {
         // Declare variables
         $content_overview = array();
 
+        if ( !is_null( $this->ga_filter ) ) {
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
+        }
+
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array('pagePath'), array( 'pageviews', 'avgTimeOnPage', 'visitBounceRate', 'exitRate' ), array( '-pageviews' ), $this->ga_filter, $this->date_start, $this->date_end, 1, $limit );
+        $response = $this->ga->query( array(
+            'dimensions' => 'ga:pagePath'
+            , 'metrics' => 'ga:pageviews,ga:avgTimeOnPage,ga:visitBounceRate,ga:exitRate'
+            , 'sort' => '-ga:pageviews'
+            , 'filters' => $ga_filter_str
+        ) );
 
-        // See if there were any results
-        $results = $this->ga->getResults();
-
-        if ( is_array( $results ) )
-        foreach ( $this->ga->getResults() as $result ) {
-            $metrics = $result->getMetrics();
-            $dimensions = $result->getDimensions();
+        if ( is_array( $response ) )
+        foreach ( $response['rows'] as $row ) {
 
             $content_overview[] = array(
-                'page' => $dimensions['pagePath']
-                , 'page_views' => $metrics['pageviews']
-                , 'time_on_page' => dt::sec_to_time( $metrics['avgTimeOnPage'] )
-                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
-                , 'exit_rate' => number_format( $metrics['exitRate'], 2 )
+                'page' => $row[0]
+                , 'page_views' => $row[1]
+                , 'time_on_page' => dt::sec_to_time( $row[2] )
+                , 'bounce_rate' => number_format( $row[3], 2 )
+                , 'exit_rate' => number_format( $row[4], 2 )
             );
         }
 
@@ -556,25 +598,51 @@ class Analytics {
      * @throws ModelException
      *
      * @param int $ga_profile_id
-     * @param string $ga_username
-     * @param string $ga_password
      */
-    protected function set_ga_profile( $ga_profile_id, $ga_username, $ga_password ) {
-        library( 'GAPI' );
+    protected function set_ga_profile( $ga_profile_id ) {
+        library( 'GoogleAnalyticsAPI' );
+        $ga = new GoogleAnalyticsAPI();
+        $this->ga = $ga;
 
-        // Determine if their username and password are empty (use our account) or not (use their account)
-        if ( !empty( $ga_username ) && !empty( $ga_password ) ) {
-            try {
-                $this->ga = new GAPI( $ga_username, $ga_password );
-            } catch ( Exception $e ) {
-                throw new ModelException( $e->getMessage(), $e->getCode(), $e );
+        $ga->auth->setClientId( Config::key( 'ga-client-id' ) );
+        $ga->auth->setClientSecret( Config::key( 'ga-client-secret' ) );
+        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri' ) );
+
+        $accessToken = Cache::get( 'google-access-token' );
+        $refreshToken = Cache::get( 'google-refresh-token' );
+        $tokenExpires = Cache::get( 'google-token-expiration' );
+        $tokenCreated = Cache::get( 'google-token-created-at' );
+
+        if ( $accessToken ) {
+            if ( ( $tokenCreated + $tokenExpires ) > time() ) {
+                $ga->setAccessToken( $accessToken );
+                $ga->setAccountId( "ga:{$ga_profile_id}" );
+            } else {
+                $auth = $ga->auth->refreshAccessToken( $refreshToken );
+                if ($auth['http_code'] == 200) {
+                    $accessToken = $auth['access_token'];
+                    $refreshToken = $auth['refresh_token'];
+                    $tokenExpires = $auth['expires_in'];
+                    $tokenCreated = time();
+
+                    Cache::set( 'google-access-token', $accessToken );
+                    Cache::set( 'google-refresh-token', $refreshToken );
+                    Cache::set( 'google-token-expiration', $tokenExpires );
+                    Cache::set( 'google-token-created-at', $tokenCreated );
+                } else {
+                    throw new GoogleAnalyticsOAuthException( "Could not Refresh Token" );
+                }
             }
         } else {
-            $this->ga = new GAPI( Config::key('ga-username'), Config::key('ga-password') );
+            throw new GoogleAnalyticsOAuthException( "No Access Token Found" );
         }
 
-        $this->ga_profile_id = (int) $ga_profile_id;
+        // Set Query Defaults - Date Range
+        $ga->setDefaultQueryParams( array(
+            'start-date' => $this->date_start
+            , 'end-date' => $this->date_end
+            , 'max-results' => 5000
+        ) );
     }
 
-    /***** EMAIL MARKETING *****/
 }
