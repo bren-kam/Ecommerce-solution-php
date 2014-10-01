@@ -33,6 +33,10 @@ class Config {
         // Google Analytics
         , 'ga-username'             => 'web@imagineretailer.com'
         , 'ga-password'             => 'imagine1010'
+        // Google Analytics API
+        , 'ga-client-id'            => ''
+        , 'ga-client-secret'        => ''
+        , 'ga-redirect-uri'         => ''
         // Sendgrid
         , 'sendgrid-timezone'       => 'America/Chicago'
 	);
