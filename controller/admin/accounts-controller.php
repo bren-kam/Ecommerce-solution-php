@@ -1217,10 +1217,20 @@ class AccountsController extends BaseController {
         $files = $ftp->raw_list();
         $file_count = count( $files );
 
+        // FTP Settings
+        $settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
+        $username = urlencode( security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
+        $password = urlencode( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) );
+        $folder = str_replace( 'CE_', '', $username );
+        if ( '-' != substr( $folder, -1 ) )
+            $folder .= '-';
+        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
+        $base_path = "/CustEDI/$folder/$subfolder/";
+
         // Create response
         $message = "Got {$file_count} file(s):";
         foreach ($files as $f) {
-            $message .= "<br> {$f['name']} - {$f['size']}";
+            $message .= "<br> {$f['name']} - {$f['size']} <a href=\"ftp://{$username}:{$password}@ftp.ashleyfurniture.com/{$base_path}{$f['name']}\" target=\"_blank\">View</a>";
         }
         $response->notify( $message );
 
