@@ -46,6 +46,8 @@ class WebsiteOrderItem extends ActiveRecordBase {
      * @return WebsiteOrderItem[]
      */
     public function get_all( $website_order_id, WebsiteOrderItemOption $website_order_item_option = null ) {
+        $product = new AccountProduct();
+
         // Get the main order
         $items_array = $this->get_by_order( $website_order_id );
         $items = array();
@@ -69,7 +71,7 @@ class WebsiteOrderItem extends ActiveRecordBase {
          */
         if ( is_array( $items_array ) && !empty( $items_array ) )
         foreach ( $items_array as $item ) { // Populate local variables
-            $image_link = 'http://' . $item->industry . '.retailcatalog.us/products/' . $item->product_id . '/' . $item->image;
+            $image_link = $product->get_image_url( $item->image, '', $item->industry, $item->product_id );
 
             $items[$item->id] = $item;
             $items[$item->id]->image = $image_link;

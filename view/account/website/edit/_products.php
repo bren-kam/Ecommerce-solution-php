@@ -44,7 +44,7 @@
                 if ( $product_count > 0 ):
                 foreach ( $page->products as $product ):
                     $images = $product->get_images();
-                    $product_image = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/' . current( $images );
+                    $product_image = $product->get_image_url( current($images), '', $product->industry, $product->id  );
             ?>
                 <div class="product">
                     <img src="<?php echo $product_image ?>"/>

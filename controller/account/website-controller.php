@@ -1887,7 +1887,7 @@ class WebsiteController extends BaseController {
 
         $category->get( $product->category_id );
 
-        $product->image_url = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images );
+        $product->image_url = $product->get_image_url( current( $product->images ), 'small', $product->industry, $product->id );
         $response->add_response( 'product', $product );
 
         // Form the response HTML
