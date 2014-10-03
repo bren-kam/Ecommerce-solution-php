@@ -601,6 +601,7 @@ class WebsiteController extends BaseController {
                 foreach ( $tree as $tree_node ) {
                     $page = $_POST['navigation'][$tree_node['id']];
                     list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
                     $navigation_node = compact( 'url', 'name' );
 
                     // children - sub items
@@ -610,6 +611,7 @@ class WebsiteController extends BaseController {
                         foreach ( $tree_node['children'] as $child_node ) {
                             $sub_page = $_POST['navigation'][$child_node['id']];
                             list( $url, $name ) = explode( '|', $sub_page );
+                            $name = htmlentities( $name );
                             $navigation_node['children'][] = compact( 'url', 'name' );
                         }
                         if ( empty( $navigation_node['children'] ) )
@@ -645,6 +647,7 @@ class WebsiteController extends BaseController {
 
             foreach ( $_POST['footer-navigation'] as $page ) {
                 list( $url, $name ) = explode( '|', $page );
+                $name = htmlentities( $name );
                 $footer_navigation[] = compact( 'url', 'name' );
             }
 
@@ -2303,6 +2306,7 @@ class WebsiteController extends BaseController {
             if ( !empty( $_POST['top-site-navigation'] ) ) {
                 foreach ( $_POST['top-site-navigation'] as $page ) {
                     list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
                     $top_site_navigation[] = compact( 'url', 'name' );
                 }
             }
