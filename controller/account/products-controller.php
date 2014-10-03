@@ -915,7 +915,7 @@ class ProductsController extends BaseController {
             if ($this->user->account->is_new_template() ) {
                 $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
-                $product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+                $product->link = 'http://' . $this->user->account->domain . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             }
 
             $product->image_url = $product->get_image_url( $product->image, '', $product->industry, $product->product_id  );
