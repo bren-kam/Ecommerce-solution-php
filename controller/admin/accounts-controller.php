@@ -810,20 +810,19 @@ class AccountsController extends BaseController {
 
                 $server = new Server();
                 $server->get( $account->server_id );
-                $server_ip = $server->ip ? $server->ip : '199.79.48.137';
 
                 // Defaults
                 $changes = array(
-                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server_ip )
+                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->ip )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'MX', '14400', '0 mail.' . $full_domain_name )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'TXT', '14400', '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"' )
-                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server_ip )
+                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
                     , $r53->prepareChange( 'CREATE', 'www.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server_ip )
-                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server_ip )
-                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server_ip )
-                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server_ip )
-                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server_ip )
+                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
                 );
 
                 $response = $r53->changeResourceRecordSets( $zone_id, $changes );
