@@ -133,6 +133,7 @@ class CronsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->remove_all_discontinued();
 
+        // Remove Old Product View Data
         $website_product_view = new WebsiteProductView();
         $website_product_view->purge_old_data();
         unset( $website_product_view );
@@ -158,6 +159,10 @@ class CronsController extends BaseController {
         // Clean up old API logs (1 month)
         $api_ext_log = new ApiExtLog();
         $api_ext_log->purge();
+
+        // Run Butler Feed
+        $butler = new ButlerFeedGateway();
+        $butler->run();
 
         return new HtmlResponse( 'Weekly Jobs Completed' );
     }
