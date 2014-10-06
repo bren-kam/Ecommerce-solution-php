@@ -33,6 +33,10 @@ class Config {
         // Google Analytics
         , 'ga-username'             => 'web@imagineretailer.com'
         , 'ga-password'             => 'imagine1010'
+        // Google Analytics API
+        , 'ga-client-id'            => '460745244735-b7hpe3q29a032bctunqr56gs6oaivmu0.apps.googleusercontent.com'
+        , 'ga-client-secret'        => 'e6DWOZffowAMYPhnursYHmdb'
+        , 'ga-redirect-uri'         => 'http://account.testing.greysuitretail.com/analytics/oauth2callback/'
         // Sendgrid
         , 'sendgrid-timezone'       => 'America/Chicago'
 	);

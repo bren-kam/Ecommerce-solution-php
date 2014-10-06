@@ -601,6 +601,7 @@ class WebsiteController extends BaseController {
                 foreach ( $tree as $tree_node ) {
                     $page = $_POST['navigation'][$tree_node['id']];
                     list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
                     $navigation_node = compact( 'url', 'name' );
 
                     // children - sub items
@@ -610,6 +611,7 @@ class WebsiteController extends BaseController {
                         foreach ( $tree_node['children'] as $child_node ) {
                             $sub_page = $_POST['navigation'][$child_node['id']];
                             list( $url, $name ) = explode( '|', $sub_page );
+                            $name = htmlentities( $name );
                             $navigation_node['children'][] = compact( 'url', 'name' );
                         }
                         if ( empty( $navigation_node['children'] ) )
@@ -645,6 +647,7 @@ class WebsiteController extends BaseController {
 
             foreach ( $_POST['footer-navigation'] as $page ) {
                 list( $url, $name ) = explode( '|', $page );
+                $name = htmlentities( $name );
                 $footer_navigation[] = compact( 'url', 'name' );
             }
 
@@ -1887,7 +1890,7 @@ class WebsiteController extends BaseController {
 
         $category->get( $product->category_id );
 
-        $product->image_url = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images );
+        $product->image_url = $product->get_image_url( current( $product->images ), 'small', $product->industry, $product->id );
         $response->add_response( 'product', $product );
 
         // Form the response HTML
@@ -2303,6 +2306,7 @@ class WebsiteController extends BaseController {
             if ( !empty( $_POST['top-site-navigation'] ) ) {
                 foreach ( $_POST['top-site-navigation'] as $page ) {
                     list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
                     $top_site_navigation[] = compact( 'url', 'name' );
                 }
             }

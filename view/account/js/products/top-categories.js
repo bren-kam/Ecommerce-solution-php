@@ -44,7 +44,7 @@ var CategoryList = {
         var sequence = [];
         $( '#category-list .category' ).each( function(){
             sequence.push($( this ).data('category-id') );
-        })
+        });
 
         $.post(
             '/products/update-top-category-sequence/'
