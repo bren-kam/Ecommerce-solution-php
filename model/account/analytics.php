@@ -45,7 +45,6 @@ class Analytics {
      */
     public function setup( Account $account ) {
         // Setup the profile
-        $settings = $account->get_settings( 'ga-username', 'ga-password' );
 
         $this->set_ga_profile(
             $account->ga_profile_id
@@ -608,10 +607,10 @@ class Analytics {
         $ga->auth->setClientSecret( Config::key( 'ga-client-secret' ) );
         $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri' ) );
 
-        $accessToken = Cache::get( 'google-access-token' );
-        $refreshToken = Cache::get( 'google-refresh-token' );
-        $tokenExpires = Cache::get( 'google-token-expiration' );
-        $tokenCreated = Cache::get( 'google-token-created-at' );
+        $accessToken = Cache::get( 'google-access-token-'.$ga_profile_id );
+        $refreshToken = Cache::get( 'google-refresh-token-'.$ga_profile_id );
+        $tokenExpires = Cache::get( 'google-token-expiration-'.$ga_profile_id );
+        $tokenCreated = Cache::get( 'google-token-created-at-'.$ga_profile_id );
 
         if ( $accessToken ) {
             if ( ( $tokenCreated + $tokenExpires ) > time() ) {
@@ -625,10 +624,10 @@ class Analytics {
                     $tokenExpires = $auth['expires_in'];
                     $tokenCreated = time();
 
-                    Cache::set( 'google-access-token', $accessToken );
-                    Cache::set( 'google-refresh-token', $refreshToken );
-                    Cache::set( 'google-token-expiration', $tokenExpires );
-                    Cache::set( 'google-token-created-at', $tokenCreated );
+                    Cache::set( 'google-access-token-'.$ga_profile_id, $accessToken );
+                    Cache::set( 'google-refresh-token-'.$ga_profile_id, $refreshToken );
+                    Cache::set( 'google-token-expiration-'.$ga_profile_id, $tokenExpires );
+                    Cache::set( 'google-token-created-at-'.$ga_profile_id, $tokenCreated );
                 } else {
                     throw new GoogleAnalyticsOAuthException( "Could not Refresh Token" );
                 }

@@ -24,7 +24,7 @@
   position: absolute;
   display: none;
   top: 0px;
-  right: 0px;
+  right: 5px;
   color: red;
 }
 #brand-list .brand:hover .remove {
