@@ -51,14 +51,32 @@ nonce::field( 'update_top_category_sequence', '_update_top_category_sequence' );
             <div class="panel-body">
 
                 <div id="category-list">
-                    <?php foreach ( $top_categories as $category ): ?>
-                        <div class="category" data-category-id="<?php echo $category->id ?>">
-                            <img src="<?php echo ( !isset( $category_images[$category->id] ) || empty( $category_images[$category->id] ) ) ? 'http://placehold.it/200x200&text=' . $category->name : $category_images[$category->id]; ?>" />
-                            <h4><?php echo $category->name; ?></h4>
-                            <p class="category-url"><a href="<?php echo $category->link; ?>" title="<?php echo $category->name; ?>" target="_blank" ><?php echo $category->link; ?></a></p>
-                            <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
-                        </div>
-                    <?php endforeach; ?>
+
+                    <?php if ( $top_categories ): ?>
+
+                        <?php foreach ( $top_categories as $category ): ?>
+                            <div class="category" data-category-id="<?php echo $category->id ?>">
+                                <img src="<?php echo ( !isset( $category_images[$category->id] ) || empty( $category_images[$category->id] ) ) ? 'http://placehold.it/200x200&text=' . $category->name : $category_images[$category->id]; ?>" />
+                                <h4><?php echo $category->name; ?></h4>
+                                <p class="category-url"><a href="<?php echo $category->link; ?>" title="<?php echo $category->name; ?>" target="_blank" ><?php echo $category->link; ?></a></p>
+                                <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
+                            </div>
+                        <?php endforeach; ?>
+
+                    <?php else: ?>
+
+                        <input type="hidden" id="action-create-categories" />
+
+                        <?php foreach ( $default_top_categories as $category ): ?>
+                            <div class="category" data-category-id="<?php echo $category->id ?>">
+                                <img src="<?php echo ( !isset( $category_images[$category->id] ) || empty( $category_images[$category->id] ) ) ? 'http://placehold.it/200x200&text=' . $category->name : $category_images[$category->id]; ?>" />
+                                <h4><?php echo $category->name; ?></h4>
+                                <p class="category-url"><a href="<?php echo $category->link; ?>" title="<?php echo $category->name; ?>" target="_blank" ><?php echo $category->link; ?></a></p>
+                                <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
+                            </div>
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
 
                     <div class="category hidden" id="category-template">
                         <img />
@@ -66,7 +84,19 @@ nonce::field( 'update_top_category_sequence', '_update_top_category_sequence' );
                         <p class="category-url"><a target="_blank" ></a></p>
                         <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
                     </div>
+
                 </div>
+
+                <div class="clearfix"></div>
+
+                <?php if ( $top_categories ): ?>
+                    <p>
+                        <strong>Default Categories:</strong>
+                        <?php foreach( $default_top_categories as $category ): ?>
+                            <?php echo $category->name ?>.
+                        <?php endforeach; ?>
+                    </p>
+                <?php endif; ?>
 
             </div>
         </section>

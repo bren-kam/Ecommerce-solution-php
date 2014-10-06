@@ -638,6 +638,13 @@ class ProductsController extends BaseController {
             $top_categories[] = Category::$categories[$category_id];
         }
 
+        // Get Account Parent Categories (Default Top Brands if first time)
+        $default_top_categories = array();
+        foreach( Category::$categories as $category ) {
+            if ( $category->parent_category_id == 0 && in_array( $category->id, $website_category_ids ) )
+                $default_top_categories[] = $category;
+        }
+
         $this->resources->javascript( 'products/top-categories' )
             ->javascript_url( Config::Resource('jqueryui-js') )
             ->css( 'products/top-categories' );
@@ -646,7 +653,7 @@ class ProductsController extends BaseController {
             ->kb( 137 )
             ->add_title( _('Top Categories') )
             ->menu_item( 'products/top-categories' )
-            ->set( compact( 'categories', 'top_categories', 'category_images' ) );
+            ->set( compact( 'categories', 'top_categories', 'category_images', 'default_top_categories' ) );
     }
 
     /**
