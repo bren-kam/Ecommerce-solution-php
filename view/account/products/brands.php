@@ -13,6 +13,7 @@ nonce::field( 'autocomplete', '_autocomplete' );
 nonce::field( 'add_brand', '_add_brand' );
 nonce::field( 'remove_brand', '_remove_brand' );
 nonce::field( 'update_brand_sequence', '_update_brand_sequence' );
+nonce::field( 'set_brand_link', '_set_brand_link' );
 ?>
 
 <div class="row-fluid">
@@ -55,7 +56,7 @@ nonce::field( 'update_brand_sequence', '_update_brand_sequence' );
                         <div class="brand" data-brand-id="<?php echo $brand->id ?>">
                             <img src="<?php echo $brand->image; ?>" />
                             <h4><?php echo $brand->name; ?></h4>
-                            <p class="brand-url"><a href="<?php echo $brand->link; ?>" title="<?php echo $brand->name; ?>" target="_blank" ><?php echo $brand->link; ?></a></p>
+                            <p class="brand-url"><a href="http://<?php echo $brand->link; ?>" title="<?php echo $brand->name; ?>" target="_blank" ><?php echo $brand->link; ?></a></p>
                             <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
                         </div>
                     <?php endforeach; ?>

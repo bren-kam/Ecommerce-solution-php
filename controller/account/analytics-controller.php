@@ -622,6 +622,32 @@ class AnalyticsController extends BaseController {
 
         return $response;
     }
+
+    public function oauth2callback() {
+        library("GoogleAnalyticsAPI");
+
+        $ga = new GoogleAnalyticsAPI();
+        $ga->auth->setClientId( Config::key( 'ga-client-id' ) );
+        $ga->auth->setClientSecret( Config::key( 'ga-client-secret' ) );
+        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri' ) );
+
+        if ( isset( $_GET['code'] ) ) {
+            $auth = $ga->auth->getAccessToken( $_GET['code'] );
+            if ($auth['http_code'] == 200) {
+                $accessToken = $auth['access_token'];
+                $refreshToken = $auth['refresh_token'];
+                $tokenExpires = $auth['expires_in'];
+                $tokenCreated = time();
+
+                Cache::set( 'google-access-token', $accessToken );
+                Cache::set( 'google-refresh-token', $refreshToken );
+                Cache::set( 'google-token-expiration', $tokenExpires );
+                Cache::set( 'google-token-created-at', $tokenCreated );
+            }
+        }
+
+        return new RedirectResponse( $_SESSION['google-analytics-callback'] );
+    }
 }
 
 

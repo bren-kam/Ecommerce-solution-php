@@ -1250,4 +1250,25 @@ class AccountProduct extends ActiveRecordBase {
         );
     }
 
+    /**
+     * Get Image URL
+     *
+     * @param $image
+     * @param string $size
+     * @param string $industry
+     * @param null $product_id
+     * @return string
+     */
+    public function get_image_url($image, $size = "small", $industry = "furniture", $product_id = null ) {
+
+        // If it's an absolute URL, just return it
+        if ( stripos( $image, 'http' ) === 0 )
+            return $image;
+
+        if ( !$product_id )
+            $product_id = $this->product_id;
+
+        return 'http://' . str_replace( ' ', '', $industry ) . '.retailcatalog.us/products/' . $product_id . '/' . ($size ? ($size . '/') : '') .$image;
+    }
+
 }

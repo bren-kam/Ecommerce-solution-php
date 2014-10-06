@@ -81,7 +81,7 @@ nonce::field( 'add_product', '_add_product' );
                         ?>
                             <div class="product">
                                 <h4><?php echo format::limit_chars( $product->name, 40 ); ?></h4>
-                                <img src="http://<?php echo $product->industry; ?>.retailcatalog.us/products/<?php echo $product->id; ?>/small/<?php echo $image; ?>" alt="<?php echo $product->name; ?>" />
+                                <img src="<?php echo $product->get_image_url( $image, 'small', $product->industry, $product->id )?>" alt="<?php echo $product->name; ?>" />
                                 <p>Brand: <?php echo $product->brand; ?></p>
                                 <a href="javascript:;" class="remove" title="Remove"><i class="fa fa-trash-o"></i></a>
                                 <input type="hidden" name="products[]" value="<?php echo $product->id; ?>" />

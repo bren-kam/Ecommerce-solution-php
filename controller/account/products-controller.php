@@ -638,6 +638,13 @@ class ProductsController extends BaseController {
             $top_categories[] = Category::$categories[$category_id];
         }
 
+        // Get Account Parent Categories (Default Top Brands if first time)
+        $default_top_categories = array();
+        foreach( Category::$categories as $category ) {
+            if ( $category->parent_category_id == 0 && in_array( $category->id, $website_category_ids ) )
+                $default_top_categories[] = $category;
+        }
+
         $this->resources->javascript( 'products/top-categories' )
             ->javascript_url( Config::Resource('jqueryui-js') )
             ->css( 'products/top-categories' );
@@ -646,7 +653,7 @@ class ProductsController extends BaseController {
             ->kb( 137 )
             ->add_title( _('Top Categories') )
             ->menu_item( 'products/top-categories' )
-            ->set( compact( 'categories', 'top_categories', 'category_images' ) );
+            ->set( compact( 'categories', 'top_categories', 'category_images', 'default_top_categories' ) );
     }
 
     /**
@@ -915,10 +922,10 @@ class ProductsController extends BaseController {
             if ($this->user->account->is_new_template() ) {
                 $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
-                $product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+                $product->link = 'http://' . $this->user->account->domain . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             }
 
-            $product->image_url = 'http://' . str_replace( ' ', '', $product->industry ) . '.retailcatalog.us/products/' . $product->product_id . '/' . $product->image;
+            $product->image_url = $product->get_image_url( $product->image, '', $product->industry, $product->product_id  );
         }
 
         $response = new AjaxResponse( true );
@@ -1044,7 +1051,7 @@ class ProductsController extends BaseController {
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
-        $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
+        $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
 
         // Get The Public URL Link
@@ -2061,7 +2068,7 @@ class ProductsController extends BaseController {
         // Get Product Images & Name
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
-        $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
+        $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
 
         // Get Category

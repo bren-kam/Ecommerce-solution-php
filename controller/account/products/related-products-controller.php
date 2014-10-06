@@ -278,7 +278,7 @@ class RelatedProductsController extends BaseController {
         $product->get( $account_product->product_id );
         $image = current( $product->get_images() );
 
-        $product->image_url = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$image}";
+        $product->image_url = $product->get_image_url( $image, 'small', $product->industry, $product->id );
         $response->add_response( 'product', $product );
 
         return $response;
