@@ -1478,10 +1478,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             /***** PREPARE PRODUCT DATA *****/
 
             $group = $groups[$item['group']];
-            $group_name = $group['name'] . ' - ';
+            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
 
-            $group_description = '<p>' . $group['description'] . '</p>';
-            $group_features = '<p>' . $group['features'] . '</p>';
+            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
+            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
 
             $name = format::convert_characters( $group_name . $item['description'] );
 
