@@ -1444,8 +1444,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( !isset( $groups[$item['group'] ] ) ) {
                 $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
 
-                if ( !isset( $groups[$item['group'] ] ) )
-                    continue;
+                if ( !isset( $groups[$item['group']] ) )
+                    $groups[$item['group']] = array('name' => '', 'description' => '', 'features' => '');
             }
 
             /***** GET PRODUCT *****/
