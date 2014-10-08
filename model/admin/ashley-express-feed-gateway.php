@@ -164,7 +164,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	 */
 	public function run_flag_products( Account $account ) {
 
-        $this->get_xml( $account, '846-' );
+        if ( !$this->get_xml( $account, '846-' ) )
+            return false;
 
         // Declare array
         $ashley_express_skus = array();
