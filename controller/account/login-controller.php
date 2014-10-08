@@ -70,7 +70,7 @@ class LoginController extends BaseController {
         if ( !$token->id )
             return new RedirectResponse('/login/');
 
-        $form = new FormTable('activate_account');
+        $form = new BootstrapForm('activate_account');
 
         $form->add_field( 'password', _('Password'), 'password' )
             ->attribute( 'maxlength', 30 )
