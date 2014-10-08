@@ -32,8 +32,10 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 3600 );
 
-        require_once MODEL_PATH . '../account/website-order.php';
-        require_once MODEL_PATH . '../account/website-shipping-method.php';
+        if ( !class_exists( 'WebsiteOrder' ) ) {
+            require_once MODEL_PATH . '../account/website-order.php';
+            require_once MODEL_PATH . '../account/website-shipping-method.php';
+        }
     }
 
     /**
