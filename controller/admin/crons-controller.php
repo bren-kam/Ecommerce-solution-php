@@ -113,10 +113,10 @@ class CronsController extends BaseController {
         gc_collect_cycles();
 
         /** Run Ashley Feed */
-        $ashley = new AshleyMasterProductFeedGateway();
-        $ashley->run();
-        unset( $ashley );
-        gc_collect_cycles();
+        //$ashley = new AshleyMasterProductFeedGateway();
+        //$ashley->run();
+        //unset( $ashley );
+        //gc_collect_cycles();
 
         // Ashley Package Gateway
         $ashley_package_gateway = new AshleyPackageProductFeedGateway();
