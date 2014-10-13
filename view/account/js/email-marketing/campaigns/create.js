@@ -396,7 +396,7 @@ var CampaignForm = {
             , dateFormat: 'yyyy-mm-dd'
         }).on( 'changeDate', function(e) {
             $("#date").val(e.format('yyyy-mm-dd'));
-        }).bootstrapDatepicker( 'setDate', $('#date').val() );
+        }).bootstrapDatepicker( 'setDate', new Date( $('#date').val() ) );
 
         // Time Picker
         var time = $('#tTime');
