@@ -110,7 +110,7 @@ class Analytics {
         $values = array();
 
         // Get the values
-        if ( is_array( $response ) )
+        if ( isset( $response['rows'] ) )
             foreach( $response['rows'] as $row )
                 $values[strtotime($row[0]) . '000'] = $row[1];
 
@@ -140,7 +140,7 @@ class Analytics {
             , 'filters' => $ga_filter_str
         ) );
 
-        if ( is_array( $response ) )
+        if ( isset( $response['rows'] ) )
             foreach ( $response['rows'] as $row ) {
                 $totals = array(
                     'bounce_rate' => number_format( $row[0], 2 )
@@ -184,7 +184,7 @@ class Analytics {
         // Initialize variable
         $traffic_sources_totals['total'] = 0;
 
-        if ( is_array( $response ) )
+        if ( isset( $response['rows'] ) )
         foreach ( $response['rows'] as $row ) {
 
             $traffic_sources_totals['total'] += $row[1];
@@ -242,7 +242,7 @@ class Analytics {
             , 'filters' => $ga_filter_str
         ) );
 
-        if ( is_array( $response ) )
+        if ( isset( $response['rows'] ) )
         foreach ( $response['rows'] as $row ) {
             $traffic_sources[] = array(
                 'source' => $row[0]
@@ -296,7 +296,7 @@ class Analytics {
             , 'filters' => $ga_filter_str
         ) );
 
-        if ( is_array( $response ) )
+        if ( isset( $response['rows'] ) )
         foreach ( $response['rows'] as $row ) {
 
             $keywords[] = array(
@@ -342,7 +342,7 @@ class Analytics {
             , 'filters' => $ga_filter_str
         ) );
 
-        if ( is_array( $response ) )
+        if ( isset( $response['rows'] ) )
         foreach ( $response['rows'] as $row ) {
 
             $content_overview[] = array(
