@@ -36,7 +36,7 @@ class AnalyticsController extends BaseController {
             $traffic_sources = $analytics->get_traffic_sources_totals();
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         } catch ( ModelException $e ) {
             $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
             return new RedirectResponse('/');
@@ -100,7 +100,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/content-overview/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
 
         // Get all the data
@@ -162,7 +162,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/page/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
         $analytics->set_ga_filter( 'pagePath==' . $_GET['p'] );
 
@@ -221,7 +221,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/traffic-sources-overview/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
 
         // Get all the data
@@ -284,7 +284,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/traffic-sources/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
 
         // Get all the data
@@ -344,7 +344,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/keywords/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
 
         // Get all the data
@@ -407,7 +407,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/keyword/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
         $analytics->set_ga_filter( 'keyword==' . $_GET['k'] );
 
@@ -470,7 +470,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
         } catch ( GoogleAnalyticsOAuthException $e ) {
             $_SESSION['google-analytics-callback'] = '/analytics/source/';
-            return new RedirectResponse( $analytics->ga->auth->buildAuthUrl() );
+            return new RedirectResponse( '/analytics/oauth2/' );
         }
         $analytics->set_ga_filter( 'source==' . $_GET['s'] );
 
@@ -623,6 +623,18 @@ class AnalyticsController extends BaseController {
 
         return $response;
     }
+    
+    public function oauth2() {
+        try {
+            $analytics = new Analytics();
+            $analytics->setup($this->user->account);
+        } catch ( Exception $e ) { /* DO NOTHING */ }
+        $login_url = $analytics->ga->auth->buildAuthUrl();
+
+        $this->resources->javascript( 'analytics/oauth2' );
+        return $this->get_template_response( 'oauth2' )
+            ->set( compact( 'login_url' ) );
+    }
 
     public function oauth2callback() {
         library("GoogleAnalyticsAPI");
@@ -649,7 +661,7 @@ class AnalyticsController extends BaseController {
             }
         }
 
-        return new RedirectResponse( $_SESSION['google-analytics-callback'] );
+        return new HtmlResponse('<script>window.opener.location = "/analytics/"; window.close();</script>'); // RedirectResponse( $_SESSION['google-analytics-callback'] );
     }
 }
 
