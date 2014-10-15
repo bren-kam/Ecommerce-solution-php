@@ -148,4 +148,19 @@ nonce::field( 'load_product', '_load_product' );
         </div>
     </div>
 
+    <div class="row-fluid <?php if ( !$ad->id ) echo 'hidden'; ?>">
+        <div class="col-lg-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    Post AD
+                </header>
+                <div class="panel-body">
+                    <p class="text-right">
+                        <button type="button" class="btn btn-primary" id="post-ad">Post AD</button>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+
 </form>
