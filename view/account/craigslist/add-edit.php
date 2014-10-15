@@ -139,10 +139,6 @@ nonce::field( 'load_product', '_load_product' );
 
                     <div id="preview"></div>
 
-                    <p>
-                        <button type="button" class="btn btn-primary" id="post-ad">Post AD</button>
-                    </p>
-
                 </div>
             </section>
         </div>
