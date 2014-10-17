@@ -2039,7 +2039,7 @@ class WebsiteController extends BaseController {
             $header = $_POST['header'];
 
             // Make URLs work on SSL and non-SSL
-            $header = preg_replace( '/http(s?):\/\//i', '//', $header );
+            $header = preg_replace( '/src="http(s?):\/\//i', '/src="/', $header );
             // Make S3 Images work on SSL and non-SSL
             $header = preg_replace( '/src="http:\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', 'src="//s3.amazonaws.com/$1.retailcatalog.us/$2"', $header );
             // Encode Entities
