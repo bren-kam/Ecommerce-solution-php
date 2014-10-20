@@ -6,7 +6,7 @@ var AnalyticsOAuth2 = {
 
     , openPopup: function(e) {
         if ( e ) e.preventDefault();
-        window.open( $(this).attr('href'), 'login-popup', "width=600,height=400,scrollbars=no" );
+        window.open( $(this).attr('href'), 'login-popup', "width=640,height=480,scrollbars=no" );
     }
 
 }
