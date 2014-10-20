@@ -39,6 +39,8 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
 
     private $current_product_list = array();
 
+    private $brands = array();
+
     public function __construct() {
         // Load Categories
         $category = new Category();
@@ -61,6 +63,12 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         $this->categories_by_name = $categories_by_name;
 
         $this->current_product_list = $this->get_current_products();
+
+        $brand = new Brand();
+        $brand_list = $brand->get_all();
+        foreach ( $brand_list as $b ) {
+            $this->brands[ $b->name ] = $b;
+        }
     }
 
     private function get_current_products() {
@@ -92,55 +100,76 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         echo "Connecting...\n";
         $connection = mssql_connect( self::DB_URL, self::DB_USER, self::DB_PASS );
         mssql_select_db( self::DB_NAME, $connection );
-        $query = mssql_query( "SELECT * FROM stage" );
-        if ( !$query ) {
-            echo "Something bad happened\n";
-            return;
-        }
 
-        while ( ( $row = mssql_fetch_object( $query ) ) !== FALSE ) {
-            $this->process_row( $row );
-        }
+        $page = 15;
+        do {
+            $start = $page * 10000;
+            $end = ($page+1) * 10000;
+            $page++;
+            echo date('Y-m-d H.i.s') . " - SELECT * FROM stage WHERE id BETWEEN $start AND $end\n";
 
+            $query = mssql_query("SELECT * FROM stage WHERE id BETWEEN $start AND $end");
+            if (!$query) {
+                echo "Something bad happened\n";
+                return;
+            }
+
+            $i = 0;
+            while (($row = mssql_fetch_object($query)) !== FALSE) {
+                $this->process_row($row);
+                $i++;
+            }
+
+            echo "Processed $i rows from $start to $end\n";
+        } while ( $i != 0 );
         echo "Finished\n";
 
         mssql_close( $connection );
     }
 
     private function process_row( $row ) {
-        echo "<hr>Getting $row->sku_code...<br>\n";
+        echo "Getting $row->sku_code...\n";
 
-        /**
-         * @var Product $product
-         */
-        $product = isset( $this->current_product_list[$row->sku_code] ) ?
-            $this->current_product_list[$row->sku_code] :
-            null;
+        $brand = isset( $this->brands[ $row->vendor_name ] ) ? $this->brands[ $row->vendor_name ] : NULL;
+        if ( !$brand ) {
+            echo "Creating Brand {$row->vendor_name}...\n";
+            $brand = new Brand();
+            $brand->name = $row->vendor_name;
+            $brand->slug = format::slug( $row->vendor_name );
+            $brand->create();
+            $this->brands[ $row->vendor_name ] = $brand;
+        }
 
-        if ( !$product ) {
+        echo "Brand #{$brand->id}\n";
+
+        $product = new Product();
+        $product->get_by_sku( $row->sku_code );
+
+        if ( !$product->id ) {
             if ( $row->ecommerce != 'Y' ) {
+                echo "New product, not for ecommerce. Skip\n";
                 return;
             }
 
-            echo "Creating new Product<br>";
-            $product = new Product();
+            echo "Creating new Product\n";
             $product->website_id = 0;  // Global Product
             $product->user_id_created = self::USER_ID;
             $product->publish_visibility = 'private';
             $product->status = 'in-stock';
             $product->create();
 
-            $product_name = "{$row->vendor_name} {$row->collection_name} {$row->type_name} {$row->sku_code}";
+            // [Collection] [Color] [Category] - [Size Category]
+            $product_name = "{$row->collection_name} {$row->vendor_primary_color} {$row->category} - {$row->size_category}";
             $product->sku = $row->sku_code;
             $product->name = ucwords( strtolower ( $product_name ) );
             $product->slug = format::slug( $product->name );
 
-            echo "Trying with Image " . $row->medium_image_filename . " <br>\n";
+            // echo "Trying with Image " . $row->medium_image_filename . " <br>\n";
             if ( curl::check_file( $row->medium_image_filename ) ) {
                 $product->add_images( array(
                     $row->medium_image_filename
                 ) );
-                $product->publish_visibility = 'public';
+                $product->publish_visibility = 'RMI';
             }
         } else {
             echo "Product found {$product->id}<br>\n";
@@ -151,15 +180,17 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         $duplicated_slug = new Product();
         $duplicated_slug->get_by_slug( $product->slug );
         // If slug exists, append random number and check again
-        while (     $duplicated_slug->id != null ) {
+        while ( $duplicated_slug->id != null ) {
             $product->slug = str_replace( '---', '-', format::slug( $product->name ) ) . '-' . rand( 1000, 9999 );
+            unset($duplicated_slug);
             $duplicated_slug = new Product();
             $duplicated_slug->get_by_slug( $product->slug );
         }
+        unset($duplicated_slug);
 
         $product->description = "<p>{$row->description}</p>\n";
 
-        $product->brand_id = self::BRAND_ID;
+        $product->brand_id = $brand->id;
         $product->category_id = $this->get_category_id( $row->category );
         $product->industry_id = 1;  // Furniture
         $product->price = $row->vendor_cost;
@@ -167,15 +198,24 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         $product->publish_date = date('Y-m-d H:i:s');
 
         $specifications = array();
-        $specifications[] = array( 'Width', "{$row->width_1}'{$row->width_2}\"" );
-        $specifications[] = array( 'Depth', "{$row->length_1}'{$row->length_2}\"" );
+        if ( $row->width_1 )
+            $specifications[] = array( 'Width', "{$row->width_1}'{$row->width_2}\"" );
+        if ( $row->length_1 )
+            $specifications[] = array( 'Depth', "{$row->length_1}'{$row->length_2}\"" );
+        if ( $row->shape_name )
+            $specifications[] = array( 'Shape', "{$row->shape_name}" );
+        if ( $row->background_color_name )
+            $specifications[] = array( 'Background Color', "{$row->background_color_name}" );
+        if ( $row->border_color_name )
+            $specifications[] = array( 'Border', "{$row->border_color_name}" );
+        if ( $row->type_name )
+            $specifications[] = array( 'Type', "{$row->type_name}" );
+        if ( $row->origin_name )
+            $specifications[] = array( 'Origin', "{$row->origin_name}" );
 
         if ( $row->ecommerce != 'Y' ) {
             $product->publish_visibility = 'deleted';
         }
-
-        echo json_encode($product) . "<br>\n";
-        echo json_encode($specifications) . "<br>\n";
 
         $product->save();
 
@@ -184,7 +224,9 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
             $product->add_specifications( $specifications );
         }
 
-        flush();
+        unset($product);
+        unset($specifications);
+        unset($row);
     }
 
 }
