@@ -629,11 +629,16 @@ class AnalyticsController extends BaseController {
             $analytics = new Analytics();
             $analytics->setup($this->user->account);
         } catch ( Exception $e ) { /* DO NOTHING */ }
+
         $login_url = $analytics->ga->auth->buildAuthUrl();
+
+        $settings = $this->user->account->get_settings( 'ga-username', 'ga-password' );
+        $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
+        $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
 
         $this->resources->javascript( 'analytics/oauth2' );
         return $this->get_template_response( 'oauth2' )
-            ->set( compact( 'login_url' ) );
+            ->set( compact( 'login_url', 'ga_username', 'ga_password' ) );
     }
 
     public function oauth2callback() {
