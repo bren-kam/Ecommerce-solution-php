@@ -139,6 +139,17 @@ class CronsController extends BaseController {
         unset( $website_product_view );
         gc_collect_cycles();
 
+        // Email Accounts Disabled Yesterday
+        $account = new Account();
+        $accounts = $account->list_all( array( ' AND a.`status` = 0 AND a.`date_updated` >= CURDATE() - INTERVAL 1 DAY ', '', '', 500 ) );
+        $message =  'Accounts Disabled:<br><br>';
+        foreach ( $accounts as $account ) {
+            $message .= "{$account->domain} <a href=\"http://admin.greysuitretail.com/accounts/edit/?aid={$account->website_id}\">Edit Site</a> - Disabled At {$account->date_updated} <br>";
+        }
+        $yesterday = new DateTime();
+        $yesterday->sub( new DateInterval('P1D') );
+        fn::mail( 'technical@greysuitretail.com', 'Sites disabled since ' . $yesterday->format('Y-m-d') , $message, 'noreply@greysuitretail.com', 'noreply@greysuitretail.com', false );
+
         return new HtmlResponse( 'Daily Jobs Completed' );
     }
 
