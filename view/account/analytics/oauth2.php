@@ -24,27 +24,27 @@
                     <li>Password: <?php echo $ga_password ?></li>
                 </ul>
 
-                <p>
-                    <a href="<?php echo $login_url ?>" class="btn btn-primary" id="login-popup-link">Log In into Google</a>
-                </p>
-
                 <p><strong>Note, please ensure you have logged out of your personal Google account before proceeding with the below steps</strong></p>
 
-                <p>1. Click the “Log into Google” button shown below.</p>
+                <p>1. Click the "Log in to Google" button shown below.</p>
+
+                <p>
+                    <a href="<?php echo $login_url ?>" class="btn btn-primary" id="login-popup-link">Log in to Google</a>
+                </p>
 
                 <div id="step-2-short">
-                    <p>2. A popup box will appear prompting you to login to Google. You will need to login with the email address and password provided on this page: <a href="javascript:;" id="show-step-2-long">(Already logged in?)</a></p>
+                    <p>2. A popup box will appear prompting you to log in to Google. You will need to login with the email address and password provided on this page: <a href="javascript:;" id="show-step-2-long">(Already logged in?)</a></p>
                     <p class="text-center"><img src="/images/analytics/oauth_2c.png" /></p>
                 </div>
 
                 <div id="step-2-long" class="hidden">
-                    <p>2a. A popup box will appear . Click the email address in the top right and then “Add Account”, as shown below:</p>
+                    <p>2a. A popup box will appear . Click the email address in the top right and then "Add Account", as shown below:</p>
                     <p class="text-center"><img src="/images/analytics/oauth_2a.png" /></p>
 
-                    <p>2b. You will then see a screen that says “Add Account”, click the add account:</p>
+                    <p>2b. You will then see a screen that says "Add Account", click the add account:</p>
                     <p class="text-center"><img src="/images/analytics/oauth_2b.jpg" /></p>
 
-                    <p>2c. A popup box will appear prompting you to login to Google. You will need to login with the email address and password provided on this page: <a href="javascript:;" id="show-step-2-short">(Not logged in?)</a></p>
+                    <p>2c. A popup box will appear prompting you to log in to Google. You will need to login with the email address and password provided on this page: <a href="javascript:;" id="show-step-2-short">(Not logged in?)</a></p>
                     <p class="text-center"><img src="/images/analytics/oauth_2c.png" /></p>
                 </div>
 
