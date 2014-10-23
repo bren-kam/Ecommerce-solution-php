@@ -142,13 +142,29 @@ class CronsController extends BaseController {
         // Email Accounts Disabled Yesterday
         $account = new Account();
         $accounts = $account->list_all( array( ' AND a.`status` = 0 AND a.`date_updated` >= CURDATE() - INTERVAL 1 DAY ', '', '', 500 ) );
-        $message =  'Accounts Disabled:<br><br>';
-        foreach ( $accounts as $account ) {
-            $message .= "{$account->domain} <a href=\"http://admin.greysuitretail.com/accounts/edit/?aid={$account->website_id}\">Edit Site</a> - Disabled At {$account->date_updated} <br>";
+        if ( count( $accounts ) ) {
+            $message = 'Accounts Disabled:<br><br>';
+            foreach ($accounts as $account) {
+                $message .= "{$account->domain} <a href=\"http://admin.greysuitretail.com/accounts/edit/?aid={$account->website_id}\">Edit Site</a> - Disabled At {$account->date_updated} <br>";
+            }
+            $yesterday = new DateTime();
+            $yesterday->sub(new DateInterval('P1D'));
+            fn::mail('technical@greysuitretail.com, gabriel@greysuitretail.com', 'Sites disabled since ' . $yesterday->format('Y-m-d'), $message, 'noreply@greysuitretail.com', 'noreply@greysuitretail.com', false);
         }
-        $yesterday = new DateTime();
-        $yesterday->sub( new DateInterval('P1D') );
-        fn::mail( 'technical@greysuitretail.com', 'Sites disabled since ' . $yesterday->format('Y-m-d') , $message, 'noreply@greysuitretail.com', 'noreply@greysuitretail.com', false );
+
+        // Email Products created yesterday
+        $product = new Product();
+        $new_product_list = $product->list_all( array( ' AND p.`date_created` >= CURDATE() - INTERVAL 1 DAY ', '', '', 10000 ) );
+        if ( count( $new_product_list ) ) {
+            $email_message = "New Products: " . count( $new_product_list ) . PHP_EOL . PHP_EOL;
+            foreach( $new_product_list as $p ) {
+                $email_message .= "{$p->sku} - {$p->name} - http://admin.greysuitretail.com/products/add-edit/pid={$p->id}" . PHP_EOL;
+            }
+            $yesterday = new DateTime();
+            $yesterday->sub( new DateInterval('P1D') );
+            fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com, gabriel@greysuitretail.com', 'Ashley Products - ' . $yesterday->format('Y-m-d'), $email_message );
+        }
+
 
         return new HtmlResponse( 'Daily Jobs Completed' );
     }
