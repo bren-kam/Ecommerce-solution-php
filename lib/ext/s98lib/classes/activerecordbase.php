@@ -432,7 +432,7 @@ abstract class ActiveRecordBase {
 
             // Doesn't exist, then create it
             if ( !$this->_pdo ) {
-                if ( stristr( ABS_PATH, '/gsr/systems/' ) ) {
+                if ( file_exists( '/gsr/systems/db.php' ) ) {
                     require '/gsr/systems/db.php';
 
                     try {
