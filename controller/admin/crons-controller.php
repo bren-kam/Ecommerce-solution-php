@@ -157,8 +157,10 @@ class CronsController extends BaseController {
         $new_product_list = $product->list_all( array( ' AND p.`date_created` >= CURDATE() - INTERVAL 1 DAY ', '', '', 10000 ) );
         if ( count( $new_product_list ) ) {
             $email_message = "New Products: " . count( $new_product_list ) . PHP_EOL . PHP_EOL;
+            $i = 0;
             foreach( $new_product_list as $p ) {
-                $email_message .= "{$p->sku} - {$p->name} - http://admin.greysuitretail.com/products/add-edit/pid={$p->id}" . PHP_EOL;
+                $i++;
+                $email_message .= "[{$i}] {$p->sku} - {$p->name} - Created By {$p->created_by} - http://admin.greysuitretail.com/products/add-edit/?pid={$p->id}" . PHP_EOL;
             }
             $yesterday = new DateTime();
             $yesterday->sub( new DateInterval('P1D') );
