@@ -94,6 +94,56 @@ class SettingsController extends BaseController {
             ->select( 'logo-and-phone' );
     }
 
+    /**
+     * Billing Information
+     *
+     * @return TemplateResponse
+     */
+    protected function billing_information() {
+        if ( $this->verified() ) {
+            library('arb');
+
+            // Set Variables
+            $start_date = new DateTime();
+            $start_date->add( new DateInterval('P1M') ); // 1 Month from now
+
+            // Create instance of ARB
+            $arb = new arb( $_SESSION['store_name'] );
+
+            // Set variables
+            $arb->setInterval(1, 'Months'); // if omitted, default is 1 month
+            $arb->setAmount( $total_monthly_price );
+            $arb->setStartDate( $start_date->format('Y-m-d') ); // if omitted, default is "today"
+            $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
+            $arb->setOrderDetails('Managed Website Monthly Payment');
+            $arb->setCustomerId( $_SESSION['user_id'] );
+            $arb->setCustomerPhone( $_SESSION['work_phone'] );
+            $arb->setCustomerEmail( $_SESSION['email'] );
+
+            // Set billing information
+            $arb->setBillingName( $_SESSION['billing_first_name'], $_SESSION['billing_last_name'] );
+            $arb->setBillingAddress( $_SESSION['billing_address'] );
+            $arb->setBillingCity( $_SESSION['billing_city'] );
+            $arb->setBillingState( $_SESSION['billing_state'] ); //full state name can be used (i.e. Massachusetts)
+            $arb->setBillingZip( $_SESSION['billing_zip'] );
+            $arb->setBillingCountry('United States'); // optional
+
+            // set the payment details (one of the two options is required)
+            $arb->setPaymentDetails( $cc_info['number'], $cc_info['expiration_year'] . '-' . $cc_info['expiration_month'] );
+
+            // Submit the subscription request
+            $arb->UpdateSubscriptionRequest();
+
+            // Test and print results
+            $success_monthly_order = $arb->success;
+        }
+
+        return $this->get_template_response( 'billing-information' )
+            ->kb( 0 )
+            ->add_title( _('Billing Information') )
+            ->select( 'billing-information' );
+    }
+
     /***** AJAX *****/
 
     /**
