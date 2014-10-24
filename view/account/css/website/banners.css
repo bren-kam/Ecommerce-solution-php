@@ -24,6 +24,11 @@
   width: 100%;
   margin-top: 35px;
 }
+#banner-list .banner .input-daterange {
+  position: absolute;
+  bottom: 82px;
+  left: 125px;
+}
 #banner-list .banner-placeholder {
   height: 100px;
   width: 60%;

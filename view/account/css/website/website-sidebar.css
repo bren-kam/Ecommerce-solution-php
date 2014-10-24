@@ -29,6 +29,11 @@
 #sidebar-list .sidebar-element #sidebar-video {
   margin-bottom: 15px;
 }
+#sidebar-list .sidebar-element .input-daterange {
+  position: absolute;
+  bottom: 80px;
+  left: 125px;
+}
 #sidebar-list .sidebar-element-placeholder {
   height: 100px;
   width: 40%;

@@ -394,8 +394,8 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/website-sidebar', 'media-manager' )
-            ->css_url( Config::resource( 'videojs-css' ) )
-            ->javascript_url( Config::resource( 'jqueryui-js' ), Config::resource( 'videojs-js' ) )
+            ->css_url( Config::resource( 'videojs-css' ), Config::resource( 'bootstrap-datepicker-css' ) )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource( 'jqueryui-js' ), Config::resource( 'videojs-js' ) )
             ->javascript( 'fileuploader', 'media-manager', 'website/website-sidebar' );
 
         return $this->get_template_response( 'website-sidebar' )
@@ -443,7 +443,8 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/banners', 'media-manager' )
-            ->javascript_url( Config::resource( 'jqueryui-js' ) )
+            ->css_url( Config::resource('bootstrap-datepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource( 'jqueryui-js' ) )
             ->javascript( 'fileuploader', 'media-manager', 'website/banners' );
 
         return $this->get_template_response( 'banners' )
@@ -1628,23 +1629,29 @@ class WebsiteController extends BaseController {
         $attachment = new AccountPageAttachment();
         $attachment->get( $_POST['hAccountPageAttachmentId'], $this->user->account->id );
 
-        // Empty it the link they didn't enter anything
-        if ( 'Enter Link...' == $_POST['extra'] || 'http://' == $_POST['extra'] )
-            $_POST['extra'] = '';
-
         $meta = ( isset( $_POST['meta'] ) ) ? $_POST['meta'] : '';
 
         // Do validation
-        $v = new Validator( 'fUpdateExtra' );
-        $v->add_validation( 'extra', 'URL' );
+        $extra = isset( $_POST['extra']) ? $_POST['extra'] : '';
 
-        $response->check( empty( $errs ) && ( empty( $_POST['extra'] ) || stristr( $_POST['extra'], 'http' ) ), _('Please make sure you enter in a valid link') );
+        // "extra" can be an array, in that case we store it as JSON
+        if ( is_array( $extra ) ) {
+            // date parsing
+            if ( isset( $extra['date-start'] ) ) {
+                $extra['date-start'] = ( new DateTime( $extra['date-start'] ) )->format('Y-m-d');
+            }
 
-        if ( $response->has_error() )
-            return $response;
+            if ( isset( $extra['date-end'] ) ) {
+                $extra['date-end'] = ( new DateTime( $extra['date-end'] ) )->format('Y-m-d');
+            }
+
+            // make it json
+            $extra = json_encode($extra);
+
+        }
 
         // Update attachment
-        $attachment->extra = $_POST['extra'];
+        $attachment->extra = $extra;
         $attachment->meta = $meta;
         $attachment->save();
 

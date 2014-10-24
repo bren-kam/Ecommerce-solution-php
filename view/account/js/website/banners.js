@@ -19,6 +19,9 @@ var Banner = {
 
         Banner.template = $('#banner-template').clone().removeClass('hidden').removeAttr('id');
         $('#banner-template').remove();
+
+        $('#banner-list').on( 'click', '.show-date-range', Banner.showDateRange );
+        Banner.bindDateRange();
     }
 
     , changeStatus: function( event, state ) {
@@ -88,12 +91,14 @@ var Banner = {
                 '/website/create-banner/'
                 , { _nonce: $('#_create_banner').val(), fn: file.url, apid: $('#page-id').val() }
                 , function( response ) {
-                    Banner.template.clone()
+                    var element = Banner.template.clone()
                         .attr('data-attachment-id', response.id)
                         .find('img').attr('src', response.url).end()
                         .find('[name=hAccountPageAttachmentId]').val( response.id ).end()
-                        .find('input[type=checkbox]').bootstrapSwitch().end()
+                        .find('input[type=checkbox][data-toggle=switch]').bootstrapSwitch().end()
                         .prependTo('#banner-list');
+
+                    Banner.bindDateRange( element );
 
                     $('#new-element-loader').hide()
                         .prependTo('#banner-list');
@@ -104,6 +109,25 @@ var Banner = {
 
 
 
+        }
+    }
+
+    , bindDateRange: function(context) {
+        if ( context ) {
+            context.find('.input-daterange').datepicker({});
+        } else {
+            $('#banner-list .banner').each( function(k, v) {
+                $(v).find('.input-daterange').datepicker({});
+            });
+        }
+    }
+
+    , showDateRange: function() {
+        var daterange = $(this).parents('.banner').find('.input-daterange');
+        if ( $(this).is(':checked') ) {
+            daterange.removeClass('hidden').show();
+        } else {
+            daterange.hide();
         }
     }
 
