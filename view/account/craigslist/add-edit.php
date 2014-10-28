@@ -142,7 +142,7 @@ nonce::field( 'load_product', '_load_product' );
                     <div class="clearfix"></div>
 
                     <p>
-                        Submit your post to Craigslist <button type="button" class="btn btn-primary" id="post-ad">Post AD</button>
+                        Submit your post to Craigslist <button type="button" class="btn btn-primary" id="post-ad2">Post AD</button>
                     </p>
 
                 </div>

@@ -9,7 +9,7 @@ var CraigslistForm = {
         $('#fAddCraigslistTemplate .hidden').removeClass('hidden').hide();
 
         $('#show-preview').click( CraigslistForm.preview );
-        $('#post-ad').click( CraigslistForm.postAD );
+        $('#post-ad2').click( CraigslistForm.postAD );
 
         if ( $('#hProductID').val() ) {
             CraigslistForm.load();
