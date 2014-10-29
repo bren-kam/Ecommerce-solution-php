@@ -8,7 +8,8 @@ class ApiKeysController extends BaseController {
 
     public function index() {
         return $this->get_template_response( 'api-keys/index' )
-            ->add_title( 'API Keys' );
+            ->add_title( 'API Keys' )
+            ->menu_item( 'api-keys/index' );
     }
 
     public function list_all() {
@@ -89,7 +90,8 @@ class ApiKeysController extends BaseController {
 
         return $this->get_template_response('api-keys/manage')
             ->add_title('Manage API Key')
-            ->set( compact( 'api_key', 'brands', 'selected_brands', 'ashley_accounts', 'selected_ashley_accounts' ) );
+            ->set( compact( 'api_key', 'brands', 'selected_brands', 'ashley_accounts', 'selected_ashley_accounts' ) )
+            ->menu_item( 'api-keys/index' );
     }
 
 }
