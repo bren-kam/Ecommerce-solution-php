@@ -22,10 +22,16 @@ abstract class ActiveRecordBase {
     const EXCEPTION_DUPLICATE_ENTRY = 23000;
 
     /**
-     * Hold the PDO object
+     * Hold the PDO object MASTER
      * @var PDO
      */
-    private $_pdo;
+    private $_pdo_master;
+
+    /**
+     * Hold the PDO object SLAVE
+     * @var PDO
+     */
+    private $_pdo_slave;
 
     /**
      * Hold the last statement
@@ -149,12 +155,12 @@ abstract class ActiveRecordBase {
 
         // Setup the fields and criteria
         foreach ( array_keys( $data ) as $field ) {
-			$fields[] = "`$field` = ?";
-		}
+            $fields[] = "`$field` = ?";
+        }
 
         foreach ( (array) array_keys( $where ) as $field ) {
-			$criteria[] = "`$field` = ?";
-		}
+            $criteria[] = "`$field` = ?";
+        }
 
         // Create the values for a statement
         $sql = "UPDATE `$this->table` SET " . implode( ', ', $fields ) . ' WHERE ' . implode( ' AND ', $criteria );
@@ -177,10 +183,10 @@ abstract class ActiveRecordBase {
         // Make sure we have base arrays
         $criteria = array();
 
-         // Setup the fields and criteria
+        // Setup the fields and criteria
         foreach ( (array) array_keys( $where ) as $field ) {
-			$criteria[] = "`$field` = ?";
-		}
+            $criteria[] = "`$field` = ?";
+        }
 
         // Create the values for a statement
         $sql = "DELETE FROM `$this->table` WHERE " . implode( ' AND ', $criteria );
@@ -317,7 +323,7 @@ abstract class ActiveRecordBase {
             } else {
                 $where_sql[] = "`$key` = $field";
             }
-		}
+        }
 
         // Define SQL
         $sql = "INSERT INTO $table ( $field_keys ) SELECT $field_values FROM $table WHERE " . IMPLODE ( ' AND ', $where_sql ) . ' ON DUPLICATE KEY UPDATE ' . implode( ', ', $duplicate_keys );
@@ -357,7 +363,7 @@ abstract class ActiveRecordBase {
      * @static
      */
     public static function begin_transaction() {
-        Registry::get('pdo')->beginTransaction();
+        Registry::get('pdo_master')->beginTransaction();
     }
 
     /**
@@ -366,7 +372,7 @@ abstract class ActiveRecordBase {
      * @static
      */
     public static function commit() {
-        Registry::get('pdo')->commit();
+        Registry::get('pdo_master')->commit();
     }
 
     /**
@@ -375,7 +381,7 @@ abstract class ActiveRecordBase {
      * @static
      */
     public static function roll_back() {
-        Registry::get('pdo')->rollBack();
+        Registry::get('pdo_master')->rollBack();
     }
 
     /**
@@ -384,7 +390,7 @@ abstract class ActiveRecordBase {
      * @return int
      */
     public function get_insert_id() {
-        return $this->_pdo->lastInsertId();
+        return $this->_pdo_master->lastInsertId();
     }
 
     /**
@@ -416,7 +422,7 @@ abstract class ActiveRecordBase {
      * @return string
      */
     public function quote( $string ) {
-        return $this->_pdo->quote( $string );
+        return $this->_pdo_master->quote( $string );
     }
 
     /**
@@ -426,39 +432,42 @@ abstract class ActiveRecordBase {
      */
     private function _connect() {
         // Make sure we can do a query
-        if ( !$this->_pdo instanceof PDO ) {
+        if ( !$this->_pdo_master instanceof PDO || !$this->_pdo_slave instanceof PDO ) {
             // Try to get it from the registry
-            $this->_pdo = Registry::get('pdo');
+            $this->_pdo_master = Registry::get('pdo_master');
+            $this->_pdo_slave = Registry::get('pdo_slave');
 
             // Doesn't exist, then create it
-            if ( !$this->_pdo ) {
+            if ( !$this->_pdo_master || !$this->_pdo_slave ) {
                 if ( stristr( ABS_PATH, '/gsr/systems/' ) ) {
-                    require '/gsr/systems/db.php';
-
                     try {
-                        $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
-                    } catch( PDOException $e ) {
-                         // Switch to Slave
-                        unlink('/gsr/systems/db.php');
-                        symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
-                        require '/gsr/systems/db.php';
+                        require '/gsr/systems/db.master.php';
+                        $this->_pdo_master = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
 
+                        require '/gsr/systems/db.slave.php';
+                        $this->_pdo_slave = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                    } catch( PDOException $e ) {
+                        // Switch to Slave
                         try {
-                            $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                            require '/gsr/systems/db.slave.php';
+                            $this->_pdo_master = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                            $this->_pdo_slave = $this->_pdo_master;
                         } catch( PDOException $e ) {
                             throw new ModelException( $e->getMessage(), $e->getCode(), $e );
                         }
                     }
                 } else {
                     try {
-                        $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
+                        $this->_pdo_master = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
+                        $this->_pdo_slave = $this->_pdo_master;
                     } catch( PDOException $e ) {
                         throw new ModelException( $e->getMessage(), $e->getCode(), $e );
                     }
                 }
 
                 // Set it in the registry
-                Registry::set( 'pdo', $this->_pdo );
+                Registry::set( 'pdo_master', $this->_pdo_master );
+                Registry::set( 'pdo_slave', $this->_pdo_slave );
             }
         }
     }
@@ -527,7 +536,11 @@ abstract class ActiveRecordBase {
      */
     private function _prepare( $sql ) {
         try {
-            $statement = $this->_pdo->prepare( $sql );
+            if ( stripos( $sql, "SELECT" ) === 0 ) {
+                $statement = $this->_pdo_slave->prepare( $sql );
+            } else {
+                $statement = $this->_pdo_master->prepare( $sql );
+            }
         } catch ( PDOException $e ) {
             throw new ModelException( $e->getMessage(), $e->getCode(), $e );
         }
@@ -593,7 +606,7 @@ abstract class ActiveRecordBase {
             $key = ( is_string( $key ) ) ? $key : $key + 1;
 
             $replacement = ( is_string( $key ) ) ? $key : '?';
-            $this->_last_query = preg_replace( '/' . regexp::escape_string( $replacement ) . '/', $this->_pdo->quote( $value ), $this->_last_query, 1 );
+            $this->_last_query = preg_replace( '/' . regexp::escape_string( $replacement ) . '/', $this->_pdo_master->quote( $value ), $this->_last_query, 1 );
 
             // Bind the value
             try {

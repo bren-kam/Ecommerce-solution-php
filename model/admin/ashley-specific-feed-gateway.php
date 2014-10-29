@@ -405,7 +405,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      *
      * @return mixed
      */
-    protected function get_feed_accounts() {
+    public function get_feed_accounts() {
         return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) LEFT JOIN `website_settings` AS ws2 ON ( ws2.`website_id` = w.`website_id` AND ws2.`key` = 'feed-last-run' ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1 ORDER BY ws2.`value`", PDO::FETCH_CLASS, 'Account' );
     }
 

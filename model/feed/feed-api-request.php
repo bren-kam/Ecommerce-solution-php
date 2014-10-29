@@ -121,6 +121,7 @@ class FeedApiRequest {
 			return;
 		}
 
+        $this->feed->api_key = $api_key;
 		$this->statuses['auth'] = true;
 	}
 	
@@ -226,7 +227,7 @@ class FeedApiRequest {
 		
 		if ( !is_array( $products ) )
 			$products = array();
-		
+
         $this->add_response( array( 'success' => true, 'message' => 'success-get-products', 'products' => $products ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}

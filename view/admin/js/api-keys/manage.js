@@ -49,7 +49,7 @@ var ManageAshleyAccounts = {
 
     , setupAutocomplete: function() {
         var autocomplete = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('id')
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name')
             , queryTokenizer: Bloodhound.tokenizers.whitespace
             , local: AshleyAccounts
         });
@@ -62,7 +62,7 @@ var ManageAshleyAccounts = {
                 , highlight: true
                 }
             , {
-                displayKey: 'id'
+                displayKey: 'name'
                 , source: autocomplete.ttAdapter()
             }
         )
@@ -72,7 +72,7 @@ var ManageAshleyAccounts = {
 
     , add: function( event, item ) {
         $('#ashley-account-list').append(
-            '<li>' + item.id + ' <input type="hidden" name="ashley-accounts[]" value="' + item.id + '" /> <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a></li>'
+            '<li>' + item.name + ' <input type="hidden" name="ashley-accounts[]" value="' + item.id + '" /> <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a></li>'
         );
     }
 

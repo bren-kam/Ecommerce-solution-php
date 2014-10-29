@@ -64,7 +64,7 @@
                     <p><strong>Available Ashley Accounts:</strong></p>
                     <ul id="ashley-account-list">
                         <?php foreach( $selected_ashley_accounts as $ashley_account ): ?>
-                            <li><?php echo $ashley_account['id'] ?> <input type="hidden" name="ashley-account[]" value="<?php echo $ashley_account['id'] ?>" /><a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a></li>
+                            <li><?php echo $ashley_account['name'] ?> <input type="hidden" name="ashley-accounts[]" value="<?php echo $ashley_account['id'] ?>" /><a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a></li>
                         <?php endforeach; ?>
                     </ul>
 
