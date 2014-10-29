@@ -42,7 +42,7 @@
                     <p class="text-center"><img src="/images/analytics/oauth_2a.png" /></p>
 
                     <p>2b. You will then see a screen that says "Add Account", click the add account:</p>
-                    <p class="text-center"><img src="/images/analytics/oauth_2b.jpg" /></p>
+                    <p class="text-center"><img src="/images/analytics/oauth_2b.png" /></p>
 
                     <p>2c. A popup box will appear prompting you to log in to Google. You will need to login with the email address and password provided on this page: <a href="javascript:;" id="show-step-2-short">(Not logged in?)</a></p>
                     <p class="text-center"><img src="/images/analytics/oauth_2c.png" /></p>
