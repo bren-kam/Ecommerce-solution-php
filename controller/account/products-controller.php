@@ -2087,4 +2087,22 @@ class ProductsController extends BaseController {
         return $response;
     }
 
+    /**
+     * Reset all prices
+     *
+     * Set all AccountProducts prices to 0
+     *
+     * @return RedirectResponse
+     */
+    protected function reset_all_prices() {
+
+        $account_product = new AccountProduct();
+        $account_product->reset_price_by_account( $this->user->account->id );
+
+        $this->notify( _('All account prices has been reseted.') );
+
+        return new RedirectResponse( "/products/settings/" );
+    }
+
+
 }
