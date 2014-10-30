@@ -63,7 +63,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
 <script src="//cdn.jsdelivr.net/jquery.bootstrapvalidation/1.3.7/jqBootstrapValidation.min.js"></script>
 <script src="/resources/js_single/?f=jquery.dcjqaccordion.2.7"></script>
 <script src="//cdn.jsdelivr.net/jquery.scrollto/1.4.8/jquery.scrollTo.min.js" type="text/javascript"></script>
-<script src="//cdn.jsdelivr.net/jquery.nicescroll/3.5.4/jquery.nicescroll.min.js" type="text/javascript"></script>
+<!--<script src="//cdn.jsdelivr.net/jquery.nicescroll/3.5.4/jquery.nicescroll.min.js" type="text/javascript"></script>-->
 <script src="//cdn.jsdelivr.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/jquery.customselect/0.5.1/jquery.customSelect.min.js" ></script>
 <script src="/resources/js_single/?f=respond.min" ></script>

@@ -1468,6 +1468,8 @@ class ProductsController extends BaseController {
         if ( !empty( $_GET['b'] ) )
             $dt->add_where( ' AND p.`brand_id` = ' . (int) $_GET['b'] );
 
+        $dt->search( array( 'p.`sku`' => false, 'p.`name`' => false, 'wp.`alternate_price`' => false, 'wp.`price`' => false, 'wp.`sale_price`' => false, 'wp.`price_note`' => false ) );
+
         if ( !empty( $_GET['cid'] ) ) {
             $category = new Category();
             $account_category = new AccountCategory();

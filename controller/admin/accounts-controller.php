@@ -939,7 +939,7 @@ class AccountsController extends BaseController {
         $account = new Account;
         $account->get( $_GET['aid'] );
 
-        $form = new FormTable( 'fAddEmailTemplate' );
+        $form = new BootstrapForm( 'fAddEmailTemplate' );
         $form->submit( _('Add Template') );
 
         $form->add_field( 'text', _('View Product Button'), 'tViewProductButton' )

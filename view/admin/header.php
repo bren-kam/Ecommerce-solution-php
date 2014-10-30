@@ -3,6 +3,7 @@
  * @var Template $template
  * @var Resources $resources
  * @var Notification[] $notifications
+ * @var User $user
  */
 ?>
 <!DOCTYPE html>
@@ -207,6 +208,15 @@
                     <li <?php if ( $template->v('knowledge-base/categories') ) echo 'class="active"'?>><a href="/knowledge-base/categories/?s=admin">Categories</a></li>
                 </ul>
             </li>
+
+            <?php if ( $user->has_permission( User::ROLE_ADMIN ) ): ?>
+                <li class="sub-menu">
+                    <a href="/api-keys/" <?php if ( $template->in_menu_item('api-keys') ) echo 'class="active"'?>>
+                        <i class="fa fa-key"></i>
+                        <span>API Keys</span>
+                    </a>
+                </li>
+            <?php endif; ?>
 
         </ul>
         <!-- sidebar menu end-->

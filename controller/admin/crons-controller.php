@@ -10,10 +10,8 @@ class CronsController extends BaseController {
 
     /**
      * Hourly
-     *
-     * @return HtmlResponse
      */
-    protected function hourly() {
+    public function remove_unused_ticket_uploads() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
@@ -29,14 +27,23 @@ class CronsController extends BaseController {
         $keys = $ticket_upload->get_keys_by_uncreated_tickets();
 
         if ( !empty( $keys ) ) {
-			// Remove uploads
-			foreach ( $keys as $key ) {
-				$file->delete_file( "attachments/{$key}" );
-			}
+            // Remove uploads
+            foreach ( $keys as $key ) {
+                $file->delete_file( "attachments/{$key}" );
+            }
 
-			// Delete everything relating to them
-			$ticket->deleted_uncreated_tickets();
-		}
+            // Delete everything relating to them
+            $ticket->deleted_uncreated_tickets();
+        }
+    }
+
+    /**
+     * Hourly
+     */
+    public function facebook_posts() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         /** Have Social media send out facebook posts */
         $social_media_posting_post = new SocialMediaPostingPost();
@@ -75,10 +82,28 @@ class CronsController extends BaseController {
             if ( !empty( $sm_error_ids ) )
                 $social_media_posting_post->mark_errors( $sm_error_ids );
         }
+    }
+
+    /**
+     * Hourly
+     */
+    public function email_marketing_mark_sent() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Mark emails as sent
         $email_marketing = new EmailMarketing();
         $email_marketing->mark_sent();
+    }
+
+    /**
+     * Hourly
+     */
+    public function ashley_express_order_status() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Ashley Express Feed - Order Acknowledgement
         $ashley_express_feed = new AshleyExpressFeedGateway();
@@ -91,17 +116,12 @@ class CronsController extends BaseController {
         $ashley_express_feed->run_order_asn_all();
         unset( $ashley_express_feed );
         gc_collect_cycles();
-
-
-        return new HtmlResponse( 'Hourly Jobs Completed');
     }
 
     /**
      * Daily
-     *
-     * @return HtmlResponse
      */
-    protected function daily() {
+    public function ashley_express_get_products() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
@@ -111,43 +131,115 @@ class CronsController extends BaseController {
         $ashley_express_feed->run_flag_products_all();
         unset( $ashley_express_feed );
         gc_collect_cycles();
+    }
 
-        /** Run Ashley Feed */
-        $ashley = new AshleyMasterProductFeedGateway();
-        $ashley->run();
-        unset( $ashley );
-        gc_collect_cycles();
+    /**
+     * Daily
+     */
+    public function ashley_package() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Ashley Package Gateway
         $ashley_package_gateway = new AshleyPackageProductFeedGateway();
         $ashley_package_gateway->run();
         gc_collect_cycles();
+    }
+
+    /**
+     * Daily
+     */
+    public function site_on_time() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         /** Run Site On Time Feed */
         $site_on_time = new SiteOnTimeProductFeedGateway();
         $site_on_time->run();
         unset( $site_on_time );
         gc_collect_cycles();
+    }
+
+    /**
+     * Daily
+     */
+    public function remove_discontinued_products() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Remove Discontinued products
         $account_product = new AccountProduct();
         $account_product->remove_all_discontinued();
+    }
+
+    /**
+     * Daily
+     */
+    public function purge_website_product_view() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Remove Old Product View Data
         $website_product_view = new WebsiteProductView();
         $website_product_view->purge_old_data();
         unset( $website_product_view );
         gc_collect_cycles();
+    }
 
-        return new HtmlResponse( 'Daily Jobs Completed' );
+    /**
+     * Daily
+     */
+    public function disabled_accounts_report() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        // Email Accounts Disabled Yesterday
+        $account = new Account();
+        $accounts = $account->list_all( array( ' AND a.`status` = 0 AND a.`date_updated` >= CURDATE() - INTERVAL 1 DAY ', '', '', 500 ) );
+        if ( count( $accounts ) ) {
+            $message = 'Accounts Disabled:<br><br>';
+            foreach ($accounts as $account) {
+                $message .= "{$account->domain} <a href=\"http://admin.greysuitretail.com/accounts/edit/?aid={$account->website_id}\">Edit Site</a> - Disabled At {$account->date_updated} <br>";
+            }
+            $yesterday = new DateTime();
+            $yesterday->sub(new DateInterval('P1D'));
+            fn::mail('technical@greysuitretail.com, gabriel@greysuitretail.com', 'Sites disabled since ' . $yesterday->format('Y-m-d'), $message, 'noreply@greysuitretail.com', 'noreply@greysuitretail.com', false);
+        }
+    }
+
+    /**
+     * Daily
+     */
+    public function new_products_report() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        // Email Products created yesterday
+        $product = new Product();
+        $new_product_list = $product->list_all( array( ' AND p.`date_created` >= CURDATE() - INTERVAL 1 DAY ', '', '', 10000 ) );
+        if ( count( $new_product_list ) ) {
+            $email_message = "New Products: " . count( $new_product_list ) . PHP_EOL . PHP_EOL;
+            $i = 0;
+            foreach( $new_product_list as $p ) {
+                $i++;
+                $email_message .= "[{$i}] {$p->sku} - {$p->name} - Created By {$p->created_by} - http://admin.greysuitretail.com/products/add-edit/?pid={$p->id}" . PHP_EOL;
+            }
+            $yesterday = new DateTime();
+            $yesterday->sub( new DateInterval('P1D') );
+            fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com, gabriel@greysuitretail.com', 'Ashley Products - ' . $yesterday->format('Y-m-d'), $email_message );
+        }
     }
 
     /**
      * Weekly
-     *
-     * @return HtmlResponse
      */
-    protected function weekly() {
+    public function ashley_specific_feed() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
@@ -155,16 +247,32 @@ class CronsController extends BaseController {
         // Run Ashley Feed
         $ashley = new AshleySpecificFeedGateway();
         $ashley->run_all();
+    }
+
+    /**
+     * Weekly
+     */
+    public function purge_api_ext_log() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Clean up old API logs (1 month)
         $api_ext_log = new ApiExtLog();
         $api_ext_log->purge();
+    }
+
+    /**
+     * Weekly
+     */
+    public function butler_feed() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
 
         // Run Butler Feed
         $butler = new ButlerFeedGateway();
         $butler->run();
-
-        return new HtmlResponse( 'Weekly Jobs Completed' );
     }
 
     /**

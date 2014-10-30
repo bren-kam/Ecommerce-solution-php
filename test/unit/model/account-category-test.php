@@ -152,11 +152,8 @@ class AccountCategoryTest extends BaseDatabaseTest {
      */
     public function testReorganizeCategories() {
         // Stub
-        $category = $this->getMock('Category');
-        $category->expects($this->once())
-            ->method('get_all');
-        $category->expects($this->once())
-            ->method('get_all');
+        $category = new Category();
+        $category->get( self::CATEGORY_ID );
 
         // Create
         $this->phactory->create( 'website_categories' );

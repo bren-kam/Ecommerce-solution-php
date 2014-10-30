@@ -364,7 +364,11 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 			// These will be used twice
 			$sku_pieces = explode( '/', $sku );
 			$series = array_shift( $sku_pieces );
-			
+            // Remove anything within parenthesis on SKU Pieces
+            foreach ( $sku_pieces as $k => $sp ) {
+                $sku_pieces[$k] = preg_replace( '/\([^)]*\)/', '', $sp );
+            }
+
             // Get the name -- which may be hard if the description is empty
             if ( empty( $template->Descr ) ) {
 
