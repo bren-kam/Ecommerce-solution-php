@@ -95,7 +95,7 @@ var Banner = {
                         .attr('data-attachment-id', response.id)
                         .find('img').attr('src', response.url).end()
                         .find('[name=hAccountPageAttachmentId]').val( response.id ).end()
-                        .find('input[type=checkbox][data-toggle=switch]').bootstrapSwitch().end()
+                        .find('input[type=checkbox]:first').bootstrapSwitch().end()
                         .prependTo('#banner-list');
 
                     Banner.bindDateRange( element );
