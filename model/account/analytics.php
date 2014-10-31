@@ -603,9 +603,9 @@ class Analytics {
         $ga = new GoogleAnalyticsAPI();
         $this->ga = $ga;
 
-        $ga->auth->setClientId( Config::key( 'ga-client-id' ) );
-        $ga->auth->setClientSecret( Config::key( 'ga-client-secret' ) );
-        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri' ) );
+        $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
+        $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
+        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
 
         $accessToken = Cache::get( 'google-access-token-'.$ga_profile_id );
         $refreshToken = Cache::get( 'google-refresh-token-'.$ga_profile_id );
