@@ -645,9 +645,9 @@ class AnalyticsController extends BaseController {
         library("GoogleAnalyticsAPI");
 
         $ga = new GoogleAnalyticsAPI();
-        $ga->auth->setClientId( Config::key( 'ga-client-id' ) );
-        $ga->auth->setClientSecret( Config::key( 'ga-client-secret' ) );
-        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri' ) );
+        $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
+        $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
+        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
 
         if ( isset( $_GET['code'] ) ) {
             $auth = $ga->auth->getAccessToken( $_GET['code'] );
