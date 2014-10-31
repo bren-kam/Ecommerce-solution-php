@@ -57,7 +57,7 @@ $rate_nonce = nonce::create('rate');
 <div class="row-fluid">
     <div class="col-lg-<?php echo ( count( $articles ) == 1 ) ? '12' : '9' ?>">
         <section class="panel">
-            <header class="panel-heading">
+            <header class="panel-heading kb-article-content">
                 <?php echo $article->title; ?>
             </header>
 
