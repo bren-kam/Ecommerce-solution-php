@@ -910,6 +910,7 @@ class AccountsController extends BaseController {
             $account_note->user_id = $this->user->id;
             $account_note->message = $_POST['taNote'];
             $account_note->create();
+            return new RedirectResponse( '/accounts/notes/?aid=' . $_GET['aid'] );
         }
 
         // Get notes
