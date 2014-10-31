@@ -33,6 +33,20 @@ class AccountCategory extends ActiveRecordBase {
      * @param int $account_id
      * @return array
      */
+    public function get_all( $account_id ) {
+        return $this->prepare(
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id"
+            , 'ii'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get All IDs
+     *
+     * @param int $account_id
+     * @return array
+     */
     public function get_all_ids( $account_id ) {
         return $this->prepare(
             'SELECT DISTINCT wc.`category_id` FROM `website_categories` AS wc LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = wc.`category_id` AND wbc.`website_id` = wc.`website_id` ) WHERE wc.`website_id` = :account_id AND wbc.`category_id` IS NULL'

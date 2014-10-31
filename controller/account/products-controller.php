@@ -882,6 +882,20 @@ class ProductsController extends BaseController {
             $where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $child_category_ids ) ) ) . ')';
         }
 
+        // Exclude Blocked Categories
+        $blocked_categories = $account_category->get_blocked_website_category_ids( $this->user->account->id );
+        if ( $blocked_categories ) {
+            foreach ( $blocked_categories as $bc_id ) {
+                foreach ( $category->get_all_children( $bc_id ) as $bcc  ) {
+                    $blocked_categories[] = $bcc->category_id;
+                    foreach ( $category->get_all_children( $bcc->category_id ) as $bccc  ) {
+                        $blocked_categories[] = $bccc->category_id;
+                    }
+                }
+            }
+            $where .= " AND c.`category_id` NOT IN ( " . implode( ',', $blocked_categories ) . " )";
+        }
+
         // Pricing
         if ( !empty( $_POST['pr'] ) ) {
             if ( '0|0' == $_POST['pr'] ) {
