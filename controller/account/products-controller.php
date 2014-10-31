@@ -623,6 +623,13 @@ class ProductsController extends BaseController {
         $top_categories_array = json_decode( $this->user->account->get_settings('top-categories') );
         $top_categories_array = $top_categories_array ? $top_categories_array : array();
         $category_images = ar::assign_key( $account_category->get_website_category_images( $this->user->account->id, $website_category_ids ), 'category_id', true );
+        $account_categories = ar::assign_key( $account_category->get_all( $this->user->account->id ), 'category_id' );
+
+        foreach ( $account_categories as $cat_id => $ac ) {
+            if ( !isset( $category_images[ $cat_id ] ) ) {
+                $category_images[ $cat_id ] = $ac['image_url'];
+            }
+        }
 
         $categories = $top_categories = array();
 
