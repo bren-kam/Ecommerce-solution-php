@@ -80,11 +80,23 @@ class AccountCategory extends ActiveRecordBase {
      * @param array $category_ids
      */
     public function hide( $account_id, array $category_ids ) {
+        $category = new Category();
+
         // Type Juggling
         $account_id = (int) $account_id;
 
         foreach ( $category_ids as &$cid ) {
             $cid = (int) $cid;
+
+            // Hide Children
+            $children = $category->get_by_parent( $cid );
+            if ( $children ) {
+                $children_to_block = array();
+                foreach ( $children as $child ) {
+                    $children_to_block[] = $child->category_id;
+                }
+                $this->hide( $account_id, $children_to_block );
+            }
         }
 
         $values = "( $account_id, " . implode( " ), ( $account_id, ", $category_ids ) . ' )';
