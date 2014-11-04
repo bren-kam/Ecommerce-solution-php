@@ -403,17 +403,18 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $name = $item->SeriesName . ' ' . $this->names[(string)$template->Descr];
             }
 
-            echo "Name: $name - ";
+            echo "\nName: $name - ";
 
 			// Price
 			foreach ( $sku_pieces as $sp ) {
+                echo  "\nPirece: $sp - ";
 				if ( isset( $this->ashley_products[$series . $sp] ) ) {
 					if ( 0 == $this->ashley_products[$series . $sp]['price'] ) {
 						$new_price = 0;
 						break;
 					}
 
-                    echo "\nItem Price: " . $this->ashley_products[$series . $sp]['price'] . " * " . $piece_items[$sp];
+                    echo "Item Price: " . $this->ashley_products[$series . $sp]['price'] . " * " . $piece_items[$sp];
 					$new_price += $this->ashley_products[$series . $sp]['price'] * $piece_items[$sp];
 				} elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
 					if ( 0 == $this->ashley_products[$series . '-' . $sp]['price'] ) {
@@ -421,7 +422,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 						break;
 					}
 
-                    echo "\nItem Price: " . $this->ashley_products[$series . '-' . $sp]['price'] . " * " . $piece_items[$sp];
+                    echo "Item Price: " . $this->ashley_products[$series . '-' . $sp]['price'] . " * " . $piece_items[$sp];
 					$new_price += $this->ashley_products[$series . '-' . $sp]['price'] * $piece_items[$sp];
 				} else {
 					$new_price = 0;
@@ -559,6 +560,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             // Setup images array
             $images = explode( '|', $product->images );
 
+            echo "Images...";
             foreach ( $image_urls as $image_url ) {
                 if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image_url, 10 ) ) {
                     $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
