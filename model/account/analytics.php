@@ -612,11 +612,15 @@ class Analytics {
         $tokenExpires = Cache::get( 'google-token-expiration-'.$ga_profile_id );
         $tokenCreated = Cache::get( 'google-token-created-at-'.$ga_profile_id );
 
+        $log = "Cache Token for '{$ga_profile_id}': {$accessToken}|{$refreshToken}|{$tokenExpires}|{$tokenCreated}";
+
         if ( $accessToken ) {
             if ( ( $tokenCreated + $tokenExpires ) > time() ) {
+                $log .= "\nToken is valid, using access token {$accessToken}";
                 $ga->setAccessToken( $accessToken );
                 $ga->setAccountId( "ga:{$ga_profile_id}" );
             } else {
+                $log .= "\nToken expired, using refresh token {$refreshToken}";
                 $auth = $ga->auth->refreshAccessToken( $refreshToken );
                 if ($auth['http_code'] == 200) {
                     $accessToken = $auth['access_token'];
@@ -629,12 +633,34 @@ class Analytics {
                     Cache::set( 'google-token-expiration-'.$ga_profile_id, $tokenExpires );
                     Cache::set( 'google-token-created-at-'.$ga_profile_id, $tokenCreated );
                 } else {
+                    $log .= "\nFailed to Refresh Token";
+                    $api_ext_log = new ApiExtLog();
+                    $api_ext_log->api = 'Analytics OAuth';
+                    $api_ext_log->method = 'Token';
+                    $api_ext_log->raw_response = $log;
+                    $api_ext_log->date_created = date('Y-m-d H:i:s');
+                    $api_ext_log->create();
                     throw new GoogleAnalyticsOAuthException( "Could not Refresh Token" );
                 }
             }
         } else {
+            $log .= "\nNo Access Token Found";
+            $api_ext_log = new ApiExtLog();
+            $api_ext_log->api = 'Analytics OAuth';
+            $api_ext_log->method = 'Token';
+            $api_ext_log->raw_response = $log;
+            $api_ext_log->date_created = date('Y-m-d H:i:s');
+            $api_ext_log->create();
             throw new GoogleAnalyticsOAuthException( "No Access Token Found" );
         }
+
+        $log = "Success\n$log";
+        $api_ext_log = new ApiExtLog();
+        $api_ext_log->api = 'Analytics OAuth';
+        $api_ext_log->method = 'Token';
+        $api_ext_log->raw_response = $log;
+        $api_ext_log->date_created = date('Y-m-d H:i:s');
+        $api_ext_log->create();
 
         // Set Query Defaults - Date Range
         $ga->setDefaultQueryParams( array(
