@@ -104,38 +104,45 @@ class SettingsController extends BaseController {
             library('arb');
 
             // Set Variables
-            $start_date = new DateTime();
-            $start_date->add( new DateInterval('P1M') ); // 1 Month from now
+//            $start_date = new DateTime();
+//            $start_date->add( new DateInterval('P1M') ); // 1 Month from now
 
             // Create instance of ARB
-            $arb = new arb( $_SESSION['store_name'] );
+            $arb = new arb( $this->user->account->title );
+
+            // Get previous subscription
+            $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
 
             // Set variables
+            $arb->setSubscriptionId($settings['arb_subscription_id']);
             $arb->setInterval(1, 'Months'); // if omitted, default is 1 month
-            $arb->setAmount( $total_monthly_price );
-            $arb->setStartDate( $start_date->format('Y-m-d') ); // if omitted, default is "today"
+            $arb->setAmount( $settings['arb_subscription_amount'] );
+            //$arb->setStartDate( $start_date->format('Y-m-d') ); // if omitted, default is "today"
             $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
             $arb->setOrderDetails('Managed Website Monthly Payment');
-            $arb->setCustomerId( $_SESSION['user_id'] );
-            $arb->setCustomerPhone( $_SESSION['work_phone'] );
-            $arb->setCustomerEmail( $_SESSION['email'] );
+            $arb->setCustomerId( $this->user->id );
+            $arb->setCustomerPhone( $this->user->work_phone );
+            $arb->setCustomerEmail( $this->user->email );
 
             // Set billing information
-            $arb->setBillingName( $_SESSION['billing_first_name'], $_SESSION['billing_last_name'] );
-            $arb->setBillingAddress( $_SESSION['billing_address'] );
-            $arb->setBillingCity( $_SESSION['billing_city'] );
-            $arb->setBillingState( $_SESSION['billing_state'] ); //full state name can be used (i.e. Massachusetts)
-            $arb->setBillingZip( $_SESSION['billing_zip'] );
+            $arb->setBillingName( $_POST['first-name'], $_POST['last-name'] );
+            $arb->setBillingAddress( $_POST['address'] );
+            $arb->setBillingCity( $_POST['city'] );
+            $arb->setBillingState( $_POST['state'] ); //full state name can be used (i.e. Massachusetts)
+            $arb->setBillingZip( $_POST['zip'] );
             $arb->setBillingCountry('United States'); // optional
 
             // set the payment details (one of the two options is required)
-            $arb->setPaymentDetails( $cc_info['number'], $cc_info['expiration_year'] . '-' . $cc_info['expiration_month'] );
+            $arb->setPaymentDetails( $_POST['ccnum'], $_POST['ccexpy'] . '-' . $_POST['ccexpm'] );
 
             // Submit the subscription request
             $arb->UpdateSubscriptionRequest();
 
             // Test and print results
-            $success_monthly_order = $arb->success;
+            $success = $arb->success;
+
+            if ( $success )
+                $this->user->account->set_settings(array( 'arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
         }
 
         return $this->get_template_response( 'billing-information' )

@@ -451,6 +451,8 @@ class AccountsController extends BaseController {
             , 'facebook-pages'
             , 'responsive-web-design'
             , 'ashley-express'
+            , 'arb-subscription-id'
+            , 'arb-subscription-amount'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -476,6 +478,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
         $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
+        $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
+        $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -515,6 +519,8 @@ class AccountsController extends BaseController {
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
                 , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
+                , 'arb-subscription-id' => $_POST['tARBSubscriptionID']
+                , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );

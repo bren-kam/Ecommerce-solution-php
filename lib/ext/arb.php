@@ -112,6 +112,12 @@ class arb
 	private $ARBCancelSubscriptionRequest;
 
 /**
+	* ARBGetSubscriptionListRequest
+	* Root Node required to cancel a subscription
+	*/
+	private $ARBGetSubscriptionListRequest;
+
+/**
 	* /merchantAuthentication
 	* Contains the merchant's payment gateway account authentication information
 	*/
@@ -422,6 +428,37 @@ class arb
 	private $subscriptionId;
 
 
+    /**
+	 * /searchType
+	 * The searchType for getSubscriptionList
+	 */
+	private $searchType;
+
+    /**
+	 * /orderBy
+	 * The orderBy for getSubscriptionList
+	 */
+	private $orderBy;
+
+    /**
+	 * /orderDescending
+	 * The orderDescending for getSubscriptionList
+	 */
+	private $orderDescending;
+
+    /**
+	 * /limit
+	 * The limit for getSubscriptionList
+	 */
+	private $limit;
+
+    /**
+	 * /offset
+	 * The offset for getSubscriptionList
+	 */
+	private $offset;
+
+
 /**
 	* __construct()
 	*	Initializes DOM
@@ -452,7 +489,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args() != 1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -475,7 +512,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args() != 1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -502,7 +539,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args() != 2)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -528,7 +565,7 @@ class arb
 		// Make sure we got an ID
 		if (func_num_args()!=1)
 		{
-			$this->error[]="Invalid arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -547,7 +584,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args() != 1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -571,7 +608,7 @@ class arb
 		// Ensure we have 2 arguments to work with
 		if (func_num_args() < 2)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -588,26 +625,26 @@ class arb
 		}
 		else
 		{
-			$this->error[]="Invalid interval length in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid interval length in function '".__FUNCTION__."()'";
 			return;
 		}
 
 		// Make sure we have the right unit
 		if ($unit_value!='days' && $unit_value!='months')
 		{
-			$this->error[]="Invalid interval unit in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid interval unit in function '".__FUNCTION__."()'";
 			return;
 		}
 
 		// Make sure the number of days is within range
 		if ($unit_value=='days' && ($length_value > 365 || $length_value < 7))
 		{
-			$this->error[]="Invalid interval length in fuction '".__FUNCTION__."()'. For daily recurrence, value must fall between 7 and 365";
+			$this->error[]="Invalid interval length in function '".__FUNCTION__."()'. For daily recurrence, value must fall between 7 and 365";
 			return;
 		}
 		elseif ($unit_value=='months' && ($length_value > 12 || $length_value < 1))
 		{
-			$this->error[]="Invalid interval length in fuction '".__FUNCTION__."()'. For monthly recurrence, value must fall between 1 and 12";
+			$this->error[]="Invalid interval length in function '".__FUNCTION__."()'. For monthly recurrence, value must fall between 1 and 12";
 			return;
 		}
 
@@ -686,7 +723,7 @@ class arb
 		}
 		else
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 
@@ -702,7 +739,7 @@ class arb
 		// Ensure we have some arguments to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		
@@ -735,7 +772,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -752,7 +789,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -769,7 +806,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -786,7 +823,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -803,7 +840,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()!=2)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$first=func_get_arg(0);
@@ -822,7 +859,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -839,7 +876,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -856,7 +893,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -873,7 +910,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -899,7 +936,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -916,7 +953,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -935,7 +972,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -955,7 +992,7 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -972,7 +1009,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()!=2)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$first=func_get_arg(0);
@@ -991,7 +1028,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1008,7 +1045,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1025,7 +1062,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1042,7 +1079,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1068,7 +1105,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1085,7 +1122,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1104,7 +1141,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1124,7 +1161,7 @@ class arb
 		// Ensure we have an argument to work with
 				if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
@@ -1141,20 +1178,89 @@ class arb
 		// Ensure we have an argument to work with
 		if (func_num_args()<1)
 		{
-			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
 		$this->subscriptionId = $this->dom->createElement('subscriptionId',substr($value,0,13));
 		return;
 	}
-		
+
+    /**
+	 * setSearchType()
+	 * Sets the searchType for GetSubscriptionList
+	 */
+	public function setSearchType()
+	{
+		// Ensure we have an argument to work with
+		if (func_num_args()<1)
+		{
+			$this->error[]="Invalid number of arguments in function '".__FUNCTION__."()'";
+			return;
+		}
+		$value=func_get_arg(0);
+		$this->searchType = $this->dom->createElement('searchType',substr($value,0,40));
+		return;
+	}
+
+    /**
+	 * setOrderBy()
+	 *
+     * id
+     * name
+     * status
+     * createTimeStampUTC
+     * lastName
+     * firstName
+     * accountNumber (ordered by last 4 digits only)
+     * amount
+     * pastOccurences
+     *
+     * @param string $orderBy
+	 */
+	protected function setOrderBy($orderBy) {
+		$this->orderBy = $this->dom->createElement('orderBy',$orderBy);
+		return;
+	}
+
+    /**
+	 * setOrderDescending()
+	 * Sets the sorting for GetSubscriptionList
+     *
+     * @param bool $descending
+	 */
+	protected function setOrderDescending($descending) {
+		$this->orderDescending = $this->dom->createElement('orderDescending',$descending);
+		return;
+	}
+
+    /**
+	 * setLimit()
+	 * Sets the sorting for GetSubscriptionList
+     *
+     * @param int $limit 1-1000
+	 */
+	protected function setLimit($limit) {
+		$this->limit = $this->dom->createElement('limit',$limit);
+		return;
+	}
+
+    /**
+	 * setOffset()
+	 * Sets the sorting for GetSubscriptionList
+     *
+     * @param int $offset 1-10000
+	 */
+	protected function setOffset($offset) {
+		$this->offset = $this->dom->createElement('offset',$offset);
+		return;
+	}
 	
 	public function UpdateSubscriptionRequest()
 	{
 		if (count($this->error)>0)
 		{
-			$this->error[]="Can not proceed in fuction '".__FUNCTION__."()' with errors present";
+			$this->error[]="Can not proceed in function '".__FUNCTION__."()' with errors present";
 			return;
 		}
 		// Create and add parent node
@@ -1171,7 +1277,7 @@ class arb
 		
 		// And, most required
 		if (!$this->subscriptionId)
-			$this->error[]="A subscription ID is required to in fuction '".__FUNCTION__."()'";
+			$this->error[]="A subscription ID is required to in function '".__FUNCTION__."()'";
 		else
 			$this->ARBUpdateSubscriptionRequest->appendChild($this->subscriptionId);
 		
@@ -1284,7 +1390,7 @@ class arb
 	{
 		if (count($this->error)>0)
 		{
-			$this->error[]="Can not proceed in fuction '".__FUNCTION__."()' with errors present";
+			$this->error[]="Can not proceed in function '".__FUNCTION__."()' with errors present";
 			return;
 		}
 		// Create and add parent node
@@ -1301,7 +1407,7 @@ class arb
 		
 		// And, last but most required
 		if (!$this->subscriptionId)
-			$this->error[]="A subscription ID is required to in fuction '".__FUNCTION__."()'";
+			$this->error[]="A subscription ID is required to in function '".__FUNCTION__."()'";
 		else
 			$this->ARBCancelSubscriptionRequest->appendChild($this->subscriptionId);
 		
@@ -1310,11 +1416,57 @@ class arb
 		return;
 	}
 
+    /**
+     * GetSubscriptionListRequest()
+     *
+     * @param string $searchType (cardExpiringThisMonth, subscriptionActive, subscriptionInactive, subscriptionExpiringThisMonth)
+     * @param string $orderBy (id, name, status, createTimeStampUTC, lastName, firstName, accountNumber (ordered by last 4 digits only), amount, pastOccurences)
+     * @param bool $orderDescending
+     * @param int $limit 1-1000
+     * @param int $offset 1-10000
+     */
+    public function GetSubscriptionListRequest( $searchType, $orderBy = null, $orderDescending = null, $limit = null, $offset = null )
+    {
+        if (count($this->error)>0)
+        {
+            $this->error[]="Can not proceed in function '".__FUNCTION__."()' with errors present";
+            return;
+        }
+        // Create and add parent node
+        $this->ARBGetSubscriptionListRequest = $this->dom->createElementNS(self::auth_net_namespace, 'ARBGetSubscriptionListRequest');
+        $this->dom->appendChild($this->ARBGetSubscriptionListRequest);
+
+        // Add the merchant authentication info
+        $this->buildMerchantAuthentication();
+        $this->ARBGetSubscriptionListRequest->appendChild($this->merchantAuthentication);
+
+        // If we have a reference ID, add it
+        $this->ARBGetSubscriptionListRequest->appendChild($this->dom->createElement('searchType', $searchType));
+
+        // If we have sorting
+        if ($orderBy && $orderDescending) {
+            $sorting = $this->ARBGetSubscriptionListRequest->appendChild($this->dom->createElement('sorting'));
+            $sorting->appendChild($this->dom->createElement('orderBy', $orderBy));
+            $sorting->appendChild($this->dom->createElement('orderDescending', $orderDescending));
+        }
+
+        // If we have paging
+        if ($limit && $offset) {
+            $paging = $this->ARBGetSubscriptionListRequest->appendChild($this->dom->createElement('paging'));
+            $paging->appendChild($this->dom->createElement('limit', $limit));
+            $paging->appendChild($this->dom->createElement('offset', $offset));
+        }
+
+        if (count($this->error)==0)
+            $this->submit();
+        return;
+    }
+
 	public function CreateSubscriptionRequest()
 	{
 		if (count($this->error)>0)
 		{
-			$this->error[]="Can not proceed in fuction '".__FUNCTION__."()' with errors present";
+			$this->error[]="Can not proceed in function '".__FUNCTION__."()' with errors present";
 			return;
 		}
 		// Create and add parent node
@@ -1343,7 +1495,7 @@ class arb
 		$this->paymentSchedule->appendChild($this->dom->createElement('startDate',$this->startDate));
 		$this->paymentSchedule->appendChild($this->dom->createElement('totalOccurrences',$this->totalOccurrences));
 		if (!$this->amount)
-			$this->error[]="An amount is required to in fuction '".__FUNCTION__."()'";
+			$this->error[]="An amount is required to in function '".__FUNCTION__."()'";
 		else
 			$this->subscription->appendChild($this->amount);
 		if ($this->trialOccurrences)
@@ -1372,7 +1524,7 @@ class arb
 		}
 		else
 		{
-			$this->error[]="A payment method is required in fuction '".__FUNCTION__."()'";
+			$this->error[]="A payment method is required in function '".__FUNCTION__."()'";
 		}
 		if ($this->invoiceNumber || $this->description)
 		{
@@ -1401,7 +1553,7 @@ class arb
 		$this->billTo = $this->dom->createElement('billTo');
 		$this->subscription->appendChild($this->billTo);
 		if (!$this->billingFirstName || !$this->billingLastName)
-			$this->error[]="A name is required in fuction '".__FUNCTION__."()'";
+			$this->error[]="A name is required in function '".__FUNCTION__."()'";
 		else
 		{
 			$this->billTo->appendChild($this->billingFirstName);
