@@ -657,12 +657,13 @@ class AnalyticsController extends BaseController {
                 $tokenExpires = $auth['expires_in'];
                 $tokenCreated = time();
 
-                $ga_profile_id = $this->user->account->ga_profile_id;
+                $this->user->account->set_settings( array(
+                    'google-access-token' => $accessToken
+                    , 'google-refresh-token' => $refreshToken
+                    , 'google-token-expiration' => $tokenExpires
+                    , 'google-token-created-at' => $tokenCreated
+                ));
 
-                Cache::set( 'google-access-token-'.$ga_profile_id, $accessToken );
-                Cache::set( 'google-refresh-token-'.$ga_profile_id, $refreshToken );
-                Cache::set( 'google-token-expiration-'.$ga_profile_id, $tokenExpires );
-                Cache::set( 'google-token-created-at-'.$ga_profile_id, $tokenCreated );
             }
         }
 

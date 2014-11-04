@@ -47,7 +47,7 @@ class Analytics {
         // Setup the profile
 
         $this->set_ga_profile(
-            $account->ga_profile_id
+            $account
         );
     }
 
@@ -592,13 +592,13 @@ class Analytics {
     }
 
     /**
-     * Set GA Profile
+     * Get Ga Profile
      *
-     * @throws ModelException
-     *
-     * @param int $ga_profile_id
+     * @param Account $account
+     * @throws Exception
+     * @throws GoogleAnalyticsOAuthException
      */
-    protected function set_ga_profile( $ga_profile_id ) {
+    protected function set_ga_profile( $account ) {
         library( 'GoogleAnalyticsAPI' );
         $ga = new GoogleAnalyticsAPI();
         $this->ga = $ga;
@@ -607,67 +607,81 @@ class Analytics {
         $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
         $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
 
-        $accessToken = Cache::get( 'google-access-token-'.$ga_profile_id );
-        $refreshToken = Cache::get( 'google-refresh-token-'.$ga_profile_id );
-        $tokenExpires = Cache::get( 'google-token-expiration-'.$ga_profile_id );
-        $tokenCreated = Cache::get( 'google-token-created-at-'.$ga_profile_id );
+        $ga_profile_id  = $account->ga_profile_id;
+        $oauth_info = $account->get_settings( 'google-access-token', 'google-refresh-token', 'google-token-expiration', 'google-token-created-at' );
+        $accessToken = $oauth_info['google-access-token'];
+        $refreshToken = $oauth_info['google-refresh-token'];
+        $tokenExpires = $oauth_info['google-token-expiration'];
+        $tokenCreated = $oauth_info['google-token-created-at'];
 
-        $log = "Cache Token for '{$ga_profile_id}': {$accessToken}|{$refreshToken}|{$tokenExpires}|{$tokenCreated}";
+        $log = "Saved Token for '{$account->id}#{$ga_profile_id}': {$accessToken}|{$refreshToken}|{$tokenExpires}|{$tokenCreated}";
 
         if ( $accessToken ) {
             if ( ( $tokenCreated + $tokenExpires ) > time() ) {
-                $log .= "\nToken is valid, using access token {$accessToken}";
-                $ga->setAccessToken( $accessToken );
-                $ga->setAccountId( "ga:{$ga_profile_id}" );
-            } else {
-                $log .= "\nToken expired, using refresh token {$refreshToken}";
-                $auth = $ga->auth->refreshAccessToken( $refreshToken );
-                if ($auth['http_code'] == 200) {
-                    $accessToken = $auth['access_token'];
-                    $refreshToken = $auth['refresh_token'];
-                    $tokenExpires = $auth['expires_in'];
-                    $tokenCreated = time();
+                try {
+                    $log .= "\nToken is valid, using access token {$accessToken}";
+                    $ga->setAccessToken( $accessToken );
+                    $ga->setAccountId( "ga:{$ga_profile_id}" );
 
-                    Cache::set( 'google-access-token-'.$ga_profile_id, $accessToken );
-                    Cache::set( 'google-refresh-token-'.$ga_profile_id, $refreshToken );
-                    Cache::set( 'google-token-expiration-'.$ga_profile_id, $tokenExpires );
-                    Cache::set( 'google-token-created-at-'.$ga_profile_id, $tokenCreated );
-                } else {
-                    $log .= "\nFailed to Refresh Token";
+                    $log = "Success\n$log";
                     $api_ext_log = new ApiExtLog();
                     $api_ext_log->api = 'Analytics OAuth';
                     $api_ext_log->method = 'Token';
                     $api_ext_log->raw_response = $log;
                     $api_ext_log->date_created = date('Y-m-d H:i:s');
                     $api_ext_log->create();
-                    throw new GoogleAnalyticsOAuthException( "Could not Refresh Token" );
-                }
+
+                    // Set Query Defaults - Date Range
+                    $ga->setDefaultQueryParams( array(
+                        'start-date' => $this->date_start
+                        , 'end-date' => $this->date_end
+                        , 'max-results' => 5000
+                    ) );
+
+                    return true;
+
+                } catch ( GoogleAnalyticsOAuthException $e ) { /* FOLLOW TO REFRESH TOKEN */ }
             }
+
+            $log .= "\nToken expired, using refresh token {$refreshToken}";
+            $auth = $ga->auth->refreshAccessToken( $refreshToken );
+            if ($auth['http_code'] == 200) {
+                $accessToken = $auth['access_token'];
+                $refreshToken = $auth['refresh_token'];
+                $tokenExpires = $auth['expires_in'];
+                $tokenCreated = time();
+
+                $account->set_settings( array(
+                    'google-access-token' => $accessToken
+                    , 'google-refresh-token' => $refreshToken
+                    , 'google-token-expiration' => $tokenExpires
+                    , 'google-token-created-at' => $tokenCreated
+                ));
+
+                // Set Query Defaults - Date Range
+                $ga->setDefaultQueryParams( array(
+                    'start-date' => $this->date_start
+                , 'end-date' => $this->date_end
+                , 'max-results' => 5000
+                ) );
+
+                return true;
+            } else {
+                $log .= "\nFailed to Refresh Token";
+            }
+
         } else {
             $log .= "\nNo Access Token Found";
-            $api_ext_log = new ApiExtLog();
-            $api_ext_log->api = 'Analytics OAuth';
-            $api_ext_log->method = 'Token';
-            $api_ext_log->raw_response = $log;
-            $api_ext_log->date_created = date('Y-m-d H:i:s');
-            $api_ext_log->create();
-            throw new GoogleAnalyticsOAuthException( "No Access Token Found" );
         }
 
-        $log = "Success\n$log";
         $api_ext_log = new ApiExtLog();
         $api_ext_log->api = 'Analytics OAuth';
         $api_ext_log->method = 'Token';
         $api_ext_log->raw_response = $log;
         $api_ext_log->date_created = date('Y-m-d H:i:s');
         $api_ext_log->create();
+        throw new GoogleAnalyticsOAuthException( $log );
 
-        // Set Query Defaults - Date Range
-        $ga->setDefaultQueryParams( array(
-            'start-date' => $this->date_start
-            , 'end-date' => $this->date_end
-            , 'max-results' => 5000
-        ) );
     }
 
 }
