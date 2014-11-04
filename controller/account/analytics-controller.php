@@ -34,45 +34,11 @@ class AnalyticsController extends BaseController {
             $records = $analytics->get_metric_by_date( 'visits' );
             $total = $analytics->get_totals();
             $traffic_sources = $analytics->get_traffic_sources_totals();
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/';
+            return new RedirectResponse( '/analytics/oauth2/' );
         } catch ( ModelException $e ) {
-            preg_match( '/"([^"]+)"/i', $e->getMessage(), $error_string_array );
-            $errors_array = explode( "\n", $error_string_array[1] );
-            $error = array();
-
-            foreach ( $errors_array as $e ) {
-                list( $key, $value ) = explode( '=', $e );
-
-                if ( empty( $key ) )
-                    continue;
-
-                $error[$key] = $value;
-            }
-
-            $ticket = new Ticket();
-            $ticket->user_id = $this->user->id;
-            $ticket->website_id = $this->user->account->id;
-            $ticket->assigned_to_user_id = $this->user->account->os_user_id;
-            $ticket->status = Ticket::STATUS_OPEN;
-            $ticket->priority = Ticket::PRIORITY_URGENT;
-
-            switch ( $error['Error'] ) {
-                case 'BadAuthentication':
-                    if ( 'WebLoginRequired' == $error['Info'] ) {
-                        $ticket->summary = 'Analytics - Failed Authentication';
-                        $ticket->message = 'Google requires a web login. Please go to the following link: <br /><a href="' . $error['Url'] . '" title="Google Analytics">' . $error['Url'] . '</a>';
-                    }
-                break;
-
-                default:
-                    $ticket->summary = 'Analytics - Unable to View';
-                    $ticket->message = "The follow error was received from Google Analytics when trying to view the analytics. Please contact Technical if unsure on what to do: \n" . $error_string_array[1];
-                break;
-            }
-
-            $ticket->create();
-
             $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
-
             return new RedirectResponse('/');
         }
 
@@ -129,8 +95,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/content-overview/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
 
         // Get all the data
         $records = $analytics->get_metric_by_date( 'page_views' );
@@ -186,8 +157,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/page/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
         $analytics->set_ga_filter( 'pagePath==' . $_GET['p'] );
 
         // Get all the data
@@ -240,8 +216,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/traffic-sources-overview/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
 
         // Get all the data
         $records = $analytics->get_metric_by_date( 'visits' );
@@ -298,8 +279,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/traffic-sources/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
 
         // Get all the data
         $records = $analytics->get_metric_by_date( 'visits' );
@@ -353,8 +339,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/keywords/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
 
         // Get all the data
         $records = $analytics->get_metric_by_date( 'visits' );
@@ -411,8 +402,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/keyword/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
         $analytics->set_ga_filter( 'keyword==' . $_GET['k'] );
 
         // Get all the data
@@ -469,8 +465,13 @@ class AnalyticsController extends BaseController {
         $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
 
         // Setup analytics
-        $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/source/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
         $analytics->set_ga_filter( 'source==' . $_GET['s'] );
 
         // Get all the data
@@ -622,6 +623,23 @@ class AnalyticsController extends BaseController {
 
         return $response;
     }
+    
+    public function oauth2() {
+        try {
+            $analytics = new Analytics();
+            $analytics->setup($this->user->account);
+        } catch ( Exception $e ) { /* DO NOTHING */ }
+
+        $login_url = $analytics->ga->auth->buildAuthUrl();
+
+        $settings = $this->user->account->get_settings( 'ga-username', 'ga-password' );
+        $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
+        $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
+
+        $this->resources->javascript( 'analytics/oauth2' );
+        return $this->get_template_response( 'oauth2' )
+            ->set( compact( 'login_url', 'ga_username', 'ga_password' ) );
+    }
 
     public function oauth2callback() {
         library("GoogleAnalyticsAPI");
@@ -639,14 +657,16 @@ class AnalyticsController extends BaseController {
                 $tokenExpires = $auth['expires_in'];
                 $tokenCreated = time();
 
-                Cache::set( 'google-access-token', $accessToken );
-                Cache::set( 'google-refresh-token', $refreshToken );
-                Cache::set( 'google-token-expiration', $tokenExpires );
-                Cache::set( 'google-token-created-at', $tokenCreated );
+                $ga_profile_id = $this->user->account->ga_profile_id;
+
+                Cache::set( 'google-access-token-'.$ga_profile_id, $accessToken );
+                Cache::set( 'google-refresh-token-'.$ga_profile_id, $refreshToken );
+                Cache::set( 'google-token-expiration-'.$ga_profile_id, $tokenExpires );
+                Cache::set( 'google-token-created-at-'.$ga_profile_id, $tokenCreated );
             }
         }
 
-        return new RedirectResponse( $_SESSION['google-analytics-callback'] );
+        return new HtmlResponse('<script>window.opener.location = "/analytics/"; window.close();</script>'); // RedirectResponse( $_SESSION['google-analytics-callback'] );
     }
 }
 

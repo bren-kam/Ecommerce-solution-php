@@ -55,17 +55,58 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             </div>
 
                             <img src="<?php echo $attachment->value ?>" />
-                            <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
-                                <div class="form-group">
-                                    <label>Image Link:</label>
-                                    <input type="text" class="form-control" name="extra" value="<?php echo $attachment->extra ?>" placeholder="Link URL" />
-                                </div>
-                                <p>
-                                    <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $attachment->id ?>" />
-                                    <?php echo $update_extra_nonce ?>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </p>
-                            </form>
+
+                            <?php if ( $user->account->is_new_template() ): ?>
+                                <?php
+                                    $extra = json_decode($attachment->extra, true);
+                                    if ( $extra ):
+                                        $image_link = $extra['link'];
+                                        $date_range = isset( $extra['date-range'] );
+                                        $date_start = ( new DateTime( $extra['date-start'] ) )->format('m/d/Y');
+                                        $date_end = ( new DateTime( $extra['date-end'] ) )->format('m/d/Y');
+                                    else:
+                                        $image_link = $attachment->extra;
+                                        $date_range = null;
+                                        $date_start = null;
+                                        $date_end = null;
+                                    endif;
+                                ?>
+                                <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+                                    <div class="form-group">
+                                        <label>Image Link:</label>
+                                        <input type="text" class="form-control" name="extra[link]" value="<?php echo $image_link ?>" placeholder="Link URL" />
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="extra[date-range]" class="show-date-range" value="1" <?php if ( $date_range ) echo 'checked' ?> />
+                                            Run Date
+                                        </label>
+                                    </div>
+                                    <div class="input-daterange input-group <?php if ( !$date_range ) echo 'hidden' ?>">
+                                        <input type="text" class="input-sm form-control" name="extra[date-start]" value="<?php echo $date_start ?>" />
+                                        <span class="input-group-addon">to</span>
+                                        <input type="text" class="input-sm form-control" name="extra[date-end]" value="<?php echo $date_end ?>" />
+                                    </div>
+                                    <p>
+                                        <br>
+                                        <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $attachment->id ?>" />
+                                        <?php echo $update_extra_nonce ?>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </p>
+                                </form>
+                            <?php else: ?>
+                                <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+                                    <div class="form-group">
+                                        <label>Image Link:</label>
+                                        <input type="text" class="form-control" name="extra" value="<?php echo $attachment->extra ?>" placeholder="Link URL" />
+                                    </div>
+                                    <p>
+                                        <input type="hidden" name="hAccountPageAttachmentId" value="<?php echo $attachment->id ?>" />
+                                        <?php echo $update_extra_nonce ?>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </p>
+                                </form>
+                            <?php endif; ?>
 
                         </div>
 
@@ -87,15 +128,40 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
     <h3>Image</h3>
     <img src="" />
-    <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
-        <div class="form-group">
-            <label>Image Link:</label>
-            <input type="text" class="form-control" name="extra" placeholder="Link URL" />
-        </div>
-        <p>
-            <input type="hidden" name="hAccountPageAttachmentId" />
-            <?php echo $update_extra_nonce ?>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </p>
-    </form>
+    <?php if ( $user->account->is_new_template() ): ?>
+        <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+            <div class="form-group">
+                <label>Image Link:</label>
+                <input type="text" class="form-control" name="extra[link]" placeholder="Link URL" />
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="extra[date-range]" class="show-date-range" value="1" />
+                    Run Date
+                </label>
+            </div>
+            <div class="input-daterange input-group <?php if ( !$date_range ) echo 'hidden' ?>">
+                <input type="text" class="input-sm form-control" name="extra[date-start]" />
+                <span class="input-group-addon">to</span>
+                <input type="text" class="input-sm form-control" name="extra[date-end]" />
+            </div>
+            <p>
+                <input type="hidden" name="hAccountPageAttachmentId" />
+                <?php echo $update_extra_nonce ?>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </p>
+        </form>
+    <?php else: ?>
+        <form action="/website/update-attachment-extra/" method="post" role="form" ajax="1">
+            <div class="form-group">
+                <label>Image Link:</label>
+                <input type="text" class="form-control" name="extra" placeholder="Link URL" />
+            </div>
+            <p>
+                <input type="hidden" name="hAccountPageAttachmentId" />
+                <?php echo $update_extra_nonce ?>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </p>
+        </form>
+    <?php endif; ?>
 </div>

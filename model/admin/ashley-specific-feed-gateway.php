@@ -405,7 +405,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      *
      * @return mixed
      */
-    protected function get_feed_accounts() {
+    public function get_feed_accounts() {
         return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) LEFT JOIN `website_settings` AS ws2 ON ( ws2.`website_id` = w.`website_id` AND ws2.`key` = 'feed-last-run' ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1 ORDER BY ws2.`value`", PDO::FETCH_CLASS, 'Account' );
     }
 
@@ -1444,8 +1444,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( !isset( $groups[$item['group'] ] ) ) {
                 $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
 
-                if ( !isset( $groups[$item['group'] ] ) )
-                    continue;
+                if ( !isset( $groups[$item['group']] ) )
+                    $groups[$item['group']] = array('name' => '', 'description' => '', 'features' => '');
             }
 
             /***** GET PRODUCT *****/
@@ -1478,10 +1478,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             /***** PREPARE PRODUCT DATA *****/
 
             $group = $groups[$item['group']];
-            $group_name = $group['name'] . ' - ';
+            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
 
-            $group_description = '<p>' . $group['description'] . '</p>';
-            $group_features = '<p>' . $group['features'] . '</p>';
+            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
+            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
 
             $name = format::convert_characters( $group_name . $item['description'] );
 

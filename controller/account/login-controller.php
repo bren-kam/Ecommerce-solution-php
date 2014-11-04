@@ -36,16 +36,31 @@ class LoginController extends BaseController {
                     // Record the login
                     $this->user->record_login();
 
-                    // Two Weeks : Two Days
-                    $expiration = ( isset( $_POST['remember-me'] ) ) ? 1209600 : 172800;
-                    set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
-
-                    if( !isset( $_SESSION['referer'] ) || isset( $_SESSION['referer'] ) && empty( $_SESSION['referer'] ) ) {
-                        return new RedirectResponse('/');
+                    $account = new Account();
+                    $accounts = array_merge(
+                        $account->get_by_user( $this->user->id )
+                        , $account->get_by_authorized_user( $this->user->id )
+                    );
+                    if ( empty( $accounts ) ) {
+                        if ( $this->user->role >= User::ROLE_COMPANY_ADMIN ) {
+                            $errs .= 'You have no Websites found. Are you trying to login to the <a href="//admin.' .DOMAIN. '/login/">administrator tool</a>?';
+                        } else {
+                            $errs .= 'You have no Websites found.';
+                        }
                     } else {
-                        $referer = $_SESSION['referer'];
-                        unset( $_SESSION['referer'] );
-                        return new RedirectResponse( $referer );
+
+                        // Two Weeks : Two Days
+                        $expiration = ( isset( $_POST['remember-me'] ) ) ? 1209600 : 172800;
+                        set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
+
+                        if( !isset( $_SESSION['referer'] ) || isset( $_SESSION['referer'] ) && empty( $_SESSION['referer'] ) ) {
+                            return new RedirectResponse('/');
+                        } else {
+                            $referer = $_SESSION['referer'];
+                            unset( $_SESSION['referer'] );
+                            return new RedirectResponse( $referer );
+                        }
+
                     }
                 } else {
                     $errs .= _('Your email and password do not match. Please try again.');
@@ -70,7 +85,7 @@ class LoginController extends BaseController {
         if ( !$token->id )
             return new RedirectResponse('/login/');
 
-        $form = new FormTable('activate_account');
+        $form = new BootstrapForm('activate_account');
 
         $form->add_field( 'password', _('Password'), 'password' )
             ->attribute( 'maxlength', 30 )

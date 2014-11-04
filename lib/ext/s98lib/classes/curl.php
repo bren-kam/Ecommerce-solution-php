@@ -108,8 +108,11 @@ class curl {
 		curl_setopt( $ch, CURLOPT_NOBODY, 1 );
 		curl_setopt( $ch, CURLOPT_FAILONERROR, 1 );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		
-		$result = ( false !== curl_exec( $ch ) ) ? true : false;
+
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 60 );
+        curl_setopt($ch, CURLOPT_TIMEOUT , 60 );
+
+        $result = ( false !== curl_exec( $ch ) ) ? true : false;
 		
 		if ( $close )
 			curl_close( $ch );

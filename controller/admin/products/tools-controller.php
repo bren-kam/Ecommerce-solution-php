@@ -34,7 +34,7 @@ class ToolsController extends BaseController {
         set_time_limit(300);
 
 
-        $form = new FormTable('fDiscontinueAshleyProducts');
+        $form = new BootstrapForm('fDiscontinueAshleyProducts');
         $form->add_field( 'textarea', 'SKUs', 'tSKUs' )
             ->add_validation( 'req', _('The "SKUs" field is required') );
 
