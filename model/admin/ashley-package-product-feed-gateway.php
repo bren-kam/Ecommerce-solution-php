@@ -363,10 +363,19 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
 			// These will be used twice
 			$sku_pieces = explode( '/', $sku );
+            $piece_items = array();
 			$series = array_shift( $sku_pieces );
             // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
             foreach ( $sku_pieces as $k => $sp ) {
-                $sku_pieces[$k] = preg_replace( '/\([^)]*\)/', '', $sp );
+                // remove things in parenthesis
+                $sku_pieces[$k] = preg_replace( $regex, '', $sp );
+
+                // see if package has many items of this product piece
+                // if $sp is ABC(2) then package has 2 items if piece ABC
+                $matches = array();
+                preg_match( $regex, $sp, $matches );
+                $piece_items[ $sku_pieces[$k] ] = ( isset( $matches[1] ) && is_numeric( $matches[1] ) ) ? $matches[1] : 1;
             }
 
             // Get the name -- which may be hard if the description is empty
@@ -400,14 +409,14 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 						break;
 					}
 					
-					$new_price += $this->ashley_products[$series . $sp]['price'];
+					$new_price += $this->ashley_products[$series . $sp]['price'] * $piece_items[$sp];
 				} elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
 					if ( 0 == $this->ashley_products[$series . '-' . $sp]['price'] ) {
 						$new_price = 0;
 						break;
 					}
 					
-					$new_price += $this->ashley_products[$series . '-' . $sp]['price'];
+					$new_price += $this->ashley_products[$series . '-' . $sp]['price'] * $piece_items[$sp];
 				} else {
 					$new_price = 0;
 					break;
