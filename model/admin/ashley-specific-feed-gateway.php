@@ -422,6 +422,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		foreach ( $products as $sku => $product_id ) {
 			$sku_pieces = explode( '/', $sku );
 
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                $sku_pieces[$k] = preg_replace($regex, '', $sp);
+            }
+
 			$series = array_shift( $sku_pieces );
 
 			$ashley_packages[$series][$product_id] = $sku_pieces;
@@ -1536,7 +1542,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $last_character = substr( $images[0], -1 );
 
             foreach ( $image_urls as $image_url ) {
-                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
+                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url, 5 ) ) {
                     try {
                         $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
                     } catch( InvalidParametersException $e ) {

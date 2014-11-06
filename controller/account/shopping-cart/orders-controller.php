@@ -112,8 +112,8 @@ class OrdersController extends BaseController {
             $date = new DateTime( $order->date_created );
 
             $link_text = '';
-            if ( $order->website_shipping_method_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
-                $link_text = " - Ashley Express";
+            if ( $order->is_ashley_express() ) {
+                $link_text = " - Express Delivery";
             }
 
             $data[] = array(
