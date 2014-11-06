@@ -658,6 +658,9 @@ class Analytics {
                     , 'google-token-created-at' => $tokenCreated
                 ));
 
+                $ga->setAccessToken( $accessToken );
+                $ga->setAccountId( "ga:{$ga_profile_id}" );
+
                 // Set Query Defaults - Date Range
                 $ga->setDefaultQueryParams( array(
                     'start-date' => $this->date_start
