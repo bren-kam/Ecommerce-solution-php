@@ -205,6 +205,19 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
 		}
 
+        // Ticket #31859 remove carton items if they have individual items flagged as Ashley Express
+        foreach ( $ashley_express_skus as $sku ) {
+            $last_letter = substr( $sku, -1 );
+            if ( ctype_alpha( $last_letter ) ) {
+                $carton_sku = substr( $sku, 0, -1 );
+                $carton_position = array_search( $carton_sku, $ashley_express_skus );
+                if ( $carton_position ) {
+                    echo "Removing Carton {$carton_sku} - Have single product {$sku}\n";
+                    unset( $ashley_express_skus[$carton_position] );
+                }
+            }
+        }
+
         $this->flag_bulk( $account, $ashley_express_skus );
 
 	}
