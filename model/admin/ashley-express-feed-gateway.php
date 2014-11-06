@@ -219,31 +219,28 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
     private function flag_bulk( $account, $skus ) {
 
         $this->prepare("
-                DELETE wpsm
-                FROM `website_product_shipping_method` wpsm
-                INNER JOIN `products` p ON ( p.`product_id` = wpsm.`product_id` )
-                WHERE wpsm.`website_id` = :website_id
-                  AND wpsm.`website_shipping_method_id` = :shipping_method_id
+                DELETE wpae
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = :website_id
                   AND p.`user_id_created` = :user_id_created
                   AND p.`sku` NOT IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
-                , ':shipping_method_id' => WebsiteOrder::get_ashley_express_shipping_method()->id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
 
         $this->prepare("
-                INSERT IGNORE INTO `website_product_shipping_method` ( website_id, product_id, website_shipping_method_id )
-                SELECT :website_id, p.product_id, :shipping_method_id
+                INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
+                SELECT :website_id, p.product_id
                 FROM `products` p
                 WHERE p.`user_id_created` = :user_id_created
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
-                , ':shipping_method_id' => WebsiteOrder::get_ashley_express_shipping_method()->id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
@@ -286,7 +283,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             if ( !$order->id )
                 continue;
 
-            if ( $order->website_shipping_method_id != WebsiteOrder::get_ashley_express_shipping_method()->id )
+            if ( $order->is_ashley_express() )
                 continue;
 
             if ( $order->status != WebsiteOrder::STATUS_PURCHASED )
@@ -339,7 +336,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             if ( !$order->id )
                 continue;
 
-            if ( $order->website_shipping_method_id != WebsiteOrder::get_ashley_express_shipping_method()->id )
+            if ( $order->is_ashley_express() )
                 continue;
 
             if ( $order->status != WebsiteOrder::STATUS_RECEIVED )
@@ -375,6 +372,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
      * @throws Exception
      */
     public function run_shipping_prices( Account $account, $filename ) {
+        throw new Exception("Method Removed");
+
         $file_extension = strtolower( f::extension( $filename ) );
 
         // get data regarding file extension
