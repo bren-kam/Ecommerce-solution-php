@@ -662,6 +662,7 @@ class AnalyticsController extends BaseController {
                     , 'google-refresh-token' => $refreshToken
                     , 'google-token-expiration' => $tokenExpires
                     , 'google-token-created-at' => $tokenCreated
+                    , 'google-token-issued-by' => DOMAIN
                 ));
 
             }

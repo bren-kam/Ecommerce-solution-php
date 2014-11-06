@@ -608,7 +608,7 @@ class Analytics {
         $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
 
         $ga_profile_id  = $account->ga_profile_id;
-        $oauth_info = $account->get_settings( 'google-access-token', 'google-refresh-token', 'google-token-expiration', 'google-token-created-at' );
+        $oauth_info = $account->get_settings( 'google-access-token', 'google-refresh-token', 'google-token-expiration', 'google-token-created-at', 'google-token-issued-by' );
         $accessToken = $oauth_info['google-access-token'];
         $refreshToken = $oauth_info['google-refresh-token'];
         $tokenExpires = $oauth_info['google-token-expiration'];
@@ -644,7 +644,15 @@ class Analytics {
             }
 
             $log .= "\nToken expired, using refresh token {$refreshToken}";
-            $auth = $ga->auth->refreshAccessToken( $refreshToken );
+
+            // Get who issued the token (GSR, IR, etc.)
+            $issued_by = $oauth_info['google-token-issued-by'] ? $oauth_info['google-token-issued-by'] : DOMAIN;
+            $refresh_ga = new GoogleAnalyticsAPI();
+            $refresh_ga->auth->setClientId( Config::key( 'ga-client-id-' . $issued_by ) );
+            $refresh_ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . $issued_by ) );
+            $refresh_ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . $issued_by ) );
+
+            $auth = $refresh_ga->auth->refreshAccessToken( $refreshToken );
             if ($auth['http_code'] == 200) {
                 $accessToken = $auth['access_token'];
                 // $refreshToken = $auth['refresh_token'];
@@ -658,15 +666,17 @@ class Analytics {
                     , 'google-token-created-at' => $tokenCreated
                 ));
 
-                $ga->setAccessToken( $accessToken );
-                $ga->setAccountId( "ga:{$ga_profile_id}" );
+                $refresh_ga->setAccessToken( $accessToken );
+                $refresh_ga->setAccountId( "ga:{$ga_profile_id}" );
 
                 // Set Query Defaults - Date Range
-                $ga->setDefaultQueryParams( array(
+                $refresh_ga->setDefaultQueryParams( array(
                     'start-date' => $this->date_start
                 , 'end-date' => $this->date_end
                 , 'max-results' => 5000
                 ) );
+
+                $this->ga = $refresh_ga;
 
                 return true;
             } else {
