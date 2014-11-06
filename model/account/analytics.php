@@ -647,13 +647,13 @@ class Analytics {
             $auth = $ga->auth->refreshAccessToken( $refreshToken );
             if ($auth['http_code'] == 200) {
                 $accessToken = $auth['access_token'];
-                $refreshToken = $auth['refresh_token'];
+                // $refreshToken = $auth['refresh_token'];
                 $tokenExpires = $auth['expires_in'];
                 $tokenCreated = time();
 
                 $account->set_settings( array(
                     'google-access-token' => $accessToken
-                    , 'google-refresh-token' => $refreshToken
+                    // , 'google-refresh-token' => $refreshToken
                     , 'google-token-expiration' => $tokenExpires
                     , 'google-token-created-at' => $tokenCreated
                 ));
