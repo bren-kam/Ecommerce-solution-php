@@ -372,7 +372,7 @@ class ShippingController extends BaseController {
             ->options(array(
                 'Leesport_PA' => 'Leesport, PA'
                 , 'Advance_NC' => 'Advance, NC'
-                , 'Arcadia WI' => 'Arcadia, WI'
+                , 'Arcadia_WI' => 'Arcadia, WI'
                 , 'Ecru_MS' => 'Ecru, MS'
                 , 'Colton_CA' => 'Colton, CA'
             ));
@@ -483,7 +483,7 @@ class ShippingController extends BaseController {
             ->options(array(
                 'Leesport_PA' => 'Leesport, PA'
                 , 'Advance_NC' => 'Advance, NC'
-                , 'Arcadia WI' => 'Arcadia, WI'
+                , 'Arcadia_WI' => 'Arcadia, WI'
                 , 'Ecru_MS' => 'Ecru, MS'
                 , 'Colton_CA' => 'Colton, CA'
             ));
