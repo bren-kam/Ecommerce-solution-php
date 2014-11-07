@@ -171,8 +171,11 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	 */
 	public function run_flag_products( Account $account ) {
 
-        if ( !$this->get_xml( $account, '846-' ) )
+        if ( !$this->get_xml( $account, '846-' ) ) {
+            // Disable Ashley Express for this site
+            $account->set_settings( array( 'ashley-express' => '' ) );
             return false;
+        }
 
         // Declare array
         $ashley_express_skus = array();
