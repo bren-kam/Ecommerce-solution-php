@@ -461,9 +461,10 @@ class Account extends ActiveRecordBase {
 
     public function resync_sendgrid_lists() {
         library('sendgrid-api');
-        list($username, $password) = $this->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        $settings = $this->get_settings( 'sendgrid-username', 'sendgrid-password' );
 
-        $sendgrid = new SendGridAPI( $this, $username, $password );
+
+        $sendgrid = new SendGridAPI( $this, $settings['sendgrid-username'], $settings['sendgrid-password'] );
         $sendgrid->setup_list();
         $sendgrid->setup_email();
         $email_list = new EmailList();
@@ -477,7 +478,7 @@ class Account extends ActiveRecordBase {
             $email_chunks = array_chunk( $emails, 1000 );
 
             foreach ( $email_chunks as $emails ) {
-                $sendgrid->email->add( $email_list->name, $emails );
+                $success = $sendgrid->email->add( $email_list->name, $emails );
             }
         }
     }
