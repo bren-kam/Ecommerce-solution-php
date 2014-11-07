@@ -32,17 +32,26 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 3600 );
 
-        require_once MODEL_PATH . '../account/website-order.php';
-        require_once MODEL_PATH . '../account/website-shipping-method.php';
+        if ( !class_exists( 'WebsiteOrder' ) ) {
+            require_once MODEL_PATH . '../account/website-order.php';
+            require_once MODEL_PATH . '../account/website-shipping-method.php';
+        }
     }
 
     /**
      * Get Feed Accounts
      *
-     * @return mixed
+     * @return Account[]
      */
     protected function get_feed_accounts() {
-        return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) LEFT JOIN `website_settings` AS ws2 ON ( ws2.`website_id` = w.`website_id` AND ws2.`key` = 'feed-last-run' ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1 ORDER BY ws2.`value`", PDO::FETCH_CLASS, 'Account' );
+        $accounts = $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) LEFT JOIN `website_settings` AS ws2 ON ( ws2.`website_id` = w.`website_id` AND ws2.`key` = 'feed-last-run' ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1 ORDER BY ws2.`value`", PDO::FETCH_CLASS, 'Account' );
+        foreach ( $accounts as $k => $account ) {
+            $is_ashley_express = (bool)$account->get_settings( 'ashley-express' );
+            if ( !$is_ashley_express ) {
+                unset( $accounts[$k] );
+            }
+        }
+        return $accounts;
     }
 
     /**
@@ -162,7 +171,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	 */
 	public function run_flag_products( Account $account ) {
 
-        $this->get_xml( $account, '846-' );
+        if ( !$this->get_xml( $account, '846-' ) )
+            return false;
 
         // Declare array
         $ashley_express_skus = array();
@@ -195,6 +205,19 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
 		}
 
+        // Ticket #31859 remove carton items if they have individual items flagged as Ashley Express
+        foreach ( $ashley_express_skus as $sku ) {
+            $last_letter = substr( $sku, -1 );
+            if ( ctype_alpha( $last_letter ) ) {
+                $carton_sku = substr( $sku, 0, -1 );
+                $carton_position = array_search( $carton_sku, $ashley_express_skus );
+                if ( $carton_position ) {
+                    echo "Removing Carton {$carton_sku} - Have single product {$sku}\n";
+                    unset( $ashley_express_skus[$carton_position] );
+                }
+            }
+        }
+
         $this->flag_bulk( $account, $ashley_express_skus );
 
 	}
@@ -209,31 +232,28 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
     private function flag_bulk( $account, $skus ) {
 
         $this->prepare("
-                DELETE wpsm
-                FROM `website_product_shipping_method` wpsm
-                INNER JOIN `products` p ON ( p.`product_id` = wpsm.`product_id` )
-                WHERE wpsm.`website_id` = :website_id
-                  AND wpsm.`website_shipping_method_id` = :shipping_method_id
+                DELETE wpae
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = :website_id
                   AND p.`user_id_created` = :user_id_created
                   AND p.`sku` NOT IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
-                , ':shipping_method_id' => WebsiteOrder::get_ashley_express_shipping_method()->id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
 
         $this->prepare("
-                INSERT IGNORE INTO `website_product_shipping_method` ( website_id, product_id, website_shipping_method_id )
-                SELECT :website_id, p.product_id, :shipping_method_id
+                INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
+                SELECT :website_id, p.product_id
                 FROM `products` p
                 WHERE p.`user_id_created` = :user_id_created
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
-                , ':shipping_method_id' => WebsiteOrder::get_ashley_express_shipping_method()->id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
@@ -276,7 +296,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             if ( !$order->id )
                 continue;
 
-            if ( $order->website_shipping_method_id != WebsiteOrder::get_ashley_express_shipping_method()->id )
+            if ( $order->is_ashley_express() )
                 continue;
 
             if ( $order->status != WebsiteOrder::STATUS_PURCHASED )
@@ -329,7 +349,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             if ( !$order->id )
                 continue;
 
-            if ( $order->website_shipping_method_id != WebsiteOrder::get_ashley_express_shipping_method()->id )
+            if ( $order->is_ashley_express() )
                 continue;
 
             if ( $order->status != WebsiteOrder::STATUS_RECEIVED )
@@ -365,6 +385,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
      * @throws Exception
      */
     public function run_shipping_prices( Account $account, $filename ) {
+        throw new Exception("Method Removed");
+
         $file_extension = strtolower( f::extension( $filename ) );
 
         // get data regarding file extension

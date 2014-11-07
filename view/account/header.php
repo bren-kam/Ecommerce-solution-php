@@ -341,6 +341,10 @@
                                 <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-custom') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-custom/">Add Custom</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-ups') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-ups/">Add UPS</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-fedex') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-fedex/">Add FedEx</a></li>
+                                <?php if ( $user->account->get_settings( 'ashley-express' ) ): ?>
+                                    <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-ashley-express-ups') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-ashley-express-ups/">Add UPS (Ashley)</a></li>
+                                    <li <?php if ( $template->in_menu_item('shopping-cart/shipping/add-ashley-express-fedex') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/add-edit-ashley-express-fedex/">Add FedEx (Ashley)</a></li>
+                                <?php endif; ?>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/shipping/settings') ) echo 'class="active"'?>><a href="/shopping-cart/shipping/settings/">Settings</a></li>
                             </ul>
                         </li>

@@ -9,6 +9,14 @@ var ProductPrices = {
             bServerSide : 1,
             iDisplayLength : 20,
             sAjaxSource : '/products/list-product-prices/',
+            "sDom":
+                "<'row'<'col-xs-8 col-md-6'f><'col-xs-4 col-md-6'l>r>"+
+                "t"+
+                "<'row'<'col-xs-6'i><'col-xs-6'p>>",
+            oLanguage: {
+                sSearch: '<span class="hidden-xs">Search:</span>',
+                sLengthMenu: '_MENU_ <span class="hidden-xs">items per page</span>'
+            },
             fnServerData: function ( sSource, aoData, fnCallback ) {
                 aoData.push({ name : 'b', value : $('#sBrand').val() });
                 aoData.push({ name : 'cid', value : $('#sCategory').val() });

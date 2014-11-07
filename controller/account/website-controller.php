@@ -394,8 +394,8 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/website-sidebar', 'media-manager' )
-            ->css_url( Config::resource( 'videojs-css' ) )
-            ->javascript_url( Config::resource( 'jqueryui-js' ), Config::resource( 'videojs-js' ) )
+            ->css_url( Config::resource( 'videojs-css' ), Config::resource( 'bootstrap-datepicker-css' ) )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource( 'jqueryui-js' ), Config::resource( 'videojs-js' ) )
             ->javascript( 'fileuploader', 'media-manager', 'website/website-sidebar' );
 
         return $this->get_template_response( 'website-sidebar' )
@@ -443,7 +443,8 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/banners', 'media-manager' )
-            ->javascript_url( Config::resource( 'jqueryui-js' ) )
+            ->css_url( Config::resource('bootstrap-datepicker-css') )
+            ->javascript_url( Config::resource('bootstrap-datepicker-js'), Config::resource( 'jqueryui-js' ) )
             ->javascript( 'fileuploader', 'media-manager', 'website/banners' );
 
         return $this->get_template_response( 'banners' )
@@ -601,6 +602,7 @@ class WebsiteController extends BaseController {
                 foreach ( $tree as $tree_node ) {
                     $page = $_POST['navigation'][$tree_node['id']];
                     list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
                     $navigation_node = compact( 'url', 'name' );
 
                     // children - sub items
@@ -610,6 +612,7 @@ class WebsiteController extends BaseController {
                         foreach ( $tree_node['children'] as $child_node ) {
                             $sub_page = $_POST['navigation'][$child_node['id']];
                             list( $url, $name ) = explode( '|', $sub_page );
+                            $name = htmlentities( $name );
                             $navigation_node['children'][] = compact( 'url', 'name' );
                         }
                         if ( empty( $navigation_node['children'] ) )
@@ -645,6 +648,7 @@ class WebsiteController extends BaseController {
 
             foreach ( $_POST['footer-navigation'] as $page ) {
                 list( $url, $name ) = explode( '|', $page );
+                $name = htmlentities( $name );
                 $footer_navigation[] = compact( 'url', 'name' );
             }
 
@@ -808,8 +812,7 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
 
-        $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] )
-            ->add_validation( 'gt=0', '"Product Price Max. Decimals" must be greater than 0' );
+        $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] );
 
         if ( $form->posted() ) {
             $new_settings = array();
@@ -1626,23 +1629,29 @@ class WebsiteController extends BaseController {
         $attachment = new AccountPageAttachment();
         $attachment->get( $_POST['hAccountPageAttachmentId'], $this->user->account->id );
 
-        // Empty it the link they didn't enter anything
-        if ( 'Enter Link...' == $_POST['extra'] || 'http://' == $_POST['extra'] )
-            $_POST['extra'] = '';
-
         $meta = ( isset( $_POST['meta'] ) ) ? $_POST['meta'] : '';
 
         // Do validation
-        $v = new Validator( 'fUpdateExtra' );
-        $v->add_validation( 'extra', 'URL' );
+        $extra = isset( $_POST['extra']) ? $_POST['extra'] : '';
 
-        $response->check( empty( $errs ) && ( empty( $_POST['extra'] ) || stristr( $_POST['extra'], 'http' ) ), _('Please make sure you enter in a valid link') );
+        // "extra" can be an array, in that case we store it as JSON
+        if ( is_array( $extra ) ) {
+            // date parsing
+            if ( isset( $extra['date-start'] ) ) {
+                $extra['date-start'] = ( new DateTime( $extra['date-start'] ) )->format('Y-m-d');
+            }
 
-        if ( $response->has_error() )
-            return $response;
+            if ( isset( $extra['date-end'] ) ) {
+                $extra['date-end'] = ( new DateTime( $extra['date-end'] ) )->format('Y-m-d');
+            }
+
+            // make it json
+            $extra = json_encode($extra);
+
+        }
 
         // Update attachment
-        $attachment->extra = $_POST['extra'];
+        $attachment->extra = $extra;
         $attachment->meta = $meta;
         $attachment->save();
 
@@ -1888,7 +1897,7 @@ class WebsiteController extends BaseController {
 
         $category->get( $product->category_id );
 
-        $product->image_url = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images );
+        $product->image_url = $product->get_image_url( current( $product->images ), 'small', $product->industry, $product->id );
         $response->add_response( 'product', $product );
 
         // Form the response HTML
@@ -2037,9 +2046,9 @@ class WebsiteController extends BaseController {
             $header = $_POST['header'];
 
             // Make URLs work on SSL and non-SSL
-            $header = preg_replace( '/http(s?):\/\//i', '//', $header );
+            $header = preg_replace( '/src="http(s?):\/\//i', '/src="/', $header );
             // Make S3 Images work on SSL and non-SSL
-            $header = preg_replace( '/\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', '//s3.amazonaws.com/$1.retailcatalog.us/$2"', $header );
+            $header = preg_replace( '/src="http:\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', 'src="//s3.amazonaws.com/$1.retailcatalog.us/$2"', $header );
             // Encode Entities
             $header = htmlentities( $header );
 
@@ -2304,6 +2313,7 @@ class WebsiteController extends BaseController {
             if ( !empty( $_POST['top-site-navigation'] ) ) {
                 foreach ( $_POST['top-site-navigation'] as $page ) {
                     list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
                     $top_site_navigation[] = compact( 'url', 'name' );
                 }
             }

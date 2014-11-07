@@ -33,6 +33,20 @@ class AccountCategory extends ActiveRecordBase {
      * @param int $account_id
      * @return array
      */
+    public function get_all( $account_id ) {
+        return $this->prepare(
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id"
+            , 'ii'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get All IDs
+     *
+     * @param int $account_id
+     * @return array
+     */
     public function get_all_ids( $account_id ) {
         return $this->prepare(
             'SELECT DISTINCT wc.`category_id` FROM `website_categories` AS wc LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = wc.`category_id` AND wbc.`website_id` = wc.`website_id` ) WHERE wc.`website_id` = :account_id AND wbc.`category_id` IS NULL'
@@ -66,11 +80,23 @@ class AccountCategory extends ActiveRecordBase {
      * @param array $category_ids
      */
     public function hide( $account_id, array $category_ids ) {
+        $category = new Category();
+
         // Type Juggling
         $account_id = (int) $account_id;
 
         foreach ( $category_ids as &$cid ) {
             $cid = (int) $cid;
+
+            // Hide Children
+            $children = $category->get_by_parent( $cid );
+            if ( $children ) {
+                $children_to_block = array();
+                foreach ( $children as $child ) {
+                    $children_to_block[] = $child->category_id;
+                }
+                $this->hide( $account_id, $children_to_block );
+            }
         }
 
         $values = "( $account_id, " . implode( " ), ( $account_id, ", $category_ids ) . ' )';
@@ -339,12 +365,16 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function get_website_category_images( $account_id, $category_ids ) {
         // Protection
-        foreach ( $category_ids as &$cid ) {
-            $cid = (int) $cid;
+        $where = '';
+        if ( $category_ids ) {
+            foreach ($category_ids as &$cid) {
+                $cid = (int)$cid;
+            }
+            $where = " AND p.`category_id` IN(" . implode( ',', $category_ids ) . ") ";
         }
 
         return $this->prepare(
-            "SELECT p.`category_id`, CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/small/', pi.`image` ) FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE p.`category_id` IN(" . implode( ',', $category_ids ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND pi.`sequence` = 0 AND wp.`website_id` = :account_id AND wp.`product_id` IS NOT NULL AND wp.`active` = 1 GROUP BY p.`category_id`"
+            "SELECT p.`category_id`, CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/small/', pi.`image` ) FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND pi.`sequence` = 0 AND wp.`website_id` = :account_id AND wp.`product_id` IS NOT NULL AND wp.`active` = 1 $where GROUP BY p.`category_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );

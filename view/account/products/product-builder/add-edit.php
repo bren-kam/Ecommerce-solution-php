@@ -181,7 +181,9 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                                 foreach ( $product_images as $pi ):
                         ?>
                             <p class="image">
-                                <a href="http://<?php echo str_replace( ' ', '', $industries[$product->industry_id]->name ); ?>.retailcatalog.us/products/<?php echo $product_id; ?>/large/<?php echo $pi; ?>" title="<?php echo 'View'; ?>" target="_blank"><img src="http://<?php echo str_replace( ' ', '', $industries[$product->industry_id]->name ); ?>.retailcatalog.us/products/<?php echo $product_id; ?>/small/<?php echo $pi; ?>" width="200" height="200" alt="" /></a>
+                                <a href="<?php echo $product->get_image_url( $pi, 'large', $industries[$product->industry_id]->name, $product_id ) ?>" title="<?php echo 'View'; ?>" target="_blank">
+                                    <img src="<?php echo $product->get_image_url( $pi, 'small', $industries[$product->industry_id]->name, $product_id ) ?>" width="200" height="200" alt="" />
+                                </a>
                                 <a href="#" class="remove-image" title="Delete"><i class="fa fa-trash-o"></i></a>
                                 <input type="hidden" name="images[]" value="<?php echo $pi; ?>" />
                             </p>

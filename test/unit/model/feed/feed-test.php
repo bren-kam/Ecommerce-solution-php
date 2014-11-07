@@ -20,6 +20,10 @@ class FeedTest extends BaseDatabaseTest {
     // Attribute Item name
     const ATTRIBUTE_ITEM_NAME = '5 years and under';
 
+    const ATTRBUTE_ITEM_ID = 1;
+
+    const PRODUCT_ID = 1;
+
     // Website Product Group
     const PRODUCT_GROUP_NAME = 'Henry Cheese Collection';
 
@@ -41,7 +45,8 @@ class FeedTest extends BaseDatabaseTest {
         $this->phactory->define( 'categories', array( 'name' => self::CATEGORY_NAME ) );
         $this->phactory->define( 'industries', array( 'name' => self::INDUSTRY_NAME ) );
         $this->phactory->define( 'attributes', array( 'name' => self::ATTRIBUTE_NAME ) );
-        $this->phactory->define( 'attribute_items', array( 'attribute_item_name' => self::ATTRIBUTE_ITEM_NAME ) );
+        $this->phactory->define( 'attribute_items', array( 'attribute_item_id' => self::ATTRBUTE_ITEM_ID, 'attribute_item_name' => self::ATTRIBUTE_ITEM_NAME ) );
+        $this->phactory->define( 'attribute_item_relations', array( 'attribute_item_id' => self::ATTRBUTE_ITEM_ID, 'product_id' => self::PRODUCT_ID ) );
         $this->phactory->define( 'product_groups', array( 'name' => self::PRODUCT_GROUP_NAME ) );
         $this->phactory->recall();
     }
@@ -127,6 +132,7 @@ class FeedTest extends BaseDatabaseTest {
     public function testGetAttributeItems() {
         // Create
         $this->phactory->create('attribute_items');
+        $this->phactory->create('attribute_item_relations');
 
         // Get
         $attribute_items = $this->feed->get_attribute_items();

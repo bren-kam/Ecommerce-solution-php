@@ -808,18 +808,21 @@ class AccountsController extends BaseController {
                 // Set the settings
                 $account->set_settings( array( 'r53-zone-id' => $zone_id ) );
 
+                $server = new Server();
+                $server->get( $account->server_id );
+
                 // Defaults
                 $changes = array(
-                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', '199.79.48.138' )
+                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->ip )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'MX', '14400', '0 mail.' . $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', $full_domain_name, 'TXT', '14400', '"v=spf1 a mx ip4:199.79.48.137 ~all"' )
-                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', '199.79.48.137' )
+                    , $r53->prepareChange( 'CREATE', $full_domain_name, 'TXT', '14400', '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"' )
+                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
                     , $r53->prepareChange( 'CREATE', 'www.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', '199.79.48.137' )
-                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
-                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
-                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
-                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
+                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
                 );
 
                 $response = $r53->changeResourceRecordSets( $zone_id, $changes );
@@ -907,6 +910,7 @@ class AccountsController extends BaseController {
             $account_note->user_id = $this->user->id;
             $account_note->message = $_POST['taNote'];
             $account_note->create();
+            return new RedirectResponse( '/accounts/notes/?aid=' . $_GET['aid'] );
         }
 
         // Get notes
@@ -936,7 +940,7 @@ class AccountsController extends BaseController {
         $account = new Account;
         $account->get( $_GET['aid'] );
 
-        $form = new FormTable( 'fAddEmailTemplate' );
+        $form = new BootstrapForm( 'fAddEmailTemplate' );
         $form->submit( _('Add Template') );
 
         $form->add_field( 'text', _('View Product Button'), 'tViewProductButton' )
@@ -1213,10 +1217,20 @@ class AccountsController extends BaseController {
         $files = $ftp->raw_list();
         $file_count = count( $files );
 
+        // FTP Settings
+        $settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
+        $username = urlencode( security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
+        $password = urlencode( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) );
+        $folder = str_replace( 'CE_', '', $username );
+        if ( '-' != substr( $folder, -1 ) )
+            $folder .= '-';
+        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
+        $base_path = "/CustEDI/$folder/$subfolder/";
+
         // Create response
         $message = "Got {$file_count} file(s):";
         foreach ($files as $f) {
-            $message .= "<br> {$f['name']} - {$f['size']}";
+            $message .= "<br> {$f['name']} - {$f['size']} <a href=\"ftp://{$username}:{$password}@ftp.ashleyfurniture.com/{$base_path}{$f['name']}\" target=\"_blank\">View</a>";
         }
         $response->notify( $message );
 
@@ -1723,7 +1737,21 @@ class AccountsController extends BaseController {
         echo 'Finished!'; die;
     }
 
+    public function reactivate() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
 
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $account->status = 1;
+            $account->save();
+        }
+
+        $this->notify( _("Account reactivated") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
 
 
 }

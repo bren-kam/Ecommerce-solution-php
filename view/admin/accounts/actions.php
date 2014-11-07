@@ -39,7 +39,7 @@
                             <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
                             <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
                             <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
-                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=<?php echo $account->id ?>">Ashley Express - Shipping Prices</a></li>
+<!--                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=--><?php //echo $account->id ?><!--">Ashley Express - Shipping Prices</a></li>-->
                         </ul>
                     </li>
                 </ul>
@@ -61,6 +61,10 @@
                 <?php } ?>
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
+
+                <?php if ( !$account->status ): ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reactivate/' ); ?>" title="<?php echo _('Reactivate Account'); ?>" confirm="<?php echo _('Are you sure you want to reactivate this account?'); ?>"><?php echo _('Reactivate Account'); ?></a></p>
+                <?php endif; ?>
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reorganize-categories/' ); ?>" title="<?php echo _('Reorganize Categories'); ?>"><?php echo _('Reorganize Categories'); ?></a></p>

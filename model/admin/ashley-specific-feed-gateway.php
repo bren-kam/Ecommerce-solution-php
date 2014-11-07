@@ -232,11 +232,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $all_skus[] = $sku;
 
             // Create the products if we don't have it in the system
-            if ( !array_key_exists( $sku, $this->existing_products ) ) {
+            // Lets run this on all product
+            // So we can ensure they are up to date
+            // if ( !array_key_exists( $sku, $this->existing_products ) ) {
                 $new_product = $this->get_product_info( $item );
                 if ( $new_product )
                     $new_products[$sku] = $new_product;
-            }
+            // }
 
             // Add to Account any products they don't have
             if ( !array_key_exists( $sku, $products ) )
@@ -403,7 +405,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      *
      * @return mixed
      */
-    protected function get_feed_accounts() {
+    public function get_feed_accounts() {
         return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) LEFT JOIN `website_settings` AS ws2 ON ( ws2.`website_id` = w.`website_id` AND ws2.`key` = 'feed-last-run' ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1 ORDER BY ws2.`value`", PDO::FETCH_CLASS, 'Account' );
     }
 
@@ -419,6 +421,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		foreach ( $products as $sku => $product_id ) {
 			$sku_pieces = explode( '/', $sku );
+
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                $sku_pieces[$k] = preg_replace($regex, '', $sp);
+            }
 
 			$series = array_shift( $sku_pieces );
 
@@ -1442,8 +1450,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( !isset( $groups[$item['group'] ] ) ) {
                 $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
 
-                if ( !isset( $groups[$item['group'] ] ) )
-                    continue;
+                if ( !isset( $groups[$item['group']] ) )
+                    $groups[$item['group']] = array('name' => '', 'description' => '', 'features' => '');
             }
 
             /***** GET PRODUCT *****/
@@ -1466,10 +1474,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
                 // Set publish date
                 $product->publish_date = dt::now();
-
-                // Increment product count
-                // -- Used for report --
-                // $this->new_product( format::convert_characters( $groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
             } else {
                 $new_product = false;
                 $product->user_id_modified = self::USER_ID;
@@ -1480,10 +1484,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             /***** PREPARE PRODUCT DATA *****/
 
             $group = $groups[$item['group']];
-            $group_name = $group['name'] . ' - ';
+            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
 
-            $group_description = '<p>' . $group['description'] . '</p>';
-            $group_features = '<p>' . $group['features'] . '</p>';
+            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
+            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
 
             $name = format::convert_characters( $group_name . $item['description'] );
 
@@ -1538,7 +1542,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $last_character = substr( $images[0], -1 );
 
             foreach ( $image_urls as $image_url ) {
-                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
+                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url, 5 ) ) {
                     try {
                         $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
                     } catch( InvalidParametersException $e ) {

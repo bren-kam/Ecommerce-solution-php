@@ -143,7 +143,7 @@ class AccountPage extends ActiveRecordBase {
     public function save() {
         parent::update( array(
             'slug' => strip_tags($this->slug)
-            , 'title' => strip_tags($this->title)
+            , 'title' => strip_tags(htmlentities($this->title))
             , 'content' => $this->content
             , 'meta_title' => strip_tags($this->meta_title)
             , 'meta_description' => strip_tags($this->meta_description)

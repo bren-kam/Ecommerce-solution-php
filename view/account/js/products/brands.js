@@ -15,6 +15,8 @@ var BrandList = {
             forcePlaceholderSize : true,
             update: BrandList.updateSequence
         });
+
+        $('#brand-link').change( BrandList.setBrandLinkSetting );
     }
 
     , setupAutocomplete: function() {
@@ -79,7 +81,7 @@ var BrandList = {
                 .data( 'brand-id', brand.id )
                 .find('img').attr( 'src', brand.image ).end()
                 .find('h4').text( brand.name ).end()
-                .find('.brand-url a').attr( 'href', brand.link ).text( brand.link ).end()
+                .find('.brand-url a').attr( 'href', 'http://' + brand.link ).text( brand.link ).end()
                 .appendTo( '#brand-list' );
         }
     }
@@ -93,6 +95,13 @@ var BrandList = {
         $.post(
             '/products/update-brand-sequence/'
             , { s: sequence.join('|'), _nonce: $('#_update_brand_sequence' ).val() }
+            , GSR.defaultAjaxResponse
+        );
+    }
+
+    , setBrandLinkSetting: function() {
+        $.post(
+            '/products/set-brand-link/', { _nonce: $('#_set_brand_link').val(), 'checked' : ( $('#brand-link').is(':checked') ) ? 1 : 0 }
             , GSR.defaultAjaxResponse
         );
     }

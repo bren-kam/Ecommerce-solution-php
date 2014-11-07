@@ -4898,3 +4898,6 @@ div#ticket-uploader {
 .panel-heading h3 {
   margin-bottom: 0px;
 }
+.kb-article-content img {
+  max-width: 100%;
+}

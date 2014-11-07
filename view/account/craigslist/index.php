@@ -15,7 +15,7 @@
                             <th>Product Name</th>
                             <th>SKU</th>
                             <th>Status</th>
-                            <th sort="1">Created</th>
+                            <th sort="1 desc">Created</th>
                         </thead>
                     </table>
                 </div>

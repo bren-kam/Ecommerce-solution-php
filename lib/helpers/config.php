@@ -33,7 +33,14 @@ class Config {
         // Google Analytics
         , 'ga-username'             => 'web@imagineretailer.com'
         , 'ga-password'             => 'imagine1010'
-        // Sendgrid
+        // Google Analytics API
+        , 'ga-client-id-greysuitretail.com'            => '460745244735-8jvkv7s18i40h87ajv56oho34vfr8ksc.apps.googleusercontent.com'
+        , 'ga-client-secret-greysuitretail.com'        => 'KhCS6ZYFl84txgtZ3wDYqJ1Q'
+        , 'ga-redirect-uri-greysuitretail.com'         => 'http://account.greysuitretail.com/analytics/oauth2callback/'
+        , 'ga-client-id-imagineretailer.com'            => '460745244735-oc1ofqo0hrcd9jerd92s53j63s4cdprl.apps.googleusercontent.com'
+        , 'ga-client-secret-imagineretailer.com'        => 'O2xxHxt1_i8TTKRnQMoPKnzA'
+        , 'ga-redirect-uri-imagineretailer.com'         => 'http://account.imagineretailer.com/analytics/oauth2callback/'
+            // Sendgrid
         , 'sendgrid-timezone'       => 'America/Chicago'
 	);
 

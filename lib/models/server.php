@@ -1,7 +1,7 @@
 <?php
 class Server extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $name, $ip, $whm_hash;
+    public $id, $name, $ip, $nodebalancer_ip, $whm_hash;
 
     /**
      * Setup the account initial data

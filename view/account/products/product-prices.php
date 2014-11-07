@@ -53,7 +53,6 @@ nonce::field('set_product_prices', '_set_product_prices');
                         <button type="button" class="btn btn-primary save">Save</button>
                     </div>
                 </div>
-                <br />
 
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" id="product-prices">

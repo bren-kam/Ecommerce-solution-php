@@ -623,6 +623,13 @@ class ProductsController extends BaseController {
         $top_categories_array = json_decode( $this->user->account->get_settings('top-categories') );
         $top_categories_array = $top_categories_array ? $top_categories_array : array();
         $category_images = ar::assign_key( $account_category->get_website_category_images( $this->user->account->id, $website_category_ids ), 'category_id', true );
+        $account_categories = ar::assign_key( $account_category->get_all( $this->user->account->id ), 'category_id' );
+
+        foreach ( $account_categories as $cat_id => $ac ) {
+            if ( !isset( $category_images[ $cat_id ] ) ) {
+                $category_images[ $cat_id ] = $ac['image_url'];
+            }
+        }
 
         $categories = $top_categories = array();
 
@@ -638,6 +645,13 @@ class ProductsController extends BaseController {
             $top_categories[] = Category::$categories[$category_id];
         }
 
+        // Get Account Parent Categories (Default Top Brands if first time)
+        $default_top_categories = array();
+        foreach( Category::$categories as $category ) {
+            if ( $category->parent_category_id == 0 && in_array( $category->id, $website_category_ids ) )
+                $default_top_categories[] = $category;
+        }
+
         $this->resources->javascript( 'products/top-categories' )
             ->javascript_url( Config::Resource('jqueryui-js') )
             ->css( 'products/top-categories' );
@@ -646,7 +660,7 @@ class ProductsController extends BaseController {
             ->kb( 137 )
             ->add_title( _('Top Categories') )
             ->menu_item( 'products/top-categories' )
-            ->set( compact( 'categories', 'top_categories', 'category_images' ) );
+            ->set( compact( 'categories', 'top_categories', 'category_images', 'default_top_categories' ) );
     }
 
     /**
@@ -868,6 +882,20 @@ class ProductsController extends BaseController {
             $where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $child_category_ids ) ) ) . ')';
         }
 
+        // Exclude Blocked Categories
+        $blocked_categories = $account_category->get_blocked_website_category_ids( $this->user->account->id );
+        if ( $blocked_categories ) {
+            foreach ( $blocked_categories as $bc_id ) {
+                foreach ( $category->get_all_children( $bc_id ) as $bcc  ) {
+                    $blocked_categories[] = $bcc->category_id;
+                    foreach ( $category->get_all_children( $bcc->category_id ) as $bccc  ) {
+                        $blocked_categories[] = $bccc->category_id;
+                    }
+                }
+            }
+            $where .= " AND c.`category_id` NOT IN ( " . implode( ',', $blocked_categories ) . " )";
+        }
+
         // Pricing
         if ( !empty( $_POST['pr'] ) ) {
             if ( '0|0' == $_POST['pr'] ) {
@@ -915,10 +943,10 @@ class ProductsController extends BaseController {
             if ($this->user->account->is_new_template() ) {
                 $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
-                $product->link = 'http://' . $this->user->account->domain . ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+                $product->link = 'http://' . $this->user->account->domain . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             }
 
-            $product->image_url = 'http://' . str_replace( ' ', '', $product->industry ) . '.retailcatalog.us/products/' . $product->product_id . '/' . $product->image;
+            $product->image_url = $product->get_image_url( $product->image, '', $product->industry, $product->product_id  );
         }
 
         $response = new AjaxResponse( true );
@@ -1044,7 +1072,7 @@ class ProductsController extends BaseController {
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
-        $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
+        $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
 
         // Get The Public URL Link
@@ -1460,6 +1488,8 @@ class ProductsController extends BaseController {
 
         if ( !empty( $_GET['b'] ) )
             $dt->add_where( ' AND p.`brand_id` = ' . (int) $_GET['b'] );
+
+        $dt->search( array( 'p.`sku`' => false, 'p.`name`' => false, 'wp.`alternate_price`' => false, 'wp.`price`' => false, 'wp.`sale_price`' => false, 'wp.`price_note`' => false ) );
 
         if ( !empty( $_GET['cid'] ) ) {
             $category = new Category();
@@ -2061,7 +2091,7 @@ class ProductsController extends BaseController {
         // Get Product Images & Name
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
-        $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
+        $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
 
         // Get Category
@@ -2077,5 +2107,23 @@ class ProductsController extends BaseController {
         $response->add_response( 'product', $account_product );
         return $response;
     }
+
+    /**
+     * Reset all prices
+     *
+     * Set all AccountProducts prices to 0
+     *
+     * @return RedirectResponse
+     */
+    protected function reset_all_prices() {
+
+        $account_product = new AccountProduct();
+        $account_product->reset_price_by_account( $this->user->account->id );
+
+        $this->notify( _('All account prices has been reseted.') );
+
+        return new RedirectResponse( "/products/settings/" );
+    }
+
 
 }

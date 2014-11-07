@@ -19,6 +19,9 @@ var Sidebar = {
 
         Sidebar.template = $('#sidebar-image-template').clone().removeClass('hidden').removeAttr('id');
         $('#sidebar-image-template').remove();
+
+        $('#sidebar-list').on( 'click', '.show-date-range', Sidebar.showDateRange );
+        Sidebar.bindDateRange();
     }
 
     , changeStatus: function( event, state ) {
@@ -88,19 +91,41 @@ var Sidebar = {
                 '/website/create-sidebar-image/'
                 , { _nonce: $('#_create_sidebar_image').val(), fn: file.url, apid: $('#page-id').val() }
                 , function( response ) {
-                    Sidebar.template.clone()
-                        .attr('data-attachment-id', response.id)
+                    var element = Sidebar.template.clone();
+                    element.attr('data-attachment-id', response.id)
                         .find('img').attr('src', response.url).end()
-                        .find('[name=hAccountPageAttachmentId]]').val( response.id ).end()
-                        .find('input[type=checkbox]').bootstrapSwitch().end()
+                        .find('[name=hAccountPageAttachmentId]').val( response.id ).end()
+                        .find('input[type=checkbox]:first').bootstrapSwitch().end()
                         .prependTo('#sidebar-list');
 
-                    $('#new-element-loader').hide();
+                    $('#new-element-loader').hide()
+                        .prependTo('#sidebar-list');
+
+                    Sidebar.bindDateRange( element );
+
+                    Sidebar.reorder();
                 }
             );
 
+        }
+    }
 
+    , bindDateRange: function(context) {
+        if ( context ) {
+            context.find('.input-daterange').datepicker({});
+        } else {
+            $('#sidebar-list .sidebar-element').each( function(k, v) {
+                $(v).find('.input-daterange').datepicker({});
+            });
+        }
+    }
 
+    , showDateRange: function() {
+        var daterange = $(this).parents('.sidebar-element').find('.input-daterange');
+        if ( $(this).is(':checked') ) {
+            daterange.removeClass('hidden').show();
+        } else {
+            daterange.hide();
         }
     }
 
