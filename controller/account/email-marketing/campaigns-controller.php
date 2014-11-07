@@ -339,7 +339,7 @@ class CampaignsController extends BaseController {
         }
 
         // Just in case, resync all sendgrid emails so we are sure not addresses are left apart
-        $this->user->account->resync_sendgrid();
+        $this->user->account->resync_sendgrid_lists();
 
         $email_list = new EmailList();
         $email_lists = $email_list->get_by_message( $campaign->id, $this->user->account->id );

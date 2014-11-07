@@ -459,7 +459,7 @@ class Account extends ActiveRecordBase {
         } catch (Exception $e) { /* Probably Varnish is not installed */ }
     }
 
-    public function resync_sendgrid() {
+    public function resync_sendgrid_lists() {
         list($username, $password) = $this->get_settings( 'sendgrid-username', 'sendgrid-password' );
 
         $sendgrid = new SendGridAPI( $this, $username, $password );

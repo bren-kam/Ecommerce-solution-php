@@ -1753,5 +1753,20 @@ class AccountsController extends BaseController {
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    public function resync_email_lists() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $account->resync_sendgrid_lists();
+        }
+
+        $this->notify( _("Email Lists Synced") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
 
 }
