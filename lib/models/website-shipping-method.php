@@ -96,7 +96,7 @@ class WebsiteShippingMethod extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `website_shipping_method_id`, `type`, `name`, `method`, `amount` FROM `website_shipping_methods` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `website_shipping_method_id`, `type`, `name`, `method`, `amount`, `extra` FROM `website_shipping_methods` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'WebsiteShippingMethod' );
