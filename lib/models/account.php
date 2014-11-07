@@ -460,6 +460,7 @@ class Account extends ActiveRecordBase {
     }
 
     public function resync_sendgrid_lists() {
+        library('sendgrid-api');
         list($username, $password) = $this->get_settings( 'sendgrid-username', 'sendgrid-password' );
 
         $sendgrid = new SendGridAPI( $this, $username, $password );
