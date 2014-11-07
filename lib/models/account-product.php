@@ -1203,6 +1203,7 @@ class AccountProduct extends ActiveRecordBase {
             'alternate_price' => 0
             , 'price' => 0
             , 'sale_price' => 0
+            , 'setup_fee' => 0
         ), array( 'website_id' => $account_id ), 'i', 'i' );
     }
 
