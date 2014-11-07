@@ -33,7 +33,7 @@ class AnalyticsController extends BaseController {
             // Get all the data
             $records = $analytics->get_metric_by_date( 'visits' );
             if ( !$records ) {
-                return new GoogleAnalyticsOAuthException();
+                throw new GoogleAnalyticsOAuthException();
             }
             $total = $analytics->get_totals();
             $traffic_sources = $analytics->get_traffic_sources_totals();
