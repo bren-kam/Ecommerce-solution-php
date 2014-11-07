@@ -172,8 +172,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	public function run_flag_products( Account $account ) {
 
         if ( !$this->get_xml( $account, '846-' ) ) {
-            // Disable Ashley Express for this site
-            $account->set_settings( array( 'ashley-express' => '' ) );
+            // Remove all products from Ashley Express
+            $this->flag_bulk( $account, array( ) );
             return false;
         }
 
@@ -240,13 +240,17 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
                 WHERE wpae.`website_id` = :website_id
                   AND p.`user_id_created` = :user_id_created
-                  AND p.`sku` NOT IN ('". implode("','", $skus) ."')"
+                  " . ( $skus ? ( "AND p.`sku` NOT IN ('". implode("','", $skus) ."')" ) : "" )
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
+
+        // If no skus, there's nothing to add
+        if ( !$skus )
+            return;
 
         $this->prepare("
                 INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
