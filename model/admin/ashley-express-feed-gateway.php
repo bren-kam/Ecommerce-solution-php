@@ -256,6 +256,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
                 SELECT :website_id, p.product_id
                 FROM `products` p
+                INNER JOIN `website_product_ashley_express_master` wpaem ON p.`sku` = wpaem.`sku`
                 WHERE p.`user_id_created` = :user_id_created
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'
