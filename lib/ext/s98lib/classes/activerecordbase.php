@@ -439,7 +439,7 @@ abstract class ActiveRecordBase {
 
             // Doesn't exist, then create it
             if ( !$this->_pdo_master || !$this->_pdo_slave ) {
-                if ( stristr( ABS_PATH, '/gsr/systems/' ) ) {
+                if ( file_exists( '/gsr/systems/db.php' ) ) {
                     try {
                         require '/gsr/systems/db.master.php';
                         $this->_pdo_master = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );

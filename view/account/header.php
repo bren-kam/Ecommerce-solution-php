@@ -395,6 +395,19 @@
                 </li>
             <?php endif; ?>
 
+            <li class="sub-menu">
+                <a href="javascript:;" <?php if ( stristr( $_SERVER['REQUEST_URI'], '/settings/' ) ) echo 'class="active"'?>>
+                    <i class="fa fa-suitcase"></i>
+                    <span>Settings</span>
+                </a>
+                <ul class="sub">
+                    <li <?php if ( '/settings/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/">Settings</a></li>
+                    <li <?php if ( '/settings/authorized-users/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/authorized-users/">Authorized Users</a></li>
+                    <li <?php if ( '/settings/logo-and-phone/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/logo-and-phone/">Logo &amp; Phone</a></li>
+                    <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
+                </ul>
+            </li>
+
         </ul>
         <!-- sidebar menu end-->
     </div>
