@@ -1,6 +1,7 @@
 <?php
 /**
  * @var APIKey $api_key
+ * @var Company[] $companies
  */
 ?>
 
@@ -13,11 +14,29 @@
                 </header>
 
                 <div class="panel-body">
+                    <div class="form-group">
+                        <label for="company-id">Company:</label>
+                        <select name="company-id" id="company-id" class="form-control">
+                            <?php
+                            foreach ( $companies as $company ):
+                                echo '<option value="'. $company->id .'" ' . ($api_key->company_id == $company->id ? 'selected' : '') . '>'. $company->name .'</option>';
+                            endforeach;
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select name="status" id="status" class="form-control">
+                            <option value="1" <?php if ($api_key->id && $api_key->status == 1) echo 'selected' ?>>Active</option>
+                            <option value="0" <?php if ($api_key->id && $api_key->status == 0) echo 'selected' ?>>Inactive</option>
+                        </select>
+                    </div>
                     <ul>
-                        <li>Company: <?php echo $api_key->company ?></li>
-                        <li>Domain: <?php echo $api_key->domain ?></li>
-                        <li>Key: <?php echo $api_key->key ?></li>
+                        <li><strong>Key:</strong> <?php echo $api_key->key ? $api_key->key : 'Will be generated on save.' ?></li>
                     </ul>
+                    <p>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </p>
                 </div>
             </section>
         </div>
