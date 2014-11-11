@@ -1045,6 +1045,19 @@ class ProductsController extends BaseController {
         $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
         $account_category->save();
 
+        // Update AccountBrandCategory
+        $account_brand_category = new AccountBrandCategory();
+        $account_brand_category->get( $this->user->account->id, $_GET['bid'], $_GET['cid']);
+        $account_brand_category->image_url = $account_category->image_url;
+        if ( $account_brand_category->website_id ) {
+            $account_brand_category->save();
+        } else {
+            $account_brand_category->website_id = $this->user->account->id;
+            $account_brand_category->brand_id = $_GET['bid'];
+            $account_brand_category->category_id = $_GET['cid'];
+            $account_brand_category->create();
+        }
+
         $response->notify( 'Your category image has been set');
 
         return $response;
