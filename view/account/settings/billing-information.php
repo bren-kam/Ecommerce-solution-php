@@ -1,10 +1,36 @@
-<?php nonce::field( 'update_billing_information', '_billing_information' ); ?>
+<?php
+/**
+ * @page Billing Information
+ *
+ * @var array $settings
+ */
+?>
 
 <div class="row-fluid">
     <div class="col-lg-12">
         <section class="panel">
             <div class="panel-body">
                 <form method="post" role="form">
+                    <header class="panel-heading">Billing Information</header>
+                    <br />
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <table class="table-condensed">
+                                    <tr>
+                                        <td><label>Amount:</label></td>
+                                        <td>$<?php echo $settings['arb-subscription-amount']; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label>Interval:</label></td>
+                                        <td>Monthly</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <br />
                     <header class="panel-heading">Billing Address</header>
                     <br>
                     <div class="container-fluid">
@@ -76,8 +102,8 @@
                         </div>
                     </div>
                     <p>
-                        <?php nonce::field( 'logo_and_phone' ); ?>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <?php nonce::field( 'billing_information' ); ?>
+                        <button type="submit" class="btn btn-primary">Update Credit Card Information</button>
                     </p>
                 </form>
             </div>

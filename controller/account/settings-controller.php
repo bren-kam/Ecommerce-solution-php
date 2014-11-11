@@ -100,24 +100,17 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function billing_information() {
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+
         if ( $this->verified() ) {
             library('arb');
-
-            // Set Variables
-//            $start_date = new DateTime();
-//            $start_date->add( new DateInterval('P1M') ); // 1 Month from now
 
             // Create instance of ARB
             $arb = new arb( $this->user->account->title );
 
-            // Get previous subscription
-            $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
-
             // Set variables
-            $arb->setSubscriptionId($settings['arb_subscription_id']);
-            $arb->setInterval(1, 'Months'); // if omitted, default is 1 month
-            $arb->setAmount( $settings['arb_subscription_amount'] );
-            //$arb->setStartDate( $start_date->format('Y-m-d') ); // if omitted, default is "today"
+            $arb->setSubscriptionId($settings['arb-subscription-id']);
+            $arb->setAmount( $settings['arb-subscription-amount'] );
             $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
             $arb->setOrderDetails('Managed Website Monthly Payment');
             $arb->setCustomerId( $this->user->id );
@@ -148,6 +141,7 @@ class SettingsController extends BaseController {
         return $this->get_template_response( 'billing-information' )
             ->kb( 0 )
             ->add_title( _('Billing Information') )
+            ->set( array( 'settings' => $settings ) )
             ->select( 'billing-information' );
     }
 
