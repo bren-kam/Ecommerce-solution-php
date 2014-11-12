@@ -174,15 +174,16 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         if ( !$this->get_xml( $account, '846-' ) ) {
             // Remove all products from Ashley Express
             $this->flag_bulk( $account, array( ) );
+            $this->flag_packages( $account, array( ) );
             return false;
         }
 
         // Declare array
         $ashley_express_skus = array();
-        // Get Ashley Packages
-        $package_skus = array();
-        $packages = $this->get_ashley_packages();
-        $ashley_package_product_ids = array();
+//        // Get Ashley Packages
+//        $package_skus = array();
+//        $packages = $this->get_ashley_packages();
+//        $ashley_package_product_ids = array();
 
         // Set Settings: Ashley Express Buyer ID from XML
         $ns = $this->xml->getDocNamespaces();
@@ -205,26 +206,34 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 if ( $availability['availability'] == 'current' ) {
                     if ( $availability->availQty['value'] > 5 ) {
                         $ashley_express_skus[] = $sku;
-
-                        // Setup packages
-                        if ( stristr( $sku, '-' ) ) {
-                            list( $series, $item ) = explode( '-', $sku, 2 );
-                        } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
-                            $series = substr( $sku, 0, 5 );
-                            $item = substr( $sku, 5 );
-                        } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
-                            $series = substr( $sku, 0, 6 );
-                            $item = substr( $sku, 6 );
-                        } else {
-                            continue;
-                        }
-                        $package_skus[$series][] = $item;
                     }
                     break;
                 }
             }
-
 		}
+
+        $account_ae_skus = $this->flag_bulk( $account, $ashley_express_skus );
+
+        // Add Packages -------------------------------------------
+        // --------------------------------------------------------
+        $packages = $this->get_ashley_packages();
+        $package_skus = array();
+        $group_items = array();
+        foreach( $account_ae_skus as $sku ) {
+            // Setup packages
+            if ( stristr( $sku, '-' ) ) {
+                list( $series, $item ) = explode( '-', $sku, 2 );
+            } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
+                $series = substr( $sku, 0, 5 );
+                $item = substr( $sku, 5 );
+            } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
+                $series = substr( $sku, 0, 6 );
+                $item = substr( $sku, 6 );
+            } else {
+                continue;
+            }
+            $package_skus[$series][] = $item;
+        }
 
         // Add packages if they have all the pieces
         foreach ( $packages as $series => $items ) {
@@ -238,7 +247,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                         continue;
                     }
 
-                    if ( in_array( $series . $item, $ashley_express_skus ) ) {
+                    if ( in_array( $series . $item, $account_ae_skus ) ) {
                         $group_items[$series] = true;
                         continue;
                     }
@@ -253,7 +262,6 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             }
         }
 
-        $this->flag_bulk( $account, $ashley_express_skus );
         $this->flag_packages( $account, $ashley_package_product_ids );
 
 	}
@@ -264,6 +272,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
      *
      * @param Account $account
      * @param string[] $skus array of skus
+     * @return array with skus really added as AE
      */
     private function flag_bulk( $account, $skus ) {
 
@@ -291,6 +300,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 FROM `products` p
                 INNER JOIN `website_product_ashley_express_master` wpaem ON p.`sku` = wpaem.`sku`
                 WHERE p.`user_id_created` = :user_id_created
+                  AND p.`publish_visibility` = 'public'
+                  AND p.`status` = 'in-stock'
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
@@ -298,6 +309,14 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
+
+        return $this->get_results("
+            SELECT DISTINCT p.`sku`
+            FROM products p
+            INNER JOIN website_product_shley_express wpae ON p.product_id = wpae.product_id
+            WHERE wpae.website_id = {$account->website_id}"
+            , PDO::FETCH_COLUMN
+        );
 
     }
 
