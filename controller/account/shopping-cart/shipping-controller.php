@@ -590,7 +590,7 @@ class ShippingController extends BaseController {
             ->add_validation( 'zip', _('The "Shipping Zip" field must contain a valid zip code') );
 
         $form->add_field( 'select', _('Shipper Country'), 'sShipperCountry', $shipping_settings['shipper_country'] )
-            ->options( data::countries( false ) );
+            ->options( array_merge( array('' => ''), data::countries( false ) ) );
 
         $form->add_field( 'blank', '' );
 
