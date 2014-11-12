@@ -1,7 +1,7 @@
 <?php
 class ProductsController extends BaseController {
-    const APP_ID = '163636730371197';
-    const APP_SECRET = '3dbe8bc58cf03523ad51603654ca50a6';
+    const APP_ID = '1422389284713869';
+    const APP_SECRET = '165e04d8cb09bac7333f2de0626438dd';
     const APP_URI = 'op-products';
 
     /**

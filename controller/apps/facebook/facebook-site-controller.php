@@ -1,6 +1,6 @@
 <?php
 class FacebookSiteController extends BaseController {
-    const APP_ID = '867316659975623';
+    const APP_ID = '114243368669744';
     const APP_SECRET = '6ea7904750cd3134fa467d1887c45192';
     const APP_URI = 'op-facebook-site';
 
