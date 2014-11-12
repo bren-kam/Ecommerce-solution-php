@@ -313,7 +313,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         return $this->get_results("
             SELECT DISTINCT p.`sku`
             FROM products p
-            INNER JOIN website_product_shley_express wpae ON p.product_id = wpae.product_id
+            INNER JOIN website_product_ashley_express wpae ON p.product_id = wpae.product_id
             WHERE wpae.website_id = {$account->website_id}"
             , PDO::FETCH_COLUMN
         );
