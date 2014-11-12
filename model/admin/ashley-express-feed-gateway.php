@@ -171,8 +171,11 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	 */
 	public function run_flag_products( Account $account ) {
 
-        if ( !$this->get_xml( $account, '846-' ) )
+        if ( !$this->get_xml( $account, '846-' ) ) {
+            // Remove all products from Ashley Express
+            $this->flag_bulk( $account, array( ) );
             return false;
+        }
 
         // Declare array
         $ashley_express_skus = array();
@@ -205,19 +208,6 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
 		}
 
-        // Ticket #31859 remove carton items if they have individual items flagged as Ashley Express
-        foreach ( $ashley_express_skus as $sku ) {
-            $last_letter = substr( $sku, -1 );
-            if ( ctype_alpha( $last_letter ) ) {
-                $carton_sku = substr( $sku, 0, -1 );
-                $carton_position = array_search( $carton_sku, $ashley_express_skus );
-                if ( $carton_position ) {
-                    echo "Removing Carton {$carton_sku} - Have single product {$sku}\n";
-                    unset( $ashley_express_skus[$carton_position] );
-                }
-            }
-        }
-
         $this->flag_bulk( $account, $ashley_express_skus );
 
 	}
@@ -237,7 +227,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
                 WHERE wpae.`website_id` = :website_id
                   AND p.`user_id_created` = :user_id_created
-                  AND p.`sku` NOT IN ('". implode("','", $skus) ."')"
+                  " . ( $skus ? ( "AND p.`sku` NOT IN ('". implode("','", $skus) ."')" ) : "" )
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
@@ -245,10 +235,15 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             )
         )->query();
 
+        // If no skus, there's nothing to add
+        if ( !$skus )
+            return;
+
         $this->prepare("
                 INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
                 SELECT :website_id, p.product_id
                 FROM `products` p
+                INNER JOIN `website_product_ashley_express_master` wpaem ON p.`sku` = wpaem.`sku`
                 WHERE p.`user_id_created` = :user_id_created
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'

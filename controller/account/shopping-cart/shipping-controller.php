@@ -372,7 +372,7 @@ class ShippingController extends BaseController {
             ->options(array(
                 'Leesport_PA' => 'Leesport, PA'
                 , 'Advance_NC' => 'Advance, NC'
-                , 'Arcadia WI' => 'Arcadia, WI'
+                , 'Arcadia_WI' => 'Arcadia, WI'
                 , 'Ecru_MS' => 'Ecru, MS'
                 , 'Colton_CA' => 'Colton, CA'
             ));
@@ -483,7 +483,7 @@ class ShippingController extends BaseController {
             ->options(array(
                 'Leesport_PA' => 'Leesport, PA'
                 , 'Advance_NC' => 'Advance, NC'
-                , 'Arcadia WI' => 'Arcadia, WI'
+                , 'Arcadia_WI' => 'Arcadia, WI'
                 , 'Ecru_MS' => 'Ecru, MS'
                 , 'Colton_CA' => 'Colton, CA'
             ));
@@ -730,6 +730,12 @@ class ShippingController extends BaseController {
                 case 'ashley-express-fedex':
                     $type = 'FedEx (Ashley Express)';
                     $name = ucwords( strtolower( str_replace( '_', ' ', $method->name ) ) );
+
+                    if ( !empty( $method->extra ) ) {
+                        $method->extra = unserialize($method->extra);
+                        $name .= " - " . $method->extra['ashley_distribution_center'];
+                    }
+
                     break;
 
                 case 'ups':
@@ -769,6 +775,12 @@ class ShippingController extends BaseController {
                     );
 
                     $name = $services[$method->name];
+
+                    if ( !empty( $method->extra ) ) {
+                        $method->extra = unserialize($method->extra);
+                        $name .= " - " . $method->extra['ashley_distribution_center'];
+                    }
+
                     break;
 
                 case 'USPS':

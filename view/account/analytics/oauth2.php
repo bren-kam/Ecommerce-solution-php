@@ -21,7 +21,7 @@
 
                 <ul>
                     <li>Email Address: <?php echo $ga_username ?></li>
-                    <li>Password: <?php echo $ga_password ?></li>
+                    <li>Password: <?php echo htmlentities( $ga_password )    ?></li>
                 </ul>
 
                 <p><strong>Note, please ensure you have logged out of your personal Google account before proceeding with the below steps</strong></p>

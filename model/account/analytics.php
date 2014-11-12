@@ -603,12 +603,14 @@ class Analytics {
         $ga = new GoogleAnalyticsAPI();
         $this->ga = $ga;
 
-        $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
-        $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
-        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
+        $oauth_info = $account->get_settings( 'google-access-token', 'google-refresh-token', 'google-token-expiration', 'google-token-created-at', 'google-token-issued-by' );
+
+        $issued_by = $oauth_info['google-token-issued-by'] ? $oauth_info['google-token-issued-by'] : DOMAIN;
+        $ga->auth->setClientId( Config::key( 'ga-client-id-' . $issued_by ) );
+        $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . $issued_by ) );
+        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . $issued_by ) );
 
         $ga_profile_id  = $account->ga_profile_id;
-        $oauth_info = $account->get_settings( 'google-access-token', 'google-refresh-token', 'google-token-expiration', 'google-token-created-at', 'google-token-issued-by' );
         $accessToken = $oauth_info['google-access-token'];
         $refreshToken = $oauth_info['google-refresh-token'];
         $tokenExpires = $oauth_info['google-token-expiration'];
@@ -646,7 +648,6 @@ class Analytics {
             $log .= "\nToken expired, using refresh token {$refreshToken}";
 
             // Get who issued the token (GSR, IR, etc.)
-            $issued_by = $oauth_info['google-token-issued-by'] ? $oauth_info['google-token-issued-by'] : DOMAIN;
             $refresh_ga = new GoogleAnalyticsAPI();
             $refresh_ga->auth->setClientId( Config::key( 'ga-client-id-' . $issued_by ) );
             $refresh_ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . $issued_by ) );

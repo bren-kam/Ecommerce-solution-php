@@ -458,5 +458,29 @@ class Account extends ActiveRecordBase {
             exec("varnishadm -T localhost:6082 ban req.http.host == www.{$this->domain}");
         } catch (Exception $e) { /* Probably Varnish is not installed */ }
     }
-    
+
+    public function resync_sendgrid_lists() {
+        library('sendgrid-api');
+        $settings = $this->get_settings( 'sendgrid-username', 'sendgrid-password' );
+
+
+        $sendgrid = new SendGridAPI( $this, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_list();
+        $sendgrid->setup_email();
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->id );
+
+        foreach ( $email_lists as $email_list ) {
+            // Now import subscribers
+            $email = new Email();
+            $emails = $email->get_by_email_list( $email_list->id );
+
+            $email_chunks = array_chunk( $emails, 1000 );
+
+            foreach ( $email_chunks as $emails ) {
+                $success = $sendgrid->email->add( $email_list->name, $emails );
+            }
+        }
+    }
+
 }

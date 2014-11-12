@@ -451,6 +451,8 @@ class AccountsController extends BaseController {
             , 'facebook-pages'
             , 'responsive-web-design'
             , 'ashley-express'
+            , 'sendgrid-username'
+            , 'sendgrid-password'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -476,6 +478,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
         $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
+        $ft->add_field( 'text', _('Sendgrid Username'), 'tSendgridUsername', $settings['sendgrid-username'] );
+        $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -1750,6 +1754,21 @@ class AccountsController extends BaseController {
         }
 
         $this->notify( _("Account reactivated") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    public function resync_email_lists() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $account->resync_sendgrid_lists();
+        }
+
+        $this->notify( _("Email Lists Synced") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 

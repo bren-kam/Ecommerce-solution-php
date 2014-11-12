@@ -629,11 +629,15 @@ class AnalyticsController extends BaseController {
     
     public function oauth2() {
         try {
-            $analytics = new Analytics();
-            $analytics->setup($this->user->account);
+            library("GoogleAnalyticsAPI");
+
+            $ga = new GoogleAnalyticsAPI();
+            $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
+            $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
+            $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
         } catch ( Exception $e ) { /* DO NOTHING */ }
 
-        $login_url = $analytics->ga->auth->buildAuthUrl();
+        $login_url = $ga->auth->buildAuthUrl();
 
         $settings = $this->user->account->get_settings( 'ga-username', 'ga-password' );
         $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
