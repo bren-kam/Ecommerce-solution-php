@@ -82,16 +82,20 @@ class AuthUserWebsite extends ActiveRecordBase {
         $account = new Account();
         $account->get( $account_id );
 
+        $company = new Company();
+
         // See if they already exist as a user
         if ( $user->id ) {
+            $company->get($user->company_id);
+
             // You must have role 1 to be an authorized user
             if ( $this->is_authorized( $user->id, $account_id ) )
                 throw new ModelException( _('Invalid Role') );
 
-            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
-            $message .= '<a href="http://account.' . $user->domain . '/login/" title="Login">http://account.' .  $user->domain  . '/login/</a>';
-            $message .= '<br /><br />Please contact ' . $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
-            $message .= '<strong>Email:</strong> info@' . $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
+            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $company->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
+            $message .= '<a href="http://account.' . $company->domain . '/login/" title="Login">http://account.' .  $company->domain  . '/login/</a>';
+            $message .= '<br /><br />Please contact ' . $company->domain . ' if you have any questions. Thank you for your time.<br /><br />';
+            $message .= '<strong>Email:</strong> info@' . $company->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
           
             if ( 1 != $user->status ) {
                 $user->contact_name = $contact_name;
@@ -111,6 +115,9 @@ class AuthUserWebsite extends ActiveRecordBase {
             $user->create();
             $user->get($user->id);
 
+            $company->get($user->company_id);
+            $company->domain;
+
             // Create token for them to authorize their account
             $expires = dt::hours_to_date( 72 );
             $token = new Token();
@@ -120,10 +127,10 @@ class AuthUserWebsite extends ActiveRecordBase {
             $token->create();
 
             // Create message for email
-            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
-            $message .= 'http://account.' .  $user->domain . '/login/activate/?t=' . $token->key;
-            $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
-            $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
+            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $company->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
+            $message .= 'http://account.' .  $company->domain . '/login/activate/?t=' . $token->key;
+            $message .= '<br /><br />Please contact ' .  $company->domain . ' if you have any questions. Thank you for your time.<br /><br />';
+            $message .= '<strong>Email:</strong> info@' .  $company->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
     
         }
 

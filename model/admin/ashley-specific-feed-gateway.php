@@ -608,7 +608,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      */
     protected function get_existing_products() {
         $products = $this->prepare(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE p.`user_id_created` = :user_id_created GROUP BY p.`sku` ORDER BY `publish_visibility` DESC"
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id`, p.`timestamp` FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE p.`user_id_created` = :user_id_created GROUP BY p.`sku` ORDER BY `publish_visibility` DESC"
             , 'i'
             , array( ':user_id_created' => self::USER_ID )
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -1467,6 +1467,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Get Product
             $product = $this->get_existing_product( $sku );
 
+            $two_days_ago = new DateTime();
+            $two_days_ago->sub( new DateInterval("P2D"));
+            $last_update = new DateTime($product->timestamp);
+            if ( $last_update > $two_days_ago )
+                continue;
+
             if ( 'deleted' == $product->publish_visibility )
                 continue;
 
@@ -1535,44 +1541,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $product->category_id = $this->get_category( $product->sku, $product->name );
             }
 
-            /***** ADD PRODUCT IMAGES *****/
-
-            // Let's hope it's big!
+            // Save image to load later in AshleySpecificFeedGateway::getImages();
+            // It's taking ages as many images timeout, so we are getting them in a separate cron job.
             $image = $item['image'];
-
-            $image_urls = array();
-            $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
-            $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
-            $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
-
-            // Setup images array
-            $images = explode( '|', $product->images );
-            $last_character = substr( $images[0], -1 );
-
-            foreach ( $image_urls as $image_url ) {
-                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url, 5 ) ) {
-                    try {
-                        $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-                    } catch( InvalidParametersException $e ) {
-                        fn::info( $product );
-                        exit;
-                    }
-
-                    if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                        $this->not_identical[] = 'images';
-                        $images[] = $image_name;
-
-                        $product->add_images( $images );
-                    }
-
-                    break;
-                }
-            }
-
-            // Change publish visibility to private if there are no images
-            if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
-                $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'private';
+            $tag = new Tag();
+            $already_queued = $tag->get_value_by_type( 'ashley_product', $product->id );
+            if ( !$already_queued ) {
+                $tag->add_bulk( 'ashley_product_image', $product->id, array( $image ) );
             }
 
             $publish_visibility = ( 'discontinued' == $item['status'] ) ? 'deleted' : $product->publish_visibility;
@@ -1643,6 +1618,60 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 
         return $new_product;
+
+    }
+
+    public function get_product_images() {
+
+        $tag = new Tag();
+        $this->get_existing_products();
+
+        foreach( $this->existing_products as $product ) {
+
+            if ( $product->publish_visibility == 'deleted' )
+                continue;
+
+            $images = $tag->get_value_by_type( 'ashley_product_image', $product->id );
+            foreach ( $images as $image ) {
+                echo "#{$product->id} - {$image}\n";
+
+                /***** ADD PRODUCT IMAGES *****/
+                $image_urls = array();
+                $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
+                $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
+                $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
+
+                // Setup images array
+                $images = explode( '|', $product->images );
+                $last_character = substr( $images[0], -1 );
+
+                foreach ( $image_urls as $image_url ) {
+                    if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url, 5 ) ) {
+                        try {
+                            echo "...uploading...\n";
+                            $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+                        } catch( InvalidParametersException $e ) {
+                            fn::info( $product );
+                            exit;
+                        }
+
+                        if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+                            echo "...uploaded. Saving Image & Product.\n";
+                            $images[] = $image_name;
+
+                            $product->add_images( $images );
+                            $product->publish_visibility = 'public';
+                            $product->save();
+                        }
+                    }
+                }
+
+            }
+
+            $tag->delete_by_type( 'ashley_product_image', $product->id );
+        }
+
+        echo "Finished\n";
 
     }
 

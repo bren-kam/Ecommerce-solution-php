@@ -336,6 +336,8 @@ class ProductsController extends BaseController {
             $blocked_categories[] = $category;
         }
 
+        $this->resources->css('products/hide-categories');
+
         return $this->get_template_response( 'hide-categories' )
             ->kb( 51 )
             ->add_title( _('Hide Categories') )
