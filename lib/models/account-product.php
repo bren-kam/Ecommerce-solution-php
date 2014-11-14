@@ -158,7 +158,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Round to the ending
         $price_ending = number_format( (float) $price_ending, 2 );
-		
+
         // Won't do anything, has to be lower
         if ( $price < 0 ) {
             $set[] = 'wp.`price` = 0.01';
@@ -272,7 +272,7 @@ class AccountProduct extends ActiveRecordBase {
             if ( in_array( $category_id, $double_categories ) )
                 $new_category_ids[] = $category_id;
         }
-		
+
         if ( empty( $new_category_ids ) )
             return;
 
