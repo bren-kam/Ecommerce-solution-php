@@ -219,7 +219,8 @@ class FeedApiRequest {
 
             if ( is_array( $p['images'] ) )
             foreach( $p['images'] as &$i ) {
-                $i = 'http://' . $p['industry'] . '.retailcatalog.us/products/' . $p['product_id'] . '/large/' . $i;
+                if ( !stristr( $i, 'http' ) )
+                    $i = 'http://' . $p['industry'] . '.retailcatalog.us/products/' . $p['product_id'] . '/large/' . $i;
             }
 
             unset( $p['industry'] );
