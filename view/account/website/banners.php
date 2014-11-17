@@ -163,6 +163,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                 <label>Image Link:</label>
                 <input type="text" class="form-control" name="extra[link]" placeholder="Link URL" />
             </div>
+            <input type="hidden" name="extra[date-range]" class="has-date-range" value="0" />
             <div class="input-daterange input-group <?php if ( !$date_range ) echo 'hidden' ?>">
                 <input type="text" class="input-sm form-control" name="extra[date-start]" placeholder="start date"/>
                 <span class="input-group-addon">to</span>
