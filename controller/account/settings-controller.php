@@ -94,6 +94,57 @@ class SettingsController extends BaseController {
             ->select( 'logo-and-phone' );
     }
 
+    /**
+     * Billing Information
+     *
+     * @return TemplateResponse
+     */
+    protected function billing_information() {
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+
+        if ( $this->verified() ) {
+            library('arb');
+
+            // Create instance of ARB
+            $arb = new arb( $this->user->account->title );
+
+            // Set variables
+            $arb->setSubscriptionId($settings['arb-subscription-id']);
+            $arb->setAmount( $settings['arb-subscription-amount'] );
+            $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
+            $arb->setOrderDetails('Managed Website Monthly Payment');
+            $arb->setCustomerId( $this->user->id );
+            $arb->setCustomerPhone( $this->user->work_phone );
+            $arb->setCustomerEmail( $this->user->email );
+
+            // Set billing information
+            $arb->setBillingName( $_POST['first-name'], $_POST['last-name'] );
+            $arb->setBillingAddress( $_POST['address'] );
+            $arb->setBillingCity( $_POST['city'] );
+            $arb->setBillingState( $_POST['state'] ); //full state name can be used (i.e. Massachusetts)
+            $arb->setBillingZip( $_POST['zip'] );
+            $arb->setBillingCountry('United States'); // optional
+
+            // set the payment details (one of the two options is required)
+            $arb->setPaymentDetails( $_POST['ccnum'], $_POST['ccexpy'] . '-' . $_POST['ccexpm'] );
+
+            // Submit the subscription request
+            $arb->UpdateSubscriptionRequest();
+
+            // Test and print results
+            $success = $arb->success;
+
+            if ( $success )
+                $this->user->account->set_settings(array( 'arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+        }
+
+        return $this->get_template_response( 'billing-information' )
+            ->kb( 0 )
+            ->add_title( _('Billing Information') )
+            ->set( array( 'settings' => $settings ) )
+            ->select( 'billing-information' );
+    }
+
     /***** AJAX *****/
 
     /**

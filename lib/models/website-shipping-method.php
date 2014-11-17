@@ -57,7 +57,8 @@ class WebsiteShippingMethod extends ActiveRecordBase {
             , 'amount' => $this->amount
             , 'zip_codes' => strip_tags($this->zip_codes)
             , 'date_created' => $this->date_created
-        ), 'isssiss' );
+            , 'extra' => strip_tags($this->extra)
+        ), 'isssisss' );
     }
 
     /**

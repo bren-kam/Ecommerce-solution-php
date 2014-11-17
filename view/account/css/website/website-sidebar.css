@@ -29,10 +29,21 @@
 #sidebar-list .sidebar-element #sidebar-video {
   margin-bottom: 15px;
 }
+#sidebar-list .sidebar-element .banner-status-label {
+  font-weight: 700;
+  color: #DDDDDD;
+}
+#sidebar-list .sidebar-element .banner-status-label.selected {
+  color: #418DCB;
+}
+#sidebar-list .sidebar-element .banner-status-label.selected.running {
+  color: #39b2a9;
+}
+#sidebar-list .sidebar-element .banner-status-label.selected.over {
+  color: red;
+}
 #sidebar-list .sidebar-element .input-daterange {
-  position: absolute;
-  bottom: 80px;
-  left: 125px;
+  margin-bottom: 15px;
 }
 #sidebar-list .sidebar-element-placeholder {
   height: 100px;

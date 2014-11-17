@@ -412,7 +412,7 @@ class AccountProduct extends ActiveRecordBase {
         $sql = 'SELECT p.`product_id`,';
         $sql .= 'p.`name`, p.`slug`, b.`name` AS brand, p.`sku`, p.`status`, c.`category_id`,';
         $sql .= 'c.`name` AS category, pi.`image`, wp.`price`, wp.`alternate_price`, wp.`alternate_price_name`,';
-        $sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry ';
+        $sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry, p.`brand_id` ';
         $sql .= 'FROM `products` AS p ';
         $sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) ';
         $sql .= 'LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) ';

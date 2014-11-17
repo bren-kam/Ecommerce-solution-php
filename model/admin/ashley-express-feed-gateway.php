@@ -174,11 +174,16 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         if ( !$this->get_xml( $account, '846-' ) ) {
             // Remove all products from Ashley Express
             $this->flag_bulk( $account, array( ) );
+            $this->flag_packages( $account, array( ) );
             return false;
         }
 
         // Declare array
         $ashley_express_skus = array();
+//        // Get Ashley Packages
+//        $package_skus = array();
+//        $packages = $this->get_ashley_packages();
+//        $ashley_package_product_ids = array();
 
         // Set Settings: Ashley Express Buyer ID from XML
         $ns = $this->xml->getDocNamespaces();
@@ -205,10 +210,59 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                     break;
                 }
             }
-
 		}
 
-        $this->flag_bulk( $account, $ashley_express_skus );
+        $account_ae_skus = $this->flag_bulk( $account, $ashley_express_skus );
+
+        // Add Packages -------------------------------------------
+        // --------------------------------------------------------
+        $packages = $this->get_ashley_packages();
+        $package_skus = array();
+        $group_items = array();
+        foreach( $account_ae_skus as $sku ) {
+            // Setup packages
+            if ( stristr( $sku, '-' ) ) {
+                list( $series, $item ) = explode( '-', $sku, 2 );
+            } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
+                $series = substr( $sku, 0, 5 );
+                $item = substr( $sku, 5 );
+            } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
+                $series = substr( $sku, 0, 6 );
+                $item = substr( $sku, 6 );
+            } else {
+                continue;
+            }
+            $package_skus[$series][] = $item;
+        }
+
+        // Add packages if they have all the pieces
+        foreach ( $packages as $series => $items ) {
+            // Go through each item
+            foreach ( $items as $product_id => $package_pieces ) {
+                // See if they have all the items necessary
+                foreach ( $package_pieces as $item ) {
+                    // Check if it is a series such as "W123-45" or "W12345"
+                    if ( is_array( $package_skus[$series] ) && in_array( $item, $package_skus[$series] ) ) {
+                        $group_items[$series] = true;
+                        continue;
+                    }
+
+                    if ( in_array( $series . $item, $account_ae_skus ) ) {
+                        $group_items[$series] = true;
+                        continue;
+                    }
+
+                    // If they don't have both, then stop this item
+                    unset ( $group_items[$series] );
+                    continue 2; // Drop out of both
+                }
+
+                // Add to packages list
+                $ashley_package_product_ids[] = $product_id;
+            }
+        }
+
+        $this->flag_packages( $account, $ashley_package_product_ids );
 
 	}
 
@@ -218,6 +272,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
      *
      * @param Account $account
      * @param string[] $skus array of skus
+     * @return array with skus really added as AE
      */
     private function flag_bulk( $account, $skus ) {
 
@@ -245,6 +300,8 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 FROM `products` p
                 INNER JOIN `website_product_ashley_express_master` wpaem ON p.`sku` = wpaem.`sku`
                 WHERE p.`user_id_created` = :user_id_created
+                  AND p.`publish_visibility` = 'public'
+                  AND p.`status` = 'in-stock'
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
@@ -253,6 +310,52 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             )
         )->query();
 
+        return $this->get_results("
+            SELECT DISTINCT p.`sku`
+            FROM products p
+            INNER JOIN website_product_ashley_express wpae ON p.product_id = wpae.product_id
+            WHERE wpae.website_id = {$account->website_id}"
+            , PDO::FETCH_COLUMN
+        );
+
+    }
+
+    /**
+     * Flag Packages
+     * @param Account $account
+     * @param int[] $product_ids
+     */
+    private function flag_packages( $account, $product_ids ) {
+        $this->prepare("
+                DELETE wpae
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = :website_id
+                  AND p.`user_id_created` = :user_id_created
+                  " . ( $product_ids ? ( "AND p.`product_id` NOT IN (". implode(",", $product_ids) .")" ) : "" )
+            , 'iii'
+            , array(
+                ':website_id' => $account->website_id
+                , ':user_id_created' => 1477
+            )
+        )->query();
+
+        // If no skus, there's nothing to add
+        if ( !$product_ids )
+            return;
+
+        $this->prepare("
+                INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
+                SELECT :website_id, p.product_id
+                FROM `products` p
+                WHERE p.`user_id_created` = :user_id_created
+                  AND p.`product_id` IN (". implode(",", $product_ids) .")"
+            , 'iii'
+            , array(
+                ':website_id' => $account->website_id
+                , ':user_id_created' => 1477
+            )
+        )->query();
     }
 
     /**
@@ -459,5 +562,33 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         return $updated;
     }
 
+    /**
+     * Get Ashley Packages
+     *
+     * @return array
+     */
+    protected function get_ashley_packages() {
+        // Ashley Packages
+        $products = ar::assign_key( $this->get_results( 'SELECT `product_id`, `sku` FROM `products` WHERE `user_id_created` = 1477', PDO::FETCH_ASSOC ), 'sku', true );
+
+        $ashley_packages = array();
+
+        // Return all Ashley Packages
+        foreach ( $products as $sku => $product_id ) {
+            $sku_pieces = explode( '/', $sku );
+
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                $sku_pieces[$k] = preg_replace($regex, '', $sp);
+            }
+
+            $series = array_shift( $sku_pieces );
+
+            $ashley_packages[$series][$product_id] = $sku_pieces;
+        }
+
+        return $ashley_packages;
+    }
 
 }
