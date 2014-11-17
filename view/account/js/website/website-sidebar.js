@@ -1,7 +1,7 @@
 var Sidebar = {
 
     init: function() {
-        $('#sidebar-list').on( 'switchChange.bootstrapSwitch', ':checkbox', Sidebar.changeStatus );
+        $('#sidebar-list').on( 'change', '.status', Sidebar.changeStatus );
 
         $('#sidebar-list').sortable({
             items		: '.sidebar-element',
@@ -20,21 +20,36 @@ var Sidebar = {
         Sidebar.template = $('#sidebar-image-template').clone().removeClass('hidden').removeAttr('id');
         $('#sidebar-image-template').remove();
 
-        $('#sidebar-list').on( 'click', '.show-date-range', Sidebar.showDateRange );
+        // $('#sidebar-list').on( 'click', '.show-date-range', Sidebar.showDateRange );
         Sidebar.bindDateRange();
     }
 
-    , changeStatus: function( event, state ) {
+    , changeStatus: function( event ) {
         var element = $(this).parents('.sidebar-element');
+        var state = $(this).val();
 
-        if ( state )
+        if ( state == 'on' ) {
             element.removeClass('disabled');
-        else
+            element.find('.input-daterange').hide();
+            element.find('.has-date-range').val(0);
+            element.find('.banner-status-label').removeClass('selected');
+            $(this).parent().addClass('selected');
+        } else if ( state == 'scheduled' ) {
+            element.removeClass('disabled');
+            element.find('.input-daterange').removeClass('hidden').show();
+            element.find('.has-date-range').val(1);
+            element.find('.banner-status-label').removeClass('selected');
+            $(this).parent().addClass('selected');
+        } else if ( state == 'off' ) {
             element.addClass('disabled');
+            element.find('.input-daterange').hide();
+            element.find('.banner-status-label').removeClass('selected');
+            $(this).parent().addClass('selected');
+        }
 
         $.get(
             '/website/update-attachment-status/'
-            , { _nonce: $('#_update_attachment_status').val(), apaid: element.data('attachment-id'), s: state ? 1 : 0 }
+            , { _nonce: $('#_update_attachment_status').val(), apaid: element.data('attachment-id'), s: state == 'off' ? 0 : 1 }
             , Sidebar.changeStatusResponse
         );
     }
@@ -44,7 +59,7 @@ var Sidebar = {
 
         if ( response.success ) {
             var element = $('.sidebar-element[data-attachment-id=' + response.id + ']');
-            element.find('input, a, button, textarea').prop( 'disabled', element.hasClass('disabled') );
+            element.find('input:not(:radio  ), a, button, textarea').prop( 'disabled', element.hasClass('disabled') );
             Sidebar.reorder();
         }
     }
