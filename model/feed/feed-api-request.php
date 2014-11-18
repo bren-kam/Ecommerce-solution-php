@@ -175,7 +175,7 @@ class FeedApiRequest {
 	protected function get_products() {
         // Give them a value no matter what
         $start_date = $end_date = $starting_point = $limit = $ashley_id = NULL;
-		
+
         /**
          * @param string $start_date (optional)
          * @param string $end_date (optional)
@@ -226,7 +226,7 @@ class FeedApiRequest {
 
             unset( $p['industry'] );
         }
-		
+
 		if ( !is_array( $products ) )
 			$products = array();
 
@@ -268,7 +268,7 @@ class FeedApiRequest {
         foreach ( $attribute_items as $ai ) {
             $attributes[$ai['attribute_id']]['items'][] = $ai;
         }
-		
+
 		// We need to properly break up the category IDs
 		foreach ( $attributes as &$a ) {
 			if ( empty( $a['categories'] ) ) {
@@ -317,7 +317,7 @@ class FeedApiRequest {
 			$this->response[$key] = ( !is_array( $value ) && array_key_exists( $value, $this->messages ) ) ? $this->messages[$value] : $value;
 		}
 	}
-	
+
 	/**
 	 * Gets parameters from the post variable and returns and associative array with those values
 	 *
@@ -326,7 +326,7 @@ class FeedApiRequest {
 	 */
 	protected function get_parameters() {
 		$args = func_get_args();
-		
+
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
@@ -339,12 +339,14 @@ class FeedApiRequest {
 		foreach( $args as $a ) {
 			// Make sure the argument is set
 			if( !isset( $_POST[$a] ) ) {
-				$message = 'Required parameter "' . $a . '" was not set for the method "' . $this->method . '".';
-				$this->add_response( array( 'success' => false, 'message' => $message ) );
-				
-				$this->error = true;
-				$this->error_message = $message;
-				return array();
+//				$message = 'Required parameter "' . $a . '" was not set for the method "' . $this->method . '".';
+//				$this->add_response( array( 'success' => false, 'message' => $message ) );
+//
+//				$this->error = true;
+//				$this->error_message = $message;
+//				return array();
+                
+                $parameters[$a] = '';
 			}
 			
 			$parameters[$a] = $_POST[$a];
