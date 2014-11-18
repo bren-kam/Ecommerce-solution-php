@@ -64,7 +64,7 @@ class FeedTest extends BaseDatabaseTest {
         $this->phactory->create('products');
 
         // Get
-        $products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
+        $products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit, '' );
 
         // Assert
         $this->assertEquals( self::SLUG, $products[0]['slug']  );
