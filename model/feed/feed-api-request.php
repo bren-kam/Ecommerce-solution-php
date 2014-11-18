@@ -174,19 +174,20 @@ class FeedApiRequest {
 	 */
 	protected function get_products() {
         // Give them a value no matter what
-        $start_date = $end_date = $starting_point = $limit = NULL;
-
+        $start_date = $end_date = $starting_point = $limit = $ashley_id = NULL;
+		
         /**
          * @param string $start_date (optional)
          * @param string $end_date (optional)
          * @param int $starting_point (optional)
          * @param int $limit (optional)
+         * @param int $ashley_id (optional)
          * @return bool
          */
-        extract( $this->get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
+        extract( $this->get_parameters( 'start_date', 'end_date', 'starting_point', 'limit', 'ashley_id' ) );
 
         $product = new Product();
-    	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
+    	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit, $ashley_id );
 
 		if ( is_array( $products ) )
         foreach ( $products as &$p ) {
