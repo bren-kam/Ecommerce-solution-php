@@ -27,7 +27,7 @@
                         , 'fan-offer' => _('Fan Offer')
                         , 'sweepstakes' => _('Sweepstakes')
                         , 'share-and-save' => _('Share and Save')
-                        , 'facebook-site' => _('Facebook Site')
+                        //, 'facebook-site' => _('Facebook Site')
                         , 'contact-us' => _('Contact Us')
                         , 'about-us' => _('About Us')
                         , 'products' => _('Products')

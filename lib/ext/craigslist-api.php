@@ -10,7 +10,7 @@ class Craigslist_API {
 	/**
 	 * Constant paths to include files
 	 */
-	const URL_API = 'http://plugcp.primusconcepts.com/greysuit/';
+	const URL_API = 'http://login.primusconcepts.com/greysuit/';
 	const DEBUG = false;
 
     /**

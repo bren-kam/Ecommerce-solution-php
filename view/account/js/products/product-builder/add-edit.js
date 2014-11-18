@@ -152,9 +152,9 @@ var ProductSpecEditor = {
 
         var productSpecsList = $('#product-specs-list');
 
-        if ( specName == '' )
-            return;
-
+        //if ( specName == '' )
+        //    return;
+        //
         var values = specValue.split( /\n/ );
 
         for ( var i in values ) {

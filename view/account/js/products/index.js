@@ -121,7 +121,7 @@ var ProductSearch = {
                     .find( '.remove' ).attr( 'href', '/products/remove/?_nonce=' + remove_nonce + '&pid=' + product.product_id ).end()
                     .find( '.edit' ).attr( 'href', '/products/edit/?_nonce=' + edit_nonce + '&pid=' + product.product_id ).end()
                     .find( '.block' ).attr( 'href', '/products/block/?_nonce=' + block_nonce + '&pid=' + product.product_id ).end()
-                    .find( '.set-category-image' ).attr( 'href', '/products/set-category-image/?_nonce=' + category_image_nonce + '&cid=' + ( is_category_selected ? category_id : product.category_id ) + '&i=' + encodeURIComponent(product.image_url) ).end()
+                    .find( '.set-category-image' ).attr( 'href', '/products/set-category-image/?_nonce=' + category_image_nonce + '&cid=' + ( is_category_selected ? category_id : product.category_id ) + '&i=' + encodeURIComponent(product.image_url) + '&bid=' + product.brand_id ).end()
                     .appendTo('#product-list');
             }
 

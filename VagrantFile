@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # Every Vagrant virtual environment requires a box to build off of.
+  # config.vm.box = "puppetlabs/ubuntu-12.04-64-puppet"
+  config.vm.box = "hashicorp/precise32"
+
+  # Was necessary
+  #vagrant plugin install vagrant-vbguest
+
+  # Networking
+  config.vm.network "forwarded_port", guest: 80, host: 8000
+  # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Synced folders
+  config.vm.synced_folder ".", "/gsr/systems"
+
+  # Update
+  config.vm.provision "shell", inline: "apt-get -y update"
+
+  # Provisioning
+   config.vm.provision :shell do |shell|
+    shell.inline = "mkdir -p /etc/puppet/modules;
+    #                (puppet module install example42-puppi; true)
+    #                (puppet module install example42-apache; true)
+    #                (puppet module install example42-php; true)
+    #                (puppet module install puppetlabs-stdlib; true)
+    #                (puppet module install puppetlabs-mysql; true)
+    #                (puppet module install saz-vim; true)
+    #                (puppet module install saz-timezone; true)
+    #                (puppet module install puppetlabs-git; true)
+                     "
+  end
+
+  config.vm.provision "puppet" do |puppet|
+      puppet.facter = {
+        "fqdn" => "dev.greysuitretail.com",
+        "aliases" => "*.dev.greysuitretail.com",
+        "hostname" => "www",
+        "docroot" => '/gsr/systems/',
+      }
+      # puppet.hiera_config_path = "manifests/hiera.yaml"
+      # puppet.working_directory = "/etc/puppet"
+    end
+end

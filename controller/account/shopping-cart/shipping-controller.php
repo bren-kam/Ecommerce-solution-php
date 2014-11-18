@@ -365,10 +365,10 @@ class ShippingController extends BaseController {
             , 'FEDEX_25KG_BOX' => _('FedEx 25Kg Box')
         );
 
-        $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra['packaging_type'] )
+        $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra ? $shipping_method->extra['packaging_type'] : '')
             ->options( $packaging_types );
 
-        $form->add_field( 'select', 'Ashley Distribution Center', 'sAshleyDistributionCenter', $shipping_method->extra['ashley_distribution_center'] )
+        $form->add_field( 'select', 'Ashley Distribution Center', 'sAshleyDistributionCenter', $shipping_method->extra ? $shipping_method->extra['ashley_distribution_center'] : '' )
             ->options(array(
                 'Leesport_PA' => 'Leesport, PA'
                 , 'Advance_NC' => 'Advance, NC'
@@ -381,8 +381,7 @@ class ShippingController extends BaseController {
             $shipping_method->name = $_POST['sService'];
             $shipping_method->method = 'N/A';
             $shipping_method->extra = serialize( array(
-                'pickup_type' => $_POST['sPickupType']
-                , 'packaging_type' => $_POST['sPackagingType']
+                'packaging_type' => $_POST['sPackagingType']
                 , 'ashley_distribution_center' => $_POST['sAshleyDistributionCenter']
             ));
 
@@ -459,7 +458,7 @@ class ShippingController extends BaseController {
             , '07' => _('On Call Air')
         );
 
-        $form->add_field( 'select', _('Pickup Type'), 'sPickupType', $shipping_method->extra['pickup_type'] )
+        $form->add_field( 'select', _('Pickup Type'), 'sPickupType', $shipping_method->extra ? $shipping_method->extra['pickup_type'] : '' )
             ->options( $pickup_types );
 
         $packaging_types = array(
@@ -476,10 +475,10 @@ class ShippingController extends BaseController {
             , '2c' => 'Large Express Box'
         );
 
-        $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra['packaging_type'] )
+        $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra ? $shipping_method->extra['packaging_type'] : '' )
             ->options( $packaging_types );
 
-        $form->add_field( 'select', 'Ashley Distribution Center', 'sAshleyDistributionCenter', $shipping_method->extra['ashley_distribution_center'] )
+        $form->add_field( 'select', 'Ashley Distribution Center', 'sAshleyDistributionCenter', $shipping_method->extra ? $shipping_method->extra['ashley_distribution_center'] : '')
             ->options(array(
                 'Leesport_PA' => 'Leesport, PA'
                 , 'Advance_NC' => 'Advance, NC'
@@ -591,7 +590,7 @@ class ShippingController extends BaseController {
             ->add_validation( 'zip', _('The "Shipping Zip" field must contain a valid zip code') );
 
         $form->add_field( 'select', _('Shipper Country'), 'sShipperCountry', $shipping_settings['shipper_country'] )
-            ->options( data::countries( false ) );
+            ->options( array_merge( array('' => ''), data::countries( false ) ) );
 
         $form->add_field( 'blank', '' );
 

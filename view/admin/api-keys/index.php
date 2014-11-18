@@ -6,6 +6,9 @@
             </header>
 
             <div class="panel-body">
+                <p class="text-right">
+                    <a class="btn btn-primary" href="/api-keys/manage/"><i class="fa fa-plus"></i> API Key</a>
+                </p>
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/api-keys/list-all/" perPage="30,50,100">
                         <thead>

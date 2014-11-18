@@ -29,10 +29,22 @@
       margin-top: 35px;
     }
 
+    .banner-status-label {
+      font-weight: 700;
+      color: #DDDDDD;
+      &.selected {
+        color: #418DCB;
+        &.running {
+          color: #39b2a9;
+        }
+        &.over {
+          color: red;
+        }
+      }
+    }
+
     .input-daterange {
-      position: absolute;
-      bottom: 82px;
-      left: 125px;
+      margin-bottom: 15px;
     }
 
   }

@@ -1,7 +1,7 @@
 <?php
 class ShareAndSaveController extends BaseController {
-    const APP_ID = '118945651530886';
-    const APP_SECRET = 'ef922d64f1f526079f48e0e0efa47fb7';
+    const APP_ID = '379941868838882';
+    const APP_SECRET = '06f57d751890f5a26d01aa469bd0db4f';
     const APP_URI = 'share-and-save';
 
     /**
