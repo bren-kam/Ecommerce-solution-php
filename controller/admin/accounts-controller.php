@@ -1778,5 +1778,19 @@ class AccountsController extends BaseController {
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    public function index_products() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
 
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $index = new IndexProducts();
+            $index->index_website( $account->id );
+        }
+
+        $this->notify( _("All Products Indexed!") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
 }

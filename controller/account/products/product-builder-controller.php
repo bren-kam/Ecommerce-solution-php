@@ -175,6 +175,10 @@ class ProductBuilderController extends BaseController {
                 }
             }
 
+            // Update index for this Product/Website
+            $index = new IndexProducts();
+            $index->index_product( $product->id, $this->user->account->id );
+
             // Now go back to products list with a notification
             $this->notify( _('Your product was successfully created or updated!') );
 
@@ -318,6 +322,10 @@ class ProductBuilderController extends BaseController {
 
             // Reorganize their categories
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            // Update index for this product/website
+            $index = new IndexProducts();
+            $index->index_product( $product->id, $this->user->account->id );
         }
 
         // Redraw the table

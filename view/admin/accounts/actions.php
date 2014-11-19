@@ -78,6 +78,7 @@
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-express-feed/' ); ?>" title="<?php echo _('Run Express Ashley Feed'); ?>"><?php echo _('Run Ashley Express Feed'); ?></a></p>
 
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/index-products/' ); ?>" title="<?php echo _('Re-Index Products'); ?>"><?php echo _('Re-Index Products'); ?></a></p>
             </div>
         </section>
     </div>
