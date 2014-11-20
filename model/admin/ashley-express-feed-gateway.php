@@ -180,10 +180,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         // Declare array
         $ashley_express_skus = array();
-//        // Get Ashley Packages
-//        $package_skus = array();
-//        $packages = $this->get_ashley_packages();
-//        $ashley_package_product_ids = array();
+        $check_carton_availability = array();
 
         // Set Settings: Ashley Express Buyer ID from XML
         $ns = $this->xml->getDocNamespaces();
@@ -204,6 +201,15 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             foreach ( $item->itemAvailability as $availability ) {
                 // Item is Ashley Express only if stock for current availability is greater than 5
                 if ( $availability['availability'] == 'current' ) {
+
+                    // If available quantity is 0, maybe it's not implemented from ashley side
+                    // and we will need to get the stock from it's carton.
+                    // http://admin.greysuitretail.com/tickets/ticket/?tid=32121
+                    if ( $availability->availQty['value'] == 0 ) {
+                        // Carton SKU is individual SKU except the last char.
+                        $check_carton_availability[] = array( 'individual' => $sku, 'carton' => substr( $sku, 0, -1 ) );
+                    }
+
                     if ( $availability->availQty['value'] > 5 ) {
                         $ashley_express_skus[] = $sku;
                     }
@@ -211,6 +217,16 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                 }
             }
 		}
+
+        // If available quantity is 0, maybe it's not implemented from ashley side
+        // and we will need to get the stock from it's carton.
+        // http://admin.greysuitretail.com/tickets/ticket/?tid=32121
+        foreach ( $check_carton_availability as $carton_check ) {
+            // If carton has stock, add the individual
+            if ( in_array($carton_check['carton'], $ashley_express_skus ) ) {
+                $ashley_express_skus[] = $carton_check['individual'];
+            }
+        }
 
         $account_ae_skus = $this->flag_bulk( $account, $ashley_express_skus );
 
