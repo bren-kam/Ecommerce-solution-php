@@ -427,14 +427,6 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             $website_user = new WebsiteUser();
             $website_user->get( $order->website_user_id, $account->id );
 
-            fn::mail(
-                $website_user->email
-                , "Order #{$order->id} Acknowledgement Notification"
-                , "Hello {$website_user->shipping_first_name},<br><br>Your Express Delivery Order #{$order->id} has been Received.<br><br>For further information, please contact us.<br>Thank you."
-                , "noreply@blinkyblinky.me"
-                , $account_user->email
-                , false
-            );
         }
 
         echo "Finished with Account\n----\n";
