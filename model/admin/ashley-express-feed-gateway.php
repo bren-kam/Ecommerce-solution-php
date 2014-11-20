@@ -397,6 +397,9 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         echo "Working with Account {$account->id}\n";
 
+        $account_user = new User();
+        $account_user->get( $account->user_id );
+
         while( $this->get_xml( $account, '855-', true ) !== null ) {
 
             $order_id = (string)$this->xml->ackOrder->orderDocument['id'];
@@ -420,6 +423,18 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
             $order->status = WebsiteOrder::STATUS_RECEIVED;
             $order->save();
+
+            $website_user = new WebsiteUser();
+            $website_user->get( $order->website_user_id, $account->id );
+
+            fn::mail(
+                $website_user->email
+                , "Order #{$order->id} Acknowledgement Notification"
+                , "Hello {$website_user->shipping_first_name},<br><br>Your Express Delivery Order #{$order->id} has been Received.<br><br>For further information, please contact us.<br>Thank you."
+                , "noreply@blinkyblinky.me"
+                , $account_user->email
+                , false
+            );
         }
 
         echo "Finished with Account\n----\n";
@@ -449,6 +464,9 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
     public function run_order_asn( Account $account ) {
 
         echo "Working with Account {$account->id}\n";
+
+        $account_user = new User();
+        $account_user->get( $account->user_id );
 
         while( $this->get_xml( $account, '856-', true ) !== null ) {
 
@@ -484,6 +502,17 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             $order->status = WebsiteOrder::STATUS_SHIPPED;
             $order->save();
 
+            $website_user = new WebsiteUser();
+            $website_user->get( $order->website_user_id, $account->id );
+
+            fn::mail(
+                $website_user->email
+                , "Order #{$order->id} ASN Notification"
+                , "Hello {$website_user->shipping_first_name},<br><br>Your Express Delivery Order #{$order->id} has been Shipped.<br><br>For further information, please contact us.<br>Thank you."
+                , "noreply@blinkyblinky.me"
+                , $account_user->email
+                , false
+            );
         }
 
         echo "Finished with Account\n----\n";
