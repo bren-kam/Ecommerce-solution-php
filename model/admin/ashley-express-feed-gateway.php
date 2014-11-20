@@ -588,6 +588,20 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             $ashley_packages[$series][$product_id] = $sku_pieces;
         }
 
+        // Remove Packages with no pieces
+        foreach( $ashley_packages as $series => $packages ) {
+            if ( empty( $packages ) ) {
+                unset( $ashley_packages[$series] );
+                continue;
+            }
+
+            foreach ( $packages as $package_product_id => $pieces ) {
+                if ( empty( $pieces ) ) {
+                    unset( $ashley_packages[$series][$package_product_id] );
+                }
+            }
+        }
+
         return $ashley_packages;
     }
 
