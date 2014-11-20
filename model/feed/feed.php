@@ -189,21 +189,21 @@ class Feed extends ActiveRecordBase {
         $inner_join = '';
         $where = '';
 
-        $brands = $this->api_key ? $this->api_key->get_brand_ids() : array();
-        if ( $brands ) {
-            $inner_join .= " INNER JOIN products p ON p.category_id = air.product_id ";
-            $where .= " AND p.`brand_id` IN (" . implode( ',', $brands ) . ") ";
-        }
-        $ashley_accounts = $this->api_key ? $this->api_key->get_ashley_accounts() : array();
-        if ( $ashley_accounts ) {
-            foreach ( $ashley_accounts as &$aa ) {
-                $aa = "'$aa'";
-            }
-            if ( !$brands )
-                $inner_join .= " INNER JOIN products p ON p.category_id = air.product_id ";
-            $inner_join .= " INNER JOIN website_products wp ON wp.product_id = p.product_id INNER JOIN website_settings ws ON ws.website_id = wp.website_id AND ws.`key` = 'ashley-ftp-username'";
-            $where .= " AND ws.`value` IN (" . implode( ',', $ashley_accounts ) . ") AND p.`user_id_created` IN ( 353, 1477 ) ";
-        }
+//        $brands = $this->api_key ? $this->api_key->get_brand_ids() : array();
+//        if ( $brands ) {
+//            $inner_join .= " INNER JOIN products p ON p.category_id = air.product_id ";
+//            $where .= " AND p.`brand_id` IN (" . implode( ',', $brands ) . ") ";
+//        }
+//        $ashley_accounts = $this->api_key ? $this->api_key->get_ashley_accounts() : array();
+//        if ( $ashley_accounts ) {
+//            foreach ( $ashley_accounts as &$aa ) {
+//                $aa = "'$aa'";
+//            }
+//            if ( !$brands )
+//                $inner_join .= " INNER JOIN products p ON p.category_id = air.product_id ";
+//            $inner_join .= " INNER JOIN website_products wp ON wp.product_id = p.product_id INNER JOIN website_settings ws ON ws.website_id = wp.website_id AND ws.`key` = 'ashley-ftp-username'";
+//            $where .= " AND ws.`value` IN (" . implode( ',', $ashley_accounts ) . ") AND p.`user_id_created` IN ( 353, 1477 ) ";
+//        }
 
         return $this->get_results( "SELECT ai.* FROM `attribute_items` ai INNER JOIN attribute_item_relations air ON ai.attribute_item_id = air.attribute_item_id $inner_join WHERE 1 $where GROUP BY ai.attribute_item_id", PDO::FETCH_ASSOC );
     }
