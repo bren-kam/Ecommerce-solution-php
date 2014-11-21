@@ -229,8 +229,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
 
             // Prevent SKUs not sold in America or only in containers
-			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
-				continue;
+			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) ) {
+                // Products starting with A2C are not under this rule
+                // http://admin.greysuitretail.com/tickets/ticket/?tid=32147
+                if ( stripos( $sku, 'A2C' ) !== 0 ) {
+                    continue;
+                }
+            }
 
             $all_skus[] = $sku;
 
