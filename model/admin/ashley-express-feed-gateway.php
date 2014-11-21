@@ -228,6 +228,21 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             }
         }
 
+        // Don't run if we are deleting more than 500 products
+        $to_delete = $this->calculate_to_delete( $account, $ashley_express_skus );
+        if ( $to_delete > 500 && !isset( $_GET['override'] ) ) {
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = User::KERRY;
+            $ticket->website_id = $account->id;
+            $ticket->priority = Ticket::PRIORITY_HIGH;
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->summary = 'Ashley Express Feed - Removing Too Many Products';
+            $ticket->message = 'Trying to remove ' . $to_delete . ' products';
+            $ticket->create();
+            return;
+        }
+
         $account_ae_skus = $this->flag_bulk( $account, $ashley_express_skus );
 
         // Add Packages -------------------------------------------
@@ -281,6 +296,26 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         $this->flag_packages( $account, $ashley_package_product_ids );
 
 	}
+
+    /**
+     * Calculate rows to delete
+     *
+     * @param $account
+     * @param $skus
+     * @return int
+     */
+    private function calculate_to_delete( $account, $skus ) {
+        $to_delete = $this->get_results("
+                SELECT COUNT(*)
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = {$account->website_id}
+                  AND p.`user_id_created` = ". self::USER_ID ."
+                  " . ( $skus ? ( "AND p.`sku` NOT IN ('". implode("','", $skus) ."')" ) : "" )
+            , PDO::FETCH_COLUMN );
+
+        return array_pop($to_delete);
+    }
 
     /**
      * Flag a Bulk of Products as Ashley Express
