@@ -59,6 +59,13 @@
                     <?php echo $order->shipping_address1; ?><br />
                     <?php echo $order->shipping_city, ', ', $order->shipping_state, ' ', $order->shipping_zip; ?><br />
                 </p>
+
+                <?php if ( $order->shipping_track_number ): ?>
+                    <p>
+                        <strong>Express Delivery Tracking Codes:</strong><br>
+                        <?php echo $order->shipping_track_number ?>
+                    </p>
+                <?php endif; ?>
             </div>
         </section>
     </div>
