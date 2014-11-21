@@ -457,9 +457,6 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         echo "Working with Account {$account->id}\n";
 
-        $account_user = new User();
-        $account_user->get( $account->user_id );
-
         while( $this->get_xml( $account, '856-', true ) !== null ) {
 
             $order_id = (string)$this->xml->shipment->order->orderReferenceNumber['referenceNumberValue'];
@@ -494,109 +491,11 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             $order->status = WebsiteOrder::STATUS_SHIPPED;
             $order->save();
 
-            $website_user = new WebsiteUser();
-            $website_user->get( $order->website_user_id, $account->id );
-
-            fn::mail(
-                $website_user->email
-                , "Order #{$order->id} ASN Notification"
-                , "Hello {$website_user->shipping_first_name},<br><br>Your Express Delivery Order #{$order->id} has been Shipped.<br><br>For further information, please contact us.<br>Thank you."
-                , "noreply@blinkyblinky.me"
-                , $account_user->email
-                , false
-            );
+            $this->shipped_order_email($order, $account);
         }
 
         echo "Finished with Account\n----\n";
 
-    }
-
-    /**
-     * Run Shipping Prices
-     *
-     * @param Account $account
-     * @param $filename
-     * @return int number of updated products
-     * @throws Exception
-     */
-    public function run_shipping_prices( Account $account, $filename ) {
-        throw new Exception("Method Removed");
-
-        $file_extension = strtolower( f::extension( $filename ) );
-
-        // get data regarding file extension
-        switch ( $file_extension ) {
-            case 'xls':
-                // Load excel reader
-                library('Excel_Reader/Excel_Reader');
-                $er = new Excel_Reader();
-                // Set the basics and then read in the rows
-                $er->setOutputEncoding('ASCII');
-                $er->read( $filename );
-
-                $rows = $er->sheets[0]['cells'];
-
-                break;
-
-            case 'csv':
-                // Make sure it's opened properly
-                $handler = fopen( $filename, 'r' );
-
-                // If there is an error or now user id, return
-                if ( !$handler ) {
-                    throw new Exception( 'Could not read your file' );
-                }
-
-                // Loop through the rows
-                while ( $row = fgetcsv( $handler ) ) {
-                    $rows[] = $row;
-                }
-
-                fclose( $handler );
-
-                break;
-
-            default:
-                throw new Exception( 'Could not read your file, unsupported extension' );
-        }
-
-        // Get Ashley Products
-        $products_result = $this->prepare(
-            'SELECT product_id, sku FROM products WHERE user_id_created = :user_id'
-            , 'i'
-            , array( ':user_id' => self::USER_ID )
-        )->get_results( PDO::FETCH_ASSOC );
-        $products = ar::assign_key( $products_result, 'sku' );
-
-        // Reset all shipping methods
-        $this->prepare(
-            'UPDATE website_product_shipping_method SET shipping_price = NULL WHERE website_id = :website_id'
-            , 'i'
-            , array( ':website_id' => $account->id )
-        )->query();
-
-        // Update shipping methods
-        $headers = array_shift( $rows );
-        $updated = 0;
-        foreach ( $rows as $values ) {
-            $row = array_combine( $headers, $values );
-
-            $sku = $row['Ashley Item'];
-            $shipping_price = (float) $row['Estimated Express Freight Per Carton'];
-            $product_id = $products[$sku]['product_id'];
-
-            if ( $product_id && $shipping_price ) {
-                $this->prepare(
-                    'UPDATE website_product_shipping_method SET shipping_price = :shipping_price WHERE website_id = :website_id AND product_id = :product_id'
-                    , 'dii'
-                    , array( ':shipping_price' => $shipping_price, ':website_id' => $account->id, ':product_id' => $product_id )
-                )->query();
-                $updated++;
-            }
-
-        }
-
-        return $updated;
     }
 
     /**
@@ -641,5 +540,33 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         return $ashley_packages;
     }
+
+    /**
+     * Shipped Order Email
+     * @param WebsiteOrder $order
+     * @param Account $account
+     * @return bool
+     */
+    public function shipped_order_email($order, $account) {
+
+        $account_user = new User();
+        $account_user->get( $account->user_id );
+
+        $website_user = new WebsiteUser();
+        $website_user->get( $order->website_user_id, $account->id );
+
+        $message = file_get_contents( "http://{$account->domain}/shopping-cart/ashley-express-shipped-email/?woid={$order->id}" );
+
+        return fn::mail(
+            $website_user->email
+            , "Order #{$order->id} ASN Notification"
+            , $message
+            , "noreply@blinkyblinky.me"
+            , $account_user->email
+            , false
+        );
+
+    }
+
 
 }
