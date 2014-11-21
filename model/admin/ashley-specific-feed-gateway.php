@@ -237,6 +237,11 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 }
             }
 
+            // Skip Ashley Carton/Case products
+            // Came from an Ashley Express spreadsheet given by Ashley
+            if ( in_array( $sku, $this->ashley_express_carton ) )
+                continue;
+
             $all_skus[] = $sku;
 
             // Create the products if we don't have it in the system
@@ -310,11 +315,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		foreach ( $products as $sku => $product_id ) {
 			if ( !in_array( $sku, $all_skus ) )
 				$remove_products[] = (int) $product_id;
-
-            // Skip Ashley Carton/Case products
-            // Came from an Ashley Express spreadsheet given by Ashley
-            if ( in_array( $sku, $this->ashley_express_carton ) )
-                $remove_products[] = (int) $product_id;
 		}
 
         // Check #2 - Stop mass deletion
