@@ -697,7 +697,7 @@ class WebsiteController extends BaseController {
         }
         if ( $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link', 'sm-instagram-link', 'price-decimals' )
+                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link', 'sm-instagram-link', 'sm-foursquare-link', 'price-decimals' )
             );
         }
 
@@ -784,6 +784,9 @@ class WebsiteController extends BaseController {
 
             $form->add_field( 'text', _('Instagram Link'), 'sm-instagram-link', $settings['sm-instagram-link'] )
                 ->add_validation( 'url', _('The "Instagram Link" must be a valid link') );
+
+            $form->add_field( 'text', _('Foursquare Link'), 'sm-foursquare-link', $settings['sm-foursquare-link'] )
+                ->add_validation( 'url', _('The "FourSquare Link" must be a valid link') );
         }
 
         $form->add_field( 'blank', '' );
