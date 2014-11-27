@@ -438,26 +438,30 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         while( $this->get_xml( $account, '855-', true ) !== null ) {
 
             $order_id = (string)$this->xml->ackOrder->orderDocument['id'];
-            echo "Order $order_id \n";
+            echo "Order #$order_id \n";
 
             $order = new WebsiteOrder();
             $order->get( $order_id, $account->id );
 
+            if ( !$order->id ) {
+                echo "Order #$order_id not found under Account {$account->id}\n";
+                continue;
+            }
             echo "Order: ". json_encode($order) ." \n";
 
-            if ( !$order->id )
+            if ( !$order->is_ashley_express() ) {
+                echo "Order #$order_id is not Ashley Express {$order->website_shipping_method_id} {$order->website_ashley_express_shipping_method_id} \n";
                 continue;
+            }
 
-            if ( $order->is_ashley_express() )
+            if ( $order->status != WebsiteOrder::STATUS_PURCHASED ) {
+                echo "Order #$order_id has invalid Status {$order->status} \n";
                 continue;
-
-            if ( $order->status != WebsiteOrder::STATUS_PURCHASED )
-                continue;
-
-            echo "Order Updated\n";
+            }
 
             $order->status = WebsiteOrder::STATUS_RECEIVED;
             $order->save();
+            echo "Order Updated!\n";
 
             $website_user = new WebsiteUser();
             $website_user->get( $order->website_user_id, $account->id );
@@ -495,23 +499,26 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         while( $this->get_xml( $account, '856-', true ) !== null ) {
 
             $order_id = (string)$this->xml->shipment->order->orderReferenceNumber['referenceNumberValue'];
-            echo "Order $order_id \n";
+            echo "Order #$order_id \n";
 
             $order = new WebsiteOrder();
             $order->get( $order_id, $account->id );
 
+            if ( !$order->id ) {
+                echo "Order #$order_id not found under Account {$account->id}\n";
+                continue;
+            }
             echo "Order: ". json_encode($order) ." \n";
 
-            if ( !$order->id )
+            if ( !$order->is_ashley_express() ) {
+                echo "Order #$order_id is not Ashley Express {$order->website_shipping_method_id} {$order->website_ashley_express_shipping_method_id} \n";
                 continue;
+            }
 
-            if ( $order->is_ashley_express() )
+            if ( $order->status != WebsiteOrder::STATUS_RECEIVED ) {
+                echo "Order #$order_id has invalid Status {$order->status} \n";
                 continue;
-
-            if ( $order->status != WebsiteOrder::STATUS_RECEIVED )
-                continue;
-
-            echo "Order Updated\n";
+            }
 
             $shipping_track_numbers = array();
             try {
@@ -525,8 +532,10 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             $order->shipping_track_number = implode( ',', $shipping_track_numbers );
             $order->status = WebsiteOrder::STATUS_SHIPPED;
             $order->save();
+            echo "Order Updated\n";
 
             $this->shipped_order_email($order, $account);
+            echo "Email Sent!\n";
         }
 
         echo "Finished with Account\n----\n";
