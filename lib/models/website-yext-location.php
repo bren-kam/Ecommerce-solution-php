@@ -114,6 +114,9 @@ class WebsiteYextLocation extends ActiveRecordBase {
         if ( empty( $product_ids ) )
             return;
 
+        $account = new Account();
+        $account->get( $location->website_id );
+
         $category = new Category();
         $category->get_all();
 
@@ -136,6 +139,12 @@ class WebsiteYextLocation extends ActiveRecordBase {
             $parent_categories = $category->get_all_parents( $product['category_id'] );
             $parent_category = array_pop( $parent_categories );
 
+            if ($account->is_new_template() ) {
+                $product->link = 'http://' . $account->domain . '/product' . ( ( 0 == $product['category_id'] ) ? '/' . $product['slug'] : $category->get_url( $product['category_id'] ) . $product['slug'] . '/' );
+            } else {
+                $product->link = 'http://' . $account->domain . ( ( 0 == $product['category_id'] ) ? '/' . $product['slug'] : $category->get_url( $product['category_id'] ) . $product['slug'] . '/' );
+            }
+
             $yext_lists_items[ $parent_category->id ] = [
                 'id' => $product['product_id']
                 , 'name' => $product['name']
@@ -151,6 +160,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
                     , 'width' => 200
                     , 'height' => 200
                 ]
+                , 'url'
             ];
 
         }
