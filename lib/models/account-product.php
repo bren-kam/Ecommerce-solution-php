@@ -57,6 +57,26 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Get By IDs
+     *
+     * @param int[] $product_ids
+     * @param int $account_id
+     */
+    public function get_by_ids( $product_ids, $account_id ) {
+
+        if ( empty( $product_ids) )
+            return array();
+
+        $product_ids_sql = implode( ',', $product_ids );
+
+        $this->prepare(
+            'SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`product_id` = :product_id AND wp.`website_id` = :account_id'
+            , 'ii'
+            , array( ':product_id' => $product_id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
      * Get Auto Price Candidates
      *
      * @param int $account_id
