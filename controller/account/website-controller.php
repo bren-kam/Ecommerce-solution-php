@@ -1543,6 +1543,12 @@ class WebsiteController extends BaseController {
         // Get the account file
         $account_file->get( $_GET['id'], $this->user->account->domain, $this->user->account->id );
 
+        $file_path = $account_file->file_path;
+        if ( $file_path ) {
+            $website_attachment = new AccountPageAttachment();
+            $website_attachment->remove_by_value( $this->user->account->id, $file_path);
+        }
+
         $response->check( $account_file->id, "File {$_GET['id']} not found");
         if ( $response->has_error() )
             return $response;
