@@ -88,9 +88,10 @@ class curl {
 	 * Checks if a file exists
 	 *
 	 * @param string $url the url of the page being called
+     * @param int $timeout
 	 * @return bool
 	 */
-	public static function check_file( $url ) {
+	public static function check_file( $url, $timeout = 60 ) {
 		// Whether we should close
 		$close = true;
 		
@@ -109,8 +110,8 @@ class curl {
 		curl_setopt( $ch, CURLOPT_FAILONERROR, 1 );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 60 );
-        curl_setopt($ch, CURLOPT_TIMEOUT , 60 );
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , $timeout );
+        curl_setopt($ch, CURLOPT_TIMEOUT , $timeout );
 
         $result = ( false !== curl_exec( $ch ) ) ? true : false;
 		

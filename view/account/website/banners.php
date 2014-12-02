@@ -43,14 +43,38 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                     </div>
 
-                    <?php foreach ( $attachments as $attachment ): ?>
+                    <?php
+                        foreach ( $attachments as $attachment ):
+
+                        if ( $user->account->is_new_template() ):
+                            $extra = json_decode($attachment->extra, true);
+                            if ( $extra ) {
+                                $scheduled = isset( $extra['date-range'] ) && $extra['date-range'];
+                                $running = $extra['date-end'] && ( date('Y-m-d') >= $extra['date-start'] && date('Y-m-d') <= $extra['date-end'] );
+                                $over = $extra['date-end'] && ( date('Y-m-d') > $extra['date-end'] );
+                            } else {
+                                $scheduled = false;
+                                $running = false;
+                                $over = false;
+                            }
+                        endif;
+                    ?>
 
                         <div class="banner <?php echo $attachment->status == '0' ? 'disabled' : '' ?>" data-attachment-id="<?php echo $attachment->id ?>">
 
                             <div class="banner-actions">
                                 <small><?php echo $dimensions; ?></small>
-                                <input type="checkbox" data-toggle="switch" value="active" <?php if ( $attachment->status == '1' ) echo 'checked' ?>/>
-
+                                <label for="status-on" class="banner-status-label <?php if ( $attachment->status == '1' && !$scheduled ) echo 'selected' ?>">
+                                    <input type="radio" class="status" name="status-<?php echo $attachment->id ?>" value="on" id="status-on" <?php if ( $attachment->status == '1' && !$scheduled ) echo 'checked' ?> /> On
+                                </label>
+                                <?php if ( $user->account->is_new_template() ): ?>
+                                    <label for="status-scheduled" class="banner-status-label <?php if ( $attachment->status == '1' && $scheduled ) echo ' selected'; if ( $running ) echo ' running' ; if ( $over ) echo ' over' ?>">
+                                        <input type="radio" class="status" name="status-<?php echo $attachment->id ?>" value="scheduled" id="status-scheduled" <?php if ( $attachment->status == '1' && $scheduled ) echo 'checked' ?>/> Scheduled
+                                    </label>
+                                <?php endif; ?>
+                                <label for="status-off" class="banner-status-label <?php if ( $attachment->status == '0' ) echo 'selected' ?>">
+                                    <input type="radio" class="status" name="status-<?php echo $attachment->id ?>" value="off" id="status-off" <?php if ( $attachment->status == '0' ) echo 'checked' ?> /> Off
+                                </label>
                                 <a href="javascript:;" class="remove" title="Delete this Banner"><i class="fa fa-trash-o"></i></a>
                             </div>
 
@@ -61,7 +85,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                     $extra = json_decode($attachment->extra, true);
                                     if ( $extra ):
                                         $image_link = $extra['link'];
-                                        $date_range = isset( $extra['date-range'] );
+                                        $date_range = isset( $extra['date-range'] ) && $extra['date-range'];
                                         $date_start = ( new DateTime( $extra['date-start'] ) )->format('m/d/Y');
                                         $date_end = ( new DateTime( $extra['date-end'] ) )->format('m/d/Y');
                                     else:
@@ -76,16 +100,11 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                         <label>Image Link:</label>
                                         <input type="text" class="form-control" name="extra[link]" value="<?php echo $image_link ?>" placeholder="Link URL" />
                                     </div>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="extra[date-range]" class="show-date-range" value="1" <?php if ( $date_range ) echo 'checked' ?> />
-                                            Run Date
-                                        </label>
-                                    </div>
+                                    <input type="hidden" name="extra[date-range]" class="has-date-range" value="<?php echo $date_range ? 1 : 0 ?>" />
                                     <div class="input-daterange input-group <?php if ( !$date_range ) echo 'hidden' ?>">
-                                        <input type="text" class="input-sm form-control" name="extra[date-start]" value="<?php echo $date_start ?>" />
+                                        <input type="text" class="input-sm form-control" name="extra[date-start]" value="<?php echo $date_start ?>" placeholder="start date" />
                                         <span class="input-group-addon">to</span>
-                                        <input type="text" class="input-sm form-control" name="extra[date-end]" value="<?php echo $date_end ?>" />
+                                        <input type="text" class="input-sm form-control" name="extra[date-end]" value="<?php echo $date_end ?>" placeholder="end date"/>
                                     </div>
                                     <p>
                                         <br>
@@ -122,7 +141,17 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 <div id="banner-template" class="banner hidden">
     <div class="banner-actions">
         <small><?php echo $dimensions; ?></small>
-        <input type="checkbox" value="active" checked/>
+        <label for="status-on" class="banner-status-label selected">
+            <input type="radio" class="status" name="status" value="on" id="status-on" checked /> On
+        </label>
+        <?php if ( $user->account->is_new_template() ): ?>
+            <label for="status-scheduled" class="banner-status-label">
+                <input type="radio" class="status" name="status" value="scheduled" id="status-scheduled" /> Scheduled
+            </label>
+        <?php endif; ?>
+        <label for="status-off" class="banner-status-label">
+            <input type="radio" class="status" name="status" value="off" id="status-off" /> Off
+        </label>
         <a href="javascript:;" class="remove" title="Delete this Banner"><i class="fa fa-trash-o"></i></a>
     </div>
 
@@ -134,16 +163,11 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                 <label>Image Link:</label>
                 <input type="text" class="form-control" name="extra[link]" placeholder="Link URL" />
             </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="extra[date-range]" class="show-date-range" value="1" />
-                    Run Date
-                </label>
-            </div>
+            <input type="hidden" name="extra[date-range]" class="has-date-range" value="0" />
             <div class="input-daterange input-group <?php if ( !$date_range ) echo 'hidden' ?>">
-                <input type="text" class="input-sm form-control" name="extra[date-start]" />
+                <input type="text" class="input-sm form-control" name="extra[date-start]" placeholder="start date"/>
                 <span class="input-group-addon">to</span>
-                <input type="text" class="input-sm form-control" name="extra[date-end]" />
+                <input type="text" class="input-sm form-control" name="extra[date-end]" placeholder="end date"/>
             </div>
             <p>
                 <input type="hidden" name="hAccountPageAttachmentId" />

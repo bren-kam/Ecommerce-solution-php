@@ -39,7 +39,7 @@
                             <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
                             <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
                             <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
-                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=<?php echo $account->id ?>">Ashley Express - Shipping Prices</a></li>
+<!--                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=--><?php //echo $account->id ?><!--">Ashley Express - Shipping Prices</a></li>-->
                         </ul>
                     </li>
                 </ul>
@@ -58,6 +58,8 @@
 
                 <?php if ( empty( $settings['sendgrid-username'] ) ) { ?>
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" ajax="1"><?php echo _('Create Email Marketing Account'); ?></a></p>
+                <?php } else { ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/resync-email-lists/' ); ?>" title="<?php echo _('Resync Email Lists'); ?>"><?php echo _('Resync Email Lists'); ?></a></p>
                 <?php } ?>
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
@@ -76,6 +78,7 @@
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-express-feed/' ); ?>" title="<?php echo _('Run Express Ashley Feed'); ?>"><?php echo _('Run Ashley Express Feed'); ?></a></p>
 
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/index-products/' ); ?>" title="<?php echo _('Re-Index Products'); ?>"><?php echo _('Re-Index Products'); ?></a></p>
             </div>
         </section>
     </div>

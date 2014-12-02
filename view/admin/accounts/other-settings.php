@@ -38,7 +38,7 @@
                             <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
                             <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
                             <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
-                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=<?php echo $account->id ?>">Ashley Express - Shipping Prices</a></li>
+<!--                            <li><a href="/accounts/customize/ashley-express-shipping-prices/?aid=--><?php //echo $account->id ?><!--">Ashley Express - Shipping Prices</a></li>-->
                         </ul>
                     </li>
                 </ul>

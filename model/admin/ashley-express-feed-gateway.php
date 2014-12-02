@@ -171,11 +171,16 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	 */
 	public function run_flag_products( Account $account ) {
 
-        if ( !$this->get_xml( $account, '846-' ) )
+        if ( !$this->get_xml( $account, '846-' ) ) {
+            // Remove all products from Ashley Express
+            $this->flag_bulk( $account, array( ) );
+            $this->flag_packages( $account, array( ) );
             return false;
+        }
 
         // Declare array
         $ashley_express_skus = array();
+        $check_carton_availability = array();
 
         // Set Settings: Ashley Express Buyer ID from XML
         $ns = $this->xml->getDocNamespaces();
@@ -196,18 +201,121 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             foreach ( $item->itemAvailability as $availability ) {
                 // Item is Ashley Express only if stock for current availability is greater than 5
                 if ( $availability['availability'] == 'current' ) {
+
+                    // If available quantity is 0, maybe it's not implemented from ashley side
+                    // and we will need to get the stock from it's carton.
+                    // http://admin.greysuitretail.com/tickets/ticket/?tid=32121
+                    if ( $availability->availQty['value'] == 0 ) {
+                        // Carton SKU is individual SKU except the last char.
+                        $check_carton_availability[] = array( 'individual' => $sku, 'carton' => substr( $sku, 0, -1 ) );
+                    }
+
                     if ( $availability->availQty['value'] > 5 ) {
                         $ashley_express_skus[] = $sku;
                     }
                     break;
                 }
             }
-
 		}
 
-        $this->flag_bulk( $account, $ashley_express_skus );
+        // If available quantity is 0, maybe it's not implemented from ashley side
+        // and we will need to get the stock from it's carton.
+        // http://admin.greysuitretail.com/tickets/ticket/?tid=32121
+        foreach ( $check_carton_availability as $carton_check ) {
+            // If carton has stock, add the individual
+            if ( in_array($carton_check['carton'], $ashley_express_skus ) ) {
+                $ashley_express_skus[] = $carton_check['individual'];
+            }
+        }
+
+        // Don't run if we are deleting more than 500 products
+        $to_delete = $this->calculate_to_delete( $account, $ashley_express_skus );
+        if ( $to_delete > 500 && !isset( $_GET['override'] ) ) {
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = User::KERRY;
+            $ticket->website_id = $account->id;
+            $ticket->priority = Ticket::PRIORITY_HIGH;
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->summary = 'Ashley Express Feed - Removing Too Many Products';
+            $ticket->message = 'Trying to remove ' . $to_delete . ' products';
+            $ticket->create();
+            return;
+        }
+
+        $account_ae_skus = $this->flag_bulk( $account, $ashley_express_skus );
+
+        // Add Packages -------------------------------------------
+        // --------------------------------------------------------
+        $packages = $this->get_ashley_packages();
+        $package_skus = array();
+        $group_items = array();
+        foreach( $account_ae_skus as $sku ) {
+            // Setup packages
+            if ( stristr( $sku, '-' ) ) {
+                list( $series, $item ) = explode( '-', $sku, 2 );
+            } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
+                $series = substr( $sku, 0, 5 );
+                $item = substr( $sku, 5 );
+            } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
+                $series = substr( $sku, 0, 6 );
+                $item = substr( $sku, 6 );
+            } else {
+                continue;
+            }
+            $package_skus[$series][] = $item;
+        }
+
+        // Add packages if they have all the pieces
+        foreach ( $packages as $series => $items ) {
+            // Go through each item
+            foreach ( $items as $product_id => $package_pieces ) {
+                // See if they have all the items necessary
+                foreach ( $package_pieces as $item ) {
+                    // Check if it is a series such as "W123-45" or "W12345"
+                    if ( is_array( $package_skus[$series] ) && in_array( $item, $package_skus[$series] ) ) {
+                        $group_items[$series] = true;
+                        continue;
+                    }
+
+                    if ( in_array( $series . $item, $account_ae_skus ) ) {
+                        $group_items[$series] = true;
+                        continue;
+                    }
+
+                    // If they don't have both, then stop this item
+                    unset ( $group_items[$series] );
+                    continue 2; // Drop out of both
+                }
+
+                // Add to packages list
+                $ashley_package_product_ids[] = $product_id;
+            }
+        }
+
+        $this->flag_packages( $account, $ashley_package_product_ids );
 
 	}
+
+    /**
+     * Calculate rows to delete
+     *
+     * @param $account
+     * @param $skus
+     * @return int
+     */
+    private function calculate_to_delete( $account, $skus ) {
+        $to_delete = $this->get_results("
+                SELECT COUNT(*)
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = {$account->website_id}
+                  AND p.`user_id_created` = ". self::USER_ID ."
+                  " . ( $skus ? ( "AND p.`sku` NOT IN ('". implode("','", $skus) ."')" ) : "" )
+            , PDO::FETCH_COLUMN );
+
+        return array_pop($to_delete);
+    }
 
     /**
      * Flag a Bulk of Products as Ashley Express
@@ -215,39 +323,90 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
      *
      * @param Account $account
      * @param string[] $skus array of skus
+     * @return array with skus really added as AE
      */
     private function flag_bulk( $account, $skus ) {
 
         $this->prepare("
-                DELETE wpsm
-                FROM `website_product_shipping_method` wpsm
-                INNER JOIN `products` p ON ( p.`product_id` = wpsm.`product_id` )
-                WHERE wpsm.`website_id` = :website_id
-                  AND wpsm.`website_shipping_method_id` = :shipping_method_id
+                DELETE wpae
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = :website_id
                   AND p.`user_id_created` = :user_id_created
-                  AND p.`sku` NOT IN ('". implode("','", $skus) ."')"
+                  " . ( $skus ? ( "AND p.`sku` NOT IN ('". implode("','", $skus) ."')" ) : "" )
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
-                , ':shipping_method_id' => WebsiteOrder::get_ashley_express_shipping_method()->id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
 
+        // If no skus, there's nothing to add
+        if ( !$skus )
+            return;
+
         $this->prepare("
-                INSERT IGNORE INTO `website_product_shipping_method` ( website_id, product_id, website_shipping_method_id )
-                SELECT :website_id, p.product_id, :shipping_method_id
+                INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
+                SELECT :website_id, p.product_id
                 FROM `products` p
+                INNER JOIN `website_product_ashley_express_master` wpaem ON p.`sku` = wpaem.`sku`
                 WHERE p.`user_id_created` = :user_id_created
+                  AND p.`publish_visibility` = 'public'
+                  AND p.`status` = 'in-stock'
                   AND p.`sku` IN ('". implode("','", $skus) ."')"
             , 'iii'
             , array(
                 ':website_id' => $account->website_id
-                , ':shipping_method_id' => WebsiteOrder::get_ashley_express_shipping_method()->id
                 , ':user_id_created' => self::USER_ID
             )
         )->query();
 
+        return $this->get_results("
+            SELECT DISTINCT p.`sku`
+            FROM products p
+            INNER JOIN website_product_ashley_express wpae ON p.product_id = wpae.product_id
+            WHERE wpae.website_id = {$account->website_id}"
+            , PDO::FETCH_COLUMN
+        );
+
+    }
+
+    /**
+     * Flag Packages
+     * @param Account $account
+     * @param int[] $product_ids
+     */
+    private function flag_packages( $account, $product_ids ) {
+        $this->prepare("
+                DELETE wpae
+                FROM `website_product_ashley_express` wpae
+                INNER JOIN `products` p ON ( p.`product_id` = wpae.`product_id` )
+                WHERE wpae.`website_id` = :website_id
+                  AND p.`user_id_created` = :user_id_created
+                  " . ( $product_ids ? ( "AND p.`product_id` NOT IN (". implode(",", $product_ids) .")" ) : "" )
+            , 'iii'
+            , array(
+                ':website_id' => $account->website_id
+                , ':user_id_created' => 1477
+            )
+        )->query();
+
+        // If no skus, there's nothing to add
+        if ( !$product_ids )
+            return;
+
+        $this->prepare("
+                INSERT IGNORE INTO `website_product_ashley_express` ( website_id, product_id )
+                SELECT :website_id, p.product_id
+                FROM `products` p
+                WHERE p.`user_id_created` = :user_id_created
+                  AND p.`product_id` IN (". implode(",", $product_ids) .")"
+            , 'iii'
+            , array(
+                ':website_id' => $account->website_id
+                , ':user_id_created' => 1477
+            )
+        )->query();
     }
 
     /**
@@ -273,29 +432,40 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         echo "Working with Account {$account->id}\n";
 
+        $account_user = new User();
+        $account_user->get( $account->user_id );
+
         while( $this->get_xml( $account, '855-', true ) !== null ) {
 
             $order_id = (string)$this->xml->ackOrder->orderDocument['id'];
-            echo "Order $order_id \n";
+            echo "Order #$order_id \n";
 
             $order = new WebsiteOrder();
             $order->get( $order_id, $account->id );
 
+            if ( !$order->id ) {
+                echo "Order #$order_id not found under Account {$account->id}\n";
+                continue;
+            }
             echo "Order: ". json_encode($order) ." \n";
 
-            if ( !$order->id )
+            if ( !$order->is_ashley_express() ) {
+                echo "Order #$order_id is not Ashley Express {$order->website_shipping_method_id} {$order->website_ashley_express_shipping_method_id} \n";
                 continue;
+            }
 
-            if ( $order->website_shipping_method_id != WebsiteOrder::get_ashley_express_shipping_method()->id )
+            if ( $order->status != WebsiteOrder::STATUS_PURCHASED ) {
+                echo "Order #$order_id has invalid Status {$order->status} \n";
                 continue;
-
-            if ( $order->status != WebsiteOrder::STATUS_PURCHASED )
-                continue;
-
-            echo "Order Updated\n";
+            }
 
             $order->status = WebsiteOrder::STATUS_RECEIVED;
             $order->save();
+            echo "Order Updated!\n";
+
+            $website_user = new WebsiteUser();
+            $website_user->get( $order->website_user_id, $account->id );
+
         }
 
         echo "Finished with Account\n----\n";
@@ -329,23 +499,26 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         while( $this->get_xml( $account, '856-', true ) !== null ) {
 
             $order_id = (string)$this->xml->shipment->order->orderReferenceNumber['referenceNumberValue'];
-            echo "Order $order_id \n";
+            echo "Order #$order_id \n";
 
             $order = new WebsiteOrder();
             $order->get( $order_id, $account->id );
 
+            if ( !$order->id ) {
+                echo "Order #$order_id not found under Account {$account->id}\n";
+                continue;
+            }
             echo "Order: ". json_encode($order) ." \n";
 
-            if ( !$order->id )
+            if ( !$order->is_ashley_express() ) {
+                echo "Order #$order_id is not Ashley Express {$order->website_shipping_method_id} {$order->website_ashley_express_shipping_method_id} \n";
                 continue;
+            }
 
-            if ( $order->website_shipping_method_id != WebsiteOrder::get_ashley_express_shipping_method()->id )
+            if ( $order->status != WebsiteOrder::STATUS_RECEIVED ) {
+                echo "Order #$order_id has invalid Status {$order->status} \n";
                 continue;
-
-            if ( $order->status != WebsiteOrder::STATUS_RECEIVED )
-                continue;
-
-            echo "Order Updated\n";
+            }
 
             $shipping_track_numbers = array();
             try {
@@ -359,7 +532,10 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
             $order->shipping_track_number = implode( ',', $shipping_track_numbers );
             $order->status = WebsiteOrder::STATUS_SHIPPED;
             $order->save();
+            echo "Order Updated\n";
 
+            $this->shipped_order_email($order, $account);
+            echo "Email Sent!\n";
         }
 
         echo "Finished with Account\n----\n";
@@ -367,89 +543,73 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
     }
 
     /**
-     * Run Shipping Prices
+     * Get Ashley Packages
      *
-     * @param Account $account
-     * @param $filename
-     * @return int number of updated products
-     * @throws Exception
+     * @return array
      */
-    public function run_shipping_prices( Account $account, $filename ) {
-        $file_extension = strtolower( f::extension( $filename ) );
+    protected function get_ashley_packages() {
+        // Ashley Packages
+        $products = ar::assign_key( $this->get_results( 'SELECT `product_id`, `sku` FROM `products` WHERE `user_id_created` = 1477', PDO::FETCH_ASSOC ), 'sku', true );
 
-        // get data regarding file extension
-        switch ( $file_extension ) {
-            case 'xls':
-                // Load excel reader
-                library('Excel_Reader/Excel_Reader');
-                $er = new Excel_Reader();
-                // Set the basics and then read in the rows
-                $er->setOutputEncoding('ASCII');
-                $er->read( $filename );
+        $ashley_packages = array();
 
-                $rows = $er->sheets[0]['cells'];
+        // Return all Ashley Packages
+        foreach ( $products as $sku => $product_id ) {
+            $sku_pieces = explode( '/', $sku );
 
-                break;
-
-            case 'csv':
-                // Make sure it's opened properly
-                $handler = fopen( $filename, 'r' );
-
-                // If there is an error or now user id, return
-                if ( !$handler ) {
-                    throw new Exception( 'Could not read your file' );
-                }
-
-                // Loop through the rows
-                while ( $row = fgetcsv( $handler ) ) {
-                    $rows[] = $row;
-                }
-
-                fclose( $handler );
-
-                break;
-
-            default:
-                throw new Exception( 'Could not read your file, unsupported extension' );
-        }
-
-        // Get Ashley Products
-        $products_result = $this->prepare(
-            'SELECT product_id, sku FROM products WHERE user_id_created = :user_id'
-            , 'i'
-            , array( ':user_id' => self::USER_ID )
-        )->get_results( PDO::FETCH_ASSOC );
-        $products = ar::assign_key( $products_result, 'sku' );
-
-        // Reset all shipping methods
-        $this->prepare(
-            'UPDATE website_product_shipping_method SET shipping_price = NULL WHERE website_id = :website_id'
-            , 'i'
-            , array( ':website_id' => $account->id )
-        )->query();
-
-        // Update shipping methods
-        $headers = array_shift( $rows );
-        $updated = 0;
-        foreach ( $rows as $values ) {
-            $row = array_combine( $headers, $values );
-
-            $sku = $row['Ashley Item'];
-            $shipping_price = (float) $row['Estimated Express Freight Per Carton'];
-            $product_id = $products[$sku]['product_id'];
-
-            if ( $product_id && $shipping_price ) {
-                $this->prepare(
-                    'UPDATE website_product_shipping_method SET shipping_price = :shipping_price WHERE website_id = :website_id AND product_id = :product_id'
-                    , 'dii'
-                    , array( ':shipping_price' => $shipping_price, ':website_id' => $account->id, ':product_id' => $product_id )
-                )->query();
-                $updated++;
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                $sku_pieces[$k] = preg_replace($regex, '', $sp);
             }
 
+            $series = array_shift( $sku_pieces );
+
+            $ashley_packages[$series][$product_id] = $sku_pieces;
         }
 
-        return $updated;
+        // Remove Packages with no pieces
+        foreach( $ashley_packages as $series => $packages ) {
+            if ( empty( $packages ) ) {
+                unset( $ashley_packages[$series] );
+                continue;
+            }
+
+            foreach ( $packages as $package_product_id => $pieces ) {
+                if ( empty( $pieces ) ) {
+                    unset( $ashley_packages[$series][$package_product_id] );
+                }
+            }
+        }
+
+        return $ashley_packages;
+    }
+
+    /**
+     * Shipped Order Email
+     * @param WebsiteOrder $order
+     * @param Account $account
+     * @return bool
+     */
+    public function shipped_order_email($order, $account) {
+
+        $account_user = new User();
+        $account_user->get( $account->user_id );
+
+        $website_user = new WebsiteUser();
+        $website_user->get( $order->website_user_id, $account->id );
+
+        $message = file_get_contents( "http://{$account->domain}/shopping-cart/ashley-express-shipped-email/?woid={$order->id}" );
+
+        return fn::mail(
+            $website_user->email
+            , "Order #{$order->id} ASN Notification"
+            , $message
+            , "noreply@blinkyblinky.me"
+            , $account_user->email
+            , false
+        );
+
     }
 
 

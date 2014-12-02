@@ -1,7 +1,7 @@
 <?php
 class SweepstakesController extends BaseController {
-    const APP_ID = '113993535359575';
-    const APP_SECRET = '16937c136a9c5237b520b075d0ea83c8';
+    const APP_ID = '1533253986916428';
+    const APP_SECRET = '4df48cd45cf9e6b9761e455bd2f4fdfa';
     const APP_URI = 'op-sweepstakes';
 
     /**

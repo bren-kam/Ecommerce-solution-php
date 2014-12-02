@@ -92,6 +92,10 @@ class ProductsController extends BaseController {
             $account_product->add_bulk_by_ids( $this->user->account->id, $_POST['products'] );
             $account_category->reorganize_categories( $this->user->account->id, $category );
 
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_bulk( $_POST['products'], $this->user->account->id );
+
             $this->notify( _('Your product(s) have been successfully added!') );
 
             return new RedirectResponse('/products/');
@@ -237,6 +241,10 @@ class ProductsController extends BaseController {
                 $account_category = new AccountCategory();
                 $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+                // Update index for all Websites having this products
+                $index = new IndexProducts();
+                $index->index_product_by_sku( $skus, $this->user->account->id );
+
                 $this->notify( $quantity . ' ' . _('products added successfully!') );
                 $success = true;
             }
@@ -269,6 +277,10 @@ class ProductsController extends BaseController {
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
 
             $account_product->block_by_sku( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_by_sku( $skus, $this->user->account->id );
 
             $this->notify( _('Blocked Products have been successfully updated!') );
         }
@@ -321,6 +333,10 @@ class ProductsController extends BaseController {
             $account_category->remove_categories( $this->user->account->id, $_POST['sCategoryIDs'] );
             $account_category->reorganize_categories( $this->user->account->id, $category );
 
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_website( $this->user->account->id );
+
             $this->notify( _('Hidden categories have been successfully updated!') );
 
             return new RedirectResponse( '/products/hide-categories/' );
@@ -335,6 +351,8 @@ class ProductsController extends BaseController {
 
             $blocked_categories[] = $category;
         }
+
+        $this->resources->css('products/hide-categories');
 
         return $this->get_template_response( 'hide-categories' )
             ->kb( 51 )
@@ -462,6 +480,10 @@ class ProductsController extends BaseController {
             // Clear public website cache
             $this->user->account->purge_varnish_cache();
 
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_website( $this->user->account->id );
+
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
@@ -501,6 +523,11 @@ class ProductsController extends BaseController {
         if ( $this->verified() ) {
             $account_product = new AccountProduct();
             $account_product->unblock( $this->user->account->id, $_POST['unblock-products'] );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_bulk( $_POST['unblock-products'], $this->user->account->id );
+
             $this->notify( _('Blocked Products have been successfully updated!') );
         }
 
@@ -517,6 +544,11 @@ class ProductsController extends BaseController {
             $account_category = new AccountCategory();
             $account_category->unhide( $this->user->account->id, $_POST['unhide-categories'] );
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_website( $this->user->account->id );
+
 
             $this->notify( _('Hidden categories have been successfully updated!') );
         }
@@ -623,6 +655,13 @@ class ProductsController extends BaseController {
         $top_categories_array = json_decode( $this->user->account->get_settings('top-categories') );
         $top_categories_array = $top_categories_array ? $top_categories_array : array();
         $category_images = ar::assign_key( $account_category->get_website_category_images( $this->user->account->id, $website_category_ids ), 'category_id', true );
+        $account_categories = ar::assign_key( $account_category->get_all( $this->user->account->id ), 'category_id' );
+
+        foreach ( $account_categories as $cat_id => $ac ) {
+            if ( !isset( $category_images[ $cat_id ] ) ) {
+                $category_images[ $cat_id ] = $ac['image_url'];
+            }
+        }
 
         $categories = $top_categories = array();
 
@@ -834,6 +873,10 @@ class ProductsController extends BaseController {
         $account_product->remove_discontinued( $this->user->account->id );
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_website( $this->user->account->id );
+
         // Let them know
         $response->notify( 'All discontinued products have been removed' );
 
@@ -873,6 +916,20 @@ class ProductsController extends BaseController {
             }
 
             $where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $child_category_ids ) ) ) . ')';
+        }
+
+        // Exclude Blocked Categories
+        $blocked_categories = $account_category->get_blocked_website_category_ids( $this->user->account->id );
+        if ( $blocked_categories ) {
+            foreach ( $blocked_categories as $bc_id ) {
+                foreach ( $category->get_all_children( $bc_id ) as $bcc  ) {
+                    $blocked_categories[] = $bcc->category_id;
+                    foreach ( $category->get_all_children( $bcc->category_id ) as $bccc  ) {
+                        $blocked_categories[] = $bccc->category_id;
+                    }
+                }
+            }
+            $where .= " AND c.`category_id` NOT IN ( " . implode( ',', $blocked_categories ) . " )";
         }
 
         // Pricing
@@ -960,6 +1017,10 @@ class ProductsController extends BaseController {
         $account_product->active = 0;
         $account_product->save();
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product( $_GET['pid'], $this->user->account->id );
+
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
@@ -997,6 +1058,10 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product( $_GET['pid'], $this->user->account->id );
+
         $response->notify( 'Product blocked' );
         return $response;
     }
@@ -1023,6 +1088,19 @@ class ProductsController extends BaseController {
         $account_category->get( $this->user->account->id, $_GET['cid'] );
         $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
         $account_category->save();
+
+        // Update AccountBrandCategory
+        $account_brand_category = new AccountBrandCategory();
+        $account_brand_category->get( $this->user->account->id, $_GET['bid'], $_GET['cid']);
+        $account_brand_category->image_url = $account_category->image_url;
+        if ( $account_brand_category->website_id ) {
+            $account_brand_category->save();
+        } else {
+            $account_brand_category->website_id = $this->user->account->id;
+            $account_brand_category->brand_id = $_GET['bid'];
+            $account_brand_category->category_id = $_GET['cid'];
+            $account_brand_category->create();
+        }
 
         $response->notify( 'Your category image has been set');
 
@@ -1249,6 +1327,10 @@ class ProductsController extends BaseController {
             if ( !empty( $product_option_list_item_values ) )
                 $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
+
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product( $account_product->product_id, $this->user->account->id );
 
         $response->notify( 'Product updated' );
 
@@ -1551,6 +1633,11 @@ class ProductsController extends BaseController {
                 $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
         }
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product_bulk( array_keys($_POST['v']), $this->user->account->id );
+
+
         $response->notify( 'Your products has been updated' );
 
         return $response;
@@ -1587,6 +1674,9 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->update_sequence( $this->user->account->id, $sequence );
+
+        $index = new IndexProducts();
+        $index->index_product_bulk( $sequence, $this->user->account->id );
 
         return $response;
     }
@@ -2086,5 +2176,27 @@ class ProductsController extends BaseController {
         $response->add_response( 'product', $account_product );
         return $response;
     }
+
+    /**
+     * Reset all prices
+     *
+     * Set all AccountProducts prices to 0
+     *
+     * @return RedirectResponse
+     */
+    protected function reset_all_prices() {
+
+        $account_product = new AccountProduct();
+        $account_product->reset_price_by_account( $this->user->account->id );
+
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_website( $this->user->account->id );
+
+        $this->notify( _('All account prices has been reseted.') );
+
+        return new RedirectResponse( "/products/settings/" );
+    }
+
 
 }

@@ -32,6 +32,9 @@ class AnalyticsController extends BaseController {
 
             // Get all the data
             $records = $analytics->get_metric_by_date( 'visits' );
+            if ( !$records ) {
+                return new RedirectResponse( '/analytics/oauth2/' );
+            }
             $total = $analytics->get_totals();
             $traffic_sources = $analytics->get_traffic_sources_totals();
         } catch ( GoogleAnalyticsOAuthException $e ) {
@@ -626,11 +629,15 @@ class AnalyticsController extends BaseController {
     
     public function oauth2() {
         try {
-            $analytics = new Analytics();
-            $analytics->setup($this->user->account);
+            library("GoogleAnalyticsAPI");
+
+            $ga = new GoogleAnalyticsAPI();
+            $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
+            $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
+            $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
         } catch ( Exception $e ) { /* DO NOTHING */ }
 
-        $login_url = $analytics->ga->auth->buildAuthUrl();
+        $login_url = $ga->auth->buildAuthUrl();
 
         $settings = $this->user->account->get_settings( 'ga-username', 'ga-password' );
         $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
@@ -645,9 +652,9 @@ class AnalyticsController extends BaseController {
         library("GoogleAnalyticsAPI");
 
         $ga = new GoogleAnalyticsAPI();
-        $ga->auth->setClientId( Config::key( 'ga-client-id' ) );
-        $ga->auth->setClientSecret( Config::key( 'ga-client-secret' ) );
-        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri' ) );
+        $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
+        $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
+        $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
 
         if ( isset( $_GET['code'] ) ) {
             $auth = $ga->auth->getAccessToken( $_GET['code'] );
@@ -657,12 +664,14 @@ class AnalyticsController extends BaseController {
                 $tokenExpires = $auth['expires_in'];
                 $tokenCreated = time();
 
-                $ga_profile_id = $this->user->account->ga_profile_id;
+                $this->user->account->set_settings( array(
+                    'google-access-token' => $accessToken
+                    , 'google-refresh-token' => $refreshToken
+                    , 'google-token-expiration' => $tokenExpires
+                    , 'google-token-created-at' => $tokenCreated
+                    , 'google-token-issued-by' => DOMAIN
+                ));
 
-                Cache::set( 'google-access-token-'.$ga_profile_id, $accessToken );
-                Cache::set( 'google-refresh-token-'.$ga_profile_id, $refreshToken );
-                Cache::set( 'google-token-expiration-'.$ga_profile_id, $tokenExpires );
-                Cache::set( 'google-token-created-at-'.$ga_profile_id, $tokenCreated );
             }
         }
 

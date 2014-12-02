@@ -61,7 +61,7 @@ $rate_nonce = nonce::create('rate');
                 <?php echo $article->title; ?>
             </header>
 
-            <div class="panel-body">
+            <div class="panel-body kb-article-content">
                 <?php echo $article->content; ?>
             </div>
 

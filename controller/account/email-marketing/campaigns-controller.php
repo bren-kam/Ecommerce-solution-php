@@ -338,8 +338,16 @@ class CampaignsController extends BaseController {
             $response->add_response( 'campaign_id', $campaign->id );
         }
 
+        // Just in case, resync all sendgrid emails so we are sure not addresses are left apart
+        $this->user->account->resync_sendgrid_lists();
+
         $email_list = new EmailList();
         $email_lists = $email_list->get_by_message( $campaign->id, $this->user->account->id );
+
+        if ( empty($email_lists) ) {
+            $response->notify( 'Please select at least one email recipient list.', false );
+            return $response;
+        }
 
         // Send to SendGrid
         $campaign->schedule( $this->user->account, $email_lists );

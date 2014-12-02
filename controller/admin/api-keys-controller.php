@@ -41,13 +41,20 @@ class ApiKeysController extends BaseController {
         $api_key = new ApiKey();
         $api_key->get( $_GET['id'] );
 
-        if ( !$api_key->id )
-            return new RedirectResponse( 'api-key' );
-
         if ( $this->verified() ) {
+            $api_key->status = $_POST['status'];
+            $api_key->company_id = $_POST['company-id'];
+            if ( !$api_key->id ) {
+                $api_key->key = md5(rand());
+                $api_key->create();
+            } else {
+                $api_key->save();
+            }
+
             $api_key->set_brands( $_POST['brands'] );
             $api_key->set_ashley_accounts( $_POST['ashley-accounts'] );
             $this->notify( 'API Key settings updated!' );
+            return new RedirectResponse('/api-keys/manage/?id=' . $api_key->id);
         }
 
         $brands = array();
@@ -77,6 +84,8 @@ class ApiKeysController extends BaseController {
             }
         }
 
+        $companies = (new Company())->get_all();
+
         // remove string keys to make it a json array
         foreach( $ashley_accounts as $k => $aa ) {
             unset( $ashley_accounts[$k
@@ -90,7 +99,7 @@ class ApiKeysController extends BaseController {
 
         return $this->get_template_response('api-keys/manage')
             ->add_title('Manage API Key')
-            ->set( compact( 'api_key', 'brands', 'selected_brands', 'ashley_accounts', 'selected_ashley_accounts' ) )
+            ->set( compact( 'api_key', 'brands', 'selected_brands', 'ashley_accounts', 'selected_ashley_accounts', 'companies' ) )
             ->menu_item( 'api-keys/index' );
     }
 

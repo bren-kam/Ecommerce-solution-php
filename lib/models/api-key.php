@@ -41,7 +41,7 @@ class APIKey extends ActiveRecordBase {
      */
     public function get( $id ) {
         $this->prepare(
-            'SELECT ak.`api_key_id`, ak.`company_id`, ak.`brand_id`, ak.`user_id`, ak.`key`, c.`name` as `company`, c.`domain` FROM `api_keys` AS ak LEFT JOIN `companies` AS c ON ( c.`company_id` = ak.`company_id` ) WHERE ak.`api_key_id` = :id'
+            'SELECT ak.`api_key_id`, ak.`company_id`, ak.`brand_id`, ak.`user_id`, ak.`key`, c.`name` as `company`, c.`domain`, ak.`status` FROM `api_keys` AS ak LEFT JOIN `companies` AS c ON ( c.`company_id` = ak.`company_id` ) WHERE ak.`api_key_id` = :id'
             , 'is'
             , array( ':id' => $id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -159,6 +159,30 @@ class APIKey extends ActiveRecordBase {
             , ''
             , array()
         )->query();
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->insert(array(
+            'company_id' => $this->company_id
+            , 'key' => $this->key
+            , 'status' => $this->status
+        ), 'isi');
+        $this->id = $this->api_key_id = $this->get_insert_id();
+    }
+
+    public function save() {
+        $this->update(
+            array(
+                'company_id' => $this->company_id
+                , 'status' => $this->status
+            )
+            , array( 'api_key_id' => $this->id )
+            ,'is'
+            , 'i'
+        );
     }
 
 }

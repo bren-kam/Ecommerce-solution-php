@@ -451,6 +451,8 @@ class AccountsController extends BaseController {
             , 'facebook-pages'
             , 'responsive-web-design'
             , 'ashley-express'
+            , 'sendgrid-username'
+            , 'sendgrid-password'
             , 'arb-subscription-id'
             , 'arb-subscription-amount'
         );
@@ -478,6 +480,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
         $ft->add_field( 'checkbox', _('Enable Ashley Express Program'), 'cbAshleyExpress', $settings['ashley-express'] );
+        $ft->add_field( 'text', _('Sendgrid Username'), 'tSendgridUsername', $settings['sendgrid-username'] );
+        $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
 
@@ -819,16 +823,16 @@ class AccountsController extends BaseController {
 
                 // Defaults
                 $changes = array(
-                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->ip )
+                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'MX', '14400', '0 mail.' . $full_domain_name )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'TXT', '14400', '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"' )
-                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->ip )
                     , $r53->prepareChange( 'CREATE', 'www.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->ip )
                 );
 
                 $response = $r53->changeResourceRecordSets( $zone_id, $changes );
@@ -916,6 +920,7 @@ class AccountsController extends BaseController {
             $account_note->user_id = $this->user->id;
             $account_note->message = $_POST['taNote'];
             $account_note->create();
+            return new RedirectResponse( '/accounts/notes/?aid=' . $_GET['aid'] );
         }
 
         // Get notes
@@ -1758,5 +1763,34 @@ class AccountsController extends BaseController {
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    public function resync_email_lists() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
 
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $account->resync_sendgrid_lists();
+        }
+
+        $this->notify( _("Email Lists Synced") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    public function index_products() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $index = new IndexProducts();
+            $index->index_website( $account->id );
+        }
+
+        $this->notify( _("All Products Indexed!") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
 }

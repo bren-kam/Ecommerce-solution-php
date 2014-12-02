@@ -9,7 +9,7 @@ class WebsiteOrder extends ActiveRecordBase {
     const STATUS_SHIPPED = 4;   // Ashley Express - Order Shipped
 
     // The columns we will have access to
-    public $id, $website_order_id, $website_id, $website_user_id, $website_cart_id, $website_shipping_method_id
+    public $id, $website_order_id, $website_id, $website_user_id, $website_cart_id, $website_shipping_method_id, $website_ashley_express_shipping_method_id
         , $website_coupon_id, $shipping_price, $tax_price, $coupon_discount, $total_cost, $email, $phone
         , $billing_first_name, $billing_last_name, $billing_address1, $billing_address2, $billing_city
         , $billing_state, $billing_zip, $billing_phone, $billing_alt_phone, $shipping_name, $shipping_first_name
@@ -20,7 +20,7 @@ class WebsiteOrder extends ActiveRecordBase {
     public $name;
 
     // Belonging to another table
-    public $shipping_method;
+    public $shipping_method, $ashley_express_shipping_method;
 
     /**
      * @var WebsiteOrderItem[]
@@ -45,14 +45,10 @@ class WebsiteOrder extends ActiveRecordBase {
      */
     public function get( $website_order_id, $account_id ) {
         $this->prepare(
-            "SELECT wo.*, IF( '' = wo.`shipping_name`, CONCAT( wo.`shipping_first_name`, ' ', wo.`shipping_last_name` ), wo.`shipping_name` ) AS shipping_name, wsm.`name` AS shipping_method FROM `website_orders` AS wo LEFT JOIN `website_shipping_methods` AS wsm ON ( wsm.`website_shipping_method_id` = wo.`website_shipping_method_id` ) WHERE wo.`website_order_id` = :website_order_id AND wo.`website_id` = :account_id"
+            "SELECT wo.*, IF( '' = wo.`shipping_name`, CONCAT( wo.`shipping_first_name`, ' ', wo.`shipping_last_name` ), wo.`shipping_name` ) AS shipping_name, wsm.`name` AS shipping_method, wsm_ashley_express.`name` AS ashley_express_shipping_method FROM `website_orders` AS wo LEFT JOIN `website_shipping_methods` AS wsm ON ( wsm.`website_shipping_method_id` = wo.`website_shipping_method_id` ) LEFT JOIN `website_shipping_methods` AS wsm_ashley_express ON ( wsm_ashley_express.`website_shipping_method_id` = wo.`website_ashley_express_shipping_method_id` ) WHERE wo.`website_order_id` = :website_order_id AND wo.`website_id` = :account_id"
             , 'ii'
             , array( ':website_order_id' => $website_order_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
-
-        if ($this->website_shipping_method_id == self::get_ashley_express_shipping_method()->id) {
-            $this->shipping_method = self::get_ashley_express_shipping_method()->name;
-        }
 
         $this->id = $this->website_order_id;
     }
@@ -107,7 +103,7 @@ class WebsiteOrder extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `website_order_id`, IF ( '' = `billing_first_name`, `shipping_name`, CONCAT( `billing_first_name`, ' ', `billing_last_name` ) ) AS name, `total_cost`, `status`, `date_created`, `website_shipping_method_id` FROM `website_orders` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `website_order_id`, website_id, IF ( '' = `billing_first_name`, `shipping_name`, CONCAT( `billing_first_name`, ' ', `billing_last_name` ) ) AS name, `total_cost`, `status`, `date_created`, `website_shipping_method_id`, `website_ashley_express_shipping_method_id` FROM `website_orders` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'WebsiteOrder' );
@@ -130,23 +126,16 @@ class WebsiteOrder extends ActiveRecordBase {
         )->get_var();
 	}
 
-
     /**
-     * Get Ashley Express Shipping Method
-     * @return WebsiteShippingMethod
+     * Is Ashley Express
+     * @return bool
      */
-    public static function get_ashley_express_shipping_method() {
-        $shipping = new WebsiteShippingMethod();
-        $shipping->id = $shipping->website_shipping_method_id = 1048576;
-        $shipping->website_id = null;
-        $shipping->type = 'ashley-express';
-        $shipping->name = 'Ashley Express';
-        $shipping->description = 'Ashley Express';
-        $shipping->method = '';
-        $shipping->amount = 0;
-        $shipping->zip_codes = '';
-        $shipping->extra = '';
-        $shipping->date_created = '2014-07-23 00:00:00';
-        return $shipping;
+    public function is_ashley_express() {
+        if ( $this->website_ashley_express_shipping_method_id > 0 )
+            return true;
+
+        $sm = new WebsiteShippingMethod();
+        $sm->get( $this->website_shipping_method_id, $this->website_id );
+        return $sm->type == 'ashley-express-ups' || $sm->type == 'ashley-express-fedex';
     }
 }

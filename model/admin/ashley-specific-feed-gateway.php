@@ -27,6 +27,9 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         , 1034, 1071, 1088, 1091, 1105, 1112, 1117, 1118, 1119, 1152, 1156, 1204
     );
 
+    // We need to skip these products, they came from an XLS, should be replaced by a feed soon
+    protected $ashley_express_carton = array('A1000029','A1000030','A1000031','A1000032','A1000041','A1000043','A1000044','A1000046','A1000047','A1000066','A1000069','A1000070','A1000072','A1000074','A1000077','A1000078','A1000087','A1000091','A1000092','A1000094','A1000146','A1000157','A1000159','A1000160','A1000161','A1000168','A1000172','A1000179','A1000180','A1000181','A1000183','A1000188','A1000189','A1000190','A1000191','A1000192','A1000193','A1000194','A1000195','A1000196','A1000197','A1000198','A1000199','A1000200','A1000201','A1000203','A1000204','A1000205','A1000207','A1000209','A1000210','A1000211','A1000212','A1000213','A1000214','A1000215','A1000216','A1000217','A1000223','A1000225','A1000227','A1000228','A1000229','A1000231','A1000232','A1000239','A1000240','A1000241','A1000242','A1000243','A1000247','A1000248','A1000249','A1000250','A1000251','A1000264','A1000265','A1000271','A1000272','A1000273','A1000275','A1000283','A1000286','A1000287','A1000288','A1000289','A1000291','A1000293','A1000294','A1000296','A1000297','A1000301','A1000302','A1000303','A1000305','A1000307','A1000308','A1000309','A1000310','A1000311','A1000312','A1000316','A1000317','A1000318','A1000321','A1000325','A1000326','A1000329','A1000332','A1000334','A1000336','A1000337','A1000339','A1000340','A1000341','A1000342','A1000343','A1000344','A1000346','A1000347','A1000349','A1000350','A1000353','A1000355','A1000361','A1000362','A1000363','A1000371','A1000374','A1000377','A1000378','A1000379','A1000380','A1000381','A1000391','A1000395','A1000396','A1000397','A1000414','M82501','M89701','M97001');
+
     /**
      * Determine what was not identical
      * @var array
@@ -226,8 +229,18 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
 
             // Prevent SKUs not sold in America or only in containers
-			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
-				continue;
+			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) ) {
+                // Products starting with A2C are not under this rule
+                // http://admin.greysuitretail.com/tickets/ticket/?tid=32147
+                if ( stripos( $sku, 'A2C' ) !== 0 ) {
+                    continue;
+                }
+            }
+
+            // Skip Ashley Carton/Case products
+            // Came from an Ashley Express spreadsheet given by Ashley
+            if ( in_array( $sku, $this->ashley_express_carton ) )
+                continue;
 
             $all_skus[] = $sku;
 
@@ -422,6 +435,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		foreach ( $products as $sku => $product_id ) {
 			$sku_pieces = explode( '/', $sku );
 
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                $sku_pieces[$k] = preg_replace($regex, '', $sp);
+            }
+
 			$series = array_shift( $sku_pieces );
 
 			$ashley_packages[$series][$product_id] = $sku_pieces;
@@ -594,7 +613,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      */
     protected function get_existing_products() {
         $products = $this->prepare(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE p.`user_id_created` = :user_id_created GROUP BY p.`sku` ORDER BY `publish_visibility` DESC"
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id`, p.`timestamp` FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE p.`user_id_created` = :user_id_created GROUP BY p.`sku` ORDER BY `publish_visibility` DESC"
             , 'i'
             , array( ':user_id_created' => self::USER_ID )
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -1453,6 +1472,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Get Product
             $product = $this->get_existing_product( $sku );
 
+            $two_days_ago = new DateTime();
+            $two_days_ago->sub( new DateInterval("P2D"));
+            $last_update = new DateTime($product->timestamp);
+            if ( $last_update > $two_days_ago )
+                continue;
+
             if ( 'deleted' == $product->publish_visibility )
                 continue;
 
@@ -1521,44 +1546,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $product->category_id = $this->get_category( $product->sku, $product->name );
             }
 
-            /***** ADD PRODUCT IMAGES *****/
-
-            // Let's hope it's big!
+            // Save image to load later in AshleySpecificFeedGateway::getImages();
+            // It's taking ages as many images timeout, so we are getting them in a separate cron job.
             $image = $item['image'];
-
-            $image_urls = array();
-            $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
-            $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
-            $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
-
-            // Setup images array
-            $images = explode( '|', $product->images );
-            $last_character = substr( $images[0], -1 );
-
-            foreach ( $image_urls as $image_url ) {
-                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-                    try {
-                        $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-                    } catch( InvalidParametersException $e ) {
-                        fn::info( $product );
-                        exit;
-                    }
-
-                    if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                        $this->not_identical[] = 'images';
-                        $images[] = $image_name;
-
-                        $product->add_images( $images );
-                    }
-
-                    break;
-                }
-            }
-
-            // Change publish visibility to private if there are no images
-            if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
-                $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'private';
+            $tag = new Tag();
+            $already_queued = $tag->get_value_by_type( 'ashley_product', $product->id );
+            if ( !$already_queued ) {
+                $tag->add_bulk( 'ashley_product_image', $product->id, array( $image ) );
             }
 
             $publish_visibility = ( 'discontinued' == $item['status'] ) ? 'deleted' : $product->publish_visibility;
@@ -1629,6 +1623,60 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 
         return $new_product;
+
+    }
+
+    public function get_product_images() {
+
+        $tag = new Tag();
+        $this->get_existing_products();
+
+        foreach( $this->existing_products as $product ) {
+
+            if ( $product->publish_visibility == 'deleted' )
+                continue;
+
+            $images = $tag->get_value_by_type( 'ashley_product_image', $product->id );
+            foreach ( $images as $image ) {
+                echo "#{$product->id} - {$image}\n";
+
+                /***** ADD PRODUCT IMAGES *****/
+                $image_urls = array();
+                $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
+                $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
+                $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
+
+                // Setup images array
+                $images = explode( '|', $product->images );
+                $last_character = substr( $images[0], -1 );
+
+                foreach ( $image_urls as $image_url ) {
+                    if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url, 5 ) ) {
+                        try {
+                            echo "...uploading...\n";
+                            $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+                        } catch( InvalidParametersException $e ) {
+                            fn::info( $product );
+                            exit;
+                        }
+
+                        if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+                            echo "...uploaded. Saving Image & Product.\n";
+                            $images[] = $image_name;
+
+                            $product->add_images( $images );
+                            $product->publish_visibility = 'public';
+                            $product->save();
+                        }
+                    }
+                }
+
+            }
+
+            $tag->delete_by_type( 'ashley_product_image', $product->id );
+        }
+
+        echo "Finished\n";
 
     }
 

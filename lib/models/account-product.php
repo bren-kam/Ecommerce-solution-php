@@ -57,6 +57,26 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Get By IDs
+     *
+     * @param int[] $product_ids
+     * @param int $account_id
+     */
+    public function get_by_ids( $product_ids, $account_id ) {
+
+        if ( empty( $product_ids) )
+            return array();
+
+        $product_ids_sql = implode( ',', $product_ids );
+
+        $this->prepare(
+            'SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`product_id` = :product_id AND wp.`website_id` = :account_id'
+            , 'ii'
+            , array( ':product_id' => $product_id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
      * Get Auto Price Candidates
      *
      * @param int $account_id
@@ -158,7 +178,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Round to the ending
         $price_ending = number_format( (float) $price_ending, 2 );
-		
+
         // Won't do anything, has to be lower
         if ( $price < 0 ) {
             $set[] = 'wp.`price` = 0.01';
@@ -200,12 +220,11 @@ class AccountProduct extends ActiveRecordBase {
         $where = '';
         $inner_join = '';
         // Add the where by Brand
-        if ( $brand_id > 0 && $brand_id != WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+        if ( $brand_id > 0 && $brand_id != 1048576 ) {
             $where = ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( $brand_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+        } else if ( $brand_id == 1048576 ) {
             // Ashley Express Products
-            $inner_join = 'INNER JOIN `website_product_shipping_method` wpsm ON ( p.`product_id` = wpsm.`product_id` AND wpsm.`website_id` = wp.`website_id` ) ';
-            $where = " AND wpsm.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
+            $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         }
 
         // Run once
@@ -273,7 +292,7 @@ class AccountProduct extends ActiveRecordBase {
             if ( in_array( $category_id, $double_categories ) )
                 $new_category_ids[] = $category_id;
         }
-		
+
         if ( empty( $new_category_ids ) )
             return;
 
@@ -283,12 +302,11 @@ class AccountProduct extends ActiveRecordBase {
         // Add the where
         $inner_join = '';
         // Add the where by Brand
-        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != 1048576 ) {
             $where = ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( is_numeric($brand_id) && $brand_id == WebsiteOrder::get_ashley_express_shipping_method()->id ) {
+        } else if ( is_numeric($brand_id) && $brand_id == 1048576 ) {
             // Ashley Express Products
-            $inner_join = 'INNER JOIN `website_product_shipping_method` wpsm ON ( p.`product_id` = wpsm.`product_id` AND wpsm.`website_id` = wp.`website_id` ) ';
-            $where = " AND wpsm.`website_shipping_method_id` = " . WebsiteOrder::get_ashley_express_shipping_method()->id;
+            $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         } else {
             // 2pc only applied to Ashley products
             $where = ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ';
@@ -414,7 +432,7 @@ class AccountProduct extends ActiveRecordBase {
         $sql = 'SELECT p.`product_id`,';
         $sql .= 'p.`name`, p.`slug`, b.`name` AS brand, p.`sku`, p.`status`, c.`category_id`,';
         $sql .= 'c.`name` AS category, pi.`image`, wp.`price`, wp.`alternate_price`, wp.`alternate_price_name`,';
-        $sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry ';
+        $sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry, p.`brand_id` ';
         $sql .= 'FROM `products` AS p ';
         $sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) ';
         $sql .= 'LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) ';
@@ -1203,6 +1221,7 @@ class AccountProduct extends ActiveRecordBase {
             'alternate_price' => 0
             , 'price' => 0
             , 'sale_price' => 0
+            , 'setup_fee' => 0
         ), array( 'website_id' => $account_id ), 'i', 'i' );
     }
 
