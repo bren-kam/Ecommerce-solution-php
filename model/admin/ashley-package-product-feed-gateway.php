@@ -358,8 +358,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $package_series = $this->series[(string)$item->SeriesNo];
             $template = $this->package_templates[(string)$item->TemplateId];
             $sku = (string) $item->PackageName;
-			
-			$new_price = 0;
+
+            $new_price = 0;
+            $new_weight = 0;
 
             echo "SKU: $sku - ";
 
@@ -432,6 +433,34 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             echo "\nPackage Price: $new_price";
 			$product->price = $new_price;
+
+            // Weight
+            foreach ( $sku_pieces as $sp ) {
+                echo  "\nPiece: $sp - ";
+                if ( isset( $this->ashley_products[$series . $sp] ) ) {
+                    if ( 0 == $this->ashley_products[$series . $sp]['weight'] ) {
+                        $new_weight = 0;
+                        break;
+                    }
+
+                    echo "Item Weight: " . $this->ashley_products[$series . $sp]['weight'] . " * " . $piece_items[$sp];
+                    $new_weight += $this->ashley_products[$series . $sp]['weight'] * $piece_items[$sp];
+                } elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
+                    if ( 0 == $this->ashley_products[$series . '-' . $sp]['weight'] ) {
+                        $new_weight = 0;
+                        break;
+                    }
+
+                    echo "Item Weight: " . $this->ashley_products[$series . '-' . $sp]['weight'] . " * " . $piece_items[$sp];
+                    $new_weight += $this->ashley_products[$series . '-' . $sp]['weight'] * $piece_items[$sp];
+                } else {
+                    $new_weight = 0;
+                    break;
+                }
+            }
+
+            echo "\nPackage Weight: $new_weight";
+            $product->weight = $new_weight;
 
             // Update the price
             if ( !$new_product ) {
@@ -641,6 +670,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * @return array
      */
     protected function get_ashley_products_by_sku() {
-        return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
+        return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price`, `weight` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
     }
 }

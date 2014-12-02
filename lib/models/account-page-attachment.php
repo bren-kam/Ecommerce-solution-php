@@ -65,6 +65,19 @@ class AccountPageAttachment extends ActiveRecordBase {
     }
 
     /**
+     * Remove Attachments by Value (usually by file name)
+     * @param $website_id
+     * @param $value
+     */
+    public function remove_by_value( $website_id, $value ) {
+        $this->prepare(
+            'DELETE wa.* FROM `website_attachments` wa INNER JOIN `website_pages` wp ON wp.website_page_id = wa.website_page_id WHERE wp.`website_id` = :website_id AND wa.`value` = :value'
+            , 'is'
+            , array( ':website_id' => $website_id, ':value' => $value )
+        )->query();
+    }
+
+    /**
      * Create
      */
     public function create() {
