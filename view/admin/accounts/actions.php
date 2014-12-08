@@ -62,7 +62,7 @@
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/resync-email-lists/' ); ?>" title="<?php echo _('Resync Email Lists'); ?>"><?php echo _('Resync Email Lists'); ?></a></p>
                 <?php } ?>
 
-                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
+<!--                <p><a href="--><?php //echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?><!--" title="--><?php //echo _('Cancel Account'); ?><!--" confirm="--><?php //echo _('Are you sure you want to deactivate this account?'); ?><!--">--><?php //echo _('Cancel Account'); ?><!--</a></p>-->
 
                 <?php if ( !$account->status ): ?>
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reactivate/' ); ?>" title="<?php echo _('Reactivate Account'); ?>" confirm="<?php echo _('Are you sure you want to reactivate this account?'); ?>"><?php echo _('Reactivate Account'); ?></a></p>

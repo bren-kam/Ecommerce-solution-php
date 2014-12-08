@@ -21,7 +21,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
      */
     public function get( $yext_id, $website_id ) {
         $this->prepare(
-            "SELECT * FROM website_yext_location WHERE yext_id = :yext_id AND website_id = :websiteid"
+            "SELECT * FROM website_yext_location WHERE yext_id = :yext_id AND website_id = :website_id"
             , 'i'
             , [  ':yext_id' => $yext_id, ':website_id' => $website_id ]
         )->get_row( PDO::FETCH_INTO, $this );
@@ -35,7 +35,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
      */
     public function get_all( $website_id ) {
         return $this->prepare(
-            "SELECT * FROM website_yext_location WHERE website_id = :websiteid"
+            "SELECT * FROM website_yext_location WHERE website_id = :website_id"
             , 'i'
             , [ ':website_id' => $website_id ]
         )->get_results( PDO::FETCH_CLASS, 'WebsiteYextLocation' );
@@ -70,9 +70,9 @@ class WebsiteYextLocation extends ActiveRecordBase {
     }
 
     /**
-     * Delete
+     * remove
      */
-    public function delete() {
+    public function remove() {
         parent::delete(
             [  ':yext_id' => $this->yext_id, ':website_id' => $this->website_id ]
             , 'ii'

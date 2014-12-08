@@ -51,6 +51,7 @@ class ApiRequest {
         , 'update-social-media'
 		, 'update_user'
 		, 'set_arb_subscription'
+        , 'sendgrid_event_callback'
 	);
 	
 	/**
@@ -644,6 +645,53 @@ class ApiRequest {
 		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
 	}
+
+
+    /**
+     * Sendgrid Event Callback
+     */
+    protected function sendgrid_event_callback() {
+        $account_id = $_GET['aid'];
+        $input = file_get_contents( 'php://input' );
+
+        $this->log( 'method', "Event a#{$account_id} INPUT: {$input}", true );
+
+        $account = new Account();
+        $account->get( $account_id );
+
+        if ( !$account_id ) {
+            $this->log( 'method', "Bad account id #{$account_id}", false );
+            $this->add_response( array( 'success' => false, 'message' => 'Bad Account ID' ) );
+            return;
+        }
+
+        $events = json_decode( $input );
+        if ( !$events ) {
+            $this->log( 'method', "Bad json input", false );
+            $this->add_response( array( 'success' => false, 'message' => 'Bad Input' ) );
+            return;
+        }
+
+        // See https://sendgrid.com/docs/API_Reference/Webhooks/event.html#-Marketing-Email-Unsubscribes
+        foreach ( $events as $event ) {
+            if ( $event->event != 'unsubscribe' )
+                continue;
+
+            $email = new Email();
+            $email->get_by_email( $account_id, $event->email );
+
+            if ( !$email->email_id ) {
+                $this->log( 'method', "Email {$event->email} not found", true );
+                continue;
+            }
+
+            $email->remove_all( $account );
+            $this->log( 'method', "Disabled email {$event->email}", true );
+        }
+
+        $this->add_response( array( 'success' => true ) );
+    }
+
 	
 	/***********************/
 	/* END: IR API Methods */
@@ -773,12 +821,12 @@ class ApiRequest {
 		// Make sure it's ssl
 		if( !security::is_ssl() ) {
 			$this->add_response( array( 'success' => false, 'message' => 'ssl-required' ) );
-			
+
 			$this->error = true;
 			$this->error_message = 'The request was made without SSL';
 			return;
 		}
-		
+
 		$this->statuses['init'] = true;
 	}
     
@@ -789,7 +837,7 @@ class ApiRequest {
 	 */
 	protected function authenticate() {
 		// They didn't send an authorization key
-		if( !isset( $_POST['auth_key'] ) ) {
+		if( !isset( $_REQUEST['auth_key'] ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'no-authentication-key' ) );
 			
 			$this->error = true;
@@ -798,7 +846,7 @@ class ApiRequest {
 		}
 
         $api_key = new ApiKey;
-        $api_key->get_by_key( $_POST['auth_key'] );
+        $api_key->get_by_key( $_REQUEST['auth_key'] );
 
         $this->company_id = (int) $api_key->company_id;
 
@@ -822,11 +870,11 @@ class ApiRequest {
 	 * @access protected
 	 */
 	protected function parse() {
-		if( in_array( $_POST['method'], $this->methods ) ) {
-			$this->method = $_POST['method'];
+		if( in_array( $_REQUEST['method'], $this->methods ) ) {
+			$this->method = $_REQUEST['method'];
 			$this->statuses['method_called'] = true;
 			
-			call_user_func( array( 'ApiRequest', $_POST['method'] ) );
+			call_user_func( array( 'ApiRequest', $_REQUEST['method'] ) );
 
             // used to be destruct
             // Make sure we haven't already logged something
@@ -847,10 +895,10 @@ class ApiRequest {
                 $this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
             }
 		} else {
-			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
+			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $_REQUEST['method'] . '", is not a valid method.' ) );
 			
 			$this->error = true;
-			$this->error_message = 'The method, "' . $_POST['method'] . '", is not a valid method.';
+			$this->error_message = 'The method, "' . $_REQUEST['method'] . '", is not a valid method.';
 		}
 	}
 	

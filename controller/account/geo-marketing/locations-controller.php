@@ -8,11 +8,19 @@
 
 class LocationsController extends BaseController {
 
+    /**
+     * Index
+     * @return $this
+     */
     public function index() {
         return $this->get_template_response( 'geo-marketing/locations/index' )
             ->menu_item('geo-marketing/locations/list');
     }
 
+    /**
+     * List All
+     * @return DataTableResponse
+     */
     public function list_all() {
         $dt = new DataTableResponse( $this->user );
 
@@ -52,6 +60,10 @@ class LocationsController extends BaseController {
         return $dt;
     }
 
+    /**
+     * Delete
+     * @return AjaxResponse
+     */
     public function delete() {
         $response = new AjaxResponse( $this->verified() );
 
@@ -62,13 +74,17 @@ class LocationsController extends BaseController {
         $website_yext_location->get( $_GET['id'], $this->user->account->id );
         if ( $website_yext_location->yext_id ) {
             //TODO: DELETE FROM YEXT
-            $website_yext_location->delete();
+            $website_yext_location->remove();
         }
 
         $response->add_response( 'reload_datatable', 'reload_datatable' );
         return $response;
     }
 
+    /**
+     * Add Edit
+     * @return TemplateResponse
+     */
     public function add_edit() {
 
         $website_yext_location = new WebsiteYextLocation();
