@@ -1,5 +1,8 @@
 <?php
 class AccountPageAttachment extends ActiveRecordBase {
+    const STATUS_INACTIVE = 0;
+    const STATUS_ACTIVE = 1;
+
     public $id, $website_attachment_id, $website_page_id, $key, $value, $extra, $meta, $sequence, $status;
 
     /**
@@ -81,7 +84,7 @@ class AccountPageAttachment extends ActiveRecordBase {
      * Create
      */
     public function create() {
-        $this->status = 1;
+        $this->status = AccountPageAttachment::STATUS_ACTIVE;
 
         $this->insert( array(
             'website_page_id' => $this->website_page_id
