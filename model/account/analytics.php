@@ -81,7 +81,7 @@ class Analytics {
 
         // Handle the GA Filter
         if ( !is_null( $this->ga_filter ) ) {
-            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = ( empty( $ga_filter ) ) ? 'ga:' . $this->ga_filter : $ga_filter . ',ga:' . $this->ga_filter;
             $ga_filter = explode( ',', $ga_filter );
 			
             $ga_filter_str = implode( ',', $ga_filter );
