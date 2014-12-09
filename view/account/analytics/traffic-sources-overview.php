@@ -54,19 +54,19 @@ nonce::field( 'get_graph', '_get_graph' );
                 <div class="row">
                     <div class="col-lg-12">
                         <a href="javascript:;" data-report="direct" data-title="Direct Traffic"><img src="<?php echo $sparklines['direct']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $traffic_sources['direct'], 2 ); ?>%</span> Direct Traffic
+                        <span class="analytics-count"><?php echo number_format( $traffic_sources['direct'] ); ?></span> Direct Traffic
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <a href="javascript:;" data-report="referring" data-title="Referring Sites"><img src="<?php echo $sparklines['referring']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $traffic_sources['referring'], 2 ); ?>%</span> Referring Sites
+                        <span class="analytics-count"><?php echo number_format( $traffic_sources['referring'] ); ?></span> Referring Sites
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <a href="javascript:;" data-report="search_engines" data-title="Search Engines"><img src="<?php echo $sparklines['search_engines']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $traffic_sources['search_engines'], 2); ?>%</span> Search Engines
+                        <span class="analytics-count"><?php echo number_format( $traffic_sources['search_engines'] ); ?></span> Search Engines
                     </div>
                 </div>
 

@@ -31,7 +31,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
 
             // Get all the data
-            $records = $analytics->get_metric_by_date( 'visits' );
+            $records = $analytics->get_metric_by_date( 'sessions' );
             if ( !$records ) {
                 return new RedirectResponse( '/analytics/oauth2/' );
             }
@@ -228,7 +228,7 @@ class AnalyticsController extends BaseController {
         }
 
         // Get all the data
-        $records = $analytics->get_metric_by_date( 'visits' );
+        $records = $analytics->get_metric_by_date( 'sessions' );
         $traffic_sources = $analytics->get_traffic_sources_totals();
 
         // Pie Chart

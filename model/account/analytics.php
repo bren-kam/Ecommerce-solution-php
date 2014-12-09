@@ -542,7 +542,7 @@ class Analytics {
             break;
 
             case 'direct':
-                $ga_metric = 'visits';
+                $ga_metric = 'sessions';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==(none)';
             break;
@@ -564,13 +564,13 @@ class Analytics {
             break;
 
             case 'referring':
-                $ga_metric = 'visits';
+                $ga_metric = 'sessions';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==referral';
             break;
 
             case 'search_engines':
-                $ga_metric = 'visits';
+                $ga_metric = 'sessions';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==organic';
             break;
