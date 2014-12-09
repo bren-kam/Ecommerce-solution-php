@@ -31,7 +31,7 @@ class AnalyticsController extends BaseController {
             $analytics->setup( $this->user->account );
 
             // Get all the data
-            $records = $analytics->get_metric_by_date( 'sessions' );
+            $records = $analytics->get_metric_by_date( 'visits' );
             if ( !$records ) {
                 return new RedirectResponse( '/analytics/oauth2/' );
             }
@@ -228,7 +228,7 @@ class AnalyticsController extends BaseController {
         }
 
         // Get all the data
-        $records = $analytics->get_metric_by_date( 'sessions' );
+        $records = $analytics->get_metric_by_date( 'visits' );
         $traffic_sources = $analytics->get_traffic_sources_totals();
 
         // Pie Chart
@@ -242,7 +242,7 @@ class AnalyticsController extends BaseController {
         foreach ( $records as $r_date => $r_value ) {
             $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
+		
         // Sparklines
         $sparklines['direct'] = $analytics->sparkline( 'direct' );
         $sparklines['referring'] = $analytics->sparkline( 'referring' );
