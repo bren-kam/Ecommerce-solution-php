@@ -15,9 +15,9 @@
                         <div class="form-group">
                             <label for="location-id">Location:</label>
                             <select class="form-control" id="location-id">
-                                <option>All Locations</option>
+                                <option value="">All Locations</option>
                                 <?php foreach ( $locations as $location ): ?>
-                                    <option value="<?php echo $location->yext_id ?>"><?php echo $locatio->yext_id ?></option>
+                                    <option value="<?php echo $location->id ?>"><?php echo $location->name ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -27,8 +27,8 @@
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/geo-marketing/listings/list-all/" perPage="30,50,100">
                         <thead>
-                            <th>Location</th>
-                            <th>Site</th>
+                            <th sort="1">Location</th>
+                            <th sort="2">Site</th>
                             <th>Status</th>
                             <th>URL</th>
                         </thead>

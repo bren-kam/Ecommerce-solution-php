@@ -8,7 +8,7 @@
 
 class WebsiteYextLocation extends ActiveRecordBase {
 
-    public $yext_id, $website_id, $synchronize_products;
+    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update;
 
     public function __construct() {
         parent::__construct( 'website_yext_location' );
@@ -21,10 +21,11 @@ class WebsiteYextLocation extends ActiveRecordBase {
      */
     public function get( $yext_id, $website_id ) {
         $this->prepare(
-            "SELECT * FROM website_yext_location WHERE yext_id = :yext_id AND website_id = :website_id"
+            "SELECT * FROM website_yext_location WHERE website_yext_location_id = :yext_id AND website_id = :website_id"
             , 'i'
             , [  ':yext_id' => $yext_id, ':website_id' => $website_id ]
         )->get_row( PDO::FETCH_INTO, $this );
+        $this->id = $this->website_yext_location_id;
     }
 
 
@@ -34,24 +35,65 @@ class WebsiteYextLocation extends ActiveRecordBase {
      * @return WebsiteYextLocation[]
      */
     public function get_all( $website_id ) {
-        return $this->prepare(
+        $all = $this->prepare(
             "SELECT * FROM website_yext_location WHERE website_id = :website_id"
             , 'i'
             , [ ':website_id' => $website_id ]
         )->get_results( PDO::FETCH_CLASS, 'WebsiteYextLocation' );
+
+        foreach ( $all as $l ) {
+            $l->id = $l->website_yext_location_id;
+        }
+        return $all;
+    }
+
+    /**
+     * List All
+     * @param $variables
+     * @return WebsiteYextLocation[]
+     */
+    public function list_all( $variables ) {
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        $all = $this->prepare(
+            "SELECT * FROM website_yext_location WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteYextLocation' );
+
+        foreach ( $all as $l ) {
+            $l->id = $l->website_yext_location_id;
+        }
+        return $all;
+    }
+
+    /**
+     * Count All
+     * @param $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT COUNT(*) FROM website_yext_location WHERE 1 $where $order_by"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var(  );
     }
 
     /**
      * Create
      */
     public function create() {
-        $this->insert(
+        $this->id = $this->website_yext_location_id = $this->insert(
             [
-                'yext_id' => $this->yext_id
-                , 'website_id' => $this->website_id
+                'website_id' => $this->website_id
+                , 'name' => $this->name
+                , 'address' => $this->address
                 , 'synchronize_products' => $this->synchronize_products
             ]
-            , 'iii'
+            , 'ii'
         );
     }
 
@@ -62,8 +104,10 @@ class WebsiteYextLocation extends ActiveRecordBase {
         $this->update(
             [
                 'synchronize_products' => $this->synchronize_products
+                , 'name' => $this->name
+                , 'address' => $this->address
             ]
-            , [  ':yext_id' => $this->yext_id, ':website_id' => $this->website_id ]
+            , [  'website_yext_location_id' => $this->id, 'website_id' => $this->website_id ]
             , 'i'
             , 'ii'
         );
@@ -74,7 +118,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
      */
     public function remove() {
         parent::delete(
-            [  ':yext_id' => $this->yext_id, ':website_id' => $this->website_id ]
+            [  'website_yext_location_id' => $this->id, 'website_id' => $this->website_id ]
             , 'ii'
         );
     }
@@ -103,7 +147,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
      *
      * @param WebsiteYextLocation $location
      */
-    public function synchronize_products( $location ) {
+    public function do_synchronize_products( $location ) {
 
         // Get Website Top Products
         $product_ids = $this->get_results(
@@ -117,19 +161,23 @@ class WebsiteYextLocation extends ActiveRecordBase {
         $account = new Account();
         $account->get( $location->website_id );
 
+        $product_obj = new Product();
+
         $category = new Category();
         $category->get_all();
 
         $product_ids_sql = implode( ',', $product_ids );
         $products = $this->get_results(
-            "SELECT p.product_id, p.sku, p.name, p.description, COALESCE( wp.sale_price, wp.price, p.price ) AS price, pi.image, p.category_id, p.industry_id
+            "SELECT p.product_id, p.sku, p.slug, p.name, p.description, COALESCE( wp.sale_price, wp.price, p.price ) AS price, pi.image, p.category_id, p.industry_id, i.name as industry
              FROM products p
              INNER JOIN website_products wp ON p.product_id = wp.product_id
-             INNER JOIN products_images pi ON p.product_id = pi.product_id
+             INNER JOIN product_images pi ON p.product_id = pi.product_id
+             INNER JOIN industries i ON p.industry_id = i.industry_id
              WHERE wp.website_id = {$location->website_id}
                AND wp.product_id IN ({$product_ids_sql})
                AND p.publish_visibility = 'public' AND wp.blocked = 0 AND wp.active = 1 AND pi.sequence = 0
-             ", PDO::FETCH_ASSOC
+             LIMIT 100"
+            , PDO::FETCH_ASSOC
         );
 
         $yext_lists_items = [];
@@ -140,12 +188,14 @@ class WebsiteYextLocation extends ActiveRecordBase {
             $parent_category = array_pop( $parent_categories );
 
             if ($account->is_new_template() ) {
-                $product->link = 'http://' . $account->domain . '/product' . ( ( 0 == $product['category_id'] ) ? '/' . $product['slug'] : $category->get_url( $product['category_id'] ) . $product['slug'] . '/' );
+                $product['link'] = 'http://' . $account->domain . '/product' . ( ( 0 == $product['category_id'] ) ? '/' . $product['slug'] : $category->get_url( $product['category_id'] ) . $product['slug'] . '/' );
             } else {
-                $product->link = 'http://' . $account->domain . ( ( 0 == $product['category_id'] ) ? '/' . $product['slug'] : $category->get_url( $product['category_id'] ) . $product['slug'] . '/' );
+                $product['link'] = 'http://' . $account->domain . ( ( 0 == $product['category_id'] ) ? '/' . $product['slug'] : $category->get_url( $product['category_id'] ) . $product['slug'] . '/' );
             }
 
-            $yext_lists_items[ $parent_category->id ] = [
+            $product['image'] = $product_obj->get_image_url( $product['image'], 'small', $product['industry'], $account->id );
+
+            $yext_lists_items[ $parent_category->id ][] = [
                 'id' => $product['product_id']
                 , 'name' => $product['name']
                 , 'description' => $product['description']
@@ -160,27 +210,36 @@ class WebsiteYextLocation extends ActiveRecordBase {
                     , 'width' => 200
                     , 'height' => 200
                 ]
-                , 'url'
+                , 'url' => $product['link']
             ];
 
         }
 
+        $yext_list_id = "{$location->website_id}-{$location->website_yext_location_id}-products";
+        $yext_list = [
+            'id' => $yext_list_id
+            , 'name' => "{$yext_list_id}. Products for {$account->title}"
+            , 'title' => "Products for {$account->title}"
+            , 'type' => 'PRODUCTS'
+            , 'publish' => true
+            , 'sections' => []
+        ];
         foreach ( $yext_lists_items as $parent_category_id => &$yext_items ) {
             $parent_category = Category::$categories[$parent_category_id];
-            $yext_list = [
-                'id' => "{$location->website_id}-list-products-{$parent_category_id}"
-                , 'name' => 'Products'
-                , 'title' => $parent_category->name
-                , 'type' => 'PRODUCTS'
-                , 'publish' => true
-                , 'sections' => [
-                    'id' => "{$location->website_id}-list-products-{$parent_category_id}-section"
-                    , 'name' => $parent_category->name
-                    , 'items' => $yext_items
-                ]
+            $yext_list['sections'][] = [
+                'id' => "{$yext_list_id}-{$parent_category_id}-section"
+                , 'name' => $parent_category->name
+                , 'items' => $yext_items
             ];
+        }
 
-            // TODO: send to YEXT
+        library('yext');
+        $yext = new YEXT( $account );
+        $yext_list_exists = $yext->get( "lists/{$yext_list_id}" );
+        if ( isset( $yext_list_exists->id ) ) {
+            $response = $yext->put( "lists/{$yext_list_id}", $yext_list );
+        } else {
+            $response = $yext->post( "lists", $yext_list );
         }
 
         // Cleanup

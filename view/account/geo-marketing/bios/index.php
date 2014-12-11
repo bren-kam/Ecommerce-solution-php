@@ -13,7 +13,6 @@
                         <thead>
                         <th>#</th>
                         <th>Name</th>
-                        <th>Last Updated</th>
                         </thead>
                     </table>
                 </div>
