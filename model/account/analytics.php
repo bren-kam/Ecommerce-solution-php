@@ -75,26 +75,32 @@ class Analytics {
 
         $ga_dimensions = ( is_null( $ga_dimension ) ) ? array('date') : array( 'date', $ga_dimension );
         $ga_metrics = ( is_null( $ga_metric ) ) ? NULL : array( $ga_metric );
+			
+		if ( !empty( $ga_filter ) )
+			$ga_filter_str = "ga:$ga_filter";
 
         // Handle the GA Filter
         if ( !is_null( $this->ga_filter ) ) {
-            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = ( empty( $ga_filter ) ) ? 'ga:' . $this->ga_filter : $ga_filter . ',ga:' . $this->ga_filter;
             $ga_filter = explode( ',', $ga_filter );
-            foreach ($ga_filter as &$v)
-                $v = "ga:$v";
+			
             $ga_filter_str = implode( ',', $ga_filter );
         }
-
+		
         // Prepare Parameters
-        foreach ( $ga_dimensions as &$v )
+        foreach ( $ga_dimensions as &$v ) {
             $v = "ga:$v";
+		}
+		
         $ga_dimensions_str = implode( ',', $ga_dimensions );
 
-        foreach ( $ga_metrics as &$v )
+        foreach ( $ga_metrics as &$v ) {
             $v = "ga:$v";
+		}
+		
         $ga_metrics_str = implode( ',', $ga_metrics );
-
-        // API Call
+		
+		// API Call
         try {
             $response = $this->ga->query( array(
                 'dimensions' => $ga_dimensions_str
@@ -108,11 +114,14 @@ class Analytics {
 
         // Declare values
         $values = array();
-
+		
         // Get the values
-        if ( isset( $response['rows'] ) )
-            foreach( $response['rows'] as $row )
-                $values[strtotime($row[0]) . '000'] = $row[1];
+        if ( isset( $response['rows'] ) ) {
+            foreach( $response['rows'] as $row ) {
+				$value = ( isset( $row[2] ) ) ? $row[2] : $row[1];
+                $values[strtotime($row[0]) . '000'] = $value;
+			}
+		}
 
         return $values;
     }
@@ -542,7 +551,7 @@ class Analytics {
             break;
 
             case 'direct':
-                $ga_metric = 'sessions';
+                $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==(none)';
             break;
@@ -564,13 +573,13 @@ class Analytics {
             break;
 
             case 'referring':
-                $ga_metric = 'sessions';
+                $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==referral';
             break;
 
             case 'search_engines':
-                $ga_metric = 'sessions';
+                $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==organic';
             break;
