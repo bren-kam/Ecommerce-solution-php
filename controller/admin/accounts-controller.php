@@ -180,6 +180,7 @@ class AccountsController extends BaseController {
                     $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                     $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+                    $account->geo_marketing = (int) isset( $_POST['cbGeoMarketing'] );
                     $account->user_id_updated = $this->user->id;
 
                     $account->save();
