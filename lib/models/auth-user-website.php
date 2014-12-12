@@ -1,7 +1,7 @@
 <?php
 class AuthUserWebsite extends ActiveRecordBase {
     public $id, $auth_user_website_id, $user_id, $website_id, $pages, $products, $analytics, $blog, $email_marketing
-        , $shopping_cart;
+    , $shopping_cart, $geo_marketing;
 
     // Columns from other tables
     public $contact_name, $email;
@@ -171,6 +171,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             , 'blog' => $this->blog
             , 'email_marketing' => $this->email_marketing
             , 'shopping_cart' => $this->shopping_cart
+            , 'geo_marketing' => $this->geo_marketing
         ), 'iiiiiiii' );
 
         $this->auth_user_website_id = $this->id = $this->get_insert_id();
@@ -187,6 +188,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             , 'blog' => $this->blog
             , 'email_marketing' => $this->email_marketing
             , 'shopping_cart' => $this->shopping_cart
+            , 'geo_marketing' => $this->geo_marketing
         ), array(
             'user_id' => $this->user_id
             , 'website_id' => $this->website_id

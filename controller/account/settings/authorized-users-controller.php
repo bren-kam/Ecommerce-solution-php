@@ -77,6 +77,7 @@ class AuthorizedUsersController extends BaseController {
         $form->add_field( 'checkbox', _('Blog'), 'cbBlog', $auth_user_website->blog );
         $form->add_field( 'checkbox', _('Email Marketing'), 'cbEmailMarketing', $auth_user_website->email_marketing );
         $form->add_field( 'checkbox', _('Shopping Cart'), 'cbShoppingCart', $auth_user_website->shopping_cart );
+        $form->add_field( 'checkbox', _('Geo Marketing'), 'cbGeoMarketing', $auth_user_website->geo_marketing );
 
         if ( $form->posted() ) {
             $success = true;
@@ -88,6 +89,7 @@ class AuthorizedUsersController extends BaseController {
                 $auth_user_website->blog = ( isset( $_POST['cbBlog'] ) ) ? 1 : 0;
                 $auth_user_website->email_marketing = ( isset( $_POST['cbEmailMarketing'] ) ) ? 1 : 0;
                 $auth_user_website->shopping_cart = ( isset( $_POST['cbShoppingCart'] ) ) ? 1 : 0;
+                $auth_user_website->geo_marketing = ( isset( $_POST['cbGeoMarketing'] ) ) ? 1 : 0;
                 $auth_user_website->save();
             } else {
                 if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST )) {
