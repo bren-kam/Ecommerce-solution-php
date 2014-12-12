@@ -90,8 +90,10 @@ class BiosController extends BaseController {
         $form = new BootstrapForm( 'add-edit-bio' );
 
         $form->add_field( 'hidden', 'id', $bio['id'] );
-        $form->add_field( 'text', 'Name', 'name', $bio['name'] );
-        $form->add_field( 'textarea', 'Description', 'description', $bio['description'] );
+        $form->add_field( 'text', 'Name', 'name', $bio['name'] )
+            ->add_validation( 'req', 'A Name is required' );
+        $form->add_field( 'textarea', 'Description', 'description', $bio['description'] )
+            ->add_validation( 'req', 'A Description is required' );
         // TODO: Media Manager Field Type
         // $form->add_field( 'image', 'photo', 'photo', $bio['photo'] );
         $form->add_field( 'textarea', 'Education', 'education', is_array( $bio['education'] ) ? implode( "\n", $bio['education'] ) : '' );
@@ -121,14 +123,18 @@ class BiosController extends BaseController {
                         ]
                     ]
                 ];
-                $result = $yext->post( 'lists', $list );
+                $response = $yext->post( 'lists', $list );
             } else {
                 if ( $list_item_index !== NULL) {
                     $list->sections[0]->items[$list_item_index] = (object) $bio;
                 } else {
                     $list->sections[0]->items[] = (object) $bio;
                 }
-                $result = $yext->put( "lists/{$list_id}", $list );
+                $response = $yext->put( "lists/{$list_id}", $list );
+            }
+
+            if ( isset( $response->errors ) ) {
+                $this->notify( 'Your Bio could not be processed. ' . $response->errors[0]->message , false );
             }
 
             return new RedirectResponse( '/geo-marketing/bios' );
@@ -160,8 +166,10 @@ class BiosController extends BaseController {
                     if ($yext_bio->id == $_REQUEST['id']) {
                         // we found it! remove from the list and update
                         array_splice( $list->sections[0]->items, $i, 1 );
-                        $result = $yext->put( "lists/{$list_id}", $list );
-                        $this->notify( 'Bio removed' );
+                        $response = $yext->put( "lists/{$list_id}", $list );
+                        if ( isset( $response->errors ) ) {
+                            $this->notify( 'Your Bio could not be deleted. ' . $response->errors[0]->message , false );
+                        }
                         break;
                     }
                 }

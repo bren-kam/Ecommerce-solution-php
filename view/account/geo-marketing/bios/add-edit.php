@@ -2,8 +2,7 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Locations
-                <a href="/geo-marketing/locations/add-edit/" class="btn btn-primary btn-sm pull-right"l><i class="fa fa-plus"></i> <span class="hidden-xs">New Location</span></a>
+                Bios
             </header>
 
             <div class="panel-body">

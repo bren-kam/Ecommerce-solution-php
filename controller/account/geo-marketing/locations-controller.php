@@ -69,11 +69,15 @@ class LocationsController extends BaseController {
         if ( $website_yext_location->id ) {
             library('yext');
             $yext = new YEXT( $this->user->account );
-            $yext->delete( "locations/{$_GET['id']}" );
-            $website_yext_location->remove();
+            $response = $yext->delete( "locations/{$_GET['id']}" );
+            if ( isset( $response->errors ) ) {
+                $response->notify( 'Your Location could not be deleted. ' . $response->errors[0]->message , false );
+            } else {
+                $website_yext_location->remove();
+                $response->add_response( 'reload_datatable', 'reload_datatable' );
+            }
         }
 
-        $response->add_response( 'reload_datatable', 'reload_datatable' );
         return $response;
     }
 
@@ -202,10 +206,16 @@ class LocationsController extends BaseController {
                 $website_yext_location->create();
                 $post['id'] = $website_yext_location->id;
                 $response = $yext->post( 'locations', $post );
+                if ( isset( $response->errors ) ) {
+                    $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
+                }
             } else {
                 // Update
                 $website_yext_location->save();
                 $response = $yext->put( "locations/{$website_yext_location->id}", $post );
+                if ( isset( $response->errors ) ) {
+                    $this->notify( 'Your Location could not be updated. ' . $response->errors[0]->message , false );
+                }
             }
             return new RedirectResponse( '/geo-marketing/locations' );
 
@@ -214,6 +224,7 @@ class LocationsController extends BaseController {
         $form_html = $form->generate_form();
 
         return $this->get_template_response( 'geo-marketing/locations/add-edit' )
+            ->menu_item('geo-marketing/locations/add-edit')
             ->set( compact( 'form_html' ) );
     }
 

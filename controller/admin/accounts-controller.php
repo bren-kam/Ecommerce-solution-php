@@ -250,6 +250,7 @@ class AccountsController extends BaseController {
             , 'domain_registration'
             , 'additional_email_addresses'
             , 'social_media'
+            , 'geo_marketing'
         );
 
         foreach ( $features as $feature ) {

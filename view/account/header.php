@@ -408,6 +408,32 @@
                 </ul>
             </li>
 
+            <?php if ( $user->account->geo_marketing ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing') ) echo 'class="active"' ?>>
+                        <i class="fa fa-dot-circle-o"></i>
+                        <span>Geo Marketing</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="submenu">
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing/locations') ) echo 'class="active"' ?>>Locations</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('geo-marketing/locations/list') ) echo 'class="active"' ?>><a href="/geo-marketing/locations/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('geo-marketing/locations/add-edit') ) echo 'class="active"' ?>><a href="/geo-marketing/locations/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing/bios') ) echo 'class="active"' ?>>Bios</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('geo-marketing/bios/list') ) echo 'class="active"' ?>><a href="/geo-marketing/bios/">List</a></li>
+                                <li <?php if ( $template->in_menu_item('geo-marketing/bios/add-edit') ) echo 'class="active"' ?>><a href="/geo-marketing/bios/add-edit/">Add</a></li>
+                            </ul>
+                        </li>
+                        <li <?php if ( $template->in_menu_item('geo-marketing/listings') ) echo 'class="active"' ?>><a href="/geo-marketing/listings/">Listings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+
         </ul>
         <!-- sidebar menu end-->
     </div>
