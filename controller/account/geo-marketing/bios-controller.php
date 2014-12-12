@@ -49,10 +49,9 @@ class BiosController extends BaseController {
         $delete_nonce = nonce::create( 'delete' );
         foreach ( $bios as $bio ) {
             $data[] = [
-                $bio->website_yext_bio_id .
+                $bio->name .
                 '<br><a href="/geo-marketing/bios/add-edit/?id=' . $bio->website_yext_bio_id . '">Edit</a>
                 | <a href="/geo-marketing/bios/delete/?id=' . $bio->website_yext_bio_id . '&_nonce='.$delete_nonce.'" confirm="Do you want to Delete this Bio? Cannot be Undone.">Delete</a>'
-                , $bio->name
             ];
         }
 
