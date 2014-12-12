@@ -208,6 +208,7 @@ class LocationsController extends BaseController {
                 $response = $yext->post( 'locations', $post );
                 if ( isset( $response->errors ) ) {
                     $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
+                    $website_yext_location->remove();
                 }
             } else {
                 // Update
