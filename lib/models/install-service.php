@@ -231,20 +231,20 @@ class InstallService {
         if ( 0 != count( $new_pagemeta ) )
             $account_pagemeta->add_bulk( $new_pagemeta );
 
-        // Copy top brands
-        $account->copy_top_brands_by_account( $template_account->id, $account->id );
+        // // Copy top brands
+        // $account->copy_top_brands_by_account( $template_account->id, $account->id );
 
-        // Copy products
-        $account_product = new AccountProduct();
-        $account_product->copy_by_account( $template_account->id, $account->id );
+        // // Copy products
+        // $account_product = new AccountProduct();
+        // $account_product->copy_by_account( $template_account->id, $account->id );
 
-        // Copy product options
-        $account_product_option = new AccountProductOption();
-        $account_product_option->copy_by_account( $template_account->id, $account->id );
+        // // Copy product options
+        // $account_product_option = new AccountProductOption();
+        // $account_product_option->copy_by_account( $template_account->id, $account->id );
 
-        // Copy related products
-        $account_product_group = new WebsiteProductGroup();
-        $account_product_group->copy_by_account( $template_account->id, $account->id );
+        // // Copy related products
+        // $account_product_group = new WebsiteProductGroup();
+        // $account_product_group->copy_by_account( $template_account->id, $account->id );
 
         // Reorganize Categories
         $account_category = new AccountCategory();

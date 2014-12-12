@@ -38,20 +38,32 @@ nonce::field( 'get_graph', '_get_graph' );
                         </thead>
                         <tbody>
                         <?php
-                            foreach ( $emails as $email ):
-                                if ( !isset( $email->subject ) )
-                                    continue;
-                                $date = new DateTime( $email->date_sent );
-                            ?>
+                            if ( empty( $emails ) ) {
+                                ?>
                                 <tr>
-                                    <td><a href="<?php echo url::add_query_arg( 'eid', $email->id, '/analytics/email/' ); ?>" title="<?php echo $email->subject; ?>"><?php echo $email->subject; ?></a></td>
-                                    <td><?php echo $stats[$email->id]->requests; ?></td>
-                                    <td><?php echo $stats[$email->id]->opens; ?></td>
-                                    <td><?php echo $stats[$email->id]->clicks; ?></td>
-                                    <td><?php echo $stats[$email->id]->bounces; ?></td>
-                                    <td><?php echo $date->format( 'F jS, Y'); ?></td>
+                                    <td colspan="6" class="text-center">No email campaigns have been sent out yet.</td>
                                 </tr>
-                            <?php endforeach; ?>
+                                <?php
+                            } else {
+                                foreach ($emails as $email):
+                                    if (!isset($email->subject))
+                                        continue;
+                                    $date = new DateTime($email->date_sent);
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <a href="<?php echo url::add_query_arg('eid', $email->id, '/analytics/email/'); ?>"
+                                               title="<?php echo $email->subject; ?>"><?php echo $email->subject; ?></a>
+                                        </td>
+                                        <td><?php echo $stats[$email->id]->requests; ?></td>
+                                        <td><?php echo $stats[$email->id]->opens; ?></td>
+                                        <td><?php echo $stats[$email->id]->clicks; ?></td>
+                                        <td><?php echo $stats[$email->id]->bounces; ?></td>
+                                        <td><?php echo $date->format('F jS, Y'); ?></td>
+                                    </tr>
+                                <?php
+                                endforeach;
+                            }?>
                         </tbody>
                     </table>
 
