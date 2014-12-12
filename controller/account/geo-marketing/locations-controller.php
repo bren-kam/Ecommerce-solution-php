@@ -34,14 +34,11 @@ class LocationsController extends BaseController {
         $locations = $location->list_all( $dt->get_variables() );
         $dt->set_row_count( $location->count_all( $dt->get_count_variables() ) );
 
-        $delete_nonce = nonce::create( 'delete' );
         $data = [];
         foreach ( $locations as $location ) {
             $data[] = [
-                $location->id .
-                '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>
-                <!-- | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce='.$delete_nonce.'" ajax="1" confirm="Do you want to Delete this Location? Cannot be Undone.">Delete</a> -->'
-                , $location->name
+                $location->name .
+                '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>'
                 , $location->address
                 , date("Y-m-d H:i:s")
             ];
@@ -87,6 +84,21 @@ class LocationsController extends BaseController {
      */
     public function add_edit() {
 
+        // Check if they can add more Locations
+        if ( !isset( $_REQUEST['id'] ) ) {
+            $yext_max_locations = $this->user->account->get_settings( 'yext-max-locations' );
+            if ( !$yext_max_locations ) {
+                $yext_max_locations = 1;
+                $this->user->account->set_settings( [ 'yext-max-locations' => $yext_max_locations ] );
+            }
+            $website_yext_location = new WebsiteYextLocation();
+            $locations = $website_yext_location->get_all( $this->user->account->id );
+            if ( count( $locations ) >= $yext_max_locations ) {
+                $this->notify( 'You have reached the maximum number of locations for you account. Please contact your Online Specialist', false );
+                return new RedirectResponse( '/geo-marketing/locations' );
+            }
+        }
+
         library('yext');
         $yext = new YEXT( $this->user->account );
 
@@ -102,6 +114,7 @@ class LocationsController extends BaseController {
 
         $form->add_field( 'hidden', 'id', $location['id'] );
 
+        $form->add_field( 'title', 'Required Listing Info:' );
         $form->add_field( 'text', 'Name', 'locationName', $location['locationName'] )
             ->add_validation( 'req', 'A Name is Required' );
         $form->add_field( 'text', 'Address Line 1', 'address', $location['address'] )
@@ -116,26 +129,29 @@ class LocationsController extends BaseController {
             ->add_validation( 'req', 'A Valid ZIP is Required' )
             ->add_validation( 'num', 'A Valid ZIP is Required' )
             ->add_validation( 'zip', 'A Valid ZIP is Required' );
-        $form->add_field( 'text', 'Phone', 'phone', $location['phone'] );
-        $form->add_field( 'checkbox', 'Is Phone Tracked', 'isPhoneTracked', $location['isPhoneTracked'] );
+        $form->add_field( 'text', 'Phone', 'phone', $location['phone'] )
+            ->add_validation( 'req', 'A Phone is Required' );
+
+        $form->add_field( 'title', 'Optional Business Listing:' );
+//        $form->add_field( 'checkbox', 'Is Phone Tracked', 'isPhoneTracked', $location['isPhoneTracked'] );
         $form->add_field( 'text', 'Fax Phone', 'faxPhone', $location['faxPhone'] );
         $form->add_field( 'text', 'Mobile Phone', 'mobilePhone', $location['mobilePhone'] );
         $form->add_field( 'text', 'Toll Free Phone', 'tollFreePhone', $location['tollFreePhone'] );
         $form->add_field( 'text', 'TTY Phone', 'ttyPhone', $location['ttyPhone'] );
-        // TODO: Get Cateogory IDs from YEXT
-//        $form->add_field( 'select', 'Category', 'categories[]', $location['categories'] )
-//            ->attribute( 'multiple', 'multiple' )
-//            ->options( [] );
         $form->add_field( 'text', 'Special Offer', 'specialOffer', $location['specialOffer'] );
-        $form->add_field( 'text', 'Special Offer URL', 'specialOfferUrl', $location['specialOfferUrl'] );
-        $form->add_field( 'text', 'Website URL', 'websiteUrl', $location['websiteUrl'] );
-        $form->add_field( 'text', 'Reservations URL', 'reservationsUrl', $location['reservationsUrls'] );
-        $form->add_field( 'text', 'Hours', 'hours', $location['hours'] );
-        $form->add_field( 'text', 'Additional Hours Text', 'additionalHoursText', $location['additionalHoursText'] );
+        $form->add_field( 'text', 'Year Estabilished', 'yearEstabilished', $location['yearEstabilished'] );
+//        $form->add_field( 'text', 'Display Latitude', 'displayLat', $location['displayLat'] );
+//        $form->add_field( 'text', 'Display Longutude', 'displayLon', $location['displayLon'] );
+//        $form->add_field( 'text', 'Routable Latitude', 'routableLat', $location['routableLat'] );
+//        $form->add_field( 'text', 'Routable Longitude', 'routableLon', $location['routableLon'] );
+        $form->add_field( 'textarea', 'Specialities (one per line)', 'specialities', $location['specialities'] ? implode( "\n", $location['specialities'] ) : '' );
+        $form->add_field( 'textarea', 'Services (one per line)', 'services', $location['services'] ? implode( "\n", $location['services'] ) : '' );
+        $form->add_field( 'textarea', 'Brands (one per line)', 'brands', $location['brands'] ? implode( "\n", $location['brands'] ) : '' );
+        $form->add_field( 'textarea', 'Languages (one per line) ', 'languages', $location['languages'] ? implode( "\n", $location['languages'] ) : '' );
+        $form->add_field( 'textarea', 'Keywords (one per line)', 'keywords', $location['keywords'] ? implode( "\n", $location['keywords'] ) : '' );
+//        $form->add_field( 'textarea', 'Lists (one per line)', 'lists', $location['lists'] ? implode( "\n", $location['lists'] ) : '' );
         // TODO: Holiday Hour Arrays
         // $form->add_field( 'text', 'Holiday Hours', 'specialOffer', $location['specialOffer'] );
-        $form->add_field( 'textarea', 'Description', 'description', $location['description'] )
-            ->attribute( 'rte', '1' );
         $form->add_field( 'select', 'Payment Options', 'paymentOptions[]', $location['paymentOptions'] )
             ->attribute( 'multiple', 'multiple' )
             ->options( [
@@ -150,26 +166,26 @@ class LocationsController extends BaseController {
                 ,'TRAVELERSCHECK' => 'Travelers Check'
                 ,'VISA' => 'Visa'
             ] );
-        // TODO: Media Manager Field Type
-        // $form->add_field( 'image', 'Logo', 'specialOffer', $location['specialOffer'] );
-        $form->add_field( 'textarea', 'Video URLs (one per line)', 'videoUrls', is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] );
-        $form->add_field( 'text', 'Twitter Handle', 'twitterHandle', $location['twitterHandle'] );
+        $form->add_field( 'textarea', 'Description', 'description', $location['description'] )
+            ->attribute( 'rte', '1' );
+
+        $form->add_field( 'title', 'Email & Website:' );
+        $form->add_field( 'text', 'Special Offer URL', 'specialOfferUrl', $location['specialOfferUrl'] );
+        $form->add_field( 'text', 'Website URL', 'websiteUrl', $location['websiteUrl'] );
+        $form->add_field( 'text', 'Reservations URL', 'reservationsUrl', $location['reservationsUrls'] );
+        $form->add_field( 'text', 'Hours', 'hours', $location['hours'] );
+        $form->add_field( 'text', 'Additional Hours Text', 'additionalHoursText', $location['additionalHoursText'] );
         $form->add_field( 'text', 'Facebook Page URL', 'facebookPageUrl', $location['facebookPageUrl'] );
+        $form->add_field( 'textarea', 'Emails (one per line)', 'emails', $location['emails'] ? implode( "\n", $location['emails'] ) : '' );
         // TODO: Media Manager Field Type
         // $form->add_field( 'image', 'Facebook Cover Photo', 'specialOffer', $location['specialOffer'] );
         // $form->add_field( 'image', 'Facebook Profile Picture', 'specialOffer', $location['specialOffer'] );
-        $form->add_field( 'text', 'Year Stabilished', 'yearEstabilished', $location['yearEstabilished'] );
-//        $form->add_field( 'text', 'Display Latitude', 'displayLat', $location['displayLat'] );
-//        $form->add_field( 'text', 'Display Longutude', 'displayLon', $location['displayLon'] );
-//        $form->add_field( 'text', 'Routable Latitude', 'routableLat', $location['routableLat'] );
-//        $form->add_field( 'text', 'Routable Longitude', 'routableLon', $location['routableLon'] );
-        $form->add_field( 'textarea', 'Emails (one per line)', 'emails', $location['emails'] ? implode( "\n", $location['emails'] ) : '' );
-        $form->add_field( 'textarea', 'Specialities (one per line)', 'specialities', $location['specialities'] ? implode( "\n", $location['specialities'] ) : '' );
-        $form->add_field( 'textarea', 'Services (one per line)', 'services', $location['services'] ? implode( "\n", $location['services'] ) : '' );
-        $form->add_field( 'textarea', 'Brands (one per line)', 'brands', $location['brands'] ? implode( "\n", $location['brands'] ) : '' );
-        $form->add_field( 'textarea', 'Languages (one per line) ', 'languages', $location['languages'] ? implode( "\n", $location['languages'] ) : '' );
-        $form->add_field( 'textarea', 'Keywords (one per line)', 'keywords', $location['keywords'] ? implode( "\n", $location['keywords'] ) : '' );
-//        $form->add_field( 'textarea', 'Lists (one per line)', 'lists', $location['lists'] ? implode( "\n", $location['lists'] ) : '' );
+        $form->add_field( 'text', 'Twitter Handle', 'twitterHandle', $location['twitterHandle'] );
+
+        $form->add_field( 'title', 'Photos & Videos:' );
+        // TODO: Media Manager Field Type
+        // $form->add_field( 'image', 'Logo', 'specialOffer', $location['specialOffer'] );
+        $form->add_field( 'textarea', 'Video URLs (one per line)', 'videoUrls', is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] );
 
         $form->add_field( 'checkbox', 'List top 100 products on location', 'synchronize-products', $website_yext_location->synchronize_products );
 

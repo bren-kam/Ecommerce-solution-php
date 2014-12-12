@@ -457,6 +457,7 @@ class AccountsController extends BaseController {
             , 'sendgrid-password'
             , 'arb-subscription-id'
             , 'arb-subscription-amount'
+            , 'yext-max-locations'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -486,6 +487,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
+        $ft->add_field( 'text', _('YEXT Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -527,6 +529,7 @@ class AccountsController extends BaseController {
                 , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
                 , 'arb-subscription-id' => $_POST['tARBSubscriptionID']
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
+                , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
