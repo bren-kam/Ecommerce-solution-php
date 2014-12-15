@@ -11,7 +11,8 @@
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/geo-marketing/bios/list-all/" perPage="30,50,100">
                         <thead>
-                        <th>Name</th>
+                            <th>Name</th>
+                            <th>Location</th>
                         </thead>
                     </table>
                 </div>
