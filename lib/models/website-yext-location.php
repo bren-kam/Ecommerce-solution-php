@@ -8,7 +8,7 @@
 
 class WebsiteYextLocation extends ActiveRecordBase {
 
-    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update;
+    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update, $status;
 
     public function __construct() {
         parent::__construct( 'website_yext_location' );
@@ -92,8 +92,9 @@ class WebsiteYextLocation extends ActiveRecordBase {
                 , 'name' => $this->name
                 , 'address' => $this->address
                 , 'synchronize_products' => $this->synchronize_products
+                , 'status' => $this->status
             ]
-            , 'ii'
+            , 'issis'
         );
     }
 
@@ -106,9 +107,10 @@ class WebsiteYextLocation extends ActiveRecordBase {
                 'synchronize_products' => $this->synchronize_products
                 , 'name' => $this->name
                 , 'address' => $this->address
+                , 'status' => $this->status
             ]
             , [  'website_yext_location_id' => $this->id, 'website_id' => $this->website_id ]
-            , 'i'
+            , 'isss'
             , 'ii'
         );
     }

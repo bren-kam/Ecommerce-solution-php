@@ -13,7 +13,7 @@
                         <thead>
                         <th>Name</th>
                         <th>Address</th>
-                        <th>Last Updated</th>
+                        <th>Status</th>
                         </thead>
                     </table>
                 </div>
