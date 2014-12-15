@@ -190,7 +190,7 @@
                 <div class="panel-body">
 
                     <div class="form-group">
-                        <label for="videoUrls">Video URLs (one per line):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
+                        <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" name="synchronize-products" id="synchronize-products33" value="1" <?php if ( $location['synchronize-products'] ) echo 'checked' ?> />List top 100 products on location</label>
