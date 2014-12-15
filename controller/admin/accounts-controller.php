@@ -487,7 +487,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
-        $ft->add_field( 'text', _('YEXT Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
+        $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
 
         $server = new Server();
         $servers = $server->get_all();
