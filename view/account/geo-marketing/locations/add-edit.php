@@ -1,3 +1,10 @@
+<?php
+
+$upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+$search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+$delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
+
+?>
 <form name="add-edit-location" id="add-edit-location" action="" method="post" role="form">
 
     <div class="row-fluid">
@@ -189,6 +196,39 @@
 
                 <div class="panel-body">
 
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <p class="image-selector" id="logo">
+                                <strong>Logo:</strong>
+                                <img src="<?php echo isset( $location['logo']['url'] ) ? $location['logo']['url'] : '//placehold.it/200x200' ?>" />
+                                <input type="hidden" name="logo-url" value="<?php echo $location['logo']['url'] ?>" />
+                                <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
+                                        data-media-manager
+                                        data-upload-url="<?php echo $upload_url ?>"
+                                        data-search-url="<?php echo $search_url ?>"
+                                        data-delete-url="<?php echo $delete_url ?>"
+                                        data-image-target="#logo">
+                                    Select an Image
+                                </button>
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <p class="image-selector" id="store-photo">
+                                <strong>Store Photo:</strong>
+                                <img src="<?php echo isset( $location['store-photo'] ) ? $location['store-photo'] : '//placehold.it/200x200' ?>" />
+                                <input type="hidden" name="store-photo" value="<?php echo $location['store-photo'] ?>" />
+                                <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
+                                        data-media-manager
+                                        data-upload-url="<?php echo $upload_url ?>"
+                                        data-search-url="<?php echo $search_url ?>"
+                                        data-delete-url="<?php echo $delete_url ?>"
+                                        data-image-target="#store-photo">
+                                    Select an Image
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
                     </div>
@@ -206,8 +246,5 @@
             </section>
         </div>
     </div>
-
-    <script>jQuery(function(){ $("#add-edit-location").bootstrapValidator({"fields":{"locationName":{"validators":{"notEmpty":{"message":"A Name is Required"}}},"address":{"validators":{"notEmpty":{"message":"An Address is Required"}}},"city":{"validators":{"notEmpty":{"message":"A City is Required"}}},"state":{"validators":{"notEmpty":{"message":"A State is Required"}}},"zip":{"validators":{"zipCode":{"message":"A Valid ZIP is Required","country":"US"}}},"phone":{"validators":{"notEmpty":{"message":"A Phone is Required"}}}}}); });</script>
-
 
 </form>
