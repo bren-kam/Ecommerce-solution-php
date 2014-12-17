@@ -576,7 +576,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -1844,6 +1844,36 @@ class AccountsController extends BaseController {
         }
 
         $this->notify( _("All Products Indexed!") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    public function cancel_yext_subscription() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( !$account->id )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        library('yext');
+        $yext = new YEXT( $account );
+
+        $yext_website_subscription_id = $account->get_settings( 'yext-subscription-id' );
+        if ( !$yext_website_subscription_id )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+        if ( !isset($subscription->id) )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $subscription->status = 'CANCELED';
+        $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+
+        $account->set_settings( [ 'yext-subscription-id' => '' ] );
+
+        $this->notify( _("Subscription cancelled.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 }
