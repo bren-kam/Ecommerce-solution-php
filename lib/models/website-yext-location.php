@@ -153,7 +153,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
 
         // Get Website Top Products
         $product_ids = $this->get_results(
-            "SELECT product_id FROM website_product_view WHERE website_id = {$location->website_id} GROUP BY product_id ORDER BY COUNT(*) DESC LIMIT 100"
+            "SELECT product_id FROM website_product_view WHERE website_id = {$location->website_id} AND product_id IS NOT NULL GROUP BY product_id ORDER BY COUNT(*) DESC LIMIT 100"
             , PDO::FETCH_COLUMN
         );
 

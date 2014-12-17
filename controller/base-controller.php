@@ -89,7 +89,9 @@ abstract class BaseController {
          */
         $this->method = $method;
         $response = $this->$method();
-        $response->send_response();
+        if ( $response ) {
+            $response->send_response();
+        }
     }
 
     /**
