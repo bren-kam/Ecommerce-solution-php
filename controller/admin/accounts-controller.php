@@ -1689,6 +1689,40 @@ class AccountsController extends BaseController {
     }
 
     /**
+     * Run Ashley Express Order Status Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_express_order_status() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
+        // Ashley Express Feed - Order Acknowledgement
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_acknowledgement( $account );
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Ashley Express Feed - Order ASN
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_asn( $account );
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Give them a notification
+        $this->notify( _('The Ashley Express Feed Orders Check has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    /**
      * Install New Theme
      *
      * @throws Exception
