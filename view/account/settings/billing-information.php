@@ -11,17 +11,15 @@
         <section class="panel">
             <header class="panel-heading">
                 <ul class="nav nav-tabs tab-bg-dark-navy-blue" role="tablist">
-                    <li><a href="/products/services/">Services</a></li>
-                    <li><a href="/settings/billing-information/">Billing Information</a></li>
+                    <li class="active"><a href="/settings/billing-information/">Billing Information</a></li>
+                    <li><a href="/settings/services/">Services</a></li>
                 </ul>
 
-                <h3>Services</h3>
+                <h3>Billing Information</h3>
             </header>
 
             <div class="panel-body">
                 <form method="post" role="form">
-                    <header class="panel-heading">Billing Information</header>
-                    <br />
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-lg-4">
