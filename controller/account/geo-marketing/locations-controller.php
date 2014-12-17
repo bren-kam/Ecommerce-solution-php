@@ -110,6 +110,8 @@ class LocationsController extends BaseController {
             return new RedirectResponse( '/geo-marketing/locations' );
         }
 
+        $yext_website_subscription_id = $this->user->account->get_settings( 'yext-subscription-id' );
+
         // Check if they can add more Locations
         if ( !isset( $_REQUEST['id'] ) ) {
             $yext_max_locations = $this->user->account->get_settings( 'yext-max-locations' );
@@ -218,9 +220,24 @@ class LocationsController extends BaseController {
                 if ( isset( $response->errors ) ) {
                     $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
                     $website_yext_location->remove();
+                    return new RedirectResponse( '/geo-marketing/locations' );
                 } else {
                     $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
                     $website_yext_location->save();
+                }
+
+                // Add add Location to Subscription
+                if ( $yext_website_subscription_id ) {
+                    $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+                    $subscription->locationIds[] = $website_yext_location->id;
+                    $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+                } else {
+                    // If we don't have a Subscription ID, create it!
+                    $subscription = $yext->post( 'subscriptions', [
+                        'offerId' => YEXT::OFFER_ID
+                        , 'locationIds' => [ $website_yext_location->id ]
+                    ]);
+                    $this->user->account->set_settings( [ 'yext-subscription-id' => $subscription->id ] );
                 }
             } else {
                 // Update
@@ -228,6 +245,7 @@ class LocationsController extends BaseController {
                 $response = $yext->put( "locations/{$website_yext_location->id}", $post );
                 if ( isset( $response->errors ) ) {
                     $this->notify( 'Your Location could not be updated. ' . $response->errors[0]->message , false );
+                    return new RedirectResponse( '/geo-marketing/locations' );
                 } else {
                     $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
                     $website_yext_location->save();

@@ -8,6 +8,8 @@
 
 class YEXT {
 
+    const OFFER_ID = 1306;
+
     public static $customer_id = 165947;
     public static $url = 'https://api-sandbox.yext.com/v1/';
     public static $base_service = 'customers/165947/';
