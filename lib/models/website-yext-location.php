@@ -250,4 +250,76 @@ class WebsiteYextLocation extends ActiveRecordBase {
 
     }
 
+    /**
+     * Do Upload Photos
+     * @param WebsiteYextLocation $location
+     */
+    public function do_upload_photos( $location ) {
+        $account = new Account();
+        $account->get( $location->website_id );
+
+        library( 'yext' );
+        $yext = new Yext( $account );
+        $yext_location  = $yext->get( "locations/{$location->id}" );
+
+        if ( isset( $yext_location->errors) )
+            return;
+
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+
+        $page->get_by_slug( $account->id, 'home' );
+        $banner_page_id = $page->id;
+        $page->get_by_slug( $this->id, 'sidebar' );
+        $sidebar_page_id = $page->id;
+
+        $attachments = $attachment->get_by_account_page_ids( [ $banner_page_id, $sidebar_page_id ] );
+        $images = [];
+        foreach ( $attachments as $attachment ) {
+            if ($attachment->status == 0) {
+                continue;
+            }
+
+            $extra = json_decode($attachment->extra, true);
+            // is it json?
+            if ($extra) {
+                // Verify Date Range
+                if (isset($extra['date-range']) && $extra['date-range']) {
+                    // date range
+                    $now = date('Y-m-d');
+
+                    // out of range?
+                    if ($extra['date-start'] > $now || $extra['date-end'] < $now) {
+                        continue;
+                    }
+                }
+            }
+
+            if ($attachment->key == 'banner' || $attachment->key == 'sidebar-image') {
+                $images[] = [ 'url' => $attachment->value ];
+            }
+        }
+
+        // We need 4 images
+        if ( count($images) < 4 ) {
+            return;
+        }
+
+        shuffle( $images );
+
+        $images = array_slice( $images, 0, 4 );
+
+        if ( isset( $yext_location->photos ) && $yext_location->photos ) {
+            $yext_location->photos = array_merge(
+                [ $yext_location->photos[0] ],
+                $images
+            );
+        } else {
+            $yext_location->photos = $images;
+        }
+
+        $yext->put( "locations/{$location->id}", $yext_location );
+
+    }
+
 }
