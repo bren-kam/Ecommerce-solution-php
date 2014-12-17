@@ -7,6 +7,16 @@
  */
 
 class BiosController extends BaseController {
+    /**
+     * Setup the base for creating template responses
+     */
+    public function __construct() {
+        // Pass in the base for all the views
+        parent::__construct();
+
+        $this->title = _('Bios | Geo Marketing');
+    }
+
 
     /**
      * Index
@@ -32,7 +42,8 @@ class BiosController extends BaseController {
         }
 
         return $this->get_template_response( 'geo-marketing/bios/index' )
-            ->menu_item('geo-marketing/bios/list');
+            ->menu_item('geo-marketing/bios/list')
+            ->kb( 148 );
     }
 
     /**
@@ -173,7 +184,8 @@ class BiosController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/bios/add-edit' )
             ->menu_item( 'geo-marketing/bios/add-edit' )
-            ->set( compact( 'form_html' ) );
+            ->set( compact( 'form_html' ) )
+            ->kb( 151 );
     }
 
     public function delete() {
