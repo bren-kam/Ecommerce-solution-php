@@ -14,7 +14,7 @@ class BiosController extends BaseController {
         // Pass in the base for all the views
         parent::__construct();
 
-        $this->title = _('Bios | Geo Marketing');
+        $this->title = _('Bios | GeoMarketing');
     }
 
 

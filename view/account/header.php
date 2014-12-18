@@ -412,7 +412,7 @@
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing') ) echo 'class="active"' ?>>
                         <i class="fa fa-dot-circle-o"></i>
-                        <span>Geo Marketing</span>
+                        <span>GeoMarketing</span>
                     </a>
                     <ul class="sub">
                         <li <?php if ( $template->in_menu_item('geo-marketing/locations') ) echo 'class="active"' ?>><a href="/geo-marketing/locations/">Locations</a></li>
