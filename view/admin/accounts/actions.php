@@ -81,6 +81,11 @@
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-express-order-status/' ); ?>" title="<?php echo _('Check Ashley Express Order Status'); ?>"><?php echo _('Check Ashley Express Order Status'); ?></a></p>
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/index-products/' ); ?>" title="<?php echo _('Re-Index Products'); ?>"><?php echo _('Re-Index Products'); ?></a></p>
+
+                <?php if ( $settings['yext-subscription-id'] ) { ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel-yext-subscription/' ); ?>" title="<?php echo _('Cancel YEXT Subscription'); ?>"><?php echo _('Cancel YEXT Subscription'); ?></a></p>
+                <?php } ?>
+
             </div>
         </section>
     </div>
