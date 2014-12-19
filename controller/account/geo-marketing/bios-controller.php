@@ -43,7 +43,7 @@ class BiosController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/bios/index' )
             ->menu_item('geo-marketing/bios/list')
-            ->kb( 148 );
+            ->kb( 149 );
     }
 
     /**
