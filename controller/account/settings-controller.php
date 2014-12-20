@@ -159,35 +159,37 @@ class SettingsController extends BaseController {
             // Create instance of ARB
             $arb = new arb( $this->user->account->title );
 
-            // Set variables
-            $arb->setSubscriptionId($settings['arb-subscription-id']);
-            $arb->setAmount( $settings['arb-subscription-amount'] );
-            $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
-            $arb->setOrderDetails('Managed Website Monthly Payment');
-            $arb->setCustomerId( $this->user->id );
-            $arb->setCustomerPhone( $this->user->work_phone );
-            $arb->setCustomerEmail( $this->user->email );
-
-            // Set billing information
-            $arb->setBillingName( $_POST['first-name'], $_POST['last-name'] );
-            $arb->setBillingAddress( $_POST['address'] );
-            $arb->setBillingCity( $_POST['city'] );
-            $arb->setBillingState( $_POST['state'] ); //full state name can be used (i.e. Massachusetts)
-            $arb->setBillingZip( $_POST['zip'] );
-            $arb->setBillingCountry('United States'); // optional
-
-            // set the payment details (one of the two options is required)
-            $arb->setPaymentDetails( $_POST['ccnum'], $_POST['ccexpy'] . '-' . $_POST['ccexpm'] );
-
-            // Submit the subscription request
-            $arb->UpdateSubscriptionRequest();
-
-            // Test and print results
-            $success = $arb->success;
-
-            if ( $success )
-                $this->user->account->set_settings(array( 'arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+//            // Set variables
+//            $arb->setSubscriptionId($settings['arb-subscription-id']);
+//            $arb->setAmount( $settings['arb-subscription-amount'] );
+//            $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
+//            $arb->setOrderDetails('Managed Website Monthly Payment');
+//            $arb->setCustomerId( $this->user->id );
+//            $arb->setCustomerPhone( $this->user->work_phone );
+//            $arb->setCustomerEmail( $this->user->email );
+//
+//            // Set billing information
+//            $arb->setBillingName( $_POST['first-name'], $_POST['last-name'] );
+//            $arb->setBillingAddress( $_POST['address'] );
+//            $arb->setBillingCity( $_POST['city'] );
+//            $arb->setBillingState( $_POST['state'] ); //full state name can be used (i.e. Massachusetts)
+//            $arb->setBillingZip( $_POST['zip'] );
+//            $arb->setBillingCountry('United States'); // optional
+//
+//            // set the payment details (one of the two options is required)
+//            $arb->setPaymentDetails( $_POST['ccnum'], $_POST['ccexpy'] . '-' . $_POST['ccexpm'] );
+//
+//            // Submit the subscription request
+//            $arb->UpdateSubscriptionRequest();
+//
+//            // Test and print results
+//            $success = $arb->success;
+//
+//            if ( $success )
+//                $this->user->account->set_settings(array( 'arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
         }
+
+        $this->resources->javascript('settings/services');
 
         return $this->get_template_response( 'services' )
             ->kb( 0 )
