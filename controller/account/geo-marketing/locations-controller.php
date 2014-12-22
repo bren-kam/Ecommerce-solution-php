@@ -175,11 +175,12 @@ class LocationsController extends BaseController {
 
             $post['locationName'] = ucwords( strtolower( $post['locationName'] ) );
             $post['address'] = ucwords( strtolower( $post['address'] ) );
+            $post['address2'] = ucwords( strtolower( $post['address2'] ) );
             $post['city'] = ucwords( strtolower( $post['city'] ) );
 
             $website_yext_location->synchronize_products = (int) isset( $post['synchronize-products'] );
             $website_yext_location->name = $post['locationName'];
-            $website_yext_location->address = "{$post['address']}<br>{$post['city']}, {$post['state']} {$post['zip']}";
+            $website_yext_location->address = "{$post['address']} {$post['address2']}<br>{$post['city']}, {$post['state']} {$post['zip']}";
             $website_yext_location->website_id = $this->user->account->id;
 
             if ( $post['logo-url'] ) {

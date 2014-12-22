@@ -22,6 +22,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <div class="form-group">
                         <label for="address">Address Line 1:*</label><input type="text" class="form-control" name="address" id="address" value="<?php echo $location['address'] ?>"/>
                     </div>
+                    <div class="form-group">
+                        <label for="address2">Address Line 2:</label><input type="text" class="form-control" name="address2" id="address2" value="<?php echo $location['address2'] ?>"/>
+                    </div>
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="form-group">
