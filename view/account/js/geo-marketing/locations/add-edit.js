@@ -56,12 +56,16 @@ LocationForm = {
         if ( !categoryId )
             return;
 
+        if ( $('#category-list li').size() == 10 )
+            return;
+
         LocationForm.categoryTemplate.clone()
             .prepend( categoryName )
             .find( 'input:hidden' ).val( categoryId ).end()
             .appendTo( '#category-list' );
 
         $('#add-edit-location :submit').removeAttr('disabled');
+        $(this).find(':selected').attr('disabled', 'disabled');
         $(this).val('');
     }
 
@@ -69,7 +73,10 @@ LocationForm = {
      * Remove Category
      */
     , removeCategory: function() {
+        var categoryId = $(this).parents('li:first').find( 'input:hidden').val()
         $(this).parents('li:first').remove();
+
+        $('#yext-categories').find('[value=' + categoryId + ']').removeAttr('disabled');
 
         if ( $('#category-list li').size() == 0 ) {
             $('#add-edit-location :submit').attr('disabled', 'disabled');
