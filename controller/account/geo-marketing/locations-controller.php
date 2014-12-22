@@ -81,7 +81,7 @@ class LocationsController extends BaseController {
             $website_yext_location->remove();
 
             // There is no DELETE location for YEXT - But remove it's subscriptions
-            $yext_website_subscription_id = YEXT::SUBSCRIPTION_ID; // $this->user->account->get_settings( 'yext-subscription-id' );
+            $yext_website_subscription_id = YEXT::$SUBSCRIPTION_ID; // $this->user->account->get_settings( 'yext-subscription-id' );
             if ( $yext_website_subscription_id ) {
                 $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
                 if ( $subscription && ($key = array_search((int)$_GET['id'], $subscription->locationIds)) !== false ) {
@@ -133,7 +133,7 @@ class LocationsController extends BaseController {
             $yext_categories[ $category->id ] = $category->name;
         }
 
-        $yext_website_subscription_id = YEXT::SUBSCRIPTION_ID;  // $this->user->account->get_settings( 'yext-subscription-id' );
+        $yext_website_subscription_id = YEXT::$SUBSCRIPTION_ID;  // $this->user->account->get_settings( 'yext-subscription-id' );
 
         // Check if they can add more Locations
         if ( !isset( $_REQUEST['id'] ) ) {
