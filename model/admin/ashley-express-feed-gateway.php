@@ -62,7 +62,7 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
      */
     public function get_ftp( Account $account ) {
         // Initialize variables
-        $settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
+        $settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder', 'payment-gateway-status' );
         $username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
         $password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
 
@@ -72,7 +72,12 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
         if ( '-' != substr( $folder, -1 ) )
             $folder .= '-';
 
-        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
+        $payment_gateway_status = (bool) $settings['payment-gateway-status'];
+        if ( $payment_gateway_status ) {
+            $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
+        } else {
+            $subfolder = "/test";
+        }
 
         // Setup FTP
         $ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );

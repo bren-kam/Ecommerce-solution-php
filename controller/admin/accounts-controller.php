@@ -250,6 +250,7 @@ class AccountsController extends BaseController {
             , 'domain_registration'
             , 'additional_email_addresses'
             , 'social_media'
+            , 'geo_marketing'
         );
 
         foreach ( $features as $feature ) {
@@ -1380,6 +1381,9 @@ class AccountsController extends BaseController {
                 $sendgrid->email->add( $email_list->name, $emails );
             }
         }
+
+        $sendgrid->setup_filter();
+        $sendgrid->filter->event_notify( 0, 0, 0, 0, 0, 0, 0, 1, 0, 'https://api.imagineretailer.com/?api_key=0e63566eb07d3369836e2b59e85b9845&method=sendgrid_event_callback&aid=' . $account->id );
 
         // Create response
         $response = new AjaxResponse( true );

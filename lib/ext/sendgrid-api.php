@@ -84,6 +84,20 @@ class SendGridAPI {
     public $category;
 
     /**
+     * Hold Filter
+     *
+     * @var SendGridFilterAPI
+     */
+    public $filter;
+
+    /**
+     * Hold Unsubscribes
+     *
+     * @var SendGridUnsubscribesAPI
+     */
+    public $unsubscribes;
+
+    /**
      * A few variables that will determine the basic status
      */
     protected $response_message = NULL;
@@ -225,6 +239,20 @@ class SendGridAPI {
      */
     public function setup_category() {
         $this->_setup( 'category' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_filter() {
+        $this->_setup( 'filter' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_unsubscribes() {
+        $this->_setup( 'unsubscribes' );
     }
 
     /**

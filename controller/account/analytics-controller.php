@@ -242,7 +242,7 @@ class AnalyticsController extends BaseController {
         foreach ( $records as $r_date => $r_value ) {
             $visits_plotting_array[] = array( $r_date, $r_value );
         }
-
+		
         // Sparklines
         $sparklines['direct'] = $analytics->sparkline( 'direct' );
         $sparklines['referring'] = $analytics->sparkline( 'referring' );

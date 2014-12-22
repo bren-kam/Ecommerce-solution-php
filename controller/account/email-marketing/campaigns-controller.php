@@ -187,7 +187,7 @@ class CampaignsController extends BaseController {
         } else {
             $email_template = new EmailTemplate();
             $email_templates = $email_template->get_by_account( $this->user->account->id );
-            $email_template = current( $email_templates );
+            $email_template = end( $email_templates );
             $email_message->email_template_id = $email_template->email_template_id;
         }
 
@@ -254,7 +254,7 @@ class CampaignsController extends BaseController {
         } else {
             $email_template = new EmailTemplate();
             $email_templates = $email_template->get_by_account( $this->user->account->id );
-            $email_template = current( $email_templates );
+            $email_template = end( $email_templates );
             $campaign->email_template_id = $email_template->email_template_id;
         }
 
