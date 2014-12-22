@@ -1155,7 +1155,7 @@ class AccountsController extends BaseController {
         }
 
         // Deactivate account
-        $account->status = 0;
+        $account->status = Account::STATUS_INACTIVE;
         $account->user_id_updated = $this->user->id;
         $account->save();
 
@@ -1751,6 +1751,11 @@ class AccountsController extends BaseController {
         echo 'Finished!'; die;
     }
 
+    /**
+     * Reactivate account (ghosted or canceled)
+     *
+     * @return RedirectResponse
+     */
     public function reactivate() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );
@@ -1759,14 +1764,20 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         if (  $account->id ) {
-            $account->status = 1;
+            $account->status = Account::STATUS_ACTIVE;
             $account->save();
         }
 
         $this->notify( _("Account reactivated") );
+
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Resynchronize Email Lists (Sendgrid and others)
+     *
+     * @return RedirectResponse
+     */
     public function resync_email_lists() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );
@@ -1774,14 +1785,19 @@ class AccountsController extends BaseController {
         $account = new Account();
         $account->get( $_GET['aid'] );
 
-        if (  $account->id ) {
+        if (  $account->id )
             $account->resync_sendgrid_lists();
-        }
 
         $this->notify( _("Email Lists Synced") );
+
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Created Index for products
+     *
+     * @return RedirectResponse
+     */
     public function index_products() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );

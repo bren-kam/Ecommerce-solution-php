@@ -145,6 +145,93 @@ class SettingsController extends BaseController {
             ->select( 'billing-information' );
     }
 
+    /**
+     * Services
+     *
+     * @return TemplateResponse
+     */
+    protected function services() {
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+        $success = false;
+
+        if ( $this->verified() && $settings['arb-subscription-amount'] > 0 ) {
+            $services = array(
+                'shopping-cart'         => 50
+                , 'blog'                => 100
+                , 'email-marketing'     => 100
+                , 'social-media'        => 100
+                , 'gm-listings'         => 100
+                , 'gm-reviews'          => 100
+            );
+
+            $new_price = $settings['arb-subscription-amount'];
+            $new_services = $old_services = array();
+
+            foreach ( $services as $service => $price ) {
+                if ( !in_array( $service, array( 'gm-listings', 'gm-reviews') ) ) {
+                    $service_name = str_replace('-', '_', $service);
+                    if ($this->user->account->$service_name && !isset($_POST[$service])) {
+                        $new_price -= $price;
+                        $old_services[] = ucwords(str_replace('-', ' ', $service));
+                        $this->user->account->$service_name = 0;
+                    } elseif (!$this->user->account->$service_name && isset($_POST[$service])) {
+                        $new_price += $price;
+                        $new_services[] = ucwords(str_replace('-', ' ', $service));
+                        $this->user->account->$service_name = 1;
+                    }
+                }
+
+            }
+
+            if ( $_POST['new-price'] == $new_price ) {
+                library('arb');
+
+                // Create instance of ARB
+                $arb = new arb($this->user->account->title);
+
+                // Set variables
+                $arb->setSubscriptionId($settings['arb-subscription-id']);
+                $arb->setAmount($new_price);
+                $arb->setTotalOccurrences('9999'); // if omitted, default is 9999(forever)
+                $arb->setOrderDetails('Managed Website Monthly Payment');
+                $arb->setCustomerId($this->user->id);
+                $arb->setCustomerPhone($this->user->work_phone);
+                $arb->setCustomerEmail($this->user->email);
+
+                // Submit the subscription request
+                $arb->UpdateSubscriptionRequest();
+
+                // Test and print results
+                $success = $arb->success;
+
+                if ( $success ) {
+                    $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+                    $this->user->account->save();
+
+                    // Create a ticket with changes
+                    $ticket = new Ticket();
+                    $ticket->user_id = $this->user->account->id;
+                    $ticket->assigned_to_user_id = $this->user->account->os_user_id;
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->summary = 'Account Service Change';
+                    $ticket->message = "New Services:\n" . implode("\n", $new_services) . "\n\nOld Services:\n" . implode("\n", $old_services);
+                    $ticket->status = Ticket::STATUS_OPEN;
+                    $ticket->priority = Ticket::PRIORITY_URGENT;
+                    $ticket->create();
+                }
+            }
+
+        }
+
+        $this->resources->javascript('settings/services');
+
+        return $this->get_template_response( 'services' )
+            ->kb( 0 )
+            ->add_title( _('Services') )
+            ->set( compact( 'settings', 'success' ) )
+            ->select( 'services' );
+    }
+
     /***** AJAX *****/
 
     /**
