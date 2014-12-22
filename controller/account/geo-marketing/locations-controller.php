@@ -43,12 +43,14 @@ class LocationsController extends BaseController {
         $location = new WebsiteYextLocation();
         $locations = $location->list_all( $dt->get_variables() );
         $dt->set_row_count( $location->count_all( $dt->get_count_variables() ) );
+        $delete_nonce = nonce::create( 'delete' );
 
         $data = [];
         foreach ( $locations as $location ) {
             $data[] = [
                 $location->name .
-                '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>'
+                '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>' .
+                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>'
                 , $location->address
                 , $location->status
             ];
@@ -76,13 +78,23 @@ class LocationsController extends BaseController {
         if ( $website_yext_location->id ) {
             library('yext');
             $yext = new YEXT( $this->user->account );
-            $response = $yext->delete( "locations/{$_GET['id']}" );
-            if ( isset( $response->errors ) ) {
-                $response->notify( 'Your Location could not be deleted. ' . $response->errors[0]->message , false );
-            } else {
-                $website_yext_location->remove();
-                $response->add_response( 'reload_datatable', 'reload_datatable' );
+            $website_yext_location->remove();
+
+            // There is no DELETE location for YEXT - But remove it's subscriptions
+            $yext_website_subscription_id = $this->user->account->get_settings( 'yext-subscription-id' );
+            if ( $yext_website_subscription_id ) {
+                $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+                if ( $subscription && ($key = array_search((int)$_GET['id'], $subscription->locationIds)) !== false ) {
+                    unset( $subscription->locationIds[$key] );
+                    if ( empty( $subscription->locationIds ) ) {
+                        $subscription->status = 'CANCELED';
+                        $this->user->account->set_settings( [ 'yext-subscription-id' => null ] );
+                    }
+                    $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+                }
             }
+
+            $response->add_response( 'reload_datatable', 'reload_datatable' );
         }
 
         return $response;

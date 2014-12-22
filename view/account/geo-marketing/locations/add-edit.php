@@ -54,7 +54,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                 <select class="form-control" id="yext-categories">
                                     <option value="">-- Select a Category --</option>
                                     <?php foreach( $yext_categories as $k => $v ): ?>
-                                        <option value="<?php echo $k ?>" <?php if ( in_array( $k, $location['categoryIds'] ) ) echo 'disabled' ?>><?php echo $v ?></option>
+                                        <option value="<?php echo $k ?>" <?php if ( in_array( $k, (array)$location['categoryIds'] ) ) echo 'disabled' ?>><?php echo $v ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
