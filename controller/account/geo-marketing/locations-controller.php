@@ -14,7 +14,7 @@ class LocationsController extends BaseController {
         // Pass in the base for all the views
         parent::__construct();
 
-        $this->title = _('Locations | Geo Marketing');
+        $this->title = _('Locations | GeoMarketing');
     }
 
     /**

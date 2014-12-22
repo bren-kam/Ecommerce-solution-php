@@ -77,7 +77,7 @@ class AuthorizedUsersController extends BaseController {
         $form->add_field( 'checkbox', _('Blog'), 'cbBlog', $auth_user_website->blog );
         $form->add_field( 'checkbox', _('Email Marketing'), 'cbEmailMarketing', $auth_user_website->email_marketing );
         $form->add_field( 'checkbox', _('Shopping Cart'), 'cbShoppingCart', $auth_user_website->shopping_cart );
-        $form->add_field( 'checkbox', _('Geo Marketing'), 'cbGeoMarketing', $auth_user_website->geo_marketing );
+        $form->add_field( 'checkbox', _('GeoMarketing'), 'cbGeoMarketing', $auth_user_website->geo_marketing );
 
         if ( $form->posted() ) {
             $success = true;
