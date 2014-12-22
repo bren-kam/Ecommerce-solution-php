@@ -113,10 +113,10 @@ class LocationsController extends BaseController {
             ,'VISA' => 'Visa'
         ];
 
-        $yext_category_id = $this->user->account->get_settings( 'yext-category' );
-        if ( !$yext_category_id ) {
-            $this->notify( 'Your account has no Geomarketing Category configured. Please contact your Online Specialist', false );
-            return new RedirectResponse( '/geo-marketing/locations' );
+        $yext_category_list = ( new WebsiteYextCategory() )->get_all();
+        $yext_categories = [];
+        foreach ( $yext_category_list as $category ) {
+            $yext_categories[ $category->id ] = $category->name;
         }
 
         $yext_website_subscription_id = $this->user->account->get_settings( 'yext-subscription-id' );
@@ -218,9 +218,6 @@ class LocationsController extends BaseController {
                 unset( $post['store-photo'] );
             }
 
-            // TODO: Get from Config
-            $post['categoryIds'] = [ $yext_category_id ];
-
             if ( !$website_yext_location->id ) {
                 // Create
                 $website_yext_location->create();
@@ -264,14 +261,12 @@ class LocationsController extends BaseController {
 
         }
 
-//        $form_html = $form->generate_form();
-
         $this->resources->css( 'geo-marketing/locations/add-edit', 'media-manager' )
             ->javascript( 'geo-marketing/locations/add-edit', 'media-manager' );
 
         return $this->get_template_response( 'geo-marketing/locations/add-edit' )
             ->menu_item('geo-marketing/locations/add-edit')
-            ->set( compact( 'location', 'payment_options' ) )
+            ->set( compact( 'location', 'payment_options', 'yext_categories' ) )
             ->kb( 148 );
     }
 

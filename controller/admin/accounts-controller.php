@@ -458,7 +458,6 @@ class AccountsController extends BaseController {
             , 'arb-subscription-id'
             , 'arb-subscription-amount'
             , 'yext-max-locations'
-            , 'yext-category'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -490,14 +489,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
-        // Get Yext Categories
-        $yext_categories = ( new WebsiteYextCategory() )->get_all();
-        $category_options = [];
-        foreach ( $yext_categories as $category ) {
-            $category_options[ $category->id ] = $category->name;
-        }
-        $ft->add_field( 'select', 'Geomarketing Category', 'tYextCategory', $settings['yext-category'] )
-            ->options( $category_options );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -540,7 +531,6 @@ class AccountsController extends BaseController {
                 , 'arb-subscription-id' => $_POST['tARBSubscriptionID']
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
                 , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
-                , 'yext-category' => (int) $_POST['tYextCategory']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );

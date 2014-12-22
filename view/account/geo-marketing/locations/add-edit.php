@@ -47,6 +47,39 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <label for="phone">Phone:*</label><input type="text" class="form-control" name="phone" id="phone" value="<?php echo $location['phone'] ?>"/>
                     </div>
 
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="phone">Categories (up to 10):*</label>
+                                <select class="form-control" id="yext-categories">
+                                    <option value="">-- Select a Category --</option>
+                                    <?php foreach( $yext_categories as $k => $v ): ?>
+                                        <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <p><strong>Current Location Categories:</strong></p>
+                            <ul id="category-list">
+                                <?php if ( $location['categoryIds'] ): ?>
+                                    <?php foreach( $location['categoryIds'] as $category_id ): ?>
+                                        <li>
+                                            <?php echo $yext_categories[$category_id] ?>
+                                            <input type="hidden" name="categoryIds[]" value="<?php echo $category_id ?>" />
+                                            <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+
+                                <li id="category-template">
+                                    <input type="hidden" name="categoryIds[]" />
+                                    <a href="javascript:;" class="remove"><i class="fa fa-trash-o"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </section>
         </div>
@@ -119,14 +152,15 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <label for="description">Description:</label><textarea name="description" id="description" cols="50" rows="3" class="form-control" rte="1"><?php echo $location['description'] ?></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label for="paymentOptions">Payment Options:</label>
-                        <select name="paymentOptions[]" id="paymentOptions" class="form-control" multiple="multiple">
-                            <?php foreach( $payment_options as $k => $v ): ?>
-                                <option value="<?php echo $k ?>" <?php if ( in_array( $k, (array)$location['paymentOptions'] ) ) echo 'selected' ?>><?php echo $v ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                    <p><strong>Payment Options:</strong></p>
+                    <?php foreach( $payment_options as $k => $v ): ?>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="paymentOptions[]" value="<?php echo $k ?>" <?php if ( in_array( $k, (array)$location['paymentOptions'] ) ) echo 'checked' ?> />
+                                <?php echo $v ?>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
 
                 </div>
             </section>

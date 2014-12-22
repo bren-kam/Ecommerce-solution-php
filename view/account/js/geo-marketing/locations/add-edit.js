@@ -1,11 +1,22 @@
 LocationForm = {
 
+    categoryTemplate: null
+
     /**
      * Init
      */
-    init: function() {
+    , init: function() {
         LocationForm.setupValidation();
         MediaManager.submit = LocationForm.setImage;
+
+        LocationForm.categoryTemplate = $('#category-template').clone().removeAttr('id');
+
+        $('#category-template').remove();
+        $('#yext-categories').change( LocationForm.addCategory );
+        $('#category-list').on( 'click', '.remove', LocationForm.removeCategory );
+        if ( $('#category-list li').size() == 0 ) {
+            $('#add-edit-location :submit').attr('disabled', 'disabled');
+        }
     }
 
     /**
@@ -32,6 +43,36 @@ LocationForm = {
             $( MediaManager.options.imageTarget )
                 .find('img:first').attr('src', file.url).end()
                 .find('input').val(file.url).end();
+        }
+    }
+
+    /**
+     * Add Category
+     */
+    , addCategory: function() {
+        var categoryId = $(this).val();
+        var categoryName = $(this).find(':selected').text();
+
+        if ( !categoryId )
+            return;
+
+        LocationForm.categoryTemplate.clone()
+            .prepend( categoryName )
+            .find( 'input:hidden' ).val( categoryId ).end()
+            .appendTo( '#category-list' );
+
+        $('#add-edit-location :submit').removeAttr('disabled');
+        $(this).val('');
+    }
+
+    /**
+     * Remove Category
+     */
+    , removeCategory: function() {
+        $(this).parents('li:first').remove();
+
+        if ( $('#category-list li').size() == 0 ) {
+            $('#add-edit-location :submit').attr('disabled', 'disabled');
         }
     }
 
