@@ -172,6 +172,10 @@ class LocationsController extends BaseController {
 
             $post = $_POST;
 
+            $post['locationName'] = ucwords( strtolower( $post['locationName'] ) );
+            $post['address'] = ucwords( strtolower( $post['address'] ) );
+            $post['city'] = ucwords( strtolower( $post['city'] ) );
+
             $website_yext_location->synchronize_products = (int) isset( $post['synchronize-products'] );
             $website_yext_location->name = $post['locationName'];
             $website_yext_location->address = "{$post['address']}<br>{$post['city']}, {$post['state']} {$post['zip']}";
