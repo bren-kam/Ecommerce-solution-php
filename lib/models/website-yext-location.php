@@ -8,7 +8,7 @@
 
 class WebsiteYextLocation extends ActiveRecordBase {
 
-    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update, $status;
+    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update, $status, $customm_photos;
 
     public function __construct() {
         parent::__construct( 'website_yext_location' );
@@ -309,7 +309,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
 
         $images = array_slice( $images, 0, 4 );
 
-        if ( isset( $yext_location->photos ) && $yext_location->photos ) {
+        if ( isset( $yext_location->photos ) && count($yext_location->photos) == 1 ) {
             $yext_location->photos = array_merge(
                 [ $yext_location->photos[0] ],
                 $images

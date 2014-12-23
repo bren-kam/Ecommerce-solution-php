@@ -169,6 +169,15 @@ class LocationsController extends BaseController {
             $location['store-photo'] = $location['photos'][0]->url;
         }
 
+        if ( count($location['photos']) >= 4 ) {
+            $location['custom-photos'] = array_slice( $location['photos'], -4 );
+            foreach( $location['custom-photos'] as &$cp ) {
+                $cp = (array) $cp;
+            }
+        } else {
+            $location['custom-photos'] = [ [], [], [], [] ];
+        }
+
         if ( $this->verified() ) {
 
             $post = $_POST;
@@ -177,6 +186,15 @@ class LocationsController extends BaseController {
             $post['address'] = ucwords( strtolower( $post['address'] ) );
             $post['address2'] = ucwords( strtolower( $post['address2'] ) );
             $post['city'] = ucwords( strtolower( $post['city'] ) );
+
+            // Some Custom Valiations
+            // All of this element can't have more than 10 lines
+            $error_messages = [];
+            foreach( [ 'videoUrls', 'emails', 'specialities', 'services', 'brands', 'languages', 'keywords' ] as $element ) {
+                if ( count( explode( "\n", $post[$element] ) ) > 10 ) {
+                    $error_messages[] = "The field '$element' can not have more than 10 lines";
+                }
+            }
 
             $website_yext_location->synchronize_products = (int) isset( $post['synchronize-products'] );
             $website_yext_location->name = $post['locationName'];
@@ -214,6 +232,17 @@ class LocationsController extends BaseController {
                 unset( $post['store-photo'] );
             }
 
+            if ( $post['custom-photos'] ) {
+                foreach( $post['custom-photos'] as $k => $custom_photo ) {
+                    if ( $custom_photo ) {
+                        $photo_index = $k+1;
+                        $post['photos'][$photo_index] = [
+                            'url' => $custom_photo
+                        ];
+                    }
+                }
+            }
+
             // remove unwanted fields
             unset( $post['_nonce'] );
             unset( $post['synchronize-products'] );
@@ -235,47 +264,55 @@ class LocationsController extends BaseController {
             if ( !$post['store-photo'] ) {
                 unset( $post['store-photo'] );
             }
+            unset( $post['custom-photos'] );
 
-            if ( !$website_yext_location->id ) {
-                // Create
-                $website_yext_location->create();
-                $post['id'] = $website_yext_location->id;
-                $response = $yext->post( 'locations', $post );
-                if ( isset( $response->errors ) ) {
-                    $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
-                    $website_yext_location->remove();
-                    return new RedirectResponse( '/geo-marketing/locations' );
-                } else {
-                    $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
-                    $website_yext_location->save();
-                }
-
-                // Add add Location to Subscription
-                if ( $yext_website_subscription_id ) {
-                    $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
-                    $subscription->locationIds[] = $website_yext_location->id;
-                    $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
-                } else {
-                    // If we don't have a Subscription ID, create it!
-                    $subscription = $yext->post( 'subscriptions', [
-                        'offerId' => YEXT::OFFER_ID
-                        , 'locationIds' => [ $website_yext_location->id ]
-                    ]);
-                    $this->user->account->set_settings( [ 'yext-subscription-id' => $subscription->id ] );
-                }
+            if ( $error_messages ) {
+                $error_messages = '<div class="alert alert-danger">'. implode( '<br>', $error_messages ) .'</div>';
+                $location = $post;
             } else {
-                // Update
-                $website_yext_location->save();
-                $response = $yext->put( "locations/{$website_yext_location->id}", $post );
-                if ( isset( $response->errors ) ) {
-                    $this->notify( 'Your Location could not be updated. ' . $response->errors[0]->message , false );
-                    return new RedirectResponse( '/geo-marketing/locations' );
+
+                if ( !$website_yext_location->id ) {
+                    // Create
+                    $website_yext_location->create();
+                    $post['id'] = $website_yext_location->id;
+                    $response = $yext->post( 'locations', $post );
+                    if ( isset( $response->errors ) ) {
+                        $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
+                        $website_yext_location->remove();
+                        return new RedirectResponse( '/geo-marketing/locations' );
+                    } else {
+                        $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
+                        $website_yext_location->save();
+                    }
+
+                    // Add add Location to Subscription
+                    if ( $yext_website_subscription_id ) {
+                        $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+                        $subscription->locationIds[] = $website_yext_location->id;
+                        $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+                    } else {
+                        // If we don't have a Subscription ID, create it!
+                        $subscription = $yext->post( 'subscriptions', [
+                            'offerId' => YEXT::OFFER_ID
+                            , 'locationIds' => [ $website_yext_location->id ]
+                        ]);
+                        $this->user->account->set_settings( [ 'yext-subscription-id' => $subscription->id ] );
+                    }
                 } else {
-                    $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
+                    // Update
                     $website_yext_location->save();
+                    $response = $yext->put( "locations/{$website_yext_location->id}", $post );
+                    if ( isset( $response->errors ) ) {
+                        $this->notify( 'Your Location could not be updated. ' . $response->errors[0]->message , false );
+                        return new RedirectResponse( '/geo-marketing/locations' );
+                    } else {
+                        $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
+                        $website_yext_location->save();
+                    }
                 }
+                return new RedirectResponse( '/geo-marketing/locations' );
+
             }
-            return new RedirectResponse( '/geo-marketing/locations' );
 
         }
 
@@ -284,7 +321,7 @@ class LocationsController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/locations/add-edit' )
             ->menu_item('geo-marketing/locations/add-edit')
-            ->set( compact( 'location', 'payment_options', 'yext_categories' ) )
+            ->set( compact( 'location', 'payment_options', 'yext_categories', 'error_messages' ) )
             ->kb( 148 );
     }
 

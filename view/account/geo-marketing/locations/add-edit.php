@@ -16,19 +16,21 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
                 <div class="panel-body">
 
+                    <?php echo $error_messages ?>
+
                     <div class="form-group">
-                        <label for="locationName">Name:*</label><input type="text" class="form-control" name="locationName" id="locationName" value="<?php echo $location['locationName'] ?>"/>
+                        <label for="locationName">Name:*</label><input type="text" class="form-control" name="locationName" id="locationName" value="<?php echo $location['locationName'] ?>" maxlength="100"/>
                     </div>
                     <div class="form-group">
-                        <label for="address">Address Line 1:*</label><input type="text" class="form-control" name="address" id="address" value="<?php echo $location['address'] ?>"/>
+                        <label for="address">Address Line 1:*</label><input type="text" class="form-control" name="address" id="address" value="<?php echo $location['address'] ?>" maxlength="255"/>
                     </div>
                     <div class="form-group">
-                        <label for="address2">Address Line 2:</label><input type="text" class="form-control" name="address2" id="address2" value="<?php echo $location['address2'] ?>"/>
+                        <label for="address2">Address Line 2:</label><input type="text" class="form-control" name="address2" id="address2" value="<?php echo $location['address2'] ?>" maxlength="255"/>
                     </div>
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="form-group">
-                                <label for="city">City:*</label><input type="text" class="form-control" name="city" id="city" value="<?php echo $location['city'] ?>"/>
+                                <label for="city">City:*</label><input type="text" class="form-control" name="city" id="city" value="<?php echo $location['city'] ?>" maxlength="80"/>
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -41,13 +43,13 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group">
-                                <label for="zip">ZIP:*</label><input type="text" class="form-control" name="zip" id="zip" value="<?php echo $location['zip'] ?>"/>
+                                <label for="zip">ZIP:*</label><input type="text" class="form-control" name="zip" id="zip" value="<?php echo $location['zip'] ?>" maxlength="10"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="phone">Phone:*</label><input type="text" class="form-control" name="phone" id="phone" value="<?php echo $location['phone'] ?>"/>
+                        <label for="phone">Phone:*</label><input type="text" class="form-control" name="phone" id="phone" value="<?php echo $location['phone'] ?>" maxlength="10"/>
                     </div>
 
                     <div class="row">
@@ -100,12 +102,12 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="faxPhone">Fax Phone:</label><input type="text" class="form-control" name="faxPhone" id="faxPhone" value="<?php echo $location['faxPhone'] ?>"/>
+                                <label for="faxPhone">Fax Phone:</label><input type="text" class="form-control" name="faxPhone" id="faxPhone" value="<?php echo $location['faxPhone'] ?>" maxlength="10"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="mobilePhone">Mobile Phone:</label><input type="text" class="form-control" name="mobilePhone" id="mobilePhone" value="<?php echo $location['mobilePhone'] ?>"/>
+                                <label for="mobilePhone">Mobile Phone:</label><input type="text" class="form-control" name="mobilePhone" id="mobilePhone" value="<?php echo $location['mobilePhone'] ?>" maxlength="10"/>
                             </div>
                         </div>
                     </div>
@@ -113,12 +115,12 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="tollFreePhone">Toll Free Phone:</label><input type="text" class="form-control" name="tollFreePhone" id="tollFreePhone" value="<?php echo $location['tollFreePhone'] ?>"/>
+                                <label for="tollFreePhone">Toll Free Phone:</label><input type="text" class="form-control" name="tollFreePhone" id="tollFreePhone" value="<?php echo $location['tollFreePhone'] ?>" maxlength="10"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="ttyPhone">TTY Phone:</label><input type="text" class="form-control" name="ttyPhone" id="ttyPhone" value="<?php echo $location['ttyPhone'] ?>"/>
+                                <label for="ttyPhone">TTY Phone:</label><input type="text" class="form-control" name="ttyPhone" id="ttyPhone" value="<?php echo $location['ttyPhone'] ?>" maxlength="10"/>
                             </div>
                         </div>
                     </div>
@@ -126,33 +128,33 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="specialOffer">Special Offer:</label><input type="text" class="form-control" name="specialOffer" id="specialOffer" value="<?php echo $location['specialOffer'] ?>"/>
+                                <label for="specialOffer">Special Offer:</label><input type="text" class="form-control" name="specialOffer" id="specialOffer" value="<?php echo $location['specialOffer'] ?>" maxlength="50"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="yearEstabilished">Year Estabilished:</label><input type="text" class="form-control" name="yearEstabilished" id="yearEstabilished" value="<?php echo $location['yearEstabilished'] ?>"/>
+                                <label for="yearEstabilished">Year Estabilished:</label><input type="text" class="form-control" name="yearEstabilished" id="yearEstabilished" value="<?php echo $location['yearEstabilished'] ?>" maxlength="4"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="specialities">Specialities (one per line):</label><textarea name="specialities" id="specialities" cols="50" rows="3" class="form-control"><?php is_array($location['specialities']) ? implode( "\n", $location['specialities'] ) : $location['specialities'] ?></textarea>
+                        <label for="specialities">Specialities (one per line):</label><textarea name="specialities" id="specialities" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['specialities']) ? implode( "\n", $location['specialities'] ) : $location['specialities'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="services">Services (one per line):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control"><?php is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
+                        <label for="services">Services (one per line):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="brands">Brands (one per line):</label><textarea name="brands" id="brands" cols="50" rows="3" class="form-control"><?php is_array($location['brands']) ? implode( "\n", $location['brands'] ) : $location['brands'] ?></textarea>
+                        <label for="brands">Brands (one per line):</label><textarea name="brands" id="brands" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['brands']) ? implode( "\n", $location['brands'] ) : $location['brands'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="languages">Languages (one per line) :</label><textarea name="languages" id="languages" cols="50" rows="3" class="form-control"><?php is_array($location['languages']) ? implode( "\n", $location['languages'] ) : $location['languages'] ?></textarea>
+                        <label for="languages">Languages (one per line) :</label><textarea name="languages" id="languages" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['languages']) ? implode( "\n", $location['languages'] ) : $location['languages'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="keywords">Keywords (one per line):</label><textarea name="keywords" id="keywords" cols="50" rows="3" class="form-control"><?php is_array($location['keywords']) ? implode( "\n", $location['keywords'] ) : $location['keywords'] ?></textarea>
+                        <label for="keywords">Keywords (one per line):</label><textarea name="keywords" id="keywords" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['keywords']) ? implode( "\n", $location['keywords'] ) : $location['keywords'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="description">Description:</label><textarea name="description" id="description" cols="50" rows="3" class="form-control" rte="1"><?php echo $location['description'] ?></textarea>
+                        <label for="description">Description:</label><textarea name="description" id="description" cols="50" rows="3" class="form-control" rte="1" maxlength="2000"><?php echo $location['description'] ?></textarea>
                     </div>
 
                     <p><strong>Payment Options:</strong></p>
@@ -182,41 +184,41 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="hours">Hours:</label><input type="text" class="form-control" name="hours" id="hours" value="<?php echo $location['hours'] ?>"/>
+                                <label for="hours">Hours:</label><input type="text" class="form-control" name="hours" id="hours" value="<?php echo $location['hours'] ?>" maxlength="255"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="additionalHoursText">Additional Hours Text:</label><input type="text" class="form-control" name="additionalHoursText" id="additionalHoursText" value="<?php echo $location['additionalHoursText'] ?>"/>
+                                <label for="additionalHoursText">Additional Hours Text:</label><input type="text" class="form-control" name="additionalHoursText" id="additionalHoursText" value="<?php echo $location['additionalHoursText'] ?>" maxlength="255"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="specialOfferUrl">Special Offer URL:</label><input type="text" class="form-control" name="specialOfferUrl" id="specialOfferUrl" value="<?php echo $location['specialOfferUrl'] ?>"/>
+                        <label for="specialOfferUrl">Special Offer URL:</label><input type="text" class="form-control" name="specialOfferUrl" id="specialOfferUrl" value="<?php echo $location['specialOfferUrl'] ?>" maxlength="255"/>
                     </div>
                     <div class="form-group">
-                        <label for="websiteUrl">Website URL:</label><input type="text" class="form-control" name="websiteUrl" id="websiteUrl" value="<?php echo $location['websiteUrl'] ?>"/>
+                        <label for="websiteUrl">Website URL:</label><input type="text" class="form-control" name="websiteUrl" id="websiteUrl" value="<?php echo $location['websiteUrl'] ?>" maxlength="255"/>
                     </div>
                     <div class="form-group">
-                        <label for="reservationsUrl">Reservations URL:</label><input type="text" class="form-control" name="reservationsUrl" id="reservationsUrl" value="<?php echo $location['reservationsUrl'] ?>"/>
+                        <label for="reservationsUrl">Reservations URL:</label><input type="text" class="form-control" name="reservationsUrl" id="reservationsUrl" value="<?php echo $location['reservationsUrl'] ?>" maxlength="255"/>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="facebookPageUrl">Facebook Page URL:</label><input type="text" class="form-control" name="facebookPageUrl" id="facebookPageUrl" value="<?php echo $location['facebookPageUrl'] ?>"/>
+                                <label for="facebookPageUrl">Facebook Page URL:</label><input type="text" class="form-control" name="facebookPageUrl" id="facebookPageUrl" value="<?php echo $location['facebookPageUrl'] ?>" maxlength="255"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>"/>
+                                <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>" maxlength="15"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="emails">Emails (one per line):</label><textarea name="emails" id="emails" cols="50" rows="3" class="form-control"><?php is_array($location['emails']) ? implode( "\n", $location['emails'] ) : $location['emails'] ?></textarea>
+                        <label for="emails">Emails (one per line):</label><textarea name="emails" id="emails" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['emails']) ? implode( "\n", $location['emails'] ) : $location['emails'] ?></textarea>
                     </div>
 
                 </div>
@@ -264,6 +266,28 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                 </button>
                             </p>
                         </div>
+                    </div>
+
+                    <div class="row">
+                        <?php foreach( $location['custom-photos'] as $k => $image ): ?>
+                            <div class="col-lg-6">
+                                <p class="image-selector" id="custom-photo-<?php echo $k ?>">
+                                    <strong>Image/Photo:</strong>
+                                    <img src="<?php echo isset( $image['url'] ) ? $image['url'] : '//placehold.it/200x200' ?>" />
+                                    <input type="hidden" name="custom-photos[<?php echo $k ?>]" value="<?php echo $image['url'] ?>" />
+                                    <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
+                                            data-media-manager
+                                            data-upload-url="<?php echo $upload_url ?>"
+                                            data-search-url="<?php echo $search_url ?>"
+                                            data-delete-url="<?php echo $delete_url ?>"
+                                            data-image-target="#custom-photo-<?php echo $k ?>">
+                                        Select an Image
+                                    </button>
+                                </p>
+                            </div>
+                            <?php if ( $k & 1 ) echo '</div><div class="row">'; ?>
+
+                        <?php endforeach; ?>
                     </div>
 
                     <div class="form-group">

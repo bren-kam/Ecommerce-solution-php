@@ -40,7 +40,7 @@ LocationForm = {
         var file = MediaManager.view.find( '.mm-file.selected:first').parents( 'li:first').data();
 
         if ( file && MediaManager.isImage( file ) ) {
-            $( MediaManager.options.imageTarget )
+            $( MediaManager.targetOptions.imageTarget )
                 .find('img:first').attr('src', file.url).end()
                 .find('input').val(file.url).end();
         }
