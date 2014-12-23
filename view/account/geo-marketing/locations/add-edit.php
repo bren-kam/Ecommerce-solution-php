@@ -139,19 +139,19 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="form-group">
-                        <label for="specialities">Specialities (one per line):</label><textarea name="specialities" id="specialities" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['specialities']) ? implode( "\n", $location['specialities'] ) : $location['specialities'] ?></textarea>
+                        <label for="specialities">Specialities (one per line - max 10 lines):</label><textarea name="specialities" id="specialities" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['specialities']) ? implode( "\n", $location['specialities'] ) : $location['specialities'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="services">Services (one per line):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
+                        <label for="services">Services (one per line - max 10 lines):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="brands">Brands (one per line):</label><textarea name="brands" id="brands" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['brands']) ? implode( "\n", $location['brands'] ) : $location['brands'] ?></textarea>
+                        <label for="brands">Brands (one per line - max 10 lines):</label><textarea name="brands" id="brands" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['brands']) ? implode( "\n", $location['brands'] ) : $location['brands'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="languages">Languages (one per line) :</label><textarea name="languages" id="languages" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['languages']) ? implode( "\n", $location['languages'] ) : $location['languages'] ?></textarea>
+                        <label for="languages">Languages (one per line - max 10 lines) :</label><textarea name="languages" id="languages" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['languages']) ? implode( "\n", $location['languages'] ) : $location['languages'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="keywords">Keywords (one per line):</label><textarea name="keywords" id="keywords" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['keywords']) ? implode( "\n", $location['keywords'] ) : $location['keywords'] ?></textarea>
+                        <label for="keywords">Keywords (one per line - max 10 lines):</label><textarea name="keywords" id="keywords" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['keywords']) ? implode( "\n", $location['keywords'] ) : $location['keywords'] ?></textarea>
                     </div>
                     <div class="form-group">
                         <label for="description">Description:</label><textarea name="description" id="description" cols="50" rows="3" class="form-control" rte="1" maxlength="2000"><?php echo $location['description'] ?></textarea>
@@ -218,7 +218,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="form-group">
-                        <label for="emails">Emails (one per line):</label><textarea name="emails" id="emails" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['emails']) ? implode( "\n", $location['emails'] ) : $location['emails'] ?></textarea>
+                        <label for="emails">Emails (one per line - max 10 lines):</label><textarea name="emails" id="emails" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['emails']) ? implode( "\n", $location['emails'] ) : $location['emails'] ?></textarea>
                     </div>
 
                 </div>
@@ -291,7 +291,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="form-group">
-                        <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
+                        <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line - max 10 lines):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" name="synchronize-products" id="synchronize-products33" value="1" <?php if ( $location['synchronize-products'] ) echo 'checked' ?> />List top 100 products on location</label>
