@@ -160,7 +160,7 @@ class SettingsController extends BaseController {
                 , 'blog'                => 100
                 , 'email-marketing'     => 100
                 , 'social-media'        => 100
-                , 'gm-listings'         => 100
+                , 'geo-marketing'       => 100
                 , 'gm-reviews'          => 100
             );
 
@@ -168,7 +168,7 @@ class SettingsController extends BaseController {
             $new_services = $old_services = array();
 
             foreach ( $services as $service => $price ) {
-                if ( !in_array( $service, array( 'gm-listings', 'gm-reviews') ) ) {
+                if ( !in_array( $service, array('gm-reviews') ) ) {
                     $service_name = str_replace('-', '_', $service);
                     if ($this->user->account->$service_name && !isset($_POST[$service])) {
                         $new_price -= $price;

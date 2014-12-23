@@ -6,6 +6,7 @@
  * @var array $settings
  * @var bool $success
  */
+$settings['arb-subscription-amount'] = 399;
 ?>
 
 <div class="row-fluid">
@@ -54,19 +55,19 @@
                             <div class="row">
                                 <div class="checkbox col-lg-8">
                                     <label for="shopping-cart">
-                                        <input type="checkbox" name="shopping-cart" id="shopping-cart" data-group="Website Add-On" data-price="50" value="1" <?php if ( $user->account->shopping_cart ) echo ' checked="checked" data-default="checked"'; ?>>
+                                        <input type="checkbox" name="shopping-cart" id="shopping-cart" data-group="Website Add-On" data-price="50" value="1"<?php if ( $user->account->shopping_cart ) echo ' checked="checked" data-default="checked"'; ?>>
                                         Shopping Cart ($50)
                                     </label>
                                 </div>
                                 <div class="checkbox col-lg-8">
                                     <label for="blog">
-                                        <input type="checkbox" name="blog" id="blog" value="1" data-group="Website Add-On" data-price="100" <?php if ( $user->account->blog ) echo ' checked="checked" data-default="checked"'; ?>>
+                                        <input type="checkbox" name="blog" id="blog" value="1" data-group="Website Add-On" data-price="100"<?php if ( $user->account->blog ) echo ' checked="checked" data-default="checked"'; ?>>
                                         Blog ($100)
                                     </label>
                                 </div>
                                 <div class="checkbox col-lg-8">
                                     <label for="email-marketing">
-                                        <input type="checkbox" name="email-marketing" id="email-marketing" data-group="Website Add-On" data-price="100" value="1" <?php if ( $user->account->email_marketing ) echo ' checked="checked" data-default="checked"'; ?>>
+                                        <input type="checkbox" name="email-marketing" id="email-marketing" data-group="Website Add-On" data-price="100" value="1"<?php if ( $user->account->email_marketing ) echo ' checked="checked" data-default="checked"'; ?>>
                                         Email Marketing ($100)
                                     </label>
                                 </div>
@@ -80,7 +81,7 @@
                             <div class="row">
                                 <div class="checkbox col-lg-8">
                                     <label for="social-media">
-                                        <input type="checkbox" name="social-media" id="social-media" data-group="Social Media" data-price="99" value="1" <?php if ( $user->account->social_media ) echo ' checked="checked" data-default="checked"'; ?>>
+                                        <input type="checkbox" name="social-media" id="social-media" data-group="Social Media" data-price="99" value="1"<?php if ( $user->account->social_media ) echo ' checked="checked" data-default="checked"'; ?>>
                                         Social Media Services ($99)
                                     </label>
                                 </div>
@@ -93,8 +94,8 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="checkbox col-lg-8">
-                                    <label for="gm-listings">
-                                        <input type="checkbox" name="gm-listings" id="gm-listings" data-group="GeoMarketing" data-price="100" value="1">
+                                    <label for="geo-marketing">
+                                        <input type="checkbox" name="geo-marketing" id="geo-marketing" data-group="GeoMarketing" data-price="100" value="1"<?php if ( $user->account->geo_marketing ) echo ' checked="checked" data-default="checked"'; ?>>
                                         Listing Services ($100)
                                     </label>
                                 </div>
