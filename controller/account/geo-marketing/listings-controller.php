@@ -91,7 +91,7 @@ class ListingsController extends BaseController {
             $data[] = [
                 $locations[ $listing->location_id ]->name . '<br>' . $action
                 , $listing->site_id
-                , $listing->status
+                , str_replace('_', ' ', $listing->status)
                 , '<a href="'. $listing->url .'">'. $listing->url .'</a>'
             ];
         }
