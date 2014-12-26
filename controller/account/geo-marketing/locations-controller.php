@@ -435,7 +435,7 @@ class LocationsController extends BaseController {
         }
 
         return $this->get_template_response( 'geo-marketing/locations/import-products' )
-            ->menu_item('geo-marketing/locations/import-products')
+            ->menu_item('geo-marketing/import-products')
             ->set( compact( 'skipped', 'success', 'response' ) )
             ->kb( 148 );
     }
