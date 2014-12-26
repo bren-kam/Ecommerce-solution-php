@@ -438,20 +438,22 @@ class LocationsController extends BaseController {
             $yext_location = (array) $yext->get("locations/{$location->id}");
             if ( empty($yext_location['lists']) ) {
                 $yext_location['lists'] = [[
-                    'name' => $yext_list['name']
+                    'id' => $yext_list['id']
+                    , 'name' => $yext_list['name']
                     , 'type' => 'PRODUCTS'
                 ]];
             } else {
                 $found = false;
                 foreach( $yext_location['lists'] as $list ) {
-                    if ( $list['name'] == $yext_list['name'] ) {
+                    if ( $list->name == $yext_list['name'] ) {
                         $found = true;
                         break;
                     }
                 }
                 if ( !$found ) {
                     $yext_location['lists'][] = [
-                        'name' => $yext_list['name']
+                        'id' => $yext_list['id']
+                        , 'name' => $yext_list['name']
                         , 'type' => 'PRODUCTS'
                     ];
                 }
