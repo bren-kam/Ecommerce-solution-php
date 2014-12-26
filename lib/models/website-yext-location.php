@@ -220,7 +220,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
         $yext_list_id = "{$location->website_id}-{$location->website_yext_location_id}-products";
         $yext_list = [
             'id' => $yext_list_id
-            , 'name' => "{$yext_list_id}. Products for {$account->title}"
+            , 'name' => "Products for {$account->title}. {$yext_list_id}    "
             , 'title' => "Products for {$account->title}"
             , 'type' => 'PRODUCTS'
             , 'publish' => true

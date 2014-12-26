@@ -325,4 +325,119 @@ class LocationsController extends BaseController {
             ->kb( 148 );
     }
 
+    /**
+     * Import Products
+     * @return TemplateResponse
+     */
+    public function import_products() {
+
+        if ( $this->verified() ) {
+
+            $f = fopen( $_FILES['csv']['tmp_name'], 'r' );
+
+            if ( !$f ) {
+                $this->notify( 'A CSV File is Required', false );
+                return new RedirectResponse( '/geo-marketing/locations/import-products' );
+            }
+
+            // skip first row -- headers
+            $headers = fgetcsv( $f );
+
+            $yext_items = [];
+            $index = 0;
+            $skipped = [];
+            while ( ( $values = fgetcsv( $f ) ) !== FALSE ) {
+
+                $index++;
+                $row = array_combine( $headers, $values );
+
+                if ( empty($row['ProductName']) ) {
+                    $skipped[] = $row;
+                    continue;
+                }
+
+                $item = [
+                    'id' => "{$this->user->account->id}-cp-{$index}"
+                    , 'name' => $row['ProductName']
+                    , 'description' => $row['ProductDescription']
+                    , 'idCode' => $row['IdCode']
+                    , 'cost' => [
+                        'type' => 'PRICE'
+                        , 'price' => $row['ProductPrice']
+                        , 'unit' => 'Each'
+                    ]
+                    , 'url' => $row['Url']
+                ];
+
+                $row['ProductOption'] = array_slice( $values, 3, 5 );
+                $item_po = [];
+                foreach ( $row['ProductOption'] as $po ) {
+                    $po_pieces = explode( '|', $po );
+                    if ( count($po_pieces) != 2 || !is_numeric( $po_pieces[1] ) )
+                        continue;
+
+                    $item_po[] = [
+                        'name' => $po_pieces[0]
+                        , 'price' => $po_pieces[1]
+                    ];
+                }
+                if ( $item_po ) {
+                    $item['cost']['options'] = $item_po;
+                }
+
+                $row['Photos'] = explode( '|', $row['Photos'] );
+                $item_photos = [];
+                foreach ( $row['Photos'] as $photo ) {
+                    if ( !$photo )
+                        continue;
+
+                    $item_photos[] = [
+                        'url' => $photo
+                    ];
+                }
+                if( $item_photos ) {
+                    $item['photos'] = $item_photos;
+                }
+
+                $yext_items[] = $item;
+            }
+
+            fclose( $f );
+
+            $yext_list_id = "{$this->user->account->id}-imported-products";
+            $yext_list = [
+                'id' => $yext_list_id
+                , 'name' => "Products for {$this->user->account->title}. {$yext_list_id}"
+                , 'title' => "Products for {$this->user->account->title}"
+                , 'type' => 'PRODUCTS'
+                , 'publish' => true
+                , 'sections' => [[
+                    'id' => "{$yext_list_id}-section"
+                    , 'name' => "Imported Products"
+                    , 'items' => $yext_items
+                ]]
+            ];
+
+            library('yext');
+            $yext = new YEXT( $this->user->account );
+            $yext_list_exists = $yext->get( "lists/{$yext_list_id}" );
+            if ( isset( $yext_list_exists->id ) ) {
+                $response = $yext->put( "lists/{$yext_list_id}", $yext_list );
+            } else {
+                $response = $yext->post( "lists", $yext_list );
+            }
+
+            $success = !isset( $response->errors );
+
+            // Cleanup
+            unset( $yext_items );
+            unset( $products );
+        }
+
+        return $this->get_template_response( 'geo-marketing/locations/import-products' )
+            ->menu_item('geo-marketing/locations/import-products')
+            ->set( compact( 'skipped', 'success', 'response' ) )
+            ->kb( 148 );
+    }
+
 } 
