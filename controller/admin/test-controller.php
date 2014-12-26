@@ -282,4 +282,16 @@ class TestController extends BaseController {
 
     }
 
+    public function yext_upload_photos() {
+        $account = new Account();
+        $account->get(1352);
+
+        $location = new WebsiteYextLocation();
+        $location->get( 9, 1352 );
+
+        if ( $location->synchronize_products ) {
+            $location->do_upload_photos( $location );
+        }
+
+    }
 }

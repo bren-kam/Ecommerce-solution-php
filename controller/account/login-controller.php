@@ -9,6 +9,7 @@ class LoginController extends BaseController {
         // Tell what is the base for all login
         $this->view_base = '';
         $this->section = 'Login';
+        $this->title = 'Login';
     }
 
     /**

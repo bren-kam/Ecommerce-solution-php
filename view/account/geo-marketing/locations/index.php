@@ -11,10 +11,9 @@
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/geo-marketing/locations/list-all/" perPage="30,50,100">
                         <thead>
-                        <th>#</th>
                         <th>Name</th>
                         <th>Address</th>
-                        <th>Last Updated</th>
+                        <th>Status</th>
                         </thead>
                     </table>
                 </div>

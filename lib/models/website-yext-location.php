@@ -8,7 +8,7 @@
 
 class WebsiteYextLocation extends ActiveRecordBase {
 
-    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update;
+    public $id, $website_yext_location_id, $website_id, $synchronize_products, $name, $address, $last_update, $status, $customm_photos;
 
     public function __construct() {
         parent::__construct( 'website_yext_location' );
@@ -92,8 +92,9 @@ class WebsiteYextLocation extends ActiveRecordBase {
                 , 'name' => $this->name
                 , 'address' => $this->address
                 , 'synchronize_products' => $this->synchronize_products
+                , 'status' => $this->status
             ]
-            , 'ii'
+            , 'issis'
         );
     }
 
@@ -106,9 +107,10 @@ class WebsiteYextLocation extends ActiveRecordBase {
                 'synchronize_products' => $this->synchronize_products
                 , 'name' => $this->name
                 , 'address' => $this->address
+                , 'status' => $this->status
             ]
             , [  'website_yext_location_id' => $this->id, 'website_id' => $this->website_id ]
-            , 'i'
+            , 'isss'
             , 'ii'
         );
     }
@@ -151,7 +153,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
 
         // Get Website Top Products
         $product_ids = $this->get_results(
-            "SELECT product_id FROM website_product_view WHERE website_id = {$location->website_id} GROUP BY product_id ORDER BY COUNT(*) DESC LIMIT 100"
+            "SELECT product_id FROM website_product_view WHERE website_id = {$location->website_id} AND product_id IS NOT NULL GROUP BY product_id ORDER BY COUNT(*) DESC LIMIT 100"
             , PDO::FETCH_COLUMN
         );
 
@@ -218,7 +220,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
         $yext_list_id = "{$location->website_id}-{$location->website_yext_location_id}-products";
         $yext_list = [
             'id' => $yext_list_id
-            , 'name' => "{$yext_list_id}. Products for {$account->title}"
+            , 'name' => "Products for {$account->title}. {$yext_list_id}    "
             , 'title' => "Products for {$account->title}"
             , 'type' => 'PRODUCTS'
             , 'publish' => true
@@ -245,6 +247,78 @@ class WebsiteYextLocation extends ActiveRecordBase {
         // Cleanup
         unset( $yext_lists_items );
         unset( $products );
+
+    }
+
+    /**
+     * Do Upload Photos
+     * @param WebsiteYextLocation $location
+     */
+    public function do_upload_photos( $location ) {
+        $account = new Account();
+        $account->get( $location->website_id );
+
+        library( 'yext' );
+        $yext = new Yext( $account );
+        $yext_location  = $yext->get( "locations/{$location->id}" );
+
+        if ( isset( $yext_location->errors) )
+            return;
+
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+
+        $page->get_by_slug( $account->id, 'home' );
+        $banner_page_id = $page->id;
+        $page->get_by_slug( $this->id, 'sidebar' );
+        $sidebar_page_id = $page->id;
+
+        $attachments = $attachment->get_by_account_page_ids( [ $banner_page_id, $sidebar_page_id ] );
+        $images = [];
+        foreach ( $attachments as $attachment ) {
+            if ($attachment->status == 0) {
+                continue;
+            }
+
+            $extra = json_decode($attachment->extra, true);
+            // is it json?
+            if ($extra) {
+                // Verify Date Range
+                if (isset($extra['date-range']) && $extra['date-range']) {
+                    // date range
+                    $now = date('Y-m-d');
+
+                    // out of range?
+                    if ($extra['date-start'] > $now || $extra['date-end'] < $now) {
+                        continue;
+                    }
+                }
+            }
+
+            if ($attachment->key == 'banner' || $attachment->key == 'sidebar-image') {
+                $images[] = [ 'url' => $attachment->value ];
+            }
+        }
+
+        // We need 4 images
+        if ( count($images) < 4 ) {
+            return;
+        }
+
+        shuffle( $images );
+
+        $images = array_slice( $images, 0, 4 );
+
+        if ( isset( $yext_location->photos ) && count($yext_location->photos) == 1 ) {
+            $yext_location->photos = array_merge(
+                [ $yext_location->photos[0] ],
+                $images
+            );
+        } else {
+            $yext_location->photos = $images;
+        }
+
+        $yext->put( "locations/{$location->id}", $yext_location );
 
     }
 

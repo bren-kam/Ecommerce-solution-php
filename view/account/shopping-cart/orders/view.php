@@ -29,6 +29,10 @@
                     <?php elseif ( $order->is_ashley_express() ): ?>
                         <li><strong>Express Delivery Order</strong></li>
                     <?php endif; ?>
+
+                    <?php if( $order->authorize_only ): ?>
+                        <li><strong>Authorize Only</strong></li>
+                    <?php endif; ?>
                 </ul>
 
                 <?php nonce::field( 'update_status' ); ?>

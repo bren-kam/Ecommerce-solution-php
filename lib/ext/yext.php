@@ -8,10 +8,15 @@
 
 class YEXT {
 
+    const OFFER_ID = 1306;
+    public static $SUBSCRIPTION_ID = 256171;
+
     public static $customer_id = 165947;
     public static $url = 'https://api-sandbox.yext.com/v1/';
     public static $base_service = 'customers/165947/';
     public static $api_key = 'd7xtvCSno0V1EstMsYme';
+
+    public $last_response_code;
 
     /**
      * @var Account $account
@@ -111,6 +116,8 @@ class YEXT {
         $json_response = curl_exec( $curl );
         $response = json_decode( $json_response );
 
+        $this->last_response_code  = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
         $api_log = new ApiExtLog();
         $api_log->website_id = $this->account->id;
         $api_log->api = 'YEXT';
@@ -119,7 +126,7 @@ class YEXT {
         $api_log->request = json_encode( $request );
         $api_log->raw_request = $json_request;
         $api_log->response = json_encode( $response );
-        $api_log->raw_response = $json_response;
+        $api_log->raw_response = $this->last_response_code . '|' . $json_response;
         $api_log->create();
 
         return $response;
