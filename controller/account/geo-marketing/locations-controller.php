@@ -50,7 +50,8 @@ class LocationsController extends BaseController {
             $data[] = [
                 $location->name .
                 '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>' .
-                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>'
+                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>' . 
+                ' | <a href="/geo-marketing/locations/import-products/?id=' . $location->id . '" >Import Products</a>'
                 , $location->address
                 , $location->status
             ];
@@ -331,6 +332,11 @@ class LocationsController extends BaseController {
      */
     public function import_products() {
 
+        $location = new WebsiteYextLocation();
+        $location->get( $_GET['id'], $this->user->account->id );
+        if ( !$location->id )
+            return new RedirectResponse('/geo-marketing/locations/');
+
         if ( $this->verified() ) {
 
             $f = fopen( $_FILES['csv']['tmp_name'], 'r' );
@@ -429,6 +435,29 @@ class LocationsController extends BaseController {
 
             $success = !isset( $response->errors );
 
+            $yext_location = (array) $yext->get("locations/{$location->id}");
+            if ( empty($yext_location['lists']) ) {
+                $yext_location['lists'] = [[
+                    'name' => $yext_list['name']
+                    , 'type' => 'PRODUCTS'
+                ]];
+            } else {
+                $found = false;
+                foreach( $yext_location['lists'] as $list ) {
+                    if ( $list['name'] == $yext_list['name'] ) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if ( !$found ) {
+                    $yext_location['lists'][] = [
+                        'name' => $yext_list['name']
+                        , 'type' => 'PRODUCTS'
+                    ];
+                }
+            }
+            $yext->put("locations/{$location->id}", $yext_location);
+
             // Cleanup
             unset( $yext_items );
             unset( $products );
@@ -436,7 +465,7 @@ class LocationsController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/locations/import-products' )
             ->menu_item('geo-marketing/import-products')
-            ->set( compact( 'skipped', 'success', 'response' ) )
+            ->set( compact( 'location', 'skipped', 'success', 'response' ) )
             ->kb( 148 );
     }
 

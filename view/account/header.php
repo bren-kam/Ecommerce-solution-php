@@ -418,7 +418,6 @@
                         <li <?php if ( $template->in_menu_item('geo-marketing/locations') ) echo 'class="active"' ?>><a href="/geo-marketing/locations/">Locations</a></li>
                         <li <?php if ( $template->in_menu_item('geo-marketing/bios') ) echo 'class="active"' ?>><a href="/geo-marketing/bios/">Bios</a></li>
                         <li <?php if ( $template->in_menu_item('geo-marketing/listings') ) echo 'class="active"' ?>><a href="/geo-marketing/listings/">Listings</a></li>
-                        <li <?php if ( $template->in_menu_item('geo-marketing/import-products') ) echo 'class="active"' ?>><a href="/geo-marketing/locations/import-products/">Import Products</a></li>
                     </ul>
                 </li>
             <?php endif; ?>

@@ -2,7 +2,7 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Import Products Manually
+                Import Products for <?php echo $location->name ?>
             </header>
 
             <div class="panel-body">
