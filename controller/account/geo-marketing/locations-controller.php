@@ -50,7 +50,7 @@ class LocationsController extends BaseController {
             $data[] = [
                 $location->name .
                 '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>' .
-                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>' . 
+                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>' .
                 ' | <a href="/geo-marketing/locations/import-products/?id=' . $location->id . '" >Import Products</a>'
                 , $location->address
                 , $location->status
@@ -460,15 +460,23 @@ class LocationsController extends BaseController {
             }
             $yext->put("locations/{$location->id}", $yext_location);
 
+            $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+            $file->upload_file( $_FILES['csv']['tmp_name'], "yext-products-{$location->id}.csv", $this->user->account->id . '/yext/' );
+
             // Cleanup
             unset( $yext_items );
             unset( $products );
         }
 
+        $current_product_list = "http://websites.retailcatalog.us/1352/yext/yext-products-{$location->id}.csv";
+        if ( !curl::check_file( $current_product_list, 5 ) ) {
+            unset( $current_product_list );
+        }
+
         return $this->get_template_response( 'geo-marketing/locations/import-products' )
             ->menu_item('geo-marketing/import-products')
-            ->set( compact( 'location', 'skipped', 'success', 'response' ) )
+            ->set( compact( 'location', 'skipped', 'success', 'response', 'current_product_list' ) )
             ->kb( 148 );
     }
 
-} 
+}
