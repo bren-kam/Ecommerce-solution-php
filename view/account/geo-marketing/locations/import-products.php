@@ -31,7 +31,7 @@
                     <?php endif; ?>
 
                     <div class="form-group">
-                        <label for="csv">Product File - CSV Format - Download an import template <a href="http://websites.retailcatalog.us/1352/mm/yext-import-template.csv">here</a>:</label>
+                        <label for="csv">Product File - CSV Format - Download an import template <a href="http://websites.retailcatalog.us/1352/mm/product-import-template.csv">here</a>:</label>
                         <input type="file" name="csv" />
                     </div>
 
