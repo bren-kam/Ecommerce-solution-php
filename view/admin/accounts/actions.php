@@ -62,7 +62,7 @@
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/resync-email-lists/' ); ?>" title="<?php echo _('Resync Email Lists'); ?>"><?php echo _('Resync Email Lists'); ?></a></p>
                 <?php } ?>
 
-                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
+<!--                <p><a href="--><?php //echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?><!--" title="--><?php //echo _('Cancel Account'); ?><!--" confirm="--><?php //echo _('Are you sure you want to deactivate this account?'); ?><!--">--><?php //echo _('Cancel Account'); ?><!--</a></p>-->
 
                 <?php if ( !$account->status ): ?>
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reactivate/' ); ?>" title="<?php echo _('Reactivate Account'); ?>" confirm="<?php echo _('Are you sure you want to reactivate this account?'); ?>"><?php echo _('Reactivate Account'); ?></a></p>
@@ -77,6 +77,14 @@
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge_cache/' ); ?>" title="<?php echo _('Purge Varnish Cache'); ?>"><?php echo _('Purge cache'); ?></a></p>
 
                 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-express-feed/' ); ?>" title="<?php echo _('Run Express Ashley Feed'); ?>"><?php echo _('Run Ashley Express Feed'); ?></a></p>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-express-order-status/' ); ?>" title="<?php echo _('Check Ashley Express Order Status'); ?>"><?php echo _('Check Ashley Express Order Status'); ?></a></p>
+
+                <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/index-products/' ); ?>" title="<?php echo _('Re-Index Products'); ?>"><?php echo _('Re-Index Products'); ?></a></p>
+
+                <?php if ( $settings['yext-subscription-id'] ) { ?>
+                    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel-yext-subscription/' ); ?>" title="<?php echo _('Cancel YEXT Subscription'); ?>"><?php echo _('Cancel YEXT Subscription'); ?></a></p>
+                <?php } ?>
 
             </div>
         </section>

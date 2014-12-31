@@ -14,7 +14,7 @@ class WebsiteOrder extends ActiveRecordBase {
         , $billing_first_name, $billing_last_name, $billing_address1, $billing_address2, $billing_city
         , $billing_state, $billing_zip, $billing_phone, $billing_alt_phone, $shipping_name, $shipping_first_name
         , $shipping_last_name, $shipping_address1, $shipping_address2, $shipping_city, $shipping_state
-        , $shipping_zip, $status, $date_created, $shipping_track_number;
+        , $shipping_zip, $status, $date_created, $shipping_track_number, $authorize_only;
 
     // Artificial field
     public $name;
@@ -103,7 +103,7 @@ class WebsiteOrder extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `website_order_id`, IF ( '' = `billing_first_name`, `shipping_name`, CONCAT( `billing_first_name`, ' ', `billing_last_name` ) ) AS name, `total_cost`, `status`, `date_created`, `website_shipping_method_id`, `website_ashley_express_shipping_method_id` FROM `website_orders` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `website_order_id`, website_id, IF ( '' = `billing_first_name`, `shipping_name`, CONCAT( `billing_first_name`, ' ', `billing_last_name` ) ) AS name, `total_cost`, `status`, `date_created`, `website_shipping_method_id`, `website_ashley_express_shipping_method_id` FROM `website_orders` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'WebsiteOrder' );

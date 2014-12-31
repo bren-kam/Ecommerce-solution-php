@@ -196,6 +196,10 @@ ProductsController extends BaseController {
                     }
                 }
 
+                // Update index for all Websites having this products
+                $index = new IndexProducts();
+                $index->index_product_all_websites( $product->id );
+
                 // Now go back to products list with a notification
                 $this->notify( _('Your product was successfully created or updated!') );
 
@@ -234,6 +238,10 @@ ProductsController extends BaseController {
 
         $product = new Product;
         $product->clone_product( $product_id, $this->user->id );
+
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product_all_websites( $product->id );
 
         // Redirect to the new cloned product
         return new RedirectResponse( url::add_query_arg( 'pid', $product->id, '/products/add-edit/' ) );
@@ -530,8 +538,12 @@ ProductsController extends BaseController {
             $product->publish_visibility = 'deleted';
             $product->save();
 
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_all_websites( $product->id );
+
             // Redraw the table
-            jQuery('.dt:first')->dataTable()->fnDraw();
+            // jQuery('.dt:first')->dataTable()->fnDraw();
 
             // Add the response
             $response->add_response( 'jquery', jQuery::getResponse() );

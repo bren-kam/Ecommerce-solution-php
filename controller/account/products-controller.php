@@ -92,6 +92,10 @@ class ProductsController extends BaseController {
             $account_product->add_bulk_by_ids( $this->user->account->id, $_POST['products'] );
             $account_category->reorganize_categories( $this->user->account->id, $category );
 
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_bulk( $_POST['products'], $this->user->account->id );
+
             $this->notify( _('Your product(s) have been successfully added!') );
 
             return new RedirectResponse('/products/');
@@ -237,6 +241,10 @@ class ProductsController extends BaseController {
                 $account_category = new AccountCategory();
                 $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+                // Update index for all Websites having this products
+                $index = new IndexProducts();
+                $index->index_product_by_sku( $skus, $this->user->account->id );
+
                 $this->notify( $quantity . ' ' . _('products added successfully!') );
                 $success = true;
             }
@@ -269,6 +277,10 @@ class ProductsController extends BaseController {
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
 
             $account_product->block_by_sku( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_by_sku( $skus, $this->user->account->id );
 
             $this->notify( _('Blocked Products have been successfully updated!') );
         }
@@ -320,6 +332,10 @@ class ProductsController extends BaseController {
             // Remove any of them
             $account_category->remove_categories( $this->user->account->id, $_POST['sCategoryIDs'] );
             $account_category->reorganize_categories( $this->user->account->id, $category );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_website( $this->user->account->id );
 
             $this->notify( _('Hidden categories have been successfully updated!') );
 
@@ -464,6 +480,10 @@ class ProductsController extends BaseController {
             // Clear public website cache
             $this->user->account->purge_varnish_cache();
 
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_website( $this->user->account->id );
+
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
@@ -503,6 +523,11 @@ class ProductsController extends BaseController {
         if ( $this->verified() ) {
             $account_product = new AccountProduct();
             $account_product->unblock( $this->user->account->id, $_POST['unblock-products'] );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_product_bulk( $_POST['unblock-products'], $this->user->account->id );
+
             $this->notify( _('Blocked Products have been successfully updated!') );
         }
 
@@ -519,6 +544,11 @@ class ProductsController extends BaseController {
             $account_category = new AccountCategory();
             $account_category->unhide( $this->user->account->id, $_POST['unhide-categories'] );
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            // Update index for all Websites having this products
+            $index = new IndexProducts();
+            $index->index_website( $this->user->account->id );
+
 
             $this->notify( _('Hidden categories have been successfully updated!') );
         }
@@ -843,6 +873,10 @@ class ProductsController extends BaseController {
         $account_product->remove_discontinued( $this->user->account->id );
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_website( $this->user->account->id );
+
         // Let them know
         $response->notify( 'All discontinued products have been removed' );
 
@@ -983,6 +1017,10 @@ class ProductsController extends BaseController {
         $account_product->active = 0;
         $account_product->save();
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product( $_GET['pid'], $this->user->account->id );
+
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
@@ -1019,6 +1057,10 @@ class ProductsController extends BaseController {
 
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product( $_GET['pid'], $this->user->account->id );
 
         $response->notify( 'Product blocked' );
         return $response;
@@ -1285,6 +1327,10 @@ class ProductsController extends BaseController {
             if ( !empty( $product_option_list_item_values ) )
                 $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
+
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product( $account_product->product_id, $this->user->account->id );
 
         $response->notify( 'Product updated' );
 
@@ -1587,6 +1633,11 @@ class ProductsController extends BaseController {
                 $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
         }
 
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_product_bulk( array_keys($_POST['v']), $this->user->account->id );
+
+
         $response->notify( 'Your products has been updated' );
 
         return $response;
@@ -1623,6 +1674,9 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->update_sequence( $this->user->account->id, $sequence );
+
+        $index = new IndexProducts();
+        $index->index_product_bulk( $sequence, $this->user->account->id );
 
         return $response;
     }
@@ -2134,6 +2188,10 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->reset_price_by_account( $this->user->account->id );
+
+        // Update index for all Websites having this products
+        $index = new IndexProducts();
+        $index->index_website( $this->user->account->id );
 
         $this->notify( _('All account prices has been reseted.') );
 

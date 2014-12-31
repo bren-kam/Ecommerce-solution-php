@@ -276,6 +276,39 @@ class CronsController extends BaseController {
     }
 
     /**
+     * Daily
+     */
+    public function yext_synchronize_location_products() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        $yext_location = new WebsiteYextLocation();
+        $locations = $yext_location->list_all( [ ' AND `synchronize_products` = 1  ', '', '', 999999 ] );
+        foreach ( $locations as $location ) {
+            echo "Updating top product list for location {$location->id}\n";
+            $yext_location->do_synchronize_products( $location );
+        }
+    }
+
+    /**
+     * Daily
+     */
+    public function yext_upload_location_images() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        $yext_location = new WebsiteYextLocation();
+        $locations = $yext_location->list_all( [ '', '', '', 999999 ] );
+        foreach ( $locations as $location ) {
+            echo "Updating images for location {$location->id}\n";
+            $yext_location->do_upload_photos( $location );
+        }
+    }
+
+
+    /**
      * Login
      *
      * @return bool

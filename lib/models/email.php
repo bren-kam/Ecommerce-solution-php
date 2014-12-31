@@ -48,7 +48,7 @@ class Email extends ActiveRecordBase {
      * @param string $email
      */
     public function get_by_email( $account_id, $email ) {
-		$this->prepare( 'SELECT `email_id`, `status` FROM `emails` WHERE `website_id` = :account_id AND `email` = :email'
+		$this->prepare( 'SELECT `email_id`, `email`, `status` FROM `emails` WHERE `website_id` = :account_id AND `email` = :email'
             , 'is'
             , array(
                 ':account_id' => $account_id
@@ -64,7 +64,7 @@ class Email extends ActiveRecordBase {
      *
      * @param int $email_list_id
      * @return Email[]
-\     */
+     */
     public function get_by_email_list( $email_list_id ) {
 		return $this->prepare( 'SELECT e.`email` FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE e.`status` = :status AND ea.`email_list_id` = :email_list_id'
             , 'ii'
@@ -149,12 +149,17 @@ class Email extends ActiveRecordBase {
         library('sendgrid-api');
         $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
         $sendgrid->setup_email();
+        $sendgrid->setup_unsubscribes();
 
+        // Add to Global Unsubscribe List
+        $sendgrid->unsubscribes->add( $this->email );
+
+        // Remove email from all Lists
         $email_list = new EmailList();
         $email_lists = $email_list->get_by_email( $this->id, $account->id );
 
         foreach ( $email_lists as $email_list ) {
-            $sendgrid->email->delete( $email_list->name, $this->name );
+            $sendgrid->email->delete( $email_list->name, $this->email );
         }
 
         // Assuming the above is successful, delete everything about this email

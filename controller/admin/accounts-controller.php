@@ -180,6 +180,7 @@ class AccountsController extends BaseController {
                     $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                     $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+                    $account->geo_marketing = (int) isset( $_POST['cbGeoMarketing'] );
                     $account->user_id_updated = $this->user->id;
 
                     $account->save();
@@ -250,6 +251,7 @@ class AccountsController extends BaseController {
             , 'domain_registration'
             , 'additional_email_addresses'
             , 'social_media'
+            , 'geo_marketing'
         );
 
         foreach ( $features as $feature ) {
@@ -455,6 +457,7 @@ class AccountsController extends BaseController {
             , 'sendgrid-password'
             , 'arb-subscription-id'
             , 'arb-subscription-amount'
+            , 'yext-max-locations'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -484,6 +487,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
+
+        $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -525,6 +530,7 @@ class AccountsController extends BaseController {
                 , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
                 , 'arb-subscription-id' => $_POST['tARBSubscriptionID']
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
+                , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -560,7 +566,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -823,16 +829,16 @@ class AccountsController extends BaseController {
 
                 // Defaults
                 $changes = array(
-                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->ip )
+                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'MX', '14400', '0 mail.' . $full_domain_name )
                     , $r53->prepareChange( 'CREATE', $full_domain_name, 'TXT', '14400', '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"' )
-                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->ip )
                     , $r53->prepareChange( 'CREATE', 'www.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
+                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->ip )
+                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->ip )
                 );
 
                 $response = $r53->changeResourceRecordSets( $zone_id, $changes );
@@ -1381,6 +1387,9 @@ class AccountsController extends BaseController {
             }
         }
 
+        $sendgrid->setup_filter();
+        $sendgrid->filter->event_notify( 0, 0, 0, 0, 0, 0, 0, 1, 0, 'https://api.imagineretailer.com/?api_key=0e63566eb07d3369836e2b59e85b9845&method=sendgrid_event_callback&aid=' . $account->id );
+
         // Create response
         $response = new AjaxResponse( true );
 
@@ -1681,6 +1690,40 @@ class AccountsController extends BaseController {
     }
 
     /**
+     * Run Ashley Express Order Status Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_express_order_status() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
+        // Ashley Express Feed - Order Acknowledgement
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_acknowledgement( $account );
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Ashley Express Feed - Order ASN
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_asn( $account );
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Give them a notification
+        $this->notify( _('The Ashley Express Feed Orders Check has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    /**
      * Install New Theme
      *
      * @throws Exception
@@ -1778,5 +1821,49 @@ class AccountsController extends BaseController {
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    public function index_products() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
 
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if (  $account->id ) {
+            $index = new IndexProducts();
+            $index->index_website( $account->id );
+        }
+
+        $this->notify( _("All Products Indexed!") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    public function cancel_yext_subscription() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( !$account->id )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        library('yext');
+        $yext = new YEXT( $account );
+
+        $yext_website_subscription_id = $account->get_settings( 'yext-subscription-id' );
+        if ( !$yext_website_subscription_id )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+        if ( !isset($subscription->id) )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $subscription->status = 'CANCELED';
+        $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+
+        $account->set_settings( [ 'yext-subscription-id' => '' ] );
+
+        $this->notify( _("Subscription cancelled.") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
 }

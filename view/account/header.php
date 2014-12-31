@@ -408,6 +408,20 @@
                 </ul>
             </li>
 
+            <?php if ( $user->account->geo_marketing ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing') ) echo 'class="active"' ?>>
+                        <i class="fa fa-dot-circle-o"></i>
+                        <span>GeoMarketing</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->in_menu_item('geo-marketing/locations') ) echo 'class="active"' ?>><a href="/geo-marketing/locations/">Locations</a></li>
+                        <li <?php if ( $template->in_menu_item('geo-marketing/bios') ) echo 'class="active"' ?>><a href="/geo-marketing/bios/">Bios</a></li>
+                        <li <?php if ( $template->in_menu_item('geo-marketing/listings') ) echo 'class="active"' ?>><a href="/geo-marketing/listings/">Listings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+
         </ul>
         <!-- sidebar menu end-->
     </div>

@@ -22,9 +22,16 @@
                 <ul>
                     <li><strong>Email:</strong> <?php echo $order->email ?></li>
                     <li><strong>Phone:</strong> <?php echo $order->phone ?></li>
+
                     <li><strong>Shipping Method:</strong> <?php echo $order->shipping_method ?></li>
                     <?php if ( $order->website_ashley_express_shipping_method_id ): ?>
                         <li><strong>Shipping Method (Express Delivery):</strong> <?php echo $order->ashley_express_shipping_method ?></li>
+                    <?php elseif ( $order->is_ashley_express() ): ?>
+                        <li><strong>Express Delivery Order</strong></li>
+                    <?php endif; ?>
+
+                    <?php if( $order->authorize_only ): ?>
+                        <li><strong>Authorize Only</strong></li>
                     <?php endif; ?>
                 </ul>
 
@@ -56,6 +63,13 @@
                     <?php echo $order->shipping_address1; ?><br />
                     <?php echo $order->shipping_city, ', ', $order->shipping_state, ' ', $order->shipping_zip; ?><br />
                 </p>
+
+                <?php if ( $order->shipping_track_number ): ?>
+                    <p>
+                        <strong>Express Delivery Tracking Codes:</strong><br>
+                        <?php echo $order->shipping_track_number ?>
+                    </p>
+                <?php endif; ?>
             </div>
         </section>
     </div>
