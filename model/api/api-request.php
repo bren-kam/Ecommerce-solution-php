@@ -584,11 +584,7 @@ class ApiRequest {
          * @param string $billing_zip
          * @param int $user_id
          */
-        $personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' );
-		
-		// Get the user_id, but we don't want it in the update data
-		$user_id = $personal_information['user_id'];
-		unset( $personal_information['user_id'] );
+        extract( $this->get_parameters( 'user_id', 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' ) );
 		
 		// Make sure he exists, if not, create user
         $user = new User();
