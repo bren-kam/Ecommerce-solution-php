@@ -72,6 +72,65 @@ class YEXT {
     }
 
     /**
+     * Report
+     *
+     * @param  string[] $metrics
+     * @param  string[] $dimensions
+     * @param  string $date_start
+     * @param  string $date_end
+     * @return array[]
+     */
+    public function report( $metrics, $dimensions, $date_start, $date_end ) {
+        $base_service = self::$base_service;
+        self::$base_service = '';
+        $try_count = 0;
+        $report = null;
+
+        try {
+            $report_key = $this->_request( 'get', 'powerlistings/startReport', [
+                'format' => 'json'
+                , 'customerId' => self::$customer_id
+                , 'metrics' => implode(',', $metrics)
+                , 'dimensions' => implode(',', $dimensions)
+                , 'dateStart' => $date_start
+                , 'dateEnd' => $date_end
+            ])->key;
+
+            if ( !$report_key ) {
+                throw new Exception( 'Could not get Report Key' );
+            }
+
+            while ( true ) {
+                $response = $this->_request( 'get', 'powerlistings/getReport', [
+                    'format' => 'json'
+                    , 'key' => $report_key
+                ]);
+
+                if ( $response->status == 'done' ) {
+                    $report = $response->data;
+                    break;
+                }
+
+                if ( $response->status == 'failed') {
+                    throw new Exception( 'Report Failed' );
+                }
+
+                if ( $try_count > 30 ) {
+                    throw new Exception( 'Get Report Time Out' );
+                }
+
+                $try_count++;
+                sleep( 1 );
+            }
+        } catch ( Exception $e ) {
+            /* Do nothing */
+        }
+
+        self::$base_service = $base_service;
+        return $report;
+    }
+
+    /**
      * Request
      *
      * @param $method
@@ -132,4 +191,4 @@ class YEXT {
         return $response;
     }
 
-} 
+}
