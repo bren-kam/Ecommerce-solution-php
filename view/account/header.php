@@ -95,7 +95,7 @@
                     <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle hidden-xs" href="javascript:;">
-                            <span class="account-name"><?php echo $user->account->title ?></span> | <span class="username"><?php echo $user->contact_name ?></span>
+                                <span class="account-name"><?php echo $user->account->title ?></span> | <span class="username"><?php echo $user->contact_name ?></span>
                             <b class="caret"></b>
                         </a>
                         <a data-toggle="dropdown" class="dropdown-toggle visible-xs" href="javascript:;">
@@ -103,12 +103,18 @@
                         </a>
                         <ul class="dropdown-menu extended logout">
                             <div class="log-arrow-up"></div>
-                            <li class="big">
-                                <a href="http://<?php echo $user->account->domain ?>" target="_blank">Visit <?php echo $user->account->domain ?> <i class="fa fa-link" style="font-size:14px;"></i></a>
-                            </li>
-                            <li><a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a></li>
-                            <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Authorized <br> Users</a></li>
-                            <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp;<br> Phone</a></li>
+                            <?php if ( $user->account->pages == 1 ): /* ONLY WITH USERS WITH A WEBSITE */ ?>
+                                <li class="big">
+                                    <a href="http://<?php echo $user->account->domain ?>" target="_blank">Visit <?php echo $user->account->domain ?> <i class="fa fa-link" style="font-size:14px;"></i></a>
+                                </li>
+                                <li><a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a></li>
+                                <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Authorized <br> Users</a></li>
+                                <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp;<br> Phone</a></li>
+                            <?php else: ?>
+                                <li class="big">
+                                    <a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a>
+                                </li>
+                            <?php endif; ?>
                             <?php if ( $online_specialist->id ): ?>
                                 <li class="big">
                                     <?php
@@ -297,7 +303,7 @@
                         <li <?php if ( $template->in_menu_item('email-marketing/settings') ) echo 'class="active"'?>><a href="/email-marketing/settings/">Settings</a></li>
                     </ul>
                 </li>
-            <?php else: ?>
+            <?php elseif ( $user->account->pages == 1 ): /* ONLY WITH USERS WITH A WEBSITE */ ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('email-marketing') ) echo 'class="active"'?>>
                         <i class="fa fa-inbox"></i>
@@ -395,19 +401,6 @@
                 </li>
             <?php endif; ?>
 
-            <li class="sub-menu">
-                <a href="javascript:;" <?php if ( stristr( $_SERVER['REQUEST_URI'], '/settings/' ) ) echo 'class="active"'?>>
-                    <i class="fa fa-suitcase"></i>
-                    <span>Settings</span>
-                </a>
-                <ul class="sub">
-                    <li <?php if ( '/settings/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/">Settings</a></li>
-                    <li <?php if ( '/settings/authorized-users/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/authorized-users/">Authorized Users</a></li>
-                    <li <?php if ( '/settings/logo-and-phone/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/logo-and-phone/">Logo &amp; Phone</a></li>
-                    <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
-                </ul>
-            </li>
-
             <?php if ( $user->account->geo_marketing ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing') ) echo 'class="active"' ?>>
@@ -421,6 +414,21 @@
                     </ul>
                 </li>
             <?php endif; ?>
+
+            <li class="sub-menu">
+                <a href="javascript:;" <?php if ( stristr( $_SERVER['REQUEST_URI'], '/settings/' ) ) echo 'class="active"'?>>
+                    <i class="fa fa-suitcase"></i>
+                    <span>Settings</span>
+                </a>
+                <ul class="sub">
+                    <li <?php if ( '/settings/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/">Settings</a></li>
+                    <?php if ( $user->account->pages == 1 ): /* ONLY WITH USERS WITH A WEBSITE */ ?>
+                        <li <?php if ( '/settings/authorized-users/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/authorized-users/">Authorized Users</a></li>
+                        <li <?php if ( '/settings/logo-and-phone/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/logo-and-phone/">Logo &amp; Phone</a></li>
+                    <?php endif; ?>
+                    <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
+                </ul>
+            </li>
 
         </ul>
         <!-- sidebar menu end-->
