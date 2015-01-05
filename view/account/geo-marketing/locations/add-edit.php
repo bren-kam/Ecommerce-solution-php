@@ -214,7 +214,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                          -->
                         <div class="col-lg-12">
                             <div class="form-group">
-                                <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>" maxlength="15"/>
+                                <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>" maxlength="15" placeholder="Valid Twitter handle for the location (e.g., JohnSmith  (without the leading @))"/>
                             </div>
                         </div>
                     </div>
