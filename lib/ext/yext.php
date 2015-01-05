@@ -9,10 +9,10 @@
 class YEXT {
 
     const OFFER_ID = 1756;
-    public static $SUBSCRIPTION_ID = 9999999999;  // We need to create it after the first location
+    public static $SUBSCRIPTION_ID = 679618;
 
     public static $customer_id = 639457;
-    public static $url = 'https://api-sandbox.yext.com/v1/';
+    public static $url = 'https://api.yext.com/v1/';
     public static $base_service = 'customers/639457/';
     public static $api_key = 'PmHIbdjdLcUViKfge8LU';
 
