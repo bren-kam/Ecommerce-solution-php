@@ -133,13 +133,13 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="yearEstabilished">Year Estabilished:</label><input type="text" class="form-control" name="yearEstabilished" id="yearEstabilished" value="<?php echo $location['yearEstabilished'] ?>" maxlength="4"/>
+                                <label for="yearEstablished">Year Established:</label><input type="text" class="form-control" name="yearEstablished" id="yearEstablished" value="<?php echo $location['yearEstablished'] ?>" maxlength="4"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="specialities">Specialities (one per line - max 10 lines):</label><textarea name="specialities" id="specialities" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['specialities']) ? implode( "\n", $location['specialities'] ) : $location['specialities'] ?></textarea>
+                        <label for="specialties">specialties (one per line - max 10 lines):</label><textarea name="specialties" id="specialties" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['specialties']) ? implode( "\n", $location['specialties'] ) : $location['specialties'] ?></textarea>
                     </div>
                     <div class="form-group">
                         <label for="services">Services (one per line - max 10 lines):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
