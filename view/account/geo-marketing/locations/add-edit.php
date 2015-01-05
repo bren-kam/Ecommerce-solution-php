@@ -139,7 +139,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="form-group">
-                        <label for="specialties">specialties (one per line - max 10 lines):</label><textarea name="specialties" id="specialties" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['specialties']) ? implode( "\n", $location['specialties'] ) : $location['specialties'] ?></textarea>
+                        <label for="specialties">Especialties (one per line - max 10 lines):</label><textarea name="specialties" id="specialties" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['specialties']) ? implode( "\n", $location['specialties'] ) : $location['specialties'] ?></textarea>
                     </div>
                     <div class="form-group">
                         <label for="services">Services (one per line - max 10 lines):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
