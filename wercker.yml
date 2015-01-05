@@ -10,7 +10,7 @@ build:
           name: install dependencies
           code: |-
             pear config-set auto_discover 1
-            pear install pear.phpunit.de/PHPUnit_Selenium
+          #  pear install pear.phpunit.de/PHPUnit_Selenium
       #- script:
       #    name: setup databases
       #    code: mysql -u $WERCKER_MYSQL_USER --host=$WERCKER_MYSQL_HOST $WERCKER_MYSQL_DATABASE < test/db-schema.sql

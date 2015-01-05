@@ -8,13 +8,13 @@
 
 class YEXT {
 
-    const OFFER_ID = 1306;
-    public static $SUBSCRIPTION_ID = 256171;
+    const OFFER_ID = 1756;
+    public static $SUBSCRIPTION_ID = 9999999999;  // We need to create it after the first location
 
-    public static $customer_id = 165947;
+    public static $customer_id = 639457;
     public static $url = 'https://api-sandbox.yext.com/v1/';
-    public static $base_service = 'customers/165947/';
-    public static $api_key = 'd7xtvCSno0V1EstMsYme';
+    public static $base_service = 'customers/639457/';
+    public static $api_key = 'PmHIbdjdLcUViKfge8LU';
 
     public $last_response_code;
 
@@ -69,6 +69,65 @@ class YEXT {
      */
     public function delete( $service, $data = [] ) {
         return $this->_request( 'delete', $service, $data );
+    }
+
+    /**
+     * Report
+     *
+     * @param  string[] $metrics
+     * @param  string[] $dimensions
+     * @param  string $date_start
+     * @param  string $date_end
+     * @return array[]
+     */
+    public function report( $metrics, $dimensions, $date_start, $date_end ) {
+        $base_service = self::$base_service;
+        self::$base_service = '';
+        $try_count = 0;
+        $report = null;
+
+        try {
+            $report_key = $this->_request( 'get', 'powerlistings/startReport', [
+                'format' => 'json'
+                , 'customerId' => self::$customer_id
+                , 'metrics' => implode(',', $metrics)
+                , 'dimensions' => implode(',', $dimensions)
+                , 'dateStart' => $date_start
+                , 'dateEnd' => $date_end
+            ])->key;
+
+            if ( !$report_key ) {
+                throw new Exception( 'Could not get Report Key' );
+            }
+
+            while ( true ) {
+                $response = $this->_request( 'get', 'powerlistings/getReport', [
+                    'format' => 'json'
+                    , 'key' => $report_key
+                ]);
+
+                if ( $response->status == 'done' ) {
+                    $report = $response->data;
+                    break;
+                }
+
+                if ( $response->status == 'failed') {
+                    throw new Exception( 'Report Failed' );
+                }
+
+                if ( $try_count > 30 ) {
+                    throw new Exception( 'Get Report Time Out' );
+                }
+
+                $try_count++;
+                sleep( 1 );
+            }
+        } catch ( Exception $e ) {
+            /* Do nothing */
+        }
+
+        self::$base_service = $base_service;
+        return $report;
     }
 
     /**
@@ -132,4 +191,4 @@ class YEXT {
         return $response;
     }
 
-} 
+}

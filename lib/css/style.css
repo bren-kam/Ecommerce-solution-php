@@ -2577,6 +2577,12 @@ ul.amounts li {
   margin-left: 1px;
   margin-right: 0px;
 }
+.panel .panel-heading.panel-warning {
+  color: #fabf0a;
+}
+.panel .panel-heading.panel-danger {
+  color: #eb363b;
+}
 .m-bot20 {
   margin-bottom: 20px;
 }

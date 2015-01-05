@@ -460,6 +460,9 @@ class Account extends ActiveRecordBase {
         } catch (Exception $e) { /* Probably Varnish is not installed */ }
     }
 
+    /**
+     * Resynchronize Sendgrid Email Lists
+     */
     public function resync_sendgrid_lists() {
         library('sendgrid-api');
         $settings = $this->get_settings( 'sendgrid-username', 'sendgrid-password' );
@@ -479,7 +482,7 @@ class Account extends ActiveRecordBase {
             $email_chunks = array_chunk( $emails, 1000 );
 
             foreach ( $email_chunks as $emails ) {
-                $success = $sendgrid->email->add( $email_list->name, $emails );
+                $sendgrid->email->add( $email_list->name, $emails );
             }
         }
     }

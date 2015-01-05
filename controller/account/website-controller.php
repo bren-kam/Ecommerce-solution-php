@@ -1647,11 +1647,13 @@ class WebsiteController extends BaseController {
         if ( is_array( $extra ) ) {
             // date parsing
             if ( isset( $extra['date-start'] ) ) {
-                $extra['date-start'] = ( new DateTime( $extra['date-start'] ) )->format('Y-m-d');
+                $date_start = new DateTime( $extra['date-start'] );
+                $extra['date-start'] = $date_start->format('Y-m-d');
             }
 
             if ( isset( $extra['date-end'] ) ) {
-                $extra['date-end'] = ( new DateTime( $extra['date-end'] ) )->format('Y-m-d');
+                $date_end = new DateTime( $extra['date-end'] );
+                $extra['date-end'] = $date_end->format('Y-m-d');
             }
 
             // make it json
