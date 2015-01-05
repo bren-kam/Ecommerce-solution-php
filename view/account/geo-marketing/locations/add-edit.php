@@ -205,12 +205,14 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="row">
+                        <!--
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label for="facebookPageUrl">Facebook Page URL:</label><input type="text" class="form-control" name="facebookPageUrl" id="facebookPageUrl" value="<?php echo $location['facebookPageUrl'] ?>" maxlength="255"/>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                         -->
+                        <div class="col-lg-12">
                             <div class="form-group">
                                 <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>" maxlength="15"/>
                             </div>
