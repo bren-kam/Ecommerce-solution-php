@@ -9,7 +9,7 @@
 class YEXT {
 
     const OFFER_ID = 1756;
-    public static $SUBSCRIPTION_ID = 679618;
+    public static $SUBSCRIPTION_ID = 680224;
 
     public static $customer_id = 639457;
     public static $url = 'https://api.yext.com/v1/';
