@@ -57,7 +57,7 @@ class WebsiteYextListing extends ActiveRecordBase {
 
         $rows = [];
         foreach ( $listings as $listing ) {
-            $rows[] = "( $account_id, '{$listing->locationId}', '" . $this->quote($listing->siteId) . "', '{$listing->status}', '" . $this->quote($listing->url) . "', '" . $this->quote($listing->screenshotUrl) . "' )";
+            $rows[] = "( $account_id, '{$listing->locationId}', " . $this->quote($listing->siteId) . ", '{$listing->status}', " . $this->quote($listing->url) . ", " . $this->quote($listing->screenshotUrl) . " )";
         }
 
         $this->query( "INSERT INTO website_yext_listing( website_id, location_id, site_id, `status`, url, screenshot_url ) VALUES" . implode( ',', $rows ) );
