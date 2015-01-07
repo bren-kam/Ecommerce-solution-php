@@ -307,6 +307,25 @@ class CronsController extends BaseController {
         }
     }
 
+    public function yext_download_reports() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        global $argv;
+        $start_date = new DateTime( $argv[2] );
+        $end_date = new DateTime( $argv[3] );
+
+        $account = new Account();
+        $account->get( 1352 );
+
+        echo "Downloading reports from " . $start_date->format('Y-m-d') . " to " . $end_date->format('Y-m-d') . "...\n";
+
+        $analytics = new WebsiteYextAnalytics( $account );
+        $analytics->fetch_analytics( $start_date, $end_date );
+
+        echo "Finished\n";
+    }
 
     /**
      * Login

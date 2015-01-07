@@ -87,18 +87,20 @@ class YEXT {
         $report = null;
 
         try {
-            $report_key = $this->_request( 'get', 'powerlistings/startReport', [
+            $report_key_response = $this->_request( 'get', 'powerlistings/startReport', [
                 'format' => 'json'
                 , 'customerId' => self::$customer_id
                 , 'metrics' => implode(',', $metrics)
                 , 'dimensions' => implode(',', $dimensions)
                 , 'dateStart' => $date_start
                 , 'dateEnd' => $date_end
-            ])->key;
+            ]);
 
-            if ( !$report_key ) {
+            if ( !isset( $report_key_response->key ) ) {
                 throw new Exception( 'Could not get Report Key' );
             }
+
+            $report_key = $report_key_response->key;
 
             while ( true ) {
                 $response = $this->_request( 'get', 'powerlistings/getReport', [
