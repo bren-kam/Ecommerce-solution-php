@@ -159,6 +159,10 @@ class LocationsController extends BaseController {
         if ( isset( $_GET['id'] ) ) {
             $website_yext_location->get( $_GET['id'], $this->user->account->id );
             $location = (array) $yext->get( "locations/{$_GET['id']}" );
+            if ( isset( $location['errors'] ) ) {
+                $this->notify( "Location {$_GET['id']} not found", false );
+                return new RedirectResponse('/geo-marketing/locations' );
+            }
         }
 
         $location['synchronize-products'] = $website_yext_location->synchronize_products;
@@ -177,6 +181,35 @@ class LocationsController extends BaseController {
             }
         } else {
             $location['custom-photos'] = [ [], [], [], [] ];
+        }
+
+        $hours = explode( ',', $location['hours'] );
+        $location['hours-array'] = [];
+        foreach( $hours as $hour ) {
+            $hour_pieces = explode( ':', $hour );
+            $location[ (int)$hour_pieces[0] ] = [
+                'open' => "{$hour_pieces[1]}:{$hour_pieces[2]}"
+                , 'close' => "{$hour_pieces[3]}:{$hour_pieces[4]}"
+            ];
+        }
+
+        $period = new DatePeriod(
+             new DateTime('2015-01-01 00:00:00'),
+             new DateInterval('PT15M'),
+             new DateTime('2015-01-02 00:00:00')
+        );
+        $days = [
+            1 => 'Sunday'
+            , 2 => 'Monday'
+            , 3 => 'Tuesday'
+            , 4 => 'Wednesday'
+            , 5 => 'Thursday'
+            , 6 => 'Friday'
+            , 7 => 'Saturday'
+        ];
+        $hour_options = [];
+        foreach ( $period as $time ) {
+            $hour_options[] = $time->format('H:i');
         }
 
         if ( $this->verified() ) {
@@ -216,6 +249,8 @@ class LocationsController extends BaseController {
                 $website_yext_location->name = $post['locationName'];
                 $website_yext_location->address = "{$post['address']} {$post['address2']}<br>{$post['city']}, {$post['state']} {$post['zip']}";
                 $website_yext_location->website_id = $this->user->account->id;
+
+                $posted_fields = $post;
 
                 if ( $post['logo-url'] ) {
                     $post['logo'] = [
@@ -259,6 +294,14 @@ class LocationsController extends BaseController {
                     }
                 }
 
+                $hours = [];
+                foreach ( $post['hours-array'] as $day_number => $day_hours ) {
+                    if ( !$day_hours['open'] || !$day_hours['close'] )
+                        continue;
+                    $hours[] = implode( ':', [$day_number, $day_hours['open'], $day_hours['close'] ] );
+                }
+                $post['hours'] = implode( ',', $hours );
+
                 // remove unwanted fields
                 unset( $post['_nonce'] );
                 unset( $post['synchronize-products'] );
@@ -281,6 +324,7 @@ class LocationsController extends BaseController {
                     unset( $post['store-photo'] );
                 }
                 unset( $post['custom-photos'] );
+                unset( $post['hours-array'] );
 
                 if ( !$website_yext_location->id ) {
                     // Create
@@ -288,40 +332,44 @@ class LocationsController extends BaseController {
                     $post['id'] = $website_yext_location->id;
                     $response = $yext->post( 'locations', $post );
                     if ( isset( $response->errors ) ) {
-                        $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
+                        $error_messages = '<div class="alert alert-danger">Your Location could not be created. ' . $response->errors[0]->message.'</div>';
                         $website_yext_location->remove();
-                        return new RedirectResponse( '/geo-marketing/locations' );
+                        $location = $posted_fields;
+                        // $this->notify( 'Your Location could not be created. ' . $response->errors[0]->message , false );
+                        // return new RedirectResponse( '/geo-marketing/locations' );
                     } else {
                         $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
                         $website_yext_location->save();
-                    }
 
-                    // Add add Location to Subscription
-                    if ( $yext_website_subscription_id ) {
-                        $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
-                        $subscription->locationIds[] = $website_yext_location->id;
-                        $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
-                    } else {
-                        // If we don't have a Subscription ID, create it!
-                        $subscription = $yext->post( 'subscriptions', [
-                            'offerId' => YEXT::OFFER_ID
-                            , 'locationIds' => [ $website_yext_location->id ]
-                        ]);
-                        $this->user->account->set_settings( [ 'yext-subscription-id' => $subscription->id ] );
+                        // Add add Location to Subscription
+                        if ( $yext_website_subscription_id ) {
+                            $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+                            $subscription->locationIds[] = $website_yext_location->id;
+                            $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+                        } else {
+                            // If we don't have a Subscription ID, create it!
+                            $subscription = $yext->post( 'subscriptions', [
+                                'offerId' => YEXT::OFFER_ID
+                                , 'locationIds' => [ $website_yext_location->id ]
+                            ]);
+                            $this->user->account->set_settings( [ 'yext-subscription-id' => $subscription->id ] );
+                        }
+                        return new RedirectResponse( '/geo-marketing/locations' );
                     }
                 } else {
                     // Update
-                    $website_yext_location->save();
                     $response = $yext->put( "locations/{$website_yext_location->id}", $post );
                     if ( isset( $response->errors ) ) {
-                        $this->notify( 'Your Location could not be updated. ' . $response->errors[0]->message , false );
-                        return new RedirectResponse( '/geo-marketing/locations' );
+                        $error_messages = '<div class="alert alert-danger">Your Location could not be updated. ' . $response->errors[0]->message.'</div>';
+                        $location = $posted_fields;
+                        // $this->notify( 'Your Location could not be updated. ' . $response->errors[0]->message , false );
+                        // return new RedirectResponse( '/geo-marketing/locations' );
                     } else {
                         $website_yext_location->status = isset( $status_codes[$yext->last_response_code] ) ? $status_codes[$yext->last_response_code] : 'REJECTED';
                         $website_yext_location->save();
+                        return new RedirectResponse( '/geo-marketing/locations' );
                     }
                 }
-                return new RedirectResponse( '/geo-marketing/locations' );
 
             }
 
@@ -332,7 +380,7 @@ class LocationsController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/locations/add-edit' )
             ->menu_item('geo-marketing/locations/add-edit')
-            ->set( compact( 'location', 'payment_options', 'yext_categories', 'error_messages' ) )
+            ->set( compact( 'location', 'payment_options', 'yext_categories', 'error_messages', 'hour_options', 'days' ) )
             ->kb( 148 );
     }
 
