@@ -447,6 +447,7 @@ class AccountsController extends BaseController {
             , 'ashley-ftp-password'
             , 'ashley-alternate-folder'
             , 'ashley-express-buyer-id'
+            , 'ashley-express-ship-to'
             , 'facebook-url'
             , 'advertising-url'
             , 'zopim'
@@ -478,6 +479,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
         $ft->add_field( 'text', _('Ashley Express - Ashley Account #'), 'tAshleyExpressBuyerCode', $settings['ashley-express-buyer-id'] );
+        $ft->add_field( 'text', _('Ashley Express - Ship To'), 'tAshleyExpressShipTo', $settings['ashley-express-ship-to'] );
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
@@ -532,6 +534,7 @@ class AccountsController extends BaseController {
                 , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
                 , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']
                 , 'ashley-express-buyer-id' => $_POST['tAshleyExpressBuyerCode']
+                , 'ashley-express-ship-to' => $_POST['tAshleyExpressShipTo']
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
