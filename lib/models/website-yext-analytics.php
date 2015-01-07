@@ -29,7 +29,7 @@ class WebsiteYextAnalytics extends ActiveRecordBase {
             , $end_date->format('Y-m-d')
         );
 
-        if ( empty( $response ) ) {
+        if ( empty( $report ) ) {
             return;
         }
 
