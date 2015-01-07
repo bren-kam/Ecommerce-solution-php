@@ -11,7 +11,7 @@ class AnalyticsController extends BaseController {
 
         // Get analytics
         $start_date_str = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : '-6 week';
-        $end_date_str = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
+        $end_date_str = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '-2 week';
         $location_id = isset( $_GET['location_id'] ) ? $_GET['location_id'] : null;
 
         // Locations
