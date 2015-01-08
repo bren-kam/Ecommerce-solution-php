@@ -491,10 +491,10 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
         $arb_gateway = $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
-            ->options( [
+            ->options( array(
                 'gsr' => 'Grey Suit Retail'
                 , 'other' => 'Other'
-            ]);
+            ));
         // Only admins can edit this
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) ) {
             $arb_gateway->attribute( 'disabled', 'disabled' );
@@ -1891,7 +1891,7 @@ class AccountsController extends BaseController {
         $subscription->status = 'CANCELED';
         $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
 
-        $account->set_settings( [ 'yext-subscription-id' => '' ] );
+        $account->set_settings( array( 'yext-subscription-id' => '' ) );
 
         $this->notify( _("Subscription cancelled.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
