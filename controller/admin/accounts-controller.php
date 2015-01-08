@@ -457,6 +457,7 @@ class AccountsController extends BaseController {
             , 'sendgrid-password'
             , 'arb-subscription-id'
             , 'arb-subscription-amount'
+            , 'arb-subscription-gateway'
             , 'yext-max-locations'
         );
 
@@ -487,6 +488,15 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
+        $arb_gateway = $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
+            ->options( [
+                'gsr' => 'Grey Suit Retail'
+                , 'other' => 'Other'
+            ]);
+        // Only admins can edit this
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) ) {
+            $arb_gateway->attribute( 'disabled', 'disabled' );
+        }
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
 
@@ -530,6 +540,7 @@ class AccountsController extends BaseController {
                 , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
                 , 'arb-subscription-id' => $_POST['tARBSubscriptionID']
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
+                , 'arb-subscription-gateway' => isset($_POST['sARBSubscriptionGateway']) ? $_POST['sARBSubscriptionGateway'] : $settings['arb-subscription-gateway']
                 , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
             ));
 
@@ -1160,7 +1171,7 @@ class AccountsController extends BaseController {
         }
 
         // Deactivate account
-        $account->status = 0;
+        $account->status = Account::STATUS_INACTIVE;
         $account->user_id_updated = $this->user->id;
         $account->save();
 
@@ -1790,6 +1801,11 @@ class AccountsController extends BaseController {
         echo 'Finished!'; die;
     }
 
+    /**
+     * Reactivate account (ghosted or canceled)
+     *
+     * @return RedirectResponse
+     */
     public function reactivate() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );
@@ -1798,14 +1814,20 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         if (  $account->id ) {
-            $account->status = 1;
+            $account->status = Account::STATUS_ACTIVE;
             $account->save();
         }
 
         $this->notify( _("Account reactivated") );
+
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Resynchronize Email Lists (Sendgrid and others)
+     *
+     * @return RedirectResponse
+     */
     public function resync_email_lists() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );
@@ -1813,14 +1835,19 @@ class AccountsController extends BaseController {
         $account = new Account();
         $account->get( $_GET['aid'] );
 
-        if (  $account->id ) {
+        if (  $account->id )
             $account->resync_sendgrid_lists();
-        }
 
         $this->notify( _("Email Lists Synced") );
+
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Created Index for products
+     *
+     * @return RedirectResponse
+     */
     public function index_products() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );

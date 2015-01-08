@@ -50,7 +50,7 @@ class LocationsController extends BaseController {
             $data[] = [
                 $location->name .
                 '<br><a href="/geo-marketing/locations/add-edit/?id=' . $location->id . '">Edit</a>' .
-                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>' . 
+                ' | <a href="/geo-marketing/locations/delete/?id=' . $location->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Location? Cannot be undone">Delete</a>' .
                 ' | <a href="/geo-marketing/locations/import-products/?id=' . $location->id . '" >Import Products</a>'
                 , $location->address
                 , $location->status
@@ -191,86 +191,96 @@ class LocationsController extends BaseController {
             // Some Custom Valiations
             // All of this element can't have more than 10 lines
             $error_messages = [];
-            foreach( [ 'videoUrls', 'emails', 'specialities', 'services', 'brands', 'languages', 'keywords' ] as $element ) {
-                if ( count( explode( "\n", $post[$element] ) ) > 10 ) {
+            foreach( [ 'videoUrls', 'emails', 'specialties', 'services', 'brands', 'languages', 'keywords' ] as $element ) {
+                $post[$element] = explode( "\n", $post[$element] );
+                if ( count( $post[$element] ) > 10 ) {
                     $error_messages[] = "The field '$element' can not have more than 10 lines";
                 }
-            }
 
-            $website_yext_location->synchronize_products = (int) isset( $post['synchronize-products'] );
-            $website_yext_location->name = $post['locationName'];
-            $website_yext_location->address = "{$post['address']} {$post['address2']}<br>{$post['city']}, {$post['state']} {$post['zip']}";
-            $website_yext_location->website_id = $this->user->account->id;
-
-            if ( $post['logo-url'] ) {
-                $post['logo'] = [
-                    'url' => $post['logo-url']
-                    , 'description' => ''
-                ];
-                unset($post['logo-url']);
-            }
-
-            if ( $post['store-photo'] ) {
-                if ( isset( $location['photos'] ) && $location['photos'] ) {
-                    $post['photos'] = $location['photos'];
-                    // if have 1 photo - it's store photo
-                    // if have 5 photos - first one is store photo
-                    // unshift if have 4 photos
-                    // ignore if have 2-3 photos
-                    // See GSRA-341 and GSRA-342
-                    if ( count( $post['photos'] ) == 1 ||  count( $post['photos'] ) == 5 ) {
-                        $post['photos'][0]->url = $post['store-photo'];
-                    } else if ( count( $post['photos'] ) == 4 ) {
-                        array_unshift( $post['photos'], [
-                            'url' => $post['store-photo']
-                        ] );
-                    }
-                } else {
-                    $post['photos'] = [[
-                        'url' => $post['store-photo']
-                    ]];
-                }
-                unset( $post['store-photo'] );
-            }
-
-            if ( $post['custom-photos'] ) {
-                foreach( $post['custom-photos'] as $k => $custom_photo ) {
-                    if ( $custom_photo ) {
-                        $photo_index = $k+1;
-                        $post['photos'][$photo_index] = [
-                            'url' => $custom_photo
-                        ];
+                // Except for emails, each line can't have more than 50 characters
+                if ( $element != 'emails' ) {
+                    foreach ( $post[$element] as $line ) {
+                        if ( strlen( $line ) > 50 )  {
+                            $error_messages[] = "The each line in '$element' can't exceed 50 characters";
+                        }
                     }
                 }
             }
-
-            // remove unwanted fields
-            unset( $post['_nonce'] );
-            unset( $post['synchronize-products'] );
-            if ( !$post['services'] ) {
-                unset( $post['services'] );
-            }
-            if ( !$post['brands'] ) {
-                unset( $post['brands'] );
-            }
-            if ( !$post['languages'] ) {
-                unset( $post['languages'] );
-            }
-            if ( !$post['keywords'] ) {
-                unset( $post['keywords'] );
-            }
-            if ( !$post['logo-url'] ) {
-                unset( $post['logo-url'] );
-            }
-            if ( !$post['store-photo'] ) {
-                unset( $post['store-photo'] );
-            }
-            unset( $post['custom-photos'] );
 
             if ( $error_messages ) {
                 $error_messages = '<div class="alert alert-danger">'. implode( '<br>', $error_messages ) .'</div>';
                 $location = $post;
             } else {
+
+                $website_yext_location->synchronize_products = (int) isset( $post['synchronize-products'] );
+                $website_yext_location->name = $post['locationName'];
+                $website_yext_location->address = "{$post['address']} {$post['address2']}<br>{$post['city']}, {$post['state']} {$post['zip']}";
+                $website_yext_location->website_id = $this->user->account->id;
+
+                if ( $post['logo-url'] ) {
+                    $post['logo'] = [
+                        'url' => $post['logo-url']
+                        , 'description' => ''
+                    ];
+                    unset($post['logo-url']);
+                }
+
+                if ( $post['store-photo'] ) {
+                    if ( isset( $location['photos'] ) && $location['photos'] ) {
+                        $post['photos'] = $location['photos'];
+                        // if have 1 photo - it's store photo
+                        // if have 5 photos - first one is store photo
+                        // unshift if have 4 photos
+                        // ignore if have 2-3 photos
+                        // See GSRA-341 and GSRA-342
+                        if ( count( $post['photos'] ) == 1 ||  count( $post['photos'] ) == 5 ) {
+                            $post['photos'][0]->url = $post['store-photo'];
+                        } else if ( count( $post['photos'] ) == 4 ) {
+                            array_unshift( $post['photos'], [
+                                'url' => $post['store-photo']
+                            ] );
+                        }
+                    } else {
+                        $post['photos'] = [[
+                            'url' => $post['store-photo']
+                        ]];
+                    }
+                    unset( $post['store-photo'] );
+                }
+
+                if ( $post['custom-photos'] ) {
+                    foreach( $post['custom-photos'] as $k => $custom_photo ) {
+                        if ( $custom_photo ) {
+                            $photo_index = $k+1;
+                            $post['photos'][$photo_index] = [
+                                'url' => $custom_photo
+                            ];
+                        }
+                    }
+                }
+
+                // remove unwanted fields
+                unset( $post['_nonce'] );
+                unset( $post['synchronize-products'] );
+                if ( !$post['services'] ) {
+                    unset( $post['services'] );
+                }
+                if ( !$post['brands'] ) {
+                    unset( $post['brands'] );
+                }
+                if ( !$post['languages'] ) {
+                    unset( $post['languages'] );
+                }
+                if ( !$post['keywords'] ) {
+                    unset( $post['keywords'] );
+                }
+                if ( !$post['logo-url'] ) {
+                    unset( $post['logo-url'] );
+                }
+                if ( !$post['store-photo'] ) {
+                    unset( $post['store-photo'] );
+                }
+                unset( $post['custom-photos'] );
 
                 if ( !$website_yext_location->id ) {
                     // Create
@@ -460,15 +470,23 @@ class LocationsController extends BaseController {
             }
             $yext->put("locations/{$location->id}", $yext_location);
 
+            $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+            $file->upload_file( $_FILES['csv']['tmp_name'], "yext-products-{$location->id}.csv", $this->user->account->id . '/yext/' );
+
             // Cleanup
             unset( $yext_items );
             unset( $products );
         }
 
+        $current_product_list = "http://websites.retailcatalog.us/1352/yext/yext-products-{$location->id}.csv";
+        if ( !curl::check_file( $current_product_list, 5 ) ) {
+            unset( $current_product_list );
+        }
+
         return $this->get_template_response( 'geo-marketing/locations/import-products' )
             ->menu_item('geo-marketing/import-products')
-            ->set( compact( 'location', 'skipped', 'success', 'response' ) )
-            ->kb( 148 );
+            ->set( compact( 'location', 'skipped', 'success', 'response', 'current_product_list' ) )
+            ->kb( 152 );
     }
 
-} 
+}

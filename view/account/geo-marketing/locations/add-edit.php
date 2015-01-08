@@ -49,7 +49,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="form-group">
-                        <label for="phone">Phone:*</label><input type="text" class="form-control" name="phone" id="phone" value="<?php echo $location['phone'] ?>" maxlength="10"/>
+                        <label for="phone">Phone:*</label><input type="text" class="form-control" name="phone" id="phone" value="<?php echo $location['phone'] ?>" maxlength="10" placeholder="Must be a valid 10-digit phone number. Without dashes or parethesis."/>
                     </div>
 
                     <div class="row">
@@ -133,25 +133,25 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="yearEstabilished">Year Estabilished:</label><input type="text" class="form-control" name="yearEstabilished" id="yearEstabilished" value="<?php echo $location['yearEstabilished'] ?>" maxlength="4"/>
+                                <label for="yearEstablished">Year Established:</label><input type="text" class="form-control" name="yearEstablished" id="yearEstablished" value="<?php echo $location['yearEstablished'] ?>" maxlength="4"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="specialities">Specialities (one per line - max 10 lines):</label><textarea name="specialities" id="specialities" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['specialities']) ? implode( "\n", $location['specialities'] ) : $location['specialities'] ?></textarea>
+                        <label for="specialties">Especialties (one per line - max 10 lines):</label><textarea name="specialties" id="specialties" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['specialties']) ? implode( "\n", $location['specialties'] ) : $location['specialties'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="services">Services (one per line - max 10 lines):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
+                        <label for="services">Services (one per line - max 10 lines):</label><textarea name="services" id="services" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['services']) ? implode( "\n", $location['services'] ) : $location['services'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="brands">Brands (one per line - max 10 lines):</label><textarea name="brands" id="brands" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['brands']) ? implode( "\n", $location['brands'] ) : $location['brands'] ?></textarea>
+                        <label for="brands">Brands (one per line - max 10 lines):</label><textarea name="brands" id="brands" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['brands']) ? implode( "\n", $location['brands'] ) : $location['brands'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="languages">Languages (one per line - max 10 lines) :</label><textarea name="languages" id="languages" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['languages']) ? implode( "\n", $location['languages'] ) : $location['languages'] ?></textarea>
+                        <label for="languages">Languages (one per line - max 10 lines) :</label><textarea name="languages" id="languages" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['languages']) ? implode( "\n", $location['languages'] ) : $location['languages'] ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="keywords">Keywords (one per line - max 10 lines):</label><textarea name="keywords" id="keywords" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['keywords']) ? implode( "\n", $location['keywords'] ) : $location['keywords'] ?></textarea>
+                        <label for="keywords">Keywords (one per line - max 10 lines):</label><textarea name="keywords" id="keywords" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['keywords']) ? implode( "\n", $location['keywords'] ) : $location['keywords'] ?></textarea>
                     </div>
                     <div class="form-group">
                         <label for="description">Description:</label><textarea name="description" id="description" cols="50" rows="3" class="form-control" rte="1" maxlength="2000"><?php echo $location['description'] ?></textarea>
@@ -205,20 +205,22 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="row">
+                        <!--
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label for="facebookPageUrl">Facebook Page URL:</label><input type="text" class="form-control" name="facebookPageUrl" id="facebookPageUrl" value="<?php echo $location['facebookPageUrl'] ?>" maxlength="255"/>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                         -->
+                        <div class="col-lg-12">
                             <div class="form-group">
-                                <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>" maxlength="15"/>
+                                <label for="twitterHandle">Twitter Handle:</label><input type="text" class="form-control" name="twitterHandle" id="twitterHandle" value="<?php echo $location['twitterHandle'] ?>" maxlength="15" placeholder="Valid Twitter handle for the location (e.g., JohnSmith  (without the leading @))"/>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="emails">Emails (one per line - max 10 lines):</label><textarea name="emails" id="emails" cols="50" rows="3" class="form-control" maxlength="500"><?php is_array($location['emails']) ? implode( "\n", $location['emails'] ) : $location['emails'] ?></textarea>
+                        <label for="emails">Emails (one per line - max 10 lines):</label><textarea name="emails" id="emails" cols="50" rows="3" class="form-control" maxlength="500"><?php echo is_array($location['emails']) ? implode( "\n", $location['emails'] ) : $location['emails'] ?></textarea>
                     </div>
 
                 </div>
@@ -254,7 +256,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="col-lg-6">
                             <p class="image-selector" id="store-photo">
                                 <strong>Store Photo:</strong>
-                                <img src="<?php echo isset( $location['store-photo'] ) ? $location['store-photo'] : '//placehold.it/200x200' ?>" />
+                                <img src="<?php echo isset( $location['store-photo'] ) && $location['store-photo'] ? $location['store-photo'] : '//placehold.it/200x200' ?>" />
                                 <input type="hidden" name="store-photo" value="<?php echo $location['store-photo'] ?>" />
                                 <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                         data-media-manager
@@ -274,7 +276,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                 <p class="image-selector" id="custom-photo-<?php echo $k ?>">
                                     <strong>Image/Photo:</strong>
                                     <img src="<?php echo isset( $image['url'] ) ? $image['url'] : '//placehold.it/200x200' ?>" />
-                                    <input type="hidden" name="custom-photos[<?php echo $k ?>]" value="<?php echo $image['url'] ?>" />
+                                    <input type="hidden" name="custom-photos[<?php echo $k ?>]" value="<?php echo isset($image['url']) ? $image['url'] : ''?>" />
                                     <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                             data-media-manager
                                             data-upload-url="<?php echo $upload_url ?>"
@@ -291,7 +293,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="form-group">
-                        <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line - max 10 lines):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
+                        <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line - max 10 lines):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php echo is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" name="synchronize-products" id="synchronize-products33" value="1" <?php if ( $location['synchronize-products'] ) echo 'checked' ?> />List top 100 products on location</label>

@@ -7,6 +7,13 @@
 
             <div class="panel-body">
 
+                <?php if ( $current_product_list ): ?>
+                    <div class="alert alert-warning">
+                        You already have a product list on this Location. Download the CSV file <a href="<?php echo $current_product_list ?>">here</a><br>
+                        Only one list of products can be created per location.  To update your current list of product, upload a new spreadsheet.
+                    </div>
+                <?php endif; ?>
+
                 <form method="post" role="form" enctype="multipart/form-data">
 
                     <?php if ( isset( $success ) ): ?>
@@ -24,7 +31,7 @@
                     <?php endif; ?>
 
                     <div class="form-group">
-                        <label for="csv">Product File - CSV Format - Download an import template <a href="http://websites.retailcatalog.us/1352/mm/yext-import-template.csv">here</a>:</label>
+                        <label for="csv">Product File - CSV Format - Download an import template <a href="http://websites.retailcatalog.us/1352/mm/product-import-template.csv">here</a>:</label>
                         <input type="file" name="csv" />
                     </div>
 
