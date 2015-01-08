@@ -100,33 +100,6 @@ nonce::field( 'get_graph', '_get_graph' );
     </div>
 </div>
 
-<div class="row-fluid">
-    <div class="col-lg-6">
-        <section class="panel">
-            <header class="panel-heading">
-                Facebook Likes
-            </header>
-
-            <div class="panel-body">
-                <div id="facebook-likes" class="report"></div>
-            </div>
-        </section>
-    </div>
-
-    <div class="col-lg-6">
-        <section class="panel">
-            <header class="panel-heading">
-                Facebook Talking About
-            </header>
-
-            <div class="panel-body">
-                <div id="facebook-talking-about" class="report"></div>
-            </div>
-        </section>
-    </div>
-</div>
-
-
 <script>
     var AnalyticsSettings = <?php echo json_encode( [  'reports' => $reports ] ); ?>;
 </script>

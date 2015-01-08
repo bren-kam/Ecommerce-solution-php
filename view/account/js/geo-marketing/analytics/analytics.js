@@ -43,17 +43,6 @@ var Analytics = {
             , plotOptions
         );
 
-        $.plot(
-            $('#facebook-likes')
-            , [{ label: 'Facebook Likes', data: AnalyticsSettings.reports.facebook_likes, color: '#FFA900' }]
-            , plotOptions
-        );
-
-        $.plot(
-            $('#facebook-talking-about')
-            , [{ label: 'Facebook Talking About', data: AnalyticsSettings.reports.facebook_talking_about, color: '#FFA900' }]
-            , plotOptions
-        );
     }
 
     , showTooltip: function( event, pos, item ) {
