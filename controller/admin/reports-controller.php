@@ -22,6 +22,7 @@ class ReportsController extends BaseController {
             'product_catalog' => _('Product Catalog')
             , 'blog' => _('Blog')
             , 'email_marketing' => _('Email Marketing')
+            , 'geo_marketing' => 'GeoMarketing'
             , 'shopping_cart' => _('Shopping Cart')
             , 'room_planner' => _('Room Planner')
             , 'craigslist' => _('Craigslist')
@@ -174,6 +175,7 @@ class ReportsController extends BaseController {
             'product_catalog'
             , 'blog'
             , 'email_marketing'
+            , 'geo_marketing'
             , 'shopping_cart'
             , 'room_planner'
             , 'craigslist'

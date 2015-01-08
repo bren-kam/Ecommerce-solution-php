@@ -19,7 +19,7 @@ nonce::field( 'get_graph', '_get_graph' );
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Geo Marketing - Reports
+                GeoMarketing - Reports
             </header>
 
             <div class="panel-body">
