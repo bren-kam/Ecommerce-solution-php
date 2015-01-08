@@ -58,6 +58,7 @@ class ListingsController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/listings/index' )
             ->menu_item('geo-marketing/listings')
+            ->kb(153)
             ->set( compact( 'locations', 'listings' ) );
     }
 
