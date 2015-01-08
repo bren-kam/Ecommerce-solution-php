@@ -90,14 +90,14 @@
                         <div class="row">
                             <div class="form-group col-lg-4">
                                 <label for="ccexpm">Expiration Month:</label>
-                                <select name="ccpexpm" id="ccpexpm" class="form-control">
+                                <select name="ccexpm" id="ccexpm" class="form-control">
                                     <option value="">-- Select Month --</option>
                                     <?php data::months(); ?>
                                 </select>
                             </div>
                             <div class="form-group col-lg-4">
-                                <label for="ccexpm">Expiration Year:</label>
-                                <select name="ccpexpy" id="ccpexpy" class="form-control">
+                                <label for="ccexpy">Expiration Year:</label>
+                                <select name="ccexpy" id="ccexpy" class="form-control">
                                     <option value="">-- Select Year --</option>
                                     <?php
                                     $year = date('Y');
