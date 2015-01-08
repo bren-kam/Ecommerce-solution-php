@@ -7,6 +7,15 @@
  */
 
 class ListingsController extends BaseController {
+    /**
+     * Setup the base for creating template responses
+     */
+    public function __construct() {
+        // Pass in the base for all the views
+        parent::__construct();
+
+        $this->title = _('Listings | GeoMarketing');
+    }
 
     /**
      * Index
@@ -82,7 +91,7 @@ class ListingsController extends BaseController {
             $data[] = [
                 $locations[ $listing->location_id ]->name . '<br>' . $action
                 , $listing->site_id
-                , $listing->status
+                , str_replace('_', ' ', $listing->status)
                 , '<a href="'. $listing->url .'">'. $listing->url .'</a>'
             ];
         }

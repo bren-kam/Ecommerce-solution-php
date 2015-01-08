@@ -2140,6 +2140,7 @@ CREATE TABLE `website_orders` (
   `website_cart_id` int(11) NOT NULL,
   `website_shipping_method_id` int(11) NOT NULL,
   `website_ashley_express_shipping_method_id` int(11) DEFAULT NULL,
+  `authorize_only` INT(1) NOT NULL DEFAULT 0,
   `website_coupon_id` int(11) NOT NULL,
   `shipping_price` float NOT NULL,
   `tax_price` float NOT NULL,

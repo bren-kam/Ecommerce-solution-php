@@ -300,6 +300,7 @@ class ApiRequest {
          * @param bool $room_planner
          * @param bool $craigslist
          * @param bool $social_media
+         * @param bool $geo_marketing
          * @param bool $domain_registration
          * @param bool $additional_email_addresses
          * @param int $products
@@ -308,7 +309,7 @@ class ApiRequest {
         try {
 
             // Gets parameters and errors out if something is missing
-            extract($this->get_parameters('user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products'));
+            extract($this->get_parameters('user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'room_planner', 'craigslist', 'social_media', 'geo_marketing', 'domain_registration', 'additional_email_addresses', 'products'));
 
             // Create account
             $account = new Account();
@@ -330,6 +331,7 @@ class ApiRequest {
             $account->product_catalog = $product_catalog;
             $account->blog = $blog;
             $account->email_marketing = $email_marketing;
+            $account->geo_marketing = $geo_marketing;
             $account->shopping_cart = $shopping_cart;
             $account->room_planner = $room_planner;
             $account->craigslist = $craigslist;
@@ -582,11 +584,7 @@ class ApiRequest {
          * @param string $billing_zip
          * @param int $user_id
          */
-        $personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' );
-		
-		// Get the user_id, but we don't want it in the update data
-		$user_id = $personal_information['user_id'];
-		unset( $personal_information['user_id'] );
+        extract( $this->get_parameters( 'user_id', 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' ) );
 		
 		// Make sure he exists, if not, create user
         $user = new User();

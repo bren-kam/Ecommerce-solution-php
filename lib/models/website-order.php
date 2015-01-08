@@ -14,7 +14,7 @@ class WebsiteOrder extends ActiveRecordBase {
         , $billing_first_name, $billing_last_name, $billing_address1, $billing_address2, $billing_city
         , $billing_state, $billing_zip, $billing_phone, $billing_alt_phone, $shipping_name, $shipping_first_name
         , $shipping_last_name, $shipping_address1, $shipping_address2, $shipping_city, $shipping_state
-        , $shipping_zip, $status, $date_created, $shipping_track_number;
+        , $shipping_zip, $status, $date_created, $shipping_track_number, $authorize_only;
 
     // Artificial field
     public $name;

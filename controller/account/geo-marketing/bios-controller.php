@@ -7,6 +7,16 @@
  */
 
 class BiosController extends BaseController {
+    /**
+     * Setup the base for creating template responses
+     */
+    public function __construct() {
+        // Pass in the base for all the views
+        parent::__construct();
+
+        $this->title = _('Bios | GeoMarketing');
+    }
+
 
     /**
      * Index
@@ -14,19 +24,26 @@ class BiosController extends BaseController {
      */
     public function index() {
 
+        $location = new WebsiteYextLocation();
+        $locations = $location->get_all( $this->user->account->id );
+
         library('yext');
         $yext = new YEXT( $this->user->account );
-        $list_id = "{$this->user->account->id}-bios";
-        $response = $yext->get( "lists/{$list_id}" );
 
         $website_yext_bio = new WebsiteYextBio();
         $website_yext_bio->remove_by_account_id( $this->user->account->id );
-        if ( !isset( $response->errors ) ) {
-            $website_yext_bio->insert_bulk( $response->sections[0]->items, $this->user->account->id );
+
+        foreach ( $locations as $location ) {
+            $list_id = "{$this->user->account->id}-{$location->id}-bios";
+            $response = $yext->get( "lists/{$list_id}" );
+            if ( !isset( $response->errors ) ) {
+                $website_yext_bio->insert_bulk( $response->sections[0]->items, $location->id, $this->user->account->id );
+            }
         }
 
         return $this->get_template_response( 'geo-marketing/bios/index' )
-            ->menu_item('geo-marketing/bios/list');
+            ->menu_item('geo-marketing/bios/list')
+            ->kb( 149 );
     }
 
     /**
@@ -36,9 +53,9 @@ class BiosController extends BaseController {
     public function list_all() {
         $dt = new DataTableResponse( $this->user );
 
-        $dt->order_by( '`website_yext_bio_id`', '`name`' );
-        $dt->search( array( '`website_yext_bio_id`' => false, '`name`' => false ) );
-        $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
+        $dt->order_by( 'b.`website_yext_bio_id`', 'b.`name`' );
+        $dt->search( array( '`website_yext_bio_id`' => false, 'b.`name`' => false ) );
+        $dt->add_where( " AND b.`website_id` = " . (int) $this->user->account->id );
 
         // Get Bios
         $bio = new WebsiteYextBio();
@@ -49,10 +66,10 @@ class BiosController extends BaseController {
         $delete_nonce = nonce::create( 'delete' );
         foreach ( $bios as $bio ) {
             $data[] = [
-                $bio->website_yext_bio_id .
+                $bio->name .
                 '<br><a href="/geo-marketing/bios/add-edit/?id=' . $bio->website_yext_bio_id . '">Edit</a>
                 | <a href="/geo-marketing/bios/delete/?id=' . $bio->website_yext_bio_id . '&_nonce='.$delete_nonce.'" confirm="Do you want to Delete this Bio? Cannot be Undone.">Delete</a>'
-                , $bio->name
+                , $bio->location
             ];
         }
 
@@ -66,10 +83,23 @@ class BiosController extends BaseController {
      * @return TemplateResponse
      */
     public function add_edit() {
+
+        $website_yext_location = new WebsiteYextLocation();
+        $location_list = $website_yext_location->get_all( $this->user->account->id );
+        $locations = [];
+        foreach( $location_list as $location ) {
+            $locations[ $location->id ] = $location->name;
+        }
+
+        $website_yext_bio = new WebsiteYextBio();
+        $website_yext_bio->get( $_REQUEST['id'], $this->user->account->id );
+
+        $location_id = $website_yext_bio->website_yext_location_id ? $website_yext_bio->website_yext_location_id : $_REQUEST['location-id'];
+
         library('yext');
         $bio = [];
         $yext = new YEXT( $this->user->account );
-        $list_id = "{$this->user->account->id}-bios";
+        $list_id = "{$this->user->account->id}-{$location_id}-bios";
         $list = $yext->get( "lists/{$list_id}" );
         if ( isset( $list->sections[0]->items ) ) {
             $list_item_index = null;  // will be use to know if update
@@ -90,6 +120,14 @@ class BiosController extends BaseController {
         $form = new BootstrapForm( 'add-edit-bio' );
 
         $form->add_field( 'hidden', 'id', $bio['id'] );
+
+        $select = $form->add_field( 'select', 'Location', 'location-id', $website_yext_bio->website_yext_location_id )
+            ->options( $locations );
+        if ( $website_yext_bio->website_yext_location_id ) {
+            $select->attribute( 'disabled', 'disabled' );
+            $form->add_field( 'hidden', 'location-id', $website_yext_bio->website_yext_location_id );
+        }
+
         $form->add_field( 'text', 'Name', 'name', $bio['name'] )
             ->add_validation( 'req', 'A Name is required' );
         $form->add_field( 'textarea', 'Description', 'description', $bio['description'] )
@@ -102,8 +140,10 @@ class BiosController extends BaseController {
         $form->add_field( 'text', 'URL', 'url', $bio['url'] );
 
         if ( $form->posted() ) {
+            $list_id = "{$this->user->account->id}-{$location_id}-bios";
             $bio = $_POST;
             unset( $bio['_nonce'] );
+            unset( $bio['location-id'] );
             if ( !$bio['id'] ) {
                 $bio['id'] = time();
             }
@@ -111,13 +151,13 @@ class BiosController extends BaseController {
             if ( $create_list ) {
                 $list = [
                     'id' => $list_id
-                    , 'name' => $this->user->account->title . ' Bios'
-                    , 'title' => $this->user->account->title . ' Bios'
+                    , 'name' => "{$this->user->account->title} - {$locations[$location_id]} Bios"
+                    , 'title' => "{$this->user->account->title} - {$locations[$location_id]} Bios"
                     , 'type' => 'BIOS'
                     , 'publish' => true
                     , 'sections' => [
                         'id' => $list_id . '-section'
-                        , 'name' => $this->user->account->title . ' Bios'
+                        , 'name' => "{$this->user->account->title} - {$locations[$_POST['location-id']]} Bios"
                         , 'items' => [
                             $bio
                         ]
@@ -144,7 +184,8 @@ class BiosController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/bios/add-edit' )
             ->menu_item( 'geo-marketing/bios/add-edit' )
-            ->set( compact( 'form_html' ) );
+            ->set( compact( 'form_html' ) )
+            ->kb( 151 );
     }
 
     public function delete() {
@@ -154,14 +195,15 @@ class BiosController extends BaseController {
             return new RedirectResponse( '/geo-marketing/bios' );
         }
 
+        $website_yext_bio = new WebsiteYextBio();
+        $website_yext_bio->get( $_REQUEST['id'], $this->user->account->id );
+
         library('yext');
         $yext = new YEXT( $this->user->account );
-        $list_id = "{$this->user->account->id}-bios";
+        $list_id = "{$this->user->account->id}-{$website_yext_bio->website_yext_location_id}-bios";
         $list = $yext->get( "lists/{$list_id}" );
         if ( isset( $list->sections[0]->items ) ) {
-
             if ( isset( $_REQUEST['id'] ) ) {
-
                 foreach ($list->sections[0]->items as $i => $yext_bio) {
                     if ($yext_bio->id == $_REQUEST['id']) {
                         // we found it! remove from the list and update
@@ -173,9 +215,7 @@ class BiosController extends BaseController {
                         break;
                     }
                 }
-
             }
-
         }
 
         return new RedirectResponse( '/geo-marketing/bios' );

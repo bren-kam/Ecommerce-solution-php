@@ -180,6 +180,7 @@ class AccountsController extends BaseController {
                     $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                     $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+                    $account->geo_marketing = (int) isset( $_POST['cbGeoMarketing'] );
                     $account->user_id_updated = $this->user->id;
 
                     $account->save();
@@ -456,6 +457,8 @@ class AccountsController extends BaseController {
             , 'sendgrid-password'
             , 'arb-subscription-id'
             , 'arb-subscription-amount'
+            , 'arb-subscription-gateway'
+            , 'yext-max-locations'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -485,6 +488,17 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
+        $arb_gateway = $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
+            ->options( [
+                'gsr' => 'Grey Suit Retail'
+                , 'other' => 'Other'
+            ]);
+        // Only admins can edit this
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) ) {
+            $arb_gateway->attribute( 'disabled', 'disabled' );
+        }
+
+        $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -526,6 +540,8 @@ class AccountsController extends BaseController {
                 , 'ashley-express' => (int) isset( $_POST['cbAshleyExpress'] ) && $_POST['cbAshleyExpress']
                 , 'arb-subscription-id' => $_POST['tARBSubscriptionID']
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
+                , 'arb-subscription-gateway' => isset($_POST['sARBSubscriptionGateway']) ? $_POST['sARBSubscriptionGateway'] : $settings['arb-subscription-gateway']
+                , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -561,7 +577,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -1685,6 +1701,40 @@ class AccountsController extends BaseController {
     }
 
     /**
+     * Run Ashley Express Order Status Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_express_order_status() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
+        // Ashley Express Feed - Order Acknowledgement
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_acknowledgement( $account );
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Ashley Express Feed - Order ASN
+        $ashley_express_feed = new AshleyExpressFeedGateway();
+        $ashley_express_feed->run_order_asn( $account );
+        unset( $ashley_express_feed );
+        gc_collect_cycles();
+
+        // Give them a notification
+        $this->notify( _('The Ashley Express Feed Orders Check has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    /**
      * Install New Theme
      *
      * @throws Exception
@@ -1811,6 +1861,36 @@ class AccountsController extends BaseController {
         }
 
         $this->notify( _("All Products Indexed!") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    public function cancel_yext_subscription() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        if ( !$account->id )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        library('yext');
+        $yext = new YEXT( $account );
+
+        $yext_website_subscription_id = $account->get_settings( 'yext-subscription-id' );
+        if ( !$yext_website_subscription_id )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $subscription = $yext->get( "subscriptions/{$yext_website_subscription_id}" );
+        if ( !isset($subscription->id) )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $subscription->status = 'CANCELED';
+        $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
+
+        $account->set_settings( [ 'yext-subscription-id' => '' ] );
+
+        $this->notify( _("Subscription cancelled.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 }
