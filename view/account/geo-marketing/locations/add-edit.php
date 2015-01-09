@@ -263,7 +263,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="col-lg-6">
                             <p class="image-selector" id="logo">
                                 <strong>Logo:</strong>
-                                <img class="img-responsive" src="<?php echo isset( $location['logo']['url'] ) ? $location['logo']['url'] : '//placehold.it/200x200' ?>" />
+                                <img class="img-responsive" src="<?php echo isset( $location['logo']['url'] ) ? $location['logo']['url'] : '//placehold.it/200x200&text=Add+Logo' ?>" />
                                 <input type="hidden" name="logo-url" value="<?php echo $location['logo']['url'] ?>" />
                                 <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                         data-media-manager
@@ -278,7 +278,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="col-lg-6">
                             <p class="image-selector" id="store-photo">
                                 <strong>Store Photo:</strong>
-                                <img class="img-responsive" src="<?php echo isset( $location['store-photo'] ) && $location['store-photo'] ? $location['store-photo'] : '//placehold.it/200x200' ?>" />
+                                <img class="img-responsive" src="<?php echo isset( $location['store-photo'] ) && $location['store-photo'] ? $location['store-photo'] : '//placehold.it/200x200&text=Add+Store+Photo' ?>" />
                                 <input type="hidden" name="store-photo" value="<?php echo $location['store-photo'] ?>" />
                                 <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                         data-media-manager
@@ -297,7 +297,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             <div class="col-lg-6">
                                 <p class="image-selector" id="custom-photo-<?php echo $k ?>">
                                     <strong>Image/Photo:</strong>
-                                    <img class="img-responsive" src="<?php echo isset( $image['url'] ) ? $image['url'] : '//placehold.it/200x200' ?>" />
+                                    <img class="img-responsive" src="<?php echo isset( $image['url'] ) ? $image['url'] : '//placehold.it/200x200&text=Add+Image' ?>" />
                                     <input type="hidden" name="custom-photos[<?php echo $k ?>]" value="<?php echo isset($image['url']) ? $image['url'] : ''?>" />
                                     <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                             data-media-manager
@@ -313,6 +313,10 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
                         <?php endforeach; ?>
                     </div>
+
+                    <?php if ( $user->account->pages ): ?>
+                        <div class="alert alert-info">If there are any remaining unused images (6 total) they will be pulled from your banners and sidebars.</div>
+                    <?php endif; ?>
 
                     <div class="form-group">
                         <label for="videoUrls">Video URLs - Valid YouTube URLs for embedding a video on some publisher sites (one per line - max 10 lines):</label><textarea name="videoUrls" id="videoUrls" cols="50" rows="3" class="form-control"><?php echo is_array($location['videoUrls']) ? implode( "\n", $location['videoUrls'] ) : $location['videoUrls'] ?></textarea>
