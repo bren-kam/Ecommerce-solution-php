@@ -244,6 +244,31 @@ class WebsiteYextLocation extends ActiveRecordBase {
             $response = $yext->post( "lists", $yext_list );
         }
 
+        $yext_location = (array) $yext->get("locations/{$location->id}");
+        if ( empty($yext_location['lists']) ) {
+            $yext_location['lists'] = [[
+                'id' => $yext_list['id']
+                , 'name' => $yext_list['name']
+                , 'type' => 'PRODUCTS'
+            ]];
+        } else {
+            $found = false;
+            foreach( $yext_location['lists'] as $list ) {
+                if ( $list->name == $yext_list['name'] ) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ( !$found ) {
+                $yext_location['lists'][] = [
+                    'id' => $yext_list['id']
+                    , 'name' => $yext_list['name']
+                    , 'type' => 'PRODUCTS'
+                ];
+            }
+        }
+        $yext->put("locations/{$location->id}", $yext_location);
+
         // Cleanup
         unset( $yext_lists_items );
         unset( $products );

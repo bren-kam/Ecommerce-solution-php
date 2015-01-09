@@ -94,7 +94,7 @@ nonce::field('add_auto_price', '_add_auto_price');
                                 <td><input type="text" class="form-control" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][sale_price]" value="<?php echo (float) $auto_price->sale_price; ?>"></td>
                                 <td><input type="text" class="form-control" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][ending]" value="<?php echo (float) $auto_price->ending; ?>"></td>
                                 <td>
-                                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $auto_price->category_id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" ajax="1" confirm="Are you sure you want to remove these prices? This cannot be undone.">Remove Prices From Products</a> |
+                                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $auto_price->category_id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" class="remove-auto-price">Remove Prices From Products</a> |
                                     <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $auto_price->category_id, '_nonce' => $delete_auto_price ), '/products/delete-auto-price/' ); ?>" class="remove"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
@@ -107,7 +107,7 @@ nonce::field('add_auto_price', '_add_auto_price');
                             <td><input type="text" class="form-control" name="auto-price[BRAND_ID][CATEGORY_ID][sale_price]" /></td>
                             <td><input type="text" class="form-control" name="auto-price[BRAND_ID][CATEGORY_ID][ending]" /></td>
                             <td>
-                                <a href="/products/remove-auto-price/?bid=BRAND_ID&cid=CATEGORY_ID&_nonce=<?php echo $remove_auto_price?>" ajax="1" confirm="Are you sure you want to remove these prices? This cannot be undone.">Remove Prices From Products</a> |
+                                <a href="/products/remove-auto-price/?bid=BRAND_ID&cid=CATEGORY_ID&_nonce=<?php echo $remove_auto_price?>" class="remove-auto-price">Remove Prices From Products</a> |
                                 <a href="/products/delete-auto-price/?bid=BRAND_ID&cid=CATEGORY_ID&_nonce=<?php echo $delete_auto_price?>" class="remove"><i class="fa fa-trash-o"></i></a>
                             </td>
                         </tr>
@@ -147,6 +147,10 @@ nonce::field('add_auto_price', '_add_auto_price');
                         <?php nonce::field('auto_price'); ?>
                     </p>
                 </form>
+
+                <p class="text-right">
+                    <a href="/products/reset-all-prices/" confirm="Do you really want to REMOVE pricing for ALL Products? This cannot be undone.">Click here to Reset Prices on *all* products</a>
+                </p>
 
             </div>
         </section>

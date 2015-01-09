@@ -30,6 +30,10 @@ class ListingsController extends BaseController {
             $locations[ $location->id ] = $location;
         }
 
+        if ( !$locations ) {
+            return new RedirectResponse( '/geo-marketing/locations' );
+        }
+
         library('yext');
         YEXT::$base_service = '';  // Power Listing API doesn't need /customers/<cust_id> in the URL
         $yext = new YEXT( $this->user->account );
@@ -37,6 +41,14 @@ class ListingsController extends BaseController {
             'powerlistings/status'
             , [ 'customerId' => YEXT::$customer_id, 'locationIds' => array_keys( $locations ) ]
         )->statuses;
+
+        // They were returnings Listings without Location ID
+        // So we make sure they belong to an Account's location
+        foreach ( $listings as $k => $l ) {
+            if ( !isset( $locations[ $l->locationId ] ) ) {
+                unset( $listings[$k] );
+            }
+        }
 
         $website_yext_listing = new WebsiteYextListing();
         $website_yext_listing->remove_by_account_id( $this->user->account->id );
@@ -46,6 +58,7 @@ class ListingsController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/listings/index' )
             ->menu_item('geo-marketing/listings')
+            ->kb(153)
             ->set( compact( 'locations', 'listings' ) );
     }
 
@@ -145,4 +158,4 @@ class ListingsController extends BaseController {
         return new RedirectResponse( '/geo-marketing/listings' );
     }
 
-} 
+}

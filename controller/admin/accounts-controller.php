@@ -447,6 +447,7 @@ class AccountsController extends BaseController {
             , 'ashley-ftp-password'
             , 'ashley-alternate-folder'
             , 'ashley-express-buyer-id'
+            , 'ashley-express-ship-to'
             , 'facebook-url'
             , 'advertising-url'
             , 'zopim'
@@ -478,6 +479,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
         $ft->add_field( 'text', _('Ashley Express - Ashley Account #'), 'tAshleyExpressBuyerCode', $settings['ashley-express-buyer-id'] );
+        $ft->add_field( 'text', _('Ashley Express - Ship To'), 'tAshleyExpressShipTo', $settings['ashley-express-ship-to'] );
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
@@ -489,10 +491,10 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
         $arb_gateway = $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
-            ->options( [
+            ->options( array(
                 'gsr' => 'Grey Suit Retail'
                 , 'other' => 'Other'
-            ]);
+            ));
         // Only admins can edit this
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) ) {
             $arb_gateway->attribute( 'disabled', 'disabled' );
@@ -532,6 +534,7 @@ class AccountsController extends BaseController {
                 , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
                 , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']
                 , 'ashley-express-buyer-id' => $_POST['tAshleyExpressBuyerCode']
+                , 'ashley-express-ship-to' => $_POST['tAshleyExpressShipTo']
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
@@ -1888,7 +1891,7 @@ class AccountsController extends BaseController {
         $subscription->status = 'CANCELED';
         $yext->put( "subscriptions/{$yext_website_subscription_id}", $subscription );
 
-        $account->set_settings( [ 'yext-subscription-id' => '' ] );
+        $account->set_settings( array( 'yext-subscription-id' => '' ) );
 
         $this->notify( _("Subscription cancelled.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
