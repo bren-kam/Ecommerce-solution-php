@@ -294,6 +294,8 @@ class LocationsController extends BaseController {
                     }
                 }
 
+                $post['photos'] = array_values( $post['photos'] );
+
                 $hours = [];
                 foreach ( $post['hours-array'] as $day_number => $day_hours ) {
                     if ( !$day_hours['open'] || !$day_hours['close'] )
