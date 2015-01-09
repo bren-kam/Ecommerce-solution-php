@@ -209,7 +209,7 @@ class LocationsController extends BaseController {
         ];
         $hour_options = [];
         foreach ( $period as $time ) {
-            $hour_options[] = $time->format('H:i');
+            $hour_options[$time->format('H:i')] = $time->format('g:i A');
         }
 
         if ( $this->verified() ) {

@@ -192,16 +192,16 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                         <div class="form-group">
                                             <select class="form-control" name="hours-array[<?php echo $day_number ?>][open]">
                                                 <option value="">Closed</option>
-                                                <?php foreach( $hour_options as $hour ): ?>
-                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['open'] == $hour ) echo 'selected' ?>><?php echo $hour ?></option>
+                                                <?php foreach( $hour_options as $hour => $hour_label ): ?>
+                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['open'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <select class="form-control" name="hours-array[<?php echo $day_number ?>][close]">
                                                 <option value="">Closed</option>
-                                                <?php foreach( $hour_options as $hour ): ?>
-                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['close'] == $hour ) echo 'selected' ?>><?php echo $hour ?></option>
+                                                <?php foreach( $hour_options as $hour => $hour_label ): ?>
+                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['close'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -277,8 +277,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                         <div class="col-lg-6">
                             <p class="image-selector" id="store-photo">
-                                <strong>Store Photo:</strong>
-                                <img class="img-responsive" src="<?php echo isset( $location['store-photo'] ) && $location['store-photo'] ? $location['store-photo'] : '//placehold.it/200x200&text=Add+Store+Photo' ?>" />
+                                <strong>Image/Photo:</strong>
+                                <img class="img-responsive" src="<?php echo isset( $location['store-photo'] ) && $location['store-photo'] ? $location['store-photo'] : '//placehold.it/200x200&text=Add+Image' ?>" />
                                 <input type="hidden" name="store-photo" value="<?php echo $location['store-photo'] ?>" />
                                 <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                         data-media-manager
