@@ -276,16 +276,16 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             </p>
                         </div>
                         <div class="col-lg-6">
-                            <p class="image-selector" id="store-photo">
+                            <p class="image-selector" id="custom-photo-0">
                                 <strong>Image/Photo:</strong>
-                                <img class="img-responsive" src="<?php echo isset( $location['store-photo'] ) && $location['store-photo'] ? $location['store-photo'] : '//placehold.it/200x200&text=Add+Image' ?>" />
-                                <input type="hidden" name="store-photo" value="<?php echo $location['store-photo'] ?>" />
+                                <img class="img-responsive" src="<?php echo isset( $location['custom-photos'][0]['url'] ) ? $location['custom-photos'][0]['url'] : '//placehold.it/200x200&text=Add+Image' ?>" />
+                                <input type="hidden" name="custom-photos[0]" value="<?php echo isset($location['custom-photos'][0]['url']) ? $location['custom-photos'][0]['url'] : ''?>" />
                                 <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                         data-media-manager
                                         data-upload-url="<?php echo $upload_url ?>"
                                         data-search-url="<?php echo $search_url ?>"
                                         data-delete-url="<?php echo $delete_url ?>"
-                                        data-image-target="#store-photo">
+                                        data-image-target="#custom-photo-0">
                                     Select an Image
                                 </button>
                             </p>
@@ -293,7 +293,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     </div>
 
                     <div class="row">
-                        <?php foreach( $location['custom-photos'] as $k => $image ): ?>
+                        <?php for( $k=1; $k<=4; $k++ ): $image = $location['custom-photos'][$k]; ?>
                             <div class="col-lg-6">
                                 <p class="image-selector" id="custom-photo-<?php echo $k ?>">
                                     <strong>Image/Photo:</strong>
@@ -309,9 +309,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                     </button>
                                 </p>
                             </div>
-                            <?php if ( $k & 1 ) echo '</div><div class="row">'; ?>
+                            <?php if ( $k & 0 ) echo '</div><div class="row">'; ?>
 
-                        <?php endforeach; ?>
+                        <?php endfor; ?>
                     </div>
 
                     <?php if ( $user->account->pages ): ?>
