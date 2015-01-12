@@ -23,6 +23,10 @@ class ReviewsController extends BaseController {
      * @return TemplateResponse
      */
     public function index() {
+        if ( !$this->user->account->get_settings( 'yext-customer-reviews' ) ) {
+            return new RedirectResponse('/geo-marketing/locations');
+        }
+
         $location = new WebsiteYextLocation();
         $location_list = $location->get_all( $this->user->account->id );
 
