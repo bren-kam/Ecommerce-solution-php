@@ -346,7 +346,8 @@ class LocationsController extends BaseController {
         }
 
         $this->resources->css( 'geo-marketing/locations/add-edit', 'media-manager' )
-            ->javascript( 'geo-marketing/locations/add-edit', 'media-manager' );
+            ->javascript( 'geo-marketing/locations/add-edit', 'media-manager' )
+            ->javascript_url( Config::resource( 'jqueryui-js' ) );
 
         return $this->get_template_response( 'geo-marketing/locations/add-edit' )
             ->menu_item('geo-marketing/locations/add-edit')

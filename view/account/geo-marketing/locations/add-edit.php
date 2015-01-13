@@ -125,17 +125,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="specialOffer">Special Offer:</label><input type="text" class="form-control" name="specialOffer" id="specialOffer" value="<?php echo $location['specialOffer'] ?>" maxlength="50"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="yearEstablished">Year Established:</label><input type="text" class="form-control" name="yearEstablished" id="yearEstablished" value="<?php echo $location['yearEstablished'] ?>" maxlength="4"/>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="yearEstablished">Year Established:</label><input type="text" class="form-control" name="yearEstablished" id="yearEstablished" value="<?php echo $location['yearEstablished'] ?>" maxlength="4"/>
                     </div>
 
                     <div class="form-group">
@@ -216,6 +207,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <label for="additionalHoursText">Additional Hours Text:</label><input type="text" class="form-control" name="additionalHoursText" id="additionalHoursText" value="<?php echo $location['additionalHoursText'] ?>" maxlength="255"/>
                     </div>
 
+                    <div class="form-group">
+                        <label for="specialOffer">Special Offer:</label><input type="text" class="form-control" name="specialOffer" id="specialOffer" value="<?php echo $location['specialOffer'] ?>" maxlength="50"/>
+                    </div>
                     <div class="form-group">
                         <label for="specialOfferUrl">Special Offer URL:</label><input type="text" class="form-control" name="specialOfferUrl" id="specialOfferUrl" value="<?php echo $location['specialOfferUrl'] ?>" maxlength="255"/>
                     </div>

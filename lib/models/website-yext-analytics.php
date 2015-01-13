@@ -42,6 +42,13 @@ class WebsiteYextAnalytics extends ActiveRecordBase {
         $this->commit();
     }
 
+    /**
+     * Get Sum
+     * @param  int   $location_id
+     * @param  DateTime $start_date
+     * @param  DateTime $end_date
+     * @return array[]
+     */
     public function get_sum( $location_id = null, DateTime $start_date, DateTime $end_date ) {
         $where = '';
         if ( $location_ids ) {
