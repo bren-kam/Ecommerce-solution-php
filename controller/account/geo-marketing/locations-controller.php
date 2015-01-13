@@ -181,9 +181,9 @@ class LocationsController extends BaseController {
         $location['hours-array'] = [];
         foreach( $hours as $hour ) {
             $hour_pieces = explode( ':', $hour );
-            $location[ (int)$hour_pieces[0] ] = [
-                'open' => "{$hour_pieces[1]}:{$hour_pieces[2]}"
-                , 'close' => "{$hour_pieces[3]}:{$hour_pieces[4]}"
+            $location['hours-array'][ (int)$hour_pieces[0] ] = [
+                'open' => str_pad($hour_pieces[1], 2, '0', STR_PAD_LEFT) . ":" . str_pad($hour_pieces[2], 2, '0', STR_PAD_LEFT)
+                , 'close' => str_pad($hour_pieces[3], 2, '0', STR_PAD_LEFT) . ":" . str_pad($hour_pieces[4], 2, '0', STR_PAD_LEFT)
             ];
         }
 
@@ -265,7 +265,9 @@ class LocationsController extends BaseController {
                     }
                 }
 
-                $post['photos'] = array_values( $post['photos'] );
+                if ( isset($post['photos']) ) {
+                    $post['photos'] = array_values( $post['photos'] );
+                }
 
                 $hours = [];
                 foreach ( $post['hours-array'] as $day_number => $day_hours ) {

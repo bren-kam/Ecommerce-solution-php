@@ -176,7 +176,6 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <?php foreach( $days as $day_number => $day ): ?>
                         <div class="row">
                             <div class="form-group">
-
                                 <label for="" class="col-lg-1 control-label"><?php echo $day ?></label>
                                 <div class="col-lg-4">
                                     <div class="form-inline">
@@ -184,7 +183,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                             <select class="form-control" name="hours-array[<?php echo $day_number ?>][open]">
                                                 <option value="">Closed</option>
                                                 <?php foreach( $hour_options as $hour => $hour_label ): ?>
-                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['open'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
+                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location['hours-array'][$day_number] ) && $location['hours-array'][$day_number]['open'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -192,7 +191,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                             <select class="form-control" name="hours-array[<?php echo $day_number ?>][close]">
                                                 <option value="">Closed</option>
                                                 <?php foreach( $hour_options as $hour => $hour_label ): ?>
-                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['close'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
+                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location['hours-array'][$day_number] ) && $location['hours-array'][$day_number]['close'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
