@@ -608,9 +608,11 @@ class ApiRequest {
 	protected function set_arb_subscription() {
         /**
          * @param int $arb_subscription_id
+         * @param int $arb_subscription_amount
+         * @param int $arb_subscription_gateway
          * @param int $website_id
          */
-        extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
+        extract( $this->get_parameters( 'arb_subscription_id', 'arb_subscription_amount', 'arb_subscription_gateway', 'website_id' ) );
 
         // Make sure we can edit this website
         $this->verify_website( $website_id );
@@ -621,6 +623,8 @@ class ApiRequest {
         // Protection
 		$account->set_settings( array(
             'arb-subscription-id' => $arb_subscription_id
+            , 'arb-subscription-amount' => $arb_subscription_amount
+            , 'arb-subscription-gateway' => $arb_subscription_gateway
         ) );
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
