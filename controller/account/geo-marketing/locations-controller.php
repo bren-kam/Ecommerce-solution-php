@@ -167,20 +167,14 @@ class LocationsController extends BaseController {
 
         $location['synchronize-products'] = $website_yext_location->synchronize_products;
         $location['logo'] = (array) $location['logo'];
-        // if have 1 photo - it's store photo
-        // if have 5 photos - first one is store photo
-        // ignore if have from 2-4
-        if ( isset( $location['photos'] ) && ( count( $location['photos'] ) == 1 ||  count( $location['photos'] ) == 5 ) ) {
-            $location['store-photo'] = $location['photos'][0]->url;
-        }
 
-        if ( count($location['photos']) >= 4 ) {
-            $location['custom-photos'] = array_slice( $location['photos'], -4 );
-            foreach( $location['custom-photos'] as &$cp ) {
-                $cp = (array) $cp;
+        if ( $location['photos'] ) {
+            $location['custom-photos'] = [];
+            foreach( $location['photos'] as $cp ) {
+                $location['custom-photos'][] = (array) $cp;
             }
         } else {
-            $location['custom-photos'] = [ [], [], [], [] ];
+            $location['custom-photos'] = [ [], [], [], [], [] ];
         }
 
         $hours = explode( ',', $location['hours'] );
@@ -260,33 +254,10 @@ class LocationsController extends BaseController {
                     unset($post['logo-url']);
                 }
 
-                if ( $post['store-photo'] ) {
-                    if ( isset( $location['photos'] ) && $location['photos'] ) {
-                        $post['photos'] = $location['photos'];
-                        // if have 1 photo - it's store photo
-                        // if have 5 photos - first one is store photo
-                        // unshift if have 4 photos
-                        // ignore if have 2-3 photos
-                        // See GSRA-341 and GSRA-342
-                        if ( count( $post['photos'] ) == 1 ||  count( $post['photos'] ) == 5 ) {
-                            $post['photos'][0]->url = $post['store-photo'];
-                        } else if ( count( $post['photos'] ) == 4 ) {
-                            array_unshift( $post['photos'], [
-                                'url' => $post['store-photo']
-                            ] );
-                        }
-                    } else {
-                        $post['photos'] = [[
-                            'url' => $post['store-photo']
-                        ]];
-                    }
-                    unset( $post['store-photo'] );
-                }
-
                 if ( $post['custom-photos'] ) {
                     foreach( $post['custom-photos'] as $k => $custom_photo ) {
                         if ( $custom_photo ) {
-                            $photo_index = $k+1;
+                            $photo_index = $k;
                             $post['photos'][$photo_index] = [
                                 'url' => $custom_photo
                             ];
@@ -321,9 +292,6 @@ class LocationsController extends BaseController {
                 }
                 if ( !$post['logo-url'] ) {
                     unset( $post['logo-url'] );
-                }
-                if ( !$post['store-photo'] ) {
-                    unset( $post['store-photo'] );
                 }
                 unset( $post['custom-photos'] );
                 unset( $post['hours-array'] );
