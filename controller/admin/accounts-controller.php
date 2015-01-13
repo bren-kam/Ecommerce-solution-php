@@ -467,6 +467,7 @@ class AccountsController extends BaseController {
 
         // Start adding fields
         $ft->add_field( 'text', _('FTP Username'), 'tFTPUsername', security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('FTP Password'), 'tFTPPassword', security::decrypt( base64_decode( $account->ftp_password ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Google Analytics Username'), 'tGAUsername', security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Google Analytics Password'), 'tGAPassword', security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Google Analytics Profile ID'), 'tGAProfileID', $account->ga_profile_id );
@@ -516,6 +517,7 @@ class AccountsController extends BaseController {
         if ( $ft->posted() ) {
             $account->server_id = $_POST['sServerId'];
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
+            $account->ftp_password = security::encrypt( $_POST['tFTPPassword'], ENCRYPTION_KEY, true );
             $account->ga_profile_id = $_POST['tGAProfileID'];
             $account->ga_tracking_key = $_POST['tGATrackingKey'];
             $account->wordpress_username = security::encrypt( $_POST['tWPUsername'], ENCRYPTION_KEY, true );
