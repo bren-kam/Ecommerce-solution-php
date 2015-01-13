@@ -329,7 +329,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
             return;
         }
 
-        shuffle( $images );
+        $images = array_reverse( $images );
 
         $current_image_list = isset( $yext_location->photos ) ? $yext_location->photos : [];
         $new_image_list = array_merge(
