@@ -491,14 +491,13 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
-        $arb_gateway = $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
-            ->options( array(
-                'gsr' => 'Grey Suit Retail'
-                , 'other' => 'Other'
-            ));
-        // Only admins can edit this
-        if ( !$this->user->has_permission( User::ROLE_ADMIN ) ) {
-            $arb_gateway->attribute( 'disabled', 'disabled' );
+
+        if ( $this->user->has_permission( User::ROLE_ADMIN ) ) {
+            $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
+                ->options( array(
+                    'gsr' => 'Grey Suit Retail'
+                    , 'ir' => 'Imagine Retailer'
+                ));
         }
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
