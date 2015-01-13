@@ -51,15 +51,15 @@ class WebsiteYextAnalytics extends ActiveRecordBase {
      */
     public function get_sum( $location_id = null, DateTime $start_date, DateTime $end_date ) {
         $where = '';
-        if ( $location_ids ) {
-            $where = ' AND a.location_id = {$location_id} ';
+        if ( $location_id ) {
+            $where = " AND a.location_id = {$location_id} ";
         }
 
         return $this->get_results(
             "SELECT a.`date`, SUM(a.searches) as searches, SUM(a.profile_views) as profile_views, SUM(a.special_offer_clicks) as special_offer_clicks, SUM(foursquare_checkins) as foursquare_checkins, SUM(facebook_likes) as facebook_likes, SUM(facebook_talking_about) as facebook_talking_about, SUM(facebook_where_here) as facebook_where_here
              FROM website_yext_analytics a
              LEFT JOIN website_yext_location l ON l.website_yext_location_id = a.location_id
-             WHERE l.`website_id` = ". $this->account->id ." AND `date` BETWEEN '". $start_date->format('Y-m-d') ."' AND '". $end_date->format('Y-m-d') ."' $where
+             WHERE l.`website_id` = ". $this->account->id ." $where AND `date` BETWEEN '". $start_date->format('Y-m-d') ."' AND '". $end_date->format('Y-m-d') ."'
              GROUP BY `date`
              ORDER BY `date`"
             , PDO::FETCH_ASSOC
