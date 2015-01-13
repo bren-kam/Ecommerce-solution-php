@@ -1,0 +1,23 @@
+.report {
+  height: 300px;
+  position: relative;
+  margin-top: 15px;
+}
+.graph-tooltip {
+  border: 1px solid #ccc;
+}
+.graph-tooltip .tooltip-text,
+.graph-tooltip .tooltip-value {
+  background-color: white;
+  display: inline-block;
+  padding: 10px;
+}
+.graph-tooltip .tooltip-value {
+  background-color: #ffa900;
+  color: #fff;
+  font-weight: 600;
+  text-align: right;
+}
+.datepicker .disabled {
+  color: #ccc!important;
+}

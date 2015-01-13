@@ -5,6 +5,7 @@ var AutoPrice = {
     , init: function() {
         $('#add').click( AutoPrice.add );
         $('#auto-price-list').on( 'click', '.remove', AutoPrice.remove );
+        $('#auto-price-list').on( 'click', '.remove-auto-price', AutoPrice.removeAutoPrice );
 
         AutoPrice.template = $('#auto-price-template').clone().removeClass('hidden').removeAttr('id');
         $('#auto-price-template').remove();
@@ -62,6 +63,26 @@ var AutoPrice = {
                 if ( response.success ) {
                     anchor.parents('tr').remove();
                 } else GSR.defaultAjaxResponse( response );
+            }
+        );
+    }
+
+    , removeAutoPrice: function(e) {
+        var anchor = $(this);
+
+        if ( e ) e.preventDefault();
+
+        if ( !confirm( 'Are you sure you want to remove these prices? This cannot be undone.' ) ) {
+            return;
+        }
+
+        $.get(
+            anchor.attr('href')
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    anchor.parents('tr').find('input[type=text]').val(0);
+                }
             }
         );
     }
