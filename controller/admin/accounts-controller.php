@@ -460,6 +460,7 @@ class AccountsController extends BaseController {
             , 'arb-subscription-amount'
             , 'arb-subscription-gateway'
             , 'yext-max-locations'
+            , 'yext-customer-reviews'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -501,6 +502,7 @@ class AccountsController extends BaseController {
         }
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
+        $ft->add_field( 'checkbox', _('Geo Marketing - Enable Customer Reviews'), 'cbAYextCustomerReviews', $settings['yext-customer-reviews'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -545,6 +547,7 @@ class AccountsController extends BaseController {
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
                 , 'arb-subscription-gateway' => isset($_POST['sARBSubscriptionGateway']) ? $_POST['sARBSubscriptionGateway'] : $settings['arb-subscription-gateway']
                 , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
+                , 'yext-customer-reviews' => (int) $_POST['cbAYextCustomerReviews']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
