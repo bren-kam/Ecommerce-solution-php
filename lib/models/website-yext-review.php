@@ -26,7 +26,7 @@ class WebsiteYextReview extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT * FROM website_yext_review WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT r.* FROM website_yext_review r INNER JOIN website_yext_location l ON l.website_yext_location_id = r.location_id WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'WebsiteYextReview' );
@@ -41,7 +41,7 @@ class WebsiteYextReview extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT COUNT(*) FROM website_yext_review WHERE 1 $where $order_by"
+            "SELECT COUNT(*) FROM website_yext_review r INNER JOIN website_yext_location l ON l.website_yext_location_id = r.location_id WHERE 1 $where $order_by"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var(  );
@@ -82,6 +82,17 @@ class WebsiteYextReview extends ActiveRecordBase {
             , [ ':review_id' => $review_id, ':account_id' => $account_id ]
         )->get_row( PDO::FETCH_INTO, $this );
         $this->id = $this->website_yext_review_id;
+    }
+
+
+    /**
+     * Get Sites
+     * @param int $account_id
+    */
+    public function get_sites( $account_id ) {
+        return $this->get_col(
+            "SELECT DISTINCT r.site_id FROM website_yext_review r INNER JOIN website_yext_location l ON r.location_id = l.website_yext_location_id WHERE l.website_id = $account_id"
+        );
     }
 
 }
