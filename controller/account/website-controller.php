@@ -686,7 +686,7 @@ class WebsiteController extends BaseController {
         // Get settings
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
-            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window'
+            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window', 'banner-hide-navigation-arrows'
             , 'images-alt'
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
@@ -745,6 +745,8 @@ class WebsiteController extends BaseController {
             ->attribute( 'maxlength', '6' );
 
         $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
+
+        $form->add_field( 'checkbox', _('Hide Navigation Arrows'), 'banner-hide-navigation-arrows', $settings['banner-hide-navigation-arrows'] );
 
         $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
 
