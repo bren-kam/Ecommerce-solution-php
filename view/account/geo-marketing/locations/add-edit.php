@@ -125,17 +125,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="specialOffer">Special Offer:</label><input type="text" class="form-control" name="specialOffer" id="specialOffer" value="<?php echo $location['specialOffer'] ?>" maxlength="50"/>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="yearEstablished">Year Established:</label><input type="text" class="form-control" name="yearEstablished" id="yearEstablished" value="<?php echo $location['yearEstablished'] ?>" maxlength="4"/>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="yearEstablished">Year Established:</label><input type="text" class="form-control" name="yearEstablished" id="yearEstablished" value="<?php echo $location['yearEstablished'] ?>" maxlength="4"/>
                     </div>
 
                     <div class="form-group">
@@ -185,7 +176,6 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <?php foreach( $days as $day_number => $day ): ?>
                         <div class="row">
                             <div class="form-group">
-
                                 <label for="" class="col-lg-1 control-label"><?php echo $day ?></label>
                                 <div class="col-lg-4">
                                     <div class="form-inline">
@@ -193,7 +183,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                             <select class="form-control" name="hours-array[<?php echo $day_number ?>][open]">
                                                 <option value="">Closed</option>
                                                 <?php foreach( $hour_options as $hour => $hour_label ): ?>
-                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['open'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
+                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location['hours-array'][$day_number] ) && $location['hours-array'][$day_number]['open'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -201,7 +191,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                             <select class="form-control" name="hours-array[<?php echo $day_number ?>][close]">
                                                 <option value="">Closed</option>
                                                 <?php foreach( $hour_options as $hour => $hour_label ): ?>
-                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location[$day_number] ) && $location[$day_number]['close'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
+                                                    <option value="<?php echo $hour ?>" <?php if ( isset( $location['hours-array'][$day_number] ) && $location['hours-array'][$day_number]['close'] == $hour ) echo 'selected' ?>><?php echo $hour_label ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -216,6 +206,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <label for="additionalHoursText">Additional Hours Text:</label><input type="text" class="form-control" name="additionalHoursText" id="additionalHoursText" value="<?php echo $location['additionalHoursText'] ?>" maxlength="255"/>
                     </div>
 
+                    <div class="form-group">
+                        <label for="specialOffer">Special Offer:</label><input type="text" class="form-control" name="specialOffer" id="specialOffer" value="<?php echo $location['specialOffer'] ?>" maxlength="50"/>
+                    </div>
                     <div class="form-group">
                         <label for="specialOfferUrl">Special Offer URL:</label><input type="text" class="form-control" name="specialOfferUrl" id="specialOfferUrl" value="<?php echo $location['specialOfferUrl'] ?>" maxlength="255"/>
                     </div>

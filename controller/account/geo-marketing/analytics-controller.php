@@ -2,11 +2,18 @@
 
 class AnalyticsController extends BaseController {
 
+    /**
+     * AnalyticsController __construct
+     */
     public function __construct() {
         parent::__construct();
         $this->title = 'Analytics | GeoMarketing';
     }
 
+    /**
+     * Index
+     * @return RedirectResponse | TemplateResponse
+     */
     public function index() {
 
         // Get analytics
