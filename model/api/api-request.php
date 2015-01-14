@@ -238,6 +238,7 @@ class ApiRequest {
             $user->billing_address1 = $billing_address1;
             $user->billing_city = $billing_city;
             $user->billing_state = $billing_state;
+
             $user->billing_zip = $billing_zip;
             $user->role = User::ROLE_STORE_OWNER;
             $user->company_id = $this->company_id;
@@ -362,7 +363,7 @@ class ApiRequest {
                 $account->set_settings(array(
                     'social-media-add-ons' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}'
                 ));
-
+			
             if ( (int) $geo_marketing > 0 )
                 $account->set_settings(array(
                     'yext-max-locations' => (int) $geo_marketing
@@ -615,7 +616,8 @@ class ApiRequest {
         extract( $this->get_parameters( 'arb_subscription_id', 'arb_subscription_amount', 'arb_subscription_gateway', 'website_id' ) );
 
         // Make sure we can edit this website
-        $this->verify_website( $website_id );
+        if ( !$this->verify_website( $website_id ) )
+            return;
 
         $account = new Account();
         $account->get( $website_id );
@@ -790,6 +792,7 @@ class ApiRequest {
 
         // Verify that it exists
         if ( $account->company_id != $company_id ) {
+            $this->log( 'error', $this->method . ' failed to verify website', false );
             $this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
             return false;
         }
@@ -858,7 +861,9 @@ class ApiRequest {
 		if( in_array( $_REQUEST['method'], $this->methods ) ) {
 			$this->method = $_REQUEST['method'];
 			$this->statuses['method_called'] = true;
-			
+
+            $this->log( 'method', 'Calling method "' . $this->method . '".', true );
+
 			call_user_func( array( 'ApiRequest', $_REQUEST['method'] ) );
 
             // used to be destruct
