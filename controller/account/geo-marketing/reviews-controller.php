@@ -60,10 +60,6 @@ class ReviewsController extends BaseController {
             $sites[$r->siteId] = $r->siteId;
         }
 
-        $website_yext_review = new WebsiteYextReview();
-        $website_yext_review->remove_by_account_id( $this->user->account->id );
-        $website_yext_review->insert_bulk( $reviews, $this->user->account->id );
-
         $this->resources->javascript( 'geo-marketing/reviews/index' );
 
         return $this->get_template_response( 'geo-marketing/reviews/index' )

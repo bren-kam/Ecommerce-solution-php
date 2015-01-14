@@ -307,6 +307,9 @@ class CronsController extends BaseController {
         }
     }
 
+    /**
+     * YEXT Download Reports
+     */
     public function yext_download_reports() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
@@ -325,6 +328,118 @@ class CronsController extends BaseController {
         $analytics->fetch_analytics( $start_date, $end_date );
 
         echo "Finished\n";
+    }
+
+    /**
+     * YEXT Download Reviews
+     */
+    public function yext_download_reviews() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        global $argv;
+
+        $account = new Account();
+        $account->get(1352);
+
+        library('yext');
+        $yext = new YEXT( $account );
+
+        $start_date = (new DateTime($argv[2]));
+        echo "Downloading reviews since " . $start_date->format('Y-m-d') . "...\n";
+
+        $reviews = $yext->get(
+            'reviews'
+            , [ 'dateStart' => $start_date->format('Y-m-d') ]
+        )->reviews;
+
+        if ( empty( $reviews ) ) {
+            echo "No Reviews. Finished. \n";
+            return;
+        }
+
+        $yext_location = new WebsiteYextLocation();
+        $locations = $yext_location->list_all( [ '', '', '', 999999 ] );
+        foreach ( $locations as $location ) {
+            $locations[$location->id] = $location;
+        }
+
+        foreach ( $reviews as $review ) {
+            try {
+
+                $review_location = isset( $locations[$review->locationId] ) ? $locations[ $review->locationId] : null;
+                if ( !$review_location ) {
+                    throw new Exception( "Location ID '{$review->locationId}' not found." );
+                }
+
+                $website_yext_review = new WebsiteYextReview();
+                $website_yext_review->id = $review->id;
+                $website_yext_review->location_id = $review->locationId;
+                $website_yext_review->site_id = $review->siteId;
+                $website_yext_review->rating = isset($review->rating) ? $review->rating : null;
+                $website_yext_review->title = isset($review->title) ? $review->title : null;
+                $website_yext_review->content = $review->content;
+                $website_yext_review->author_name = isset($review->authorName) ? $review->authorName : null;
+                $website_yext_review->url = $review->url;
+                $website_yext_review->date_created = $review->reviewDate;
+                $website_yext_review->create();
+
+                echo "Saved: {$review->id}|{$review->locationId}|{$review->siteId}\n";
+
+                $review_account = new Account();
+                $review_account->website_id = $review_location->website_id;
+                $review_account->get( $review_account->website_id );
+                $email_settings = $review_account->get_settings('yext-review-disable-email', 'yext-review-email-address');
+                if ( !$email_settings['yext-review-disable-email'] ) {
+
+                    $to = $email_settings['yext-review-email-address'];
+                    if ( !$to ) {
+                        $user = new User();
+                        $user->get( $review_account->user_id );
+                        $to = $user->email;
+                    }
+
+                    $os = new User();
+                    $os->get( $review_account->os_user_id );
+                    if ( $os->email ) {
+                        $to .= "," . $os->email;
+                    }
+
+                    echo "    Sending email TO {$to} ...\n";
+
+                    $website_yext_review->get( $website_yext_review->id, $review_location->website_id );
+                    $site_name = ucfirst( strtolower( $website_yext_review->site_id ) );
+                    $review_score = floor($website_yext_review->rating * 2);
+                    $review_date = new DateTime( $website_yext_review->date_created );
+                    $author_name = $website_yext_review->author_name ? ('by ' . $website_yext_review->author_name) : '';
+
+                    $content = file_get_contents( VIEW_PATH . '../account/geo-marketing/reviews/_email.php' );
+
+                    $content = str_replace(
+                        ['[site_name]', '[site_id]', '[review_author]', '[review_text]', '[review_date]', '[review_time]', '[review_url]', '[review_score]', '[location_name]', '[location_address]']
+                        , [$site_name, $website_yext_review->site_id, $author_name, $website_yext_review->content, $review_date->format('D, n/j/y'), $review_date->format('g:i A'), $website_yext_review->url, $review_score, $website_yext_review->location_name, $website_yext_review->location_address]
+                        , $content
+                    );
+
+                    $subject = "Review on $site_name";
+                    if ( $website_yext_review->author_name ) {
+                        $subject .= " by {$website_yext_review->author_name}";
+                    }
+                    $subject .= " on " . $review_date->format('D, n/j/y');
+
+                    echo "\n $to...\n";
+                    $success = fn::mail( $to, $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
+                    var_dump($success);
+
+                } else {
+                    echo "    Will not send email...\n";
+                }
+            } catch( Exception $e ) {
+                echo "Failed: {$review->id}|{$review->locationId}|{$review->siteId}: " . $e->getMessage() . "\n";
+            }
+        }
+        echo "Finished.\n";
     }
 
     /**

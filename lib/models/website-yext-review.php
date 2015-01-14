@@ -8,7 +8,10 @@
 
 class WebsiteYextReview extends ActiveRecordBase {
 
-    public $location_id, $site_id, $title, $content, $url, $date_created, $rating, $author_name;
+    public $id, $website_yext_review_id, $location_id, $site_id, $title, $content, $url, $date_created, $rating, $author_name;
+
+    // From other tables
+    public $location_name, $location_address;
 
     public function __construct() {
         parent::__construct( 'website_yext_review' );
@@ -44,32 +47,41 @@ class WebsiteYextReview extends ActiveRecordBase {
         )->get_var(  );
     }
 
-    /**
-     * Insert Bulk
-     * @param $reviews
-     * @param $account_id
+    /*
+     * Create
      * @throws ModelException
      */
-    public function insert_bulk( $reviews, $account_id ) {
+    public function create() {
+        $this->insert(
+            [
+                'website_yext_review_id' => $this->id
+                , 'location_id' => $this->location_id
+                , 'site_id' => $this->site_id
+                , 'rating' => $this->rating
+                , 'title' => $this->title
+                , 'content' => $this->content
+                , 'author_name' => $this->author_name
+                , 'url' => $this->url
+                , 'date_created' => $this->date_created
+            ]
+            , 'iisisssss'
+        );
 
-        if ( empty( $reviews ) )
-            return;
-
-        $rows = [];
-        foreach ( $reviews as $review ) {
-            $rows[] = "( $account_id, '{$review->locationId}', " . $this->quote($review->siteId) . ", " . $this->quote($review->rating) . ", " . $this->quote($review->title) . ", " . $this->quote($review->content) . ", " . $this->quote($review->authorName) . ", " . $this->quote($review->url) . ", " . $this->quote($review->reviewDate) . " )";
-        }
-
-        $this->query( "INSERT INTO website_yext_review( website_id, location_id, site_id, rating, title, content, author_name, url, date_created ) VALUES" . implode( ',', $rows ) );
+        $this->website_yext_review_id = $this->id;
     }
 
     /**
-     * Remove By Account ID
-     * @param $account_id
-     * @throws ModelException
+     * Get
+     * @param  int $review_id
+     * @param  int $account_id
      */
-    public function remove_by_account_id( $account_id ) {
-        $this->query( "DELETE FROM website_yext_review WHERE website_id = {$account_id}" );
+    public function get( $review_id, $account_id ) {
+        $this->prepare(
+            "SELECT r.*, l.name as location_name, l.address as location_address FROM website_yext_review r INNER JOIN website_yext_location l ON r.location_id = l.website_yext_location_id WHERE r.website_yext_review_id = :review_id AND l.website_id = :account_id"
+            , 'ii'
+            , [ ':review_id' => $review_id, ':account_id' => $account_id ]
+        )->get_row( PDO::FETCH_INTO, $this );
+        $this->id = $this->website_yext_review_id;
     }
 
 }
