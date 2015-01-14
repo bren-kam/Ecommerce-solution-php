@@ -333,7 +333,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
 
         $current_image_list = isset( $yext_location->photos ) ? $yext_location->photos : [];
         $new_image_list = array_merge(
-            $current_images,
+            $current_image_list,
             $images
         );
         $new_image_list = array_slice( $new_image_list, 0, 5 );
