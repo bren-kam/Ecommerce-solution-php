@@ -59,6 +59,13 @@ class AutorespondersController extends BaseController {
         $form->add_field( 'textarea', _('Autoresponse'), 'taAutoresponse', $email_autoresponder->message )
             ->attribute( 'rte', 1 );
 
+        $upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+        $search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+        $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
+        $media_manager_link = '<button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="' . $upload_url . '" data-search-url="'. $search_url .'" data-delete-url="'. $delete_url .'">Upload File</button>';
+
+        $form->add_field( 'row', '', $media_manager_link );
+
         $form->add_field( 'checkbox', _('Include Current Offer'), 'cbCurrentOffer', $email_autoresponder->current_offer );
 
         $form->add_field( 'blank', '' );
@@ -90,6 +97,11 @@ class AutorespondersController extends BaseController {
         }
 
         $form = $form->generate_form();
+
+        $this->resources
+            ->javascript( 'fileuploader', 'media-manager' )
+            ->css( 'media-manager' );
+
         $title = ( $email_autoresponder->id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
