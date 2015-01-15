@@ -390,8 +390,8 @@ class CronsController extends BaseController {
                 $review_account = new Account();
                 $review_account->website_id = $review_location->website_id;
                 $review_account->get( $review_account->website_id );
-                $email_settings = $review_account->get_settings('yext-review-disable-email', 'yext-review-email-address');
-                if ( !$email_settings['yext-review-disable-email'] ) {
+                $email_settings = $review_account->get_settings('yext-customer-reviews', 'yext-review-disable-email', 'yext-review-email-address');
+                if ( $email_settings['yext-customer-reviews'] && !$email_settings['yext-review-disable-email'] ) {
 
                     $to = $email_settings['yext-review-email-address'];
                     if ( !$to ) {
