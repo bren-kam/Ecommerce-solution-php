@@ -325,24 +325,20 @@ class WebsiteYextLocation extends ActiveRecordBase {
             }
         }
 
-        // We need 4 images
-        if ( count($images) < 4 ) {
+        if ( empty( $images ) ) {
             return;
         }
 
-        shuffle( $images );
+        $images = array_reverse( $images );
 
-        $images = array_slice( $images, 0, 4 );
+        $current_image_list = isset( $yext_location->photos ) ? $yext_location->photos : [];
+        $new_image_list = array_merge(
+            $current_image_list,
+            $images
+        );
+        $new_image_list = array_slice( $new_image_list, 0, 5 );
 
-        if ( isset( $yext_location->photos ) && count($yext_location->photos) == 1 ) {
-            $yext_location->photos = array_merge(
-                [ $yext_location->photos[0] ],
-                $images
-            );
-        } else {
-            $yext_location->photos = $images;
-        }
-
+        $yext_location->photos = $new_image_list;
         $yext->put( "locations/{$location->id}", $yext_location );
 
     }

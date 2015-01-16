@@ -460,6 +460,7 @@ class AccountsController extends BaseController {
             , 'arb-subscription-amount'
             , 'arb-subscription-gateway'
             , 'yext-max-locations'
+            , 'yext-customer-reviews'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -490,17 +491,17 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Sendgrid Password'), 'tSendgridPassword', $settings['sendgrid-password'] );
         $ft->add_field( 'text', _('ARB Subscription ID'), 'tARBSubscriptionID', $settings['arb-subscription-id'] );
         $ft->add_field( 'text', _('ARB Subscription Amount'), 'tARBSubscriptionAmount', $settings['arb-subscription-amount'] );
-        $arb_gateway = $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
-            ->options( array(
-                'gsr' => 'Grey Suit Retail'
-                , 'other' => 'Other'
-            ));
-        // Only admins can edit this
-        if ( !$this->user->has_permission( User::ROLE_ADMIN ) ) {
-            $arb_gateway->attribute( 'disabled', 'disabled' );
+
+        if ( $this->user->has_permission( User::ROLE_ADMIN ) ) {
+            $ft->add_field( 'select', 'ARB Subscription Gateway', 'sARBSubscriptionGateway', $settings['arb-subscription-gateway'] )
+                ->options( array(
+                    'gsr' => 'Grey Suit Retail'
+                    , 'ir' => 'Imagine Retailer'
+                ));
         }
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
+        $ft->add_field( 'checkbox', _('Geo Marketing - Enable Customer Reviews'), 'cbAYextCustomerReviews', $settings['yext-customer-reviews'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -545,6 +546,7 @@ class AccountsController extends BaseController {
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
                 , 'arb-subscription-gateway' => isset($_POST['sARBSubscriptionGateway']) ? $_POST['sARBSubscriptionGateway'] : $settings['arb-subscription-gateway']
                 , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
+                , 'yext-customer-reviews' => (int) $_POST['cbAYextCustomerReviews']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
