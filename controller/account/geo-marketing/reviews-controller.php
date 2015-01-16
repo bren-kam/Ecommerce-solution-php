@@ -39,37 +39,16 @@ class ReviewsController extends BaseController {
             return new RedirectResponse( '/geo-marketing/locations' );
         }
 
-        library('yext');
-        $yext = new YEXT( $this->user->account );
-        $reviews = $yext->get(
-            'reviews'
-            , [ 'locationIds' => array_keys( $locations ) ]
-        )->reviews;
-
-        // Get Site IDs
-        $sites = [];
-
-        // They were returnings Reviews without Location ID
-        // So we make sure they belong to an Account's location
-        foreach ( $reviews as $k => $r ) {
-            if ( !isset( $locations[ $r->locationId ] ) ) {
-                unset( $reviews[$k] );
-                continue;
-            }
-
-            $sites[$r->siteId] = $r->siteId;
-        }
-
-        $website_yext_review = new WebsiteYextReview();
-        $website_yext_review->remove_by_account_id( $this->user->account->id );
-        $website_yext_review->insert_bulk( $reviews, $this->user->account->id );
+        $review = new WebsiteYextReview();
+        $sites = $review->get_sites($this->user->account->id);
+        $no_reviews = empty($sites);
 
         $this->resources->javascript( 'geo-marketing/reviews/index' );
 
         return $this->get_template_response( 'geo-marketing/reviews/index' )
             ->menu_item('geo-marketing/reviews')
             ->kb(153)
-            ->set( compact( 'locations', 'sites' ) );
+            ->set( compact( 'locations', 'sites', 'no_reviews' ) );
     }
 
     /**
