@@ -47,7 +47,7 @@ class ReviewsController extends BaseController {
 
         return $this->get_template_response( 'geo-marketing/reviews/index' )
             ->menu_item('geo-marketing/reviews')
-            ->kb(153)
+            ->kb(155)
             ->set( compact( 'locations', 'sites', 'no_reviews' ) );
     }
 
