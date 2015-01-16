@@ -2,11 +2,18 @@
 
 class AnalyticsController extends BaseController {
 
+    /**
+     * AnalyticsController __construct
+     */
     public function __construct() {
         parent::__construct();
         $this->title = 'Analytics | GeoMarketing';
     }
 
+    /**
+     * Index
+     * @return RedirectResponse | TemplateResponse
+     */
     public function index() {
 
         // Get analytics
@@ -33,6 +40,8 @@ class AnalyticsController extends BaseController {
              $end_date
         );
 
+        $has_analytics_data = false;
+
         $searches = $profile_views = $special_offer_clicks = $foursquare_checkins = $facebook_likes = $facebook_talking_about = $facebook_werehere = [];
         foreach ( $period as $date ) {
             $date_str = $date->format( 'Y-m-d' );
@@ -43,17 +52,21 @@ class AnalyticsController extends BaseController {
                 $profile_views[] = [ $ms_time, $row['profile_views'] ];
                 $special_offer_clicks[] = [ $ms_time, $row['special_offer_clicks'] ];
                 $foursquare_checkins[] = [ $ms_time, $row['foursquare_checkins'] ];
-                $facebook_likes[] = [ $ms_time, $row['facebook_likes'] ];
-                $facebook_talking_about[] = [ $ms_time, $row['facebook_talking_about'] ];
-                $facebook_werehere[] = [ $ms_time, $row['facebook_werehere'] ];
+
+                // we have to check if we have some data
+                // so we know if we have to show a warning message or not
+                $has_analytics_data = $has_analytics_data || (
+                    $row['searches'] != 0 ||
+                    $row['profile_views'] != 0 ||
+                    $row['special_offer_clicks'] != 0 ||
+                    $row['foursquare_checkins'] != 0
+                );
+
             } else {
                 $searches[] = [ $ms_time, 0 ];
                 $profile_views[] = [ $ms_time, 0 ];
                 $special_offer_clicks[] = [ $ms_time, 0 ];
                 $foursquare_checkins[] = [ $ms_time, 0 ];
-                $facebook_likes[] = [ $ms_time, 0 ];
-                $facebook_talking_about[] = [ $ms_time, 0 ];
-                $facebook_werehere[] = [ $ms_time, 0 ];
             }
         }
         $reports = compact( 'searches', 'profile_views', 'special_offer_clicks', 'foursquare_checkins', 'facebook_likes', 'facebook_talking_about', 'facebook_werehere' );
@@ -67,7 +80,7 @@ class AnalyticsController extends BaseController {
             ->kb( 0 )
             ->add_title( _('Dashboard') )
             ->menu_item( 'geo-marketing/analytics' )
-            ->set( compact( 'start_date', 'end_date', 'reports', 'locations', 'location_id' ) );
+            ->set( compact( 'start_date', 'end_date', 'reports', 'locations', 'location_id', 'has_analytics_data' ) );
 
     }
 
