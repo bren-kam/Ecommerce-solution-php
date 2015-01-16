@@ -100,11 +100,11 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function billing_information() {
-        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
 
-        if ( $this->verified() ) {
-            library('arb');
-
+        if ( $this->verified() && !empty( $settings['arb-subscription-gateway'] ) ) {
+            library('arb-' . $settings['arb-subscription-gateway']);
+			
             // Create instance of ARB
             $arb = new arb( $this->user->account->title );
 
@@ -139,6 +139,19 @@ class SettingsController extends BaseController {
                 $subject = $this->user->account->title . ' Updated Billing Information';
                 $message = $this->user->contact_name . ' has updated the billing information for ' . $this->user->account->title . '.';
                 fn::mail('kerry@greysuitretail.com', $success, $message, 'noreply@greysuitretail.com');
+                $this->notify('Your billing information has been successfully updated!');
+            } else {
+                $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.');
+
+                $ticket = new Ticket();
+                $ticket->user_id = $this->user->id;
+                $ticket->assigned_to_user_id = User::TECHNICAL;
+                $ticket->website_id = $this->user->account->id;
+                $ticket->summary = 'Billing information update failed';
+                $ticket->message = $this->user->contact_name . " tried and failed to update their billing information. The following information is available:\n" . fn::info( $arb->error, false ) . "\n\nMore information:\n" . fn::info( $arb->response );
+                $ticket->status = Ticket::STATUS_OPEN;
+                $ticket->priority = Ticket::PRIORITY_URGENT;
+                $ticket->create();
             }
         }
 
@@ -155,10 +168,10 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function services() {
-        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
         $success = false;
 
-        if ( $this->verified() && $settings['arb-subscription-amount'] > 0 ) {
+        if ( $this->verified() && $settings['arb-subscription-amount'] > 0 && !empty( $settings['arb-subscription-gateway'] ) ) {
             $services = array(
                 'shopping-cart'         => 50
                 , 'blog'                => 100
@@ -188,7 +201,7 @@ class SettingsController extends BaseController {
             }
 
             if ( $_POST['new-price'] == $new_price ) {
-                library('arb');
+                library('arb-' . $settings['arb-subscription-gateway']);
 
                 // Create instance of ARB
                 $arb = new arb($this->user->account->title);
@@ -219,6 +232,20 @@ class SettingsController extends BaseController {
                     $ticket->website_id = $this->user->account->id;
                     $ticket->summary = 'Account Service Change';
                     $ticket->message = "New Services:\n" . implode("\n", $new_services) . "\n\nOld Services:\n" . implode("\n", $old_services);
+                    $ticket->status = Ticket::STATUS_OPEN;
+                    $ticket->priority = Ticket::PRIORITY_URGENT;
+                    $ticket->create();
+
+                    $this->notify('Your services changes have been successfully submitted!');
+                } else {
+                    $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.');
+
+                    $ticket = new Ticket();
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to_user_id = User::TECHNICAL;
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->summary = 'Service Change update failed';
+                    $ticket->message = $this->user->contact_name . " tried and failed to update their billing information. The following information is available:\n" . fn::info( $arb->error, false ) . "\n\nMore information:\n" . fn::info( $arb->response );
                     $ticket->status = Ticket::STATUS_OPEN;
                     $ticket->priority = Ticket::PRIORITY_URGENT;
                     $ticket->create();
