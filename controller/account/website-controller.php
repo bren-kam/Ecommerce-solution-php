@@ -717,7 +717,7 @@ class WebsiteController extends BaseController {
             ->add_validation( 'req', _('The "Banners - Height" field is required') )
             ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
 
-        $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
+        $form->add_field( 'text', _('Delay (in seconds)'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
             ->add_validation( 'num', _('The "Banners - Speed" field may only contain a number') );
 
