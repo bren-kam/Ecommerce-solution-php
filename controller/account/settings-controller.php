@@ -134,8 +134,12 @@ class SettingsController extends BaseController {
             // Test and print results
             $success = $arb->success;
 
-            if ( $success )
-                $this->user->account->set_settings(array( 'arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+            if ( $success ) {
+                $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+                $subject = $this->user->account->title . ' Updated Billing Information';
+                $message = $this->user->contact_name . ' has updated the billing information for ' . $this->user->account->title . '.';
+                fn::mail('kerry@greysuitretail.com', $success, $message, 'noreply@greysuitretail.com');
+            }
         }
 
         return $this->get_template_response( 'billing-information' )

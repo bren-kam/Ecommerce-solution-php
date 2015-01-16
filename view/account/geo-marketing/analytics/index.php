@@ -43,6 +43,14 @@ nonce::field( 'get_graph', '_get_graph' );
                         </form>
                     </div>
                 </div>
+
+                <?php if( !$has_analytics_data ): ?>
+                    <br>
+                    <div class="alert alert-warning">
+                        Analytics will not show until 3 weeks after your first location is created.
+                    </div>
+                <?php endif; ?>
+
             </div>
         </section>
     </div>
@@ -101,5 +109,5 @@ nonce::field( 'get_graph', '_get_graph' );
 </div>
 
 <script>
-    var AnalyticsSettings = <?php echo json_encode( [  'reports' => $reports ] ); ?>;
+    var AnalyticsSettings = <?php echo json_encode( [ 'reports' => $reports ] ); ?>;
 </script>

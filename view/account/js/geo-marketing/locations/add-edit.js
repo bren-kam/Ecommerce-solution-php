@@ -14,9 +14,17 @@ LocationForm = {
         $('#category-template').remove();
         $('#yext-categories').change( LocationForm.addCategory );
         $('#category-list').on( 'click', '.remove', LocationForm.removeCategory );
-        if ( $('#category-list li').size() == 0 ) {
+        if ( $('#category-list li').size() === 0 ) {
             $('#add-edit-location :submit').attr('disabled', 'disabled');
         }
+
+        $('#category-list').sortable({
+            items: 'li'
+            , cancel: 'a'
+            , cursor: 'move'
+            , placeholder: 'item-placeholder'
+            , forcePlaceholderSize: true
+        });
     }
 
     /**
