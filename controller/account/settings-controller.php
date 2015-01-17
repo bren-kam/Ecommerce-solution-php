@@ -222,7 +222,7 @@ class SettingsController extends BaseController {
                 $success = $arb->success;
 
                 if ( $success ) {
-                    $this->user->account->set_settings(array('arb-subscription-amount', $new_price));
+                    $this->user->account->set_settings(array('arb-subscription-amount' => $new_price));
                     $this->user->account->save();
 
                     // Create a ticket with changes

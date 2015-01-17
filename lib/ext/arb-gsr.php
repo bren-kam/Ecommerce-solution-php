@@ -1290,6 +1290,11 @@ class arb
 			$this->subscription->appendChild($this->paymentSchedule);
 			$this->paymentSchedule->appendChild($this->dom->createElement('totalOccurrences',$this->totalOccurrences));
 		}
+
+		if( $this->amount ) {
+			$this->subscription->appendChild($this->amount);
+		}
+
 		if ($this->cardNumber || $this->accountNumber)
 		{
 			$this->payment=$this->dom->createElement('payment');
