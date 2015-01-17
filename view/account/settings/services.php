@@ -6,7 +6,6 @@
  * @var array $settings
  * @var bool $success
  */
-$settings['arb-subscription-amount'] = 399;
 ?>
 
 <div class="row-fluid">
