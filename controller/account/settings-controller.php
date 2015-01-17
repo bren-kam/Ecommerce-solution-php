@@ -141,7 +141,7 @@ class SettingsController extends BaseController {
                 fn::mail('kerry@greysuitretail.com', $success, $message, 'noreply@greysuitretail.com');
                 $this->notify('Your billing information has been successfully updated!');
             } else {
-                $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.');
+                $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
 
                 $ticket = new Ticket();
                 $ticket->user_id = $this->user->id;
@@ -238,7 +238,7 @@ class SettingsController extends BaseController {
 
                     $this->notify('Your services changes have been successfully submitted!');
                 } else {
-                    $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.');
+                    $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
 
                     $ticket = new Ticket();
                     $ticket->user_id = $this->user->id;

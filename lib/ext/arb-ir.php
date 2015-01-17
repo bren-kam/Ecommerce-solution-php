@@ -1638,7 +1638,7 @@ class arb
 		return;
 	}
 
-/**
+	/**
 	* processResponse()
 	* parses response into an array for user output
 	*/
@@ -1657,7 +1657,7 @@ class arb
 				$this->results['code']				= $xml->messages->message->code;
 				$this->results['text']				= $xml->messages->message->text;
 				$this->results['subscriptionId'] 	= $xml->subscriptionId;
-				
+
 				if (strtolower($this->results['result'])=='ok')
 					$this->success=true;
 				else
@@ -1666,20 +1666,23 @@ class arb
 					//foreach ($this->results as $key=>$val) unset($this->results[$key]);
 				}
 			break;
-			
+
 			case 'ARBUpdateSubscriptionResponse':
 			case 'ARBCancelSubscriptionResponse':
-				
-				$refId = $parent->firstChild;
-				$messages = $refId->nextSibling;
-				$subscriptionId = $messages->nextSibling;
-				if ($refId)
-					$this->results['refId']=$refId->nodeValue;
-				$this->results['result']=$messages->firstChild->nodeValue;
-				$this->results['code']=$messages->firstChild->nextSibling->firstChild->nodeValue;
-				$this->results['text']=$messages->firstChild->nextSibling->firstChild->nextSibling->nodeValue;
-				if ($subscriptionId)
-					$this->results['subscriptionId']=$subscriptionId->nodeValue;
+				$xml = @simplexml_load_string( $this->response );
+
+				//$refId = $parent->firstChild;
+				//$messages = $refId->nextSibling;
+				//$subscriptionId = $messages->nextSibling;
+				//if ($refId)
+				//	$this->results['refId']=$refId->nodeValue;
+				$this->results['result']			= $xml->messages->resultCode;
+				$this->results['code']				= $xml->messages->message->code;
+				$this->results['text']				= $xml->messages->message->text;
+
+				//if ($subscriptionId)
+				//	$this->results['subscriptionId']=$subscriptionId->nodeValue;
+
 				if (strtolower($this->results['result'])=='ok')
 					$this->success=true;
 				else
