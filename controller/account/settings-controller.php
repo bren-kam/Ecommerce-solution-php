@@ -222,7 +222,7 @@ class SettingsController extends BaseController {
                 $success = $arb->success;
 
                 if ( $success ) {
-                    $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+                    $this->user->account->set_settings(array('arb-subscription-amount', $new_price));
                     $this->user->account->save();
 
                     // Create a ticket with changes
@@ -237,6 +237,9 @@ class SettingsController extends BaseController {
                     $ticket->create();
 
                     $this->notify('Your services changes have been successfully submitted!');
+
+                    // Reget the settings
+                    $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
                 } else {
                     $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
 
