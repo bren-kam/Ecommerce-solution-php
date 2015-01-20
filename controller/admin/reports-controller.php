@@ -63,6 +63,10 @@ class ReportsController extends BaseController {
         if ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
             $reports_array['ApiExtLog'] = _('External API Log');
 
+        if ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) || $this->user->has_permission( User::ROLE_ADMIN )){
+            $reports_array['MyAccounts'] = _('My Accounts');
+        }
+
         $form_reports->add_field( 'select', _('Report'), 'sReport' )
             ->add_validation( 'req', _('You must select a report to download') )
             ->options( $reports_array );
