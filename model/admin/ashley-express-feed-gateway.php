@@ -176,7 +176,54 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 	 */
 	public function run_flag_products( Account $account ) {
 
-        if ( !$this->get_xml( $account, '846-' ) ) {
+        // Get FTP
+        $ftp = $this->get_ftp( $account );
+
+        // Figure out what file we're getting
+        $file = null;
+        $to_delete = [];
+        if( empty( $file ) ) {
+            // Get al ist of the files
+            $files = array_reverse( $ftp->raw_list() );
+
+            foreach ( $files as $f ) {
+                if ( 'xml' != f::extension( $f['name'] ) )
+                    continue;
+
+                $file_name = f::name( $f['name'] );
+                if ( $prefix && strpos( $file_name, $prefix ) === false )
+                    continue;
+
+                // get first file, remove olders
+                if ( !$file )
+                    $file = $f['name'];
+                else
+                    $to_delete[] = $file;
+            }
+        }
+
+        // Can't do anything without a file
+        if ( $file ) {
+            // Make sure the folder has been created
+            $local_folder = sys_get_temp_dir() . '/';
+
+            // Grab the latest file
+            if( !file_exists( $local_folder . $file ) )
+                $ftp->get( $file, '', $local_folder );
+
+            $this->xml = simplexml_load_file( $local_folder . $file );
+
+            // Now remove the file
+            unlink( $local_folder . $file );
+        }
+
+        // delete older files
+        foreach ( $to_delete as $file_to_delete ) {
+            $ftp->delete( $file_to_delete );
+        }
+
+
+        if ( !$this->xml ) {
             // Remove all products from Ashley Express
             $this->flag_bulk( $account, array( ) );
             $this->flag_packages( $account, array( ) );
