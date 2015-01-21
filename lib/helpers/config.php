@@ -42,6 +42,17 @@ class Config {
         , 'ga-redirect-uri-imagineretailer.com'         => 'http://account.imagineretailer.com/analytics/oauth2callback/'
             // Sendgrid
         , 'sendgrid-timezone'       => 'America/Chicago'
+
+        // Facebook
+        , 'facebook-key'        => '1613357988885586'
+        , 'facebook-secret'     => 'e57ed9886666f429d358355b9be89b06'
+        , 'facebook-session'    => 'CAAW7Vy3StFIBAJ1cUGld3nF1NEhVO2yO2VOaIHQZAanVJhbkL1lrh1nyxeOp9Jz47MDRMDiQnxz6NfHCnFXGQMhYaoQXe1bZBqiXLgcybJhi7VbjPWv8edeiccl6vLfcOC1B9oM6363bmcZAt4GZC725s2INVhX8l2TmgGdc9bD1ifDxqek8nMfa6KWqKTfcfpPP69NmOywyouIOiIZAZC'
+        , 'facebook-redirect'   => 'http://account.dev.greysuitretail.com/sm/facebook-callback/'
+
+        // Twitter
+        , 'twitter-key'         => 'pGE8dsjZLQCBN75GbovCpyPQg'
+        , 'twitter-secret'      => 'AFyU22nW126LMmkAsKdhFHp0pUFZj5jmTaz2Udj4QmQV61bnC9'
+        , 'twitter-redirect'    => 'http://account.dev.greysuitretail.com/sm/twitter-callback/'
 	);
 
     /**
