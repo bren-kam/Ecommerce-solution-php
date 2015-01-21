@@ -138,13 +138,13 @@
 
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-lg-2 text-center"><strong>Image</strong></div>
+                    <div class="col-lg-2"><strong>Image</strong></div>
                     <div class="col-lg-7"><strong>Description</strong></div>
                     <div class="col-lg-1 text-right"><strong>Price</strong></div>
                     <div class="col-lg-1 text-right"><strong>Quantity</strong></div>
                     <div class="col-lg-1 text-right"><strong>Total</strong></div>
                 </div>
-                <div class="row"><div class="col-lg-12"></div></div>
+                <div class="row"><div class="col-lg-12">&nbsp;</div></div>
                 <?php foreach ( $order->items as $item ): ?>
                     <div class="row">
                         <div class="col-lg-2">
