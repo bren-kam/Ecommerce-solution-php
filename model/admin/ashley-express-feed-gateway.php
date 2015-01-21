@@ -191,14 +191,14 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
                     continue;
 
                 $file_name = f::name( $f['name'] );
-                if ( $prefix && strpos( $file_name, $prefix ) === false )
+                if ( strpos( $file_name, '846-' ) === false )
                     continue;
 
                 // get first file, remove olders
                 if ( !$file )
                     $file = $f['name'];
                 else
-                    $to_delete[] = $file;
+                    $to_delete[] = $f['name'];
             }
         }
 
