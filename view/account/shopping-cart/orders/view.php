@@ -144,6 +144,7 @@
                     <div class="col-lg-1 text-right"><strong>Quantity</strong></div>
                     <div class="col-lg-1 text-right"><strong>Total</strong></div>
                 </div>
+                <div class="row"><div class="col-lg-12"></div></div>
                 <?php foreach ( $order->items as $item ): ?>
                     <div class="row">
                         <div class="col-lg-2">
