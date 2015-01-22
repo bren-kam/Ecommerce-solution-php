@@ -168,7 +168,7 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function services() {
-        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway', 'yext-customer-reviews');
         $success = false;
 
         if ( $this->verified() && $settings['arb-subscription-amount'] > 0 && !empty( $settings['arb-subscription-gateway'] ) ) {
@@ -182,20 +182,34 @@ class SettingsController extends BaseController {
             );
 
             $new_price = $settings['arb-subscription-amount'];
-            $new_services = $old_services = array();
+            $new_services = $old_services = $new_settings = array();
 
             foreach ( $services as $service => $price ) {
-                if ( !in_array( $service, array('gm-reviews') ) ) {
-                    $service_name = str_replace('-', '_', $service);
-                    if ($this->user->account->$service_name && !isset($_POST[$service])) {
-                        $new_price -= $price;
-                        $old_services[] = ucwords(str_replace('-', ' ', $service));
-                        $this->user->account->$service_name = 0;
-                    } elseif (!$this->user->account->$service_name && isset($_POST[$service])) {
-                        $new_price += $price;
-                        $new_services[] = ucwords(str_replace('-', ' ', $service));
-                        $this->user->account->$service_name = 1;
-                    }
+                switch ( $service ) {
+                    case 'gm-reviews':
+                        if ( '1' == $settings['yext-customer-reviews']  && !isset($_POST[$service] ) ) {
+                            $new_price -= $price;
+                            $old_services[] = 'GeoMarketing Customer Reviews';
+                            $new_settings['yext-customer-reviews'] = '';
+                        } elseif ( '1' != $settings['yext-customer-reviews'] && isset($_POST[$service] ) ) {
+                            $new_price += $price;
+                            $new_services[] = 'GeoMarketing Customer Reviews';
+                            $new_settings['yext-customer-reviews'] = '1';
+                        }
+                    break;
+
+                    default:
+                        $service_name = str_replace('-', '_', $service);
+                        if ($this->user->account->$service_name && !isset($_POST[$service])) {
+                            $new_price -= $price;
+                            $old_services[] = ucwords(str_replace('-', ' ', $service));
+                            $this->user->account->$service_name = 0;
+                        } elseif (!$this->user->account->$service_name && isset($_POST[$service])) {
+                            $new_price += $price;
+                            $new_services[] = ucwords(str_replace('-', ' ', $service));
+                            $this->user->account->$service_name = 1;
+                        }
+                    break;
                 }
 
             }
@@ -222,7 +236,8 @@ class SettingsController extends BaseController {
                 $success = $arb->success;
 
                 if ( $success ) {
-                    $this->user->account->set_settings(array('arb-subscription-amount' => $new_price));
+                    $new_settings['arb-subscription-amount'] = $new_price;
+                    $this->user->account->set_settings( $new_settings );
                     $this->user->account->save();
 
                     // Create a ticket with changes
