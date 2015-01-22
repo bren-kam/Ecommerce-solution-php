@@ -4,7 +4,30 @@ var Navigation = {
 
     , init: function() {
         $('#navigation').nestable( {
-            maxDepth: 2
+            maxDepth: 2,
+            dropCallback: function(dropped) {
+                if(dropped.destParent && dropped.destParent[0] && dropped.destParent[0].dataset && dropped.destParent[0].dataset.id){
+                    var id=dropped.destParent[0].dataset.id;
+                    var el= $("ol").find("[data-id='"+id+"']");
+                    var total_children = $(el).find("ol").children().length;
+
+                    if(total_children==1){
+                        //Parent element turned into dropdown
+                        var element_id = (new Date()).getTime().toString().substring(8);
+                        var name = $(el).find(".dd3-content").first().clone().children().remove().end().text().trim();
+                        var url = $(el).find(".page-url").first().text().trim();
+
+                        //Duplicate it as first child
+                        $(el).find("ol.dd-list").prepend(Navigation.template.clone()
+                            .data('id', element_id )
+                            .find('.dd3-content').prepend( name ).end()
+                            .find('.page-url').prepend( url ).end()
+                            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( url + '|' + name ).end());
+
+                        Navigation.updateTree();
+                    }
+                }
+            }
         }).on( 'change', Navigation.updateTree ).change();
 
         $('#save-menu-item').click( Navigation.create );
