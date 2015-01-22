@@ -176,7 +176,7 @@ class SettingsController extends BaseController {
                 'shopping-cart'         => 50
                 , 'blog'                => 100
                 , 'email-marketing'     => 100
-                , 'social-media'        => 100
+                , 'social-media'        => 99
                 , 'geo-marketing'       => 100
                 , 'gm-reviews'          => 100
             );
