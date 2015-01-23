@@ -23,7 +23,7 @@ class WebsiteSmAccount extends ActiveRecordBase {
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->website_sm_account_id;
-        $this->auth_information_array = json_decode($this->auth_information);
+        $this->auth_information_array = json_decode($this->auth_information, true);
 
     }
 
@@ -41,7 +41,7 @@ class WebsiteSmAccount extends ActiveRecordBase {
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->website_sm_account_id;
-        $this->auth_information_array = json_decode($this->auth_information);
+        $this->auth_information_array = json_decode($this->auth_information, true);
     }
 
     /**
@@ -58,7 +58,7 @@ class WebsiteSmAccount extends ActiveRecordBase {
 
         foreach ( $all as $l ) {
             $l->id = $l->website_sm_account_id;
-            $l->auth_information_array = json_decode($l->auth_information);
+            $l->auth_information_array = json_decode($l->auth_information, true);
         }
         return $all;
     }
@@ -79,7 +79,7 @@ class WebsiteSmAccount extends ActiveRecordBase {
 
         foreach ( $all as $l ) {
             $l->id = $l->website_sm_account_id;
-            $l->auth_information_array = json_decode($l->auth_information);
+            $l->auth_information_array = json_decode($l->auth_information, true);
         }
         return $all;
     }

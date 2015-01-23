@@ -18,7 +18,7 @@ class SmController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
-            ->menu_item( 'sm' );
+            ->menu_item( 'sm/account' );
     }
 
     /**
@@ -43,8 +43,7 @@ class SmController extends BaseController {
         foreach ( $website_sm_accounts as $website_sm_account ) {
             $data[] = [
                 $website_sm_account->title .
-                ' <br> <a href="/sm/delete/?id=' . $website_sm_account->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>' .
-                ' | <a href="/sm/post/?id=' . $website_sm_account->id . '" >Post</a>'
+                ' <br> <a href="/sm/delete/?id=' . $website_sm_account->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>'
                 , $website_sm_account->sm
                 , $website_sm_account->created_at
             ];
@@ -83,7 +82,6 @@ class SmController extends BaseController {
 
         library('facebook_v4/facebook');
         Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
-        $session = new Facebook\FacebookSession( Config::key( 'facebook-session' ) );
         $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
 
         url::redirect( $helper->getLoginUrl( ['publish_actions'] ) );
@@ -97,7 +95,6 @@ class SmController extends BaseController {
         library('facebook_v4/facebook');
 
         Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
-        $session = new Facebook\FacebookSession( Config::key( 'facebook-session' ) );
         $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
 
         try {
@@ -198,6 +195,10 @@ class SmController extends BaseController {
         url::redirect( $_SESSION['sm-callback-referer'] );
     }
 
+    /**
+     * Get Logged In User
+     * @return bool
+     */
     protected function get_logged_in_user() {
 
         // connect_* are public, but need a referer and a website-id

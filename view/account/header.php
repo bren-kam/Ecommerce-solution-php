@@ -389,14 +389,21 @@
 
             <?php if ( $user->account->social_media ): ?>
                 <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->in_menu_item('social-media') ) echo 'class="active"'?>>
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('social-media') || $template->in_menu_item('sm') ) echo 'class="active"'?>>
                         <i class="fa fa-facebook"></i>
                         <span>Social Media</span>
                     </a>
                     <ul class="sub">
-                        <li <?php if ( $template->in_menu_item('social-media/facebook/list') ) echo 'class="active"'?>><a href="/social-media/">List All</a></li>
-                        <li <?php if ( $template->in_menu_item('social-media/facebook/add') ) echo 'class="active"'?>><a href="/social-media/facebook/add-edit/">Add</a></li>
-                        <li <?php if ( $template->in_menu_item('social-media/facebook/settings') ) echo 'class="active"'?>><a href="/social-media/facebook/settings/">Settings</a></li>
+                        <li class="submenu" <?php if ( $template->in_menu_item('social-media/facebook') ) echo 'class="active"'?>>
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('social-media/facebook') ) echo 'class="active"'?> >Facebook</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('social-media/facebook/list') ) echo 'class="active"'?>><a href="/social-media/">List All</a></li>
+                                <li <?php if ( $template->in_menu_item('social-media/facebook/add') ) echo 'class="active"'?>><a href="/social-media/facebook/add-edit/">Add</a></li>
+                                <li <?php if ( $template->in_menu_item('social-media/facebook/settings') ) echo 'class="active"'?>><a href="/social-media/facebook/settings/">Settings</a></li>
+                            </ul>
+                        </li>
+                        <li <?php if ( $template->in_menu_item('sm/post') ) echo 'class="active"'?> ><a href="/sm/post/" <?php if ( $template->in_menu_item('sm/post') ) echo 'class="active"'?> >Posts</a></li>
+                        <li <?php if ( $template->in_menu_item('sm/account') ) echo 'class="active"'?>><a href="/sm/" <?php if ( $template->in_menu_item('sm/account') ) echo 'class="active"'?> >Accounts</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
