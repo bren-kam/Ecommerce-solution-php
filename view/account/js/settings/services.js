@@ -23,6 +23,7 @@ var Services = {
 
         if ( Services.updateChangedServices() ) {
             $('.new-price').text(newPrice);
+            $('#new-price').val(newPrice);
 
             var priceDifference = newPrice - originalPrice;
 
