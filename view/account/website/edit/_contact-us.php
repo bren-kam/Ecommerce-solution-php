@@ -54,6 +54,13 @@ nonce::field( 'update_location_sequence', '_update_location_sequence' );
             <input type="text" class="form-control" name="tEmail" id="tEmail" value="<?php echo $email ?>" />
         </div>
 
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="cbHideContactForm" value="yes" <?php if ( 'true' == $hide_contact_form ) echo 'checked'; ?> />
+                Hide Contact Us Form
+            </label>
+        </div>
+
         <h4>Map Settings</h4>
 
         <div class="radio">

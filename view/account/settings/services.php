@@ -6,7 +6,6 @@
  * @var array $settings
  * @var bool $success
  */
-$settings['arb-subscription-amount'] = 399;
 ?>
 
 <div class="row-fluid">
@@ -25,7 +24,7 @@ $settings['arb-subscription-amount'] = 399;
                 <?php if ( $success ) { ?>
                     <div class="alert alert-success">
                         <p><strong>Success!</strong></p>
-                        <p>Your services have been successfully changed and your new monthly bill is now <strong><?php echo $settings['arb-subscription-amount']; ?></strong>.</p>
+                        <p>Your services have been successfully changed and your new monthly bill is now <strong>$<?php echo number_format($settings['arb-subscription-amount'], 2 ); ?></strong>.</p>
                     </div>
                 <?php } else { ?>
                 <input type="hidden" id="original-subscription" value="<?php echo $settings['arb-subscription-amount']; ?>">
