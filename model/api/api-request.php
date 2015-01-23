@@ -367,6 +367,17 @@ class ApiRequest {
             if ('1' == $account->craigslist)
                 $account->add_industries(array(1, 2, 3));
 
+            // Hide blocked categories
+            $category = new Category();
+            $account_category = new AccountCategory();
+            $blocked_category_ids = array(695, 1444, 125, 428, 581, 126, 698, 699, 700);
+            $account_category->hide( $account->id, $blocked_category_ids );
+            $account_category->reorganize_categories( $account->id, $category );
+
+            // Update index for products
+            $index = new IndexProducts();
+            $index->index_website( $account->id );
+
             // Create WHM account and setup Password
             if ('1' == $account->pages) {
                 library('pm-api');
