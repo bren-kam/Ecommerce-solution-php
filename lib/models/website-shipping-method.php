@@ -119,4 +119,50 @@ class WebsiteShippingMethod extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Get Description
+     * @param  string $name
+     * @return string
+     */
+    public function get_description( $name = null) {
+        $services = array(
+            '02' => _('UPS Second Day Air')
+            , '03' => _('UPS Ground')
+            , '07' => _('UPS Worldwide Express')
+            , '08' => _('UPS Worldwide Expedited')
+            , '11' => _('UPS Standard')
+            , '12' => _('UPS Three-Day Select')
+            , '13' => _('Next Day Air Saver')
+            , '14' => _('UPS Next Day Air Early AM')
+            , '54' => _('UPS Worldwide Express Plus')
+            , '59' => _('UPS Second Day Air AM')
+            , '65' => _('UPS Saver')
+            , 'EUROPE_FIRST_INTERNATIONAL_PRIORITY' => _('Europe First International Priority')
+            , 'FEDEX_1_DAY_FREIGHT' => _('FedEx 1 Day Freight')
+            , 'FEDEX_2_DAY' => _('FedEx 2 Day')
+            , 'FEDEX_2_DAY_FREIGHT' => _('FedEx 2 Day Freight')
+            , 'FEDEX_3_DAY_FREIGHT' => _('FedEx 3 Day Freight')
+            , 'FEDEX_EXPRESS_SAVER' => _('FedEx Express Saver')
+            , 'FEDEX_GROUND' => _('FedEx Ground')
+            , 'FIRST_OVERNIGHT' => _('First Overnight')
+            , 'GROUND_HOME_DELIVERY' => _('Ground Home Delivery')
+            , 'INTERNATIONAL_ECONOMY' => _('International Economy')
+            , 'INTERNATIONAL_ECONOMY_FREIGHT' => _('International Economy Freight')
+            , 'INTERNATIONAL_FIRST' => _('International First')
+            , 'INTERNATIONAL_PRIORITY' => _('International Priority')
+            , 'INTERNATIONAL_PRIORITY_FREIGHT' => _('International Priority Freight')
+            , 'PRIORITY_OVERNIGHT' => _('Priority Overnight')
+            , 'SMART_POST' => _('Smart Post')
+            , 'STANDARD_OVERNIGHT' => _('Standard Overnight')
+            , 'FEDEX_FREIGHT' => _('FedEx Freight')
+            , 'FEDEX_NATIONAL_FREIGHT' => _('FedEx National Freight')
+        );
+
+        if ( !$name ) {
+            $name = $this->name;
+        }
+
+        return isset( $services[ $name ] ) ? $services[ $name ] : $name;
+    }
 }

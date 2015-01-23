@@ -35,6 +35,9 @@ class OrdersController extends BaseController {
         $order = new WebsiteOrder();
         $order->get_complete( $_GET['woid'], $this->user->account->id );
 
+        $shipping = new WebsiteShippingMethod();
+        $order->shipping_method = $shipping->get_description( $order->shipping_method );
+
         if ( !$order->id )
             return new RedirectResponse('/shopping-cart/orders/');
 
