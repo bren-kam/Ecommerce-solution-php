@@ -46,12 +46,12 @@ class Config {
         // Facebook
         , 'facebook-key'        => '1613357988885586'
         , 'facebook-secret'     => 'e57ed9886666f429d358355b9be89b06'
-        , 'facebook-redirect'   => 'http://account.dev.greysuitretail.com/sm/facebook-callback/'
+        , 'facebook-redirect'   => 'http://account.testing.greysuitretail.com/sm/facebook-callback/'
 
         // Twitter
-        , 'twitter-key'         => 'pGE8dsjZLQCBN75GbovCpyPQg'
-        , 'twitter-secret'      => 'AFyU22nW126LMmkAsKdhFHp0pUFZj5jmTaz2Udj4QmQV61bnC9'
-        , 'twitter-redirect'    => 'http://account.dev.greysuitretail.com/sm/twitter-callback/'
+        , 'twitter-key'         => 'bC39I7UBwjTfF7FBsg1NxF9GL'
+        , 'twitter-secret'      => 'IZFZSKFQGPGw0vXa8MzV2vshmRWt2OQy2Sm4H7ayH5LJIUupiF'
+        , 'twitter-redirect'    => 'http://account.testing.greysuitretail.com/sm/twitter-callback/'
 	);
 
     /**
