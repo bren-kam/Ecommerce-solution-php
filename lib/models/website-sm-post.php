@@ -281,7 +281,7 @@ class WebsiteSmPost extends ActiveRecordBase {
 
         $post_at = new DateTime( $this->post_at, new DateTimeZone( $this->timezone ) );
 
-        return $post_at > $now;
+        return $post_at < $now;
     }
 
 }
