@@ -35,7 +35,7 @@ class PostController extends BaseController {
 
                 $post_at = '';
                 if ( $_POST['post-at']['day'] && $_POST['post-at']['hour'] && $_POST['post-at']['minute'] ) {
-                  $post_at = "{$_POST['post-at']['day']} {$_POST['post-at']['hour']}:{$_POST['post-at']['minute']}";
+                    $post_at = "{$_POST['post-at']['day']} {$_POST['post-at']['hour']}:{$_POST['post-at']['minute']}";
                 }
                 $post_at_datetime = new DateTime( $post_at );
                 $website_sm_post->post_at = $post_at_datetime->format('Y-m-d H:i:s');
@@ -94,6 +94,73 @@ class PostController extends BaseController {
         $response->set( compact( 'website_sm_posts' ) );
         return $response;
 
+    }
+
+    /**
+     * Get
+     * @return AjaxResponse
+     */
+    public function get() {
+        $response = new AjaxResponse( true );
+
+        $post = new WebsiteSmPost();
+        $post->get( $_GET['id'], $this->user->account->id );
+
+        $response->add_response( 'post', $post );
+        return $response;
+    }
+
+    /**
+     * Edit
+     * @return AjaxResponse
+     */
+    public function edit() {
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $post = new WebsiteSmPost();
+        $post->get( $_POST['id'], $this->user->account->id );
+
+        if ( !$post->id )
+            return $response;
+
+        $post_at = '';
+        if ( $_POST['post-at']['day'] && $_POST['post-at']['hour'] && $_POST['post-at']['minute'] ) {
+            $post_at = "{$_POST['post-at']['day']} {$_POST['post-at']['hour']}:{$_POST['post-at']['minute']}";
+            $post_at_datetime = new DateTime( $post_at );
+            $post->post_at = $post_at_datetime->format('Y-m-d H:i:s');
+            $post->save();
+            $response->notify("Post #{$post->id} will run on " . $post_at_datetime->format('l jS F, h:i:s A'));
+            $response->add_response('post_at', $post_at_datetime->format('l jS F, h:i:s A'));
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * Remove
+     * @return AjaxResponse
+     */
+    public function remove() {
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $post = new WebsiteSmPost();
+        $post->get( $_REQUEST['id'], $this->user->account->id );
+
+        if ( !$post->id )
+            return $response;
+
+        $post->remove();
+
+        $response->notify('Post removed!');
+
+        return $response;
     }
 
 }

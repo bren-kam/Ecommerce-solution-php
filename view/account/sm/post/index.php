@@ -115,3 +115,47 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
 <div id="post-list">
 </div>
+
+<div class="modal fade" id="edit-post-modal">
+    <div class="modal-dialog">
+        <form method="post" action="/sm/post/edit/" ajax="1" id='edit-post-form'>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Edit Post</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" name="id" id="edit-post-id" value="" />
+
+                    <p><strong>Post at:</strong></p>
+                    <div class="datetime-container">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="post-at[day]" id="edit-post-at-day" />
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" name="post-at[hour]" id="edit-post-at-hour">
+                                <?php for( $i=0; $i<24; $i++ ): ?>
+                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" name="post-at[minute]" id="edit-post-at-minute" >
+                                <?php for( $i=0; $i<60; $i++ ): ?>
+                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
+                                <?php endfor; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <?php nonce::field('edit'); ?>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

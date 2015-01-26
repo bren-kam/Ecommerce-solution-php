@@ -1,5 +1,9 @@
+<?php
+    $remove_nonce = nonce::create( 'remove' );
+?>
+
 <?php foreach( $website_sm_posts as $website_sm_post ): ?>
-    <div class="row-fluid">
+    <div class="row-fluid" data-post-id="<?php echo $website_sm_post->id ?>">
         <div class="col-lg-12">
             <section class="panel">
                 <div class="panel-body">
@@ -10,12 +14,13 @@
                     <div class="fb-user-details">
                         <h3><?php echo $website_sm_account->title ?></h3>
                         <p>
-                            <?php echo ( new DateTime( $website_sm_post->post_at ) )->format('l jS F, h:i:s A') ?>
+                            <span class="post-at"><?php echo ( new DateTime( $website_sm_post->post_at ) )->format('l jS F, h:i:s A') ?></span>
                             <?php if ( !$website_sm_post->posted ): ?>
                                 <span class="label label-warning">scheduled</span>
+                                <a href="javascript:;" class="edit" title="Re Schedule"><i class="fa fa-clock-o"></i></a>
+                                <a href="/sm/post/remove/?id=<?php echo $website_sm_post->id ?>&amp;_nonce=<?php echo $remove_nonce ?>" class="remove" title="Delete this post"><i class="fa fa-trash-o"></i></a>
                             <?php endif; ?>
                         </p>
-
                     </div>
                     <div class="clearfix">
                         <div class="row-fluid">
