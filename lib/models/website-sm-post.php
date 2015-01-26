@@ -2,7 +2,7 @@
 
 class WebsiteSmPost extends ActiveRecordBase {
 
-    public $id, $website_sm_post_id, $website_sm_account_id, $content, $photo, $link, $post_at, $posted, $created_at;
+    public $id, $website_sm_post_id, $website_sm_account_id, $content, $photo, $link, $post_at, $timezone, $posted, $created_at;
 
     public $website_id, $sm;
 
@@ -107,6 +107,7 @@ class WebsiteSmPost extends ActiveRecordBase {
                 , 'photo' => $this->photo
                 , 'link' => $this->link
                 , 'post_at' => $this->post_at
+                , 'timezone' => $this->timezone
                 , 'posted' => $this->posted
             ]
             , 'issssi'
@@ -123,6 +124,7 @@ class WebsiteSmPost extends ActiveRecordBase {
                 , 'photo' => $this->photo
                 , 'link' => $this->link
                 , 'post_at' => $this->post_at
+                , 'timezone' => $this->timezone
                 , 'posted' => $this->posted
             ]
             , [  'website_sm_post_id' => $this->id ]
@@ -237,7 +239,25 @@ class WebsiteSmPost extends ActiveRecordBase {
         $tweet = $connection->post( 'statuses/update', $data );
 
         return $tweet->id;
+    }
 
+
+    /**
+     * Can Post
+     * @return bool
+     */
+    public function can_post() {
+        // no schedule, can be posted anytime
+        if ( !$this->post_at ) {
+            return true;
+        }
+
+        $now = new DateTime();
+        $now->getTimezone();
+
+        $post_at = new DateTime( $this->post_at, new DateTimeZone( $this->timezone ) );
+
+        return $post_at > $now;
     }
 
 }

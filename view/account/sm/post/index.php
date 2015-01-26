@@ -44,19 +44,20 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             <input type="text" class="form-control" name="post-at[day]" id="post-at" placeholder="Post now or select date"/>
                         </div>
                         <div class="form-group">
-                            <select class="form-control" name="post-at[hour]" >
-                                <?php for( $i=0; $i<24; $i++ ): ?>
-                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
-                                <?php endfor; ?>
+                            <select class="form-control" name="post-at[time]" >
+                                <?php foreach( $time_options as $k => $h ): ?>
+                                    <option value="<?php echo $k ?>"><?php echo $h ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <select class="form-control" name="post-at[minute]" >
-                                <?php for( $i=0; $i<60; $i++ ): ?>
-                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <select name="timezone" class="form-control">
+                            <?php foreach ( $timezones as $tz_key => $tz_name ) : ?>
+                                <option value="<?php echo $tz_key ?>" <?php if ( $settings['timezone'] == $tz_key ) echo 'selected' ?>><?php echo $tz_name ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <p>
@@ -134,17 +135,10 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             <input type="text" class="form-control" name="post-at[day]" id="edit-post-at-day" />
                         </div>
                         <div class="form-group">
-                            <select class="form-control" name="post-at[hour]" id="edit-post-at-hour">
-                                <?php for( $i=0; $i<24; $i++ ): ?>
-                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-control" name="post-at[minute]" id="edit-post-at-minute" >
-                                <?php for( $i=0; $i<60; $i++ ): ?>
-                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
-                                <?php endfor; ?>
+                            <select class="form-control" name="post-at[time]" id="edit-post-at-time" >
+                                <?php foreach( $time_options as $k => $h ): ?>
+                                    <option value="<?php echo $k ?>"><?php echo $h ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
