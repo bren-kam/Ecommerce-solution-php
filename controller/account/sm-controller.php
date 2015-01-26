@@ -94,19 +94,26 @@ class SmController extends BaseController {
     public function facebook_callback() {
         library('facebook_v4/facebook');
 
-        Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
-        $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
-
         try {
+            Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
+            $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
+
             $session = $helper->getSessionFromRedirect();
+
+            if ( !$session ) {
+                throw new Exception( 'Could not create Facebook Session, please accept application permissions in order to connect.' );
+            }
+
             $request = new Facebook\FacebookRequest( $session, 'GET', '/me' );
             $response = $request->execute();
 
             $token = $session->getToken();
             $me = $response->getGraphObject()->asArray();
         } catch(FacebookRequestException $ex) {
+            $this->notify( 'There was an error connecting with Facebook: ' . $ex->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
         } catch(\Exception $ex) {
+            $this->notify( 'There was an error connecting with Facebook: ' . $ex->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
         }
 
@@ -151,14 +158,15 @@ class SmController extends BaseController {
     public function twitter_callback() {
         library('twitteroauth/autoload');
 
-        $connection = new Abraham\TwitterOAuth\TwitterOAuth(
-            Config::key( 'twitter-key' )
-            , Config::key( 'twitter-secret' )
-            , $_SESSION['twitter-request-token']
-            , $_SESSION['twitter-request-token-secret']
-        );
 
         try {
+            $connection = new Abraham\TwitterOAuth\TwitterOAuth(
+                Config::key( 'twitter-key' )
+                , Config::key( 'twitter-secret' )
+                , $_SESSION['twitter-request-token']
+                , $_SESSION['twitter-request-token-secret']
+            );
+
             $token = $connection->oauth( 'oauth/access_token', ["oauth_verifier" => $_REQUEST['oauth_verifier']] );
 
             $connection = new Abraham\TwitterOAuth\TwitterOAuth(
@@ -173,6 +181,7 @@ class SmController extends BaseController {
                 throw new Exception('Could not get User Information');
             }
         } catch (Exception $e) {
+            $this->notify( 'There was an error connecting with Twitter: ' . $ex->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
         }
 
