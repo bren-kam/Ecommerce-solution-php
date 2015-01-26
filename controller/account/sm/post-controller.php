@@ -86,6 +86,13 @@ class PostController extends BaseController {
      */
     public function list_all() {
 
+        $website_sm_account = new WebsiteSmAccount();
+        $website_sm_account_list = $website_sm_account->get_all( $this->user->account->id );
+        $website_sm_accounts = [];
+        foreach ( $website_sm_account_list as $a ) {
+            $website_sm_accounts[$a->id] = $a;
+        }
+
         $where = '';
         if ( $_REQUEST['posted'] ) {
             $where .= " AND posted = {$_REQUEST['posted']}";
@@ -106,7 +113,7 @@ class PostController extends BaseController {
         $timezones = array_slice( data::timezones( false, false, true ), 4, 4 );
 
         $response = new CustomResponse( $this->resources, '/sm/post/list' );
-        $response->set( compact( 'website_sm_posts', 'timezones' ) );
+        $response->set( compact( 'website_sm_accounts', 'website_sm_posts', 'timezones' ) );
         return $response;
 
     }

@@ -2,7 +2,7 @@
 
 class WebsiteSmPost extends ActiveRecordBase {
 
-    public $id, $website_sm_post_id, $website_sm_account_id, $content, $photo, $link, $post_at, $timezone, $posted, $created_at;
+    public $id, $website_sm_post_id, $website_sm_account_id, $content, $photo, $link, $post_at, $timezone, $posted, $created_at, $sm_message;
 
     public $website_id, $sm;
 
@@ -109,6 +109,7 @@ class WebsiteSmPost extends ActiveRecordBase {
                 , 'post_at' => $this->post_at
                 , 'timezone' => $this->timezone
                 , 'posted' => $this->posted
+                , 'sm_message' => $this->sm_message
             ]
             , 'issssi'
         );
@@ -126,6 +127,7 @@ class WebsiteSmPost extends ActiveRecordBase {
                 , 'post_at' => $this->post_at
                 , 'timezone' => $this->timezone
                 , 'posted' => $this->posted
+                , 'sm_message' => $this->sm_message
             ]
             , [  'website_sm_post_id' => $this->id ]
             , 'ssssi'
@@ -149,17 +151,24 @@ class WebsiteSmPost extends ActiveRecordBase {
      */
     public function post() {
 
-        switch ($this->sm) {
-            case 'facebook';
-                $success = $this->post_facebook();
-                break;
-            case 'twitter';
-                $success = $this->post_twitter();
-                break;
-        }
+        try {
+            switch ($this->sm) {
+                case 'facebook';
+                    $success = $this->post_facebook();
+                    break;
+                case 'twitter';
+                    $success = $this->post_twitter();
+                    break;
+            }
 
-        if ( $success ) {
             $this->posted = 1;
+            $this->sm_message = '';
+            $this->save();
+            return true;
+
+        } catch( Exception $e ) {
+            $this->posted = 2;
+            $this->sm_message = $e->getMessage();
             $this->save();
         }
 
@@ -232,13 +241,28 @@ class WebsiteSmPost extends ActiveRecordBase {
 
         if ( $this->photo ) {
             $media = $connection->upload( 'media/upload', [ 'media' => $this->photo ] );
+            if ( $media->errors )
+                throw new Exception( $media->errors[0]->message );
             $data['media_ids'] = [ $media->media_id ];
         }
 
         $data['status'] = $tweet_msg;
         $tweet = $connection->post( 'statuses/update', $data );
+        if ( $tweet->errors )
+            throw new Exception( $tweet->errors[0]->message );
 
         return $tweet->id;
+    }
+
+    /**
+     * Get Unposted
+     * @return WebsiteSmPost[]
+     */
+    public function get_all_unposted() {
+        return $this->get_results(
+            "SELECT p.*, p.website_sm_post_id as id, a.sm, a.website_id FROM website_sm_post p INNER JOIN website_sm_account a ON p.website_sm_account_id = a.website_sm_account_id WHERE p.posted = 0 ORDER BY p.post_at"
+            , PDO::FETCH_CLASS, 'WebsiteSmPost'
+        );
     }
 
 
