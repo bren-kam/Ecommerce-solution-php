@@ -181,7 +181,7 @@ class SmController extends BaseController {
                 throw new Exception('Could not get User Information');
             }
         } catch (Exception $e) {
-            $this->notify( 'There was an error connecting with Twitter: ' . $ex->getMessage(), false );
+            $this->notify( 'There was an error connecting with Twitter: ' . $e->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
         }
 
