@@ -44,19 +44,20 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             <input type="text" class="form-control" name="post-at[day]" id="post-at" placeholder="Post now or select date"/>
                         </div>
                         <div class="form-group">
-                            <select class="form-control" name="post-at[hour]" >
-                                <?php for( $i=0; $i<24; $i++ ): ?>
-                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
-                                <?php endfor; ?>
+                            <select class="form-control" name="post-at[time]" >
+                                <?php foreach( $time_options as $k => $h ): ?>
+                                    <option value="<?php echo $k ?>"><?php echo $h ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <select class="form-control" name="post-at[minute]" >
-                                <?php for( $i=0; $i<60; $i++ ): ?>
-                                    <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT ) ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <select name="timezone" class="form-control">
+                            <?php foreach ( $timezones as $tz_key => $tz_name ) : ?>
+                                <option value="<?php echo $tz_key ?>" <?php if ( $settings['timezone'] == $tz_key ) echo 'selected' ?>><?php echo $tz_name ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
                     <p>
@@ -114,4 +115,41 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 </div>
 
 <div id="post-list">
+</div>
+
+<div class="modal fade" id="edit-post-modal">
+    <div class="modal-dialog">
+        <form method="post" action="/sm/post/edit/" ajax="1" id='edit-post-form'>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Edit Post</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="hidden" name="id" id="edit-post-id" value="" />
+
+                    <p><strong>Post at:</strong></p>
+                    <div class="datetime-container">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="post-at[day]" id="edit-post-at-day" />
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" name="post-at[time]" id="edit-post-at-time" >
+                                <?php foreach( $time_options as $k => $h ): ?>
+                                    <option value="<?php echo $k ?>"><?php echo $h ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <?php nonce::field('edit'); ?>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
