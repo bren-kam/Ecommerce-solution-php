@@ -238,6 +238,7 @@ class ApiRequest {
             $user->billing_address1 = $billing_address1;
             $user->billing_city = $billing_city;
             $user->billing_state = $billing_state;
+
             $user->billing_zip = $billing_zip;
             $user->role = User::ROLE_STORE_OWNER;
             $user->company_id = $this->company_id;
@@ -331,7 +332,7 @@ class ApiRequest {
             $account->product_catalog = $product_catalog;
             $account->blog = $blog;
             $account->email_marketing = $email_marketing;
-            $account->geo_marketing = $geo_marketing;
+            $account->geo_marketing = (int) $geo_marketing > 0;
             $account->shopping_cart = $shopping_cart;
             $account->room_planner = $room_planner;
             $account->craigslist = $craigslist;
@@ -358,9 +359,14 @@ class ApiRequest {
             $checklist_website_item->add_all_to_checklist($checklist->id);
 
             // If they had social media, add all the plugins, they get update this later
-            if ('1' == $account->social_media)
+            if ( '1' == $account->social_media )
                 $account->set_settings(array(
                     'social-media-add-ons' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}'
+                ));
+			
+            if ( (int) $geo_marketing > 0 )
+                $account->set_settings(array(
+                    'yext-max-locations' => (int) $geo_marketing
                 ));
 
             // Set Industries if they got craigslist
@@ -380,77 +386,55 @@ class ApiRequest {
 
             // Create WHM account and setup Password
             if ('1' == $account->pages) {
-                library('pm-api');
+                library('whm-api');
+                $this->whm = new WHM_API($server);
+                $company = new Company();
 
-                // First we need to create the group and the password
-                $pm = new PM_API(Config::key('s98-pm-key'));
+                // Make sure it's a unique username
+                $company->get($this->company_id);
+                $email = 'serveradmin@' . url::domain($company->domain, false);
+                $domain = $this->unique_domain($account->title);
+                $username = $this->unique_username($account->title);
+                $password = security::generate_password();
 
-                $this->log('method', '"' . $this->method . '": About to Create Group', true);
+                $this->log('method', '"' . $this->method . '": Trying to create user: ' . $username, true);
 
-                // Get the group ID
-                $group_id = $pm->create_group($account->title, $this->group_ids[strtoupper($account->title[0])]);
+                // Now, create the WHM API accounts
+                if (!$this->whm->create_account($username, $domain, 'Basic No Shopping Cart', 'serveradmin@imagineretailer.com', $password)) {
+                    $this->add_response(array('success' => false, 'message' => 'failed-create-website'));
+                    return;
+                }
 
-                $this->log('method', '"' . $this->method . '": Group: ' . json_encode($pm), true);
+                // Update the domain field
+                $account->ftp_username = security::encrypt($username, ENCRYPTION_KEY, true);
+                $account->ftp_password = security::encrypt($password, ENCRYPTION_KEY, true);
+                $account->domain = $domain;
+                $account->user_id_updated = $user_id;
+                $account->save();
 
-                if ($group_id) {
-                    library('whm-api');
-                    $this->whm = new WHM_API($server);
-                    $company = new Company();
+                // Get user
+                $user = new User();
+                $user->get($account->user_id);
 
-                    // Make sure it's a unique username
-                    $company->get($this->company_id);
-                    $email = 'serveradmin@' . url::domain($company->domain, false);
-                    $domain = $this->unique_domain($account->title);
-                    $username = $this->unique_username($account->title);
-                    $password = security::generate_password();
-
-                    $this->log('method', '"' . $this->method . '": Trying to create user: ' . $username, true);
-
-                    // Create the password
-                    $password_id = $pm->create_password($group_id, 'cPanel/FTP', $username, $password, $server->ip);
-
-                    if (!$password_id) {
-                        $this->add_response(array('success' => false, 'message' => 'failed-create-website'));
-                        return;
-                    }
-
-                    // Now, create the WHM API accounts
-                    if (!$this->whm->create_account($username, $domain, 'Basic No Shopping Cart', 'serveradmin@imagineretailer.com', $password)) {
-                        $this->add_response(array('success' => false, 'message' => 'failed-create-website'));
-                        return;
-                    }
-
-                    // Update the domain field
-                    $account->ftp_username = security::encrypt($username, ENCRYPTION_KEY, true);
-                    $account->domain = $domain;
-                    $account->user_id_updated = $user_id;
-                    $account->save();
-
-                    // Get user
-                    $user = new User();
-                    $user->get($account->user_id);
-
-                    // Set address settings
-                    $account->set_settings(array(
-                        'address' => $user->billing_address1
+                // Set address settings
+                $account->set_settings(array(
+                    'address' => $user->billing_address1
                     , 'city' => $user->billing_city
                     , 'state' => $user->billing_state
                     , 'zip' => $user->billing_zip
-                    ));
+                ));
 
-                    // Now need to install the service
-                    $install_service = new InstallService();
-                    $install_service->install_website($account, $user_id);
+                // Now need to install the service
+                $install_service = new InstallService();
+                $install_service->install_website($account, $user_id);
 
-                    // Setup DNS
-                    library('r53');
+                // Setup DNS
+                library('r53');
 
-                    $r53 = new Route53(Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key'));
+                $r53 = new Route53(Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key'));
 
-                    // Add to domain.blinkyblinky.me
-                    $r53->changeResourceRecordSets('hostedzone/Z20FV3IPLIV928', array($r53->prepareChange('CREATE', $domain . '.', 'A', '14400', $server->ip)));
-                }
-
+                // Add to domain.blinkyblinky.me
+                $r53->changeResourceRecordSets('hostedzone/Z20FV3IPLIV928', array($r53->prepareChange('CREATE', $domain . '.', 'A', '14400', $server->ip)));
             }
 
             // Everything was successful
@@ -636,12 +620,15 @@ class ApiRequest {
 	protected function set_arb_subscription() {
         /**
          * @param int $arb_subscription_id
+         * @param int $arb_subscription_amount
+         * @param int $arb_subscription_gateway
          * @param int $website_id
          */
-        extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
+        extract( $this->get_parameters( 'arb_subscription_id', 'arb_subscription_amount', 'arb_subscription_gateway', 'website_id' ) );
 
         // Make sure we can edit this website
-        $this->verify_website( $website_id );
+        if ( !$this->verify_website( $website_id ) )
+            return;
 
         $account = new Account();
         $account->get( $website_id );
@@ -649,6 +636,8 @@ class ApiRequest {
         // Protection
 		$account->set_settings( array(
             'arb-subscription-id' => $arb_subscription_id
+            , 'arb-subscription-amount' => $arb_subscription_amount
+            , 'arb-subscription-gateway' => $arb_subscription_gateway
         ) );
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
@@ -814,6 +803,7 @@ class ApiRequest {
 
         // Verify that it exists
         if ( $account->company_id != $company_id ) {
+            $this->log( 'error', $this->method . ' failed to verify website', false );
             $this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
             return false;
         }
@@ -882,7 +872,9 @@ class ApiRequest {
 		if( in_array( $_REQUEST['method'], $this->methods ) ) {
 			$this->method = $_REQUEST['method'];
 			$this->statuses['method_called'] = true;
-			
+
+            $this->log( 'method', 'Calling method "' . $this->method . '".', true );
+
 			call_user_func( array( 'ApiRequest', $_REQUEST['method'] ) );
 
             // used to be destruct
