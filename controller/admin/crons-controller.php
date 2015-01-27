@@ -208,7 +208,16 @@ class CronsController extends BaseController {
             }
             $yesterday = new DateTime();
             $yesterday->sub(new DateInterval('P1D'));
-            fn::mail('technical@greysuitretail.com, gabriel@greysuitretail.com', 'Sites disabled since ' . $yesterday->format('Y-m-d'), $message, 'noreply@greysuitretail.com', 'noreply@greysuitretail.com', false);
+
+            $ticket = new Ticket();
+            $ticket->user_id = User::TECHNICAL;
+            $ticket->assigned_to_user_id = User::TECHNICAL;
+            $ticket->website_id = null;
+            $ticket->priority = Ticket::PRIORITY_HIGH;
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->summary = 'Disabled Sites since ' . $yesterday->format('Y-m-d');
+            $ticket->message = $message;
+            $ticket->create();
         }
     }
 
