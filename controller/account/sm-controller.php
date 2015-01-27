@@ -41,9 +41,14 @@ class SmController extends BaseController {
 
         $data = [];
         foreach ( $website_sm_accounts as $website_sm_account ) {
+
+            $actions = '<a href="/sm/delete/?id=' . $website_sm_account->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>';
+            if ( $website_sm_account->sm == 'facebook' ) {
+                $actions .= ' | <a href="/sm/settings/?id=' . $website_sm_account->id . '">Settings</a>';
+            }
+
             $data[] = [
-                $website_sm_account->title .
-                ' <br> <a href="/sm/delete/?id=' . $website_sm_account->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>'
+                $website_sm_account->title . '<br>' . $actions
                 , $website_sm_account->sm
                 , $website_sm_account->created_at
             ];
@@ -76,6 +81,62 @@ class SmController extends BaseController {
     }
 
     /**
+     * Settings
+     * @return TemplateResponse || RedirectResponse
+     */
+    public function settings() {
+        $website_sm_account = new WebsiteSmAccount();
+        $website_sm_account->get( $_REQUEST['id'], $this->user->account->id );
+
+        if ( !$website_sm_account->id )
+            return new RedirectResponse('/sm/');
+
+        switch ( $website_sm_account->sm ) {
+            case 'facebook':
+                library('facebook_v4/facebook');
+                Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
+                $session = new Facebook\FacebookSession( $website_sm_account->auth_information_array['access-token'] );
+
+                $request = new Facebook\FacebookRequest(
+                    $session
+                    , 'GET'
+                    , '/me/accounts'
+                );
+
+                $response = $request->execute();
+                $graphObject = $response->getGraphObject();
+                $fb_pages_graph = $graphObject->getPropertyAsArray('data');
+                $fb_pages = [];
+                foreach ( $fb_pages_graph as $fb_page_graph ) {
+                    $fb_page = $fb_page_graph->asArray();
+                    $fb_pages[$fb_page['id']] = $fb_page;
+                }
+                break;
+            default:
+                return new RedirectResponse('/sm/');
+                break;
+        }
+
+        if ( $this->verified() ) {
+
+            $post_as_page = isset( $fb_pages[ $_POST['fb_post_as'] ] );
+            $post_as = $post_as_page ? $fb_pages[ $_POST['fb_post_as'] ] : $website_sm_account->auth_information_array['me'];
+            $website_sm_account->title = $post_as['name'];
+            $website_sm_account->sm_reference_id = $post_as['id'];
+            $website_sm_account->auth_information_array['post-as'] = $post_as_page ? $post_as : 'me';
+            $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
+            $website_sm_account->save();
+
+            $this->notify( 'Settings saved!' );
+            return new RedirectResponse( '/sm/' );
+        }
+
+        return $this->get_template_response('settings')
+            ->menu_item('sm/settings')
+            ->set( compact( 'website_sm_account', 'fb_pages' ) );
+    }
+
+    /**
      * Facebook Connect
      */
     public function facebook_connect() {
@@ -84,7 +145,7 @@ class SmController extends BaseController {
         Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
         $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
 
-        url::redirect( $helper->getLoginUrl( ['publish_actions'] ) );
+        url::redirect( $helper->getLoginUrl( ['publish_actions', 'manage_pages'] ) );
     }
 
     /**
@@ -129,10 +190,12 @@ class SmController extends BaseController {
         }
         $website_sm_account->auth_information_array = [
             'access-token' => $token
+            , 'me' => $me
         ];
         $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
         $website_sm_account->save();
-        url::redirect( $_SESSION['sm-callback-referer'] );
+
+        url::redirect( 'http://' . url::domain( $_SESSION['sm-callback-referer'] ) . '/sm/settings/?id=' . $website_sm_account->id );
     }
 
     /**

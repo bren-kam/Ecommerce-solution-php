@@ -187,7 +187,17 @@ class WebsiteSmPost extends ActiveRecordBase {
 
         library('facebook_v4/facebook');
         Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
-        $session = new Facebook\FacebookSession( $website_sm_account->auth_information_array['access-token'] );
+
+        // Default: write on user's wall
+        $post_url = '/me/feed';
+        $access_token = $website_sm_account->auth_information_array['access-token'];
+        if ( isset( $website_sm_account->auth_information_array['post-as']['id'] ) ) {
+            // Post somewhere else
+            $post_url = "/{$website_sm_account->auth_information_array['post-as']['id']}/feed";
+            $access_token = $website_sm_account->auth_information_array['post-as']['access_token'];
+        }
+
+        $session = new Facebook\FacebookSession( $access_token );
 
         $post_fields = [];
 
@@ -204,7 +214,7 @@ class WebsiteSmPost extends ActiveRecordBase {
         $request = new Facebook\FacebookRequest(
             $session
             , 'POST'
-            , '/me/feed'
+            , $post_url
             , $post_fields
         );
 
