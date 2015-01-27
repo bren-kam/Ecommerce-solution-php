@@ -693,7 +693,7 @@ class WebsiteController extends BaseController {
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'sidebar-image-width', 'timezone' )
+                , array( 'sidebar-image-width' )
             );
         }
         if ( $this->user->account->is_new_template() ) {
@@ -808,10 +808,10 @@ class WebsiteController extends BaseController {
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Other') );
 
-        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
-            $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
-                ->options( data::timezones( false, false, true ) );
-        }
+        //if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
+        //    $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+        //        ->options( data::timezones( false, false, true ) );
+        //}
 
         $form->add_field( 'text', _('Logo Link URL'), 'logo-link', $settings['logo-link'] )
             ->add_validation( 'url', _('The "Logo Link" must be a valid link') );
