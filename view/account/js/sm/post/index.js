@@ -13,7 +13,7 @@ PostForm = {
 
         $('#post-at').bootstrapDatepicker({
             todayHighlight: true
-            , format: 'yyyy-mm-dd'
+            , format: 'm/d/yyyy'
             , startDate: 'today'
         });
 
@@ -75,14 +75,14 @@ PostList = {
 
         $.get( '/sm/post/get/', {id: post_id}, function( response ) {
             var post = response.post;
-            var day = post.post_at.substr(0, 10);
+            var day = parseInt(post.post_at.substr(5, 2)) + '/' + parseInt(post.post_at.substr(8, 2)) + '/' + parseInt(post.post_at.substr(0, 4));
             var time = post.post_at.substr(11, 5);
 
             $('#edit-post-at-day')
                 .val( day )
                 .bootstrapDatepicker({
                     todayHighlight: true
-                    , format: 'yyyy-mm-dd'
+                    , format: 'm/d/yyyy'
                     , startDate: 'today'
                 });
             $('#edit-post-at-time').val(time);

@@ -39,12 +39,8 @@
                                     <?php echo $website_sm_post->content ?>
                                 <?php endif; ?>
 
-                                <?php if ( $website_sm_post->photo ): ?>
-                                    <a href="javascript:;" class="show-details">Show Posted Images</a>
-                                <?php endif; ?>
-
                             </div>
-                            <div class="col-sm-3 col-md-2 col-lg-2 hidden">
+                            <div class="col-sm-3 col-md-2 col-lg-2">
                                 <?php if ( $website_sm_post->photo ): ?>
                                     <img class="img-responsive" src="<?php echo $website_sm_post->photo ?>" />
                                 <?php endif; ?>
