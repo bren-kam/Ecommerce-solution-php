@@ -133,7 +133,8 @@ class WebsiteController extends BaseController {
 
                     case 'contact-us':
                         $pagemeta = array(
-                            'email' => $_POST['tEmail']
+                            'email' => $_POST['tEmail'],
+                            'hide-contact-form' => isset( $_POST['cbHideContactForm'] ) && $_POST['cbHideContactForm'] == 'yes'
                         );
                     break;
 
@@ -178,7 +179,7 @@ class WebsiteController extends BaseController {
                 $website_location = new WebsiteLocation();
                 $locations = $website_location->get_by_website( $this->user->account->id );
 
-                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps', 'email' );
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps', 'email', 'hide-contact-form' );
 
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
@@ -199,7 +200,7 @@ class WebsiteController extends BaseController {
                 $cv->add_validation( 'zip', 'zip', _('The "Zip" field must contain a valid zip code') );
                 $contact_validation = $cv->js_validation();
 
-                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'email', 'contact_validation' );
+                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'email', 'hide_contact_form', 'contact_validation' );
             break;
 
             case 'current-offer':
@@ -685,7 +686,7 @@ class WebsiteController extends BaseController {
         // Get settings
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
-            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window'
+            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window', 'banner-hide-navigation-arrows'
             , 'images-alt'
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
@@ -744,6 +745,8 @@ class WebsiteController extends BaseController {
             ->attribute( 'maxlength', '6' );
 
         $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
+
+        $form->add_field( 'checkbox', _('Hide Navigation Arrows'), 'banner-hide-navigation-arrows', $settings['banner-hide-navigation-arrows'] );
 
         $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
 
@@ -1587,6 +1590,10 @@ class WebsiteController extends BaseController {
             case 'mlm':
                 $key = 'multiple-location-map';
             break;
+
+            case 'hcf':
+                $key = 'hide-contact-form';
+                break;
 
             default:
                 $response->check( false, _('An error occurred when trying to change your setting. Please refresh the page and try again') );

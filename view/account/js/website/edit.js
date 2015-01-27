@@ -299,6 +299,11 @@ var ContactUsForm = {
         $('#cbHideAllMaps').click( function() {
             $.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'ham', v : $(this).is(':checked') ? true : false, apid : $('#fEditPage').data('account-page-id') }, GSR.defaultAjaxResponse );
         });
+
+        //Hide Contact Form toggle
+        $('#cbHideContactForm').click( function() {
+            $.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'hcf', v : $(this).is(':checked') ? true : false, apid : $('#fEditPage').data('account-page-id') }, GSR.defaultAjaxResponse );
+        });
     }
 
     , showLocationForm: function( e ) {

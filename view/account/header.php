@@ -412,6 +412,10 @@
                         <li <?php if ( $template->in_menu_item('geo-marketing/bios') ) echo 'class="active"' ?>><a href="/geo-marketing/bios/">Bios</a></li>
                         <li <?php if ( $template->in_menu_item('geo-marketing/listings') ) echo 'class="active"' ?>><a href="/geo-marketing/listings/">Listings</a></li>
                         <li <?php if ( $template->in_menu_item('geo-marketing/analytics') ) echo 'class="active"' ?>><a href="/geo-marketing/analytics/">Analytics</a></li>
+                        <?php if ( $user->account->get_settings( 'yext-customer-reviews' ) ): ?>
+                            <li <?php if ( $template->in_menu_item('geo-marketing/reviews') ) echo 'class="active"' ?>><a href="/geo-marketing/reviews/">Customer Reviews</a></li>
+                            <li <?php if ( $template->in_menu_item('geo-marketing/settings') ) echo 'class="active"' ?>><a href="/geo-marketing/settings/">Settings</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
             <?php endif; ?>
