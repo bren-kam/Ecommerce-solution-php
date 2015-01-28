@@ -294,4 +294,50 @@ class TestController extends BaseController {
         }
 
     }
+
+
+        /**
+         * Add same child element as parent if dropdown in navigation
+         * @return HtmlResponse
+         */
+        public function update_navigation() {
+        $account = new Account();
+
+        $websites = $account->get_results(
+            "SELECT w.`website_id`, ws.`value` as navigation FROM `websites` AS w LEFT JOIN `website_settings` AS ws ON ( ws.`website_id` = w.`website_id` )  WHERE ws.`key` = 'navigation' AND ws.`value` <> '' ORDER BY w.`title`"
+        );
+
+        foreach($websites as $website){
+            $urls = json_decode($website->navigation, true);
+
+            $flag = false;
+
+            foreach($urls as $index=>$url){
+                if(isset($url['children'])){
+                    $flag=true;
+                    array_unshift($urls[$index]['children'], array('url'=>$url['url'], 'name'=>$url['name']));
+                }
+            }
+
+            if($flag){
+                // How many settings are we dealing with?
+                $settings_count = 1;
+
+                // Get the setting values
+                $setting_values = array();
+                $setting_values[] = $website->website_id;
+                $setting_values[] = strip_tags('navigation');
+                $setting_values[] = strip_tags( json_encode($urls), '<p><font><ul><li><a>' );
+
+                // Insert it or update it
+                $account->prepare(
+                    'INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ' . substr( str_repeat( ', ( ?, ?, ? )', $settings_count ), 2 ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
+                    , str_repeat( 'iss', $settings_count )
+                    , $setting_values
+                )->query();
+            }
+        }
+
+        return new HtmlResponse( 'success' );
+    }
 }

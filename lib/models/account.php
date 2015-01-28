@@ -488,4 +488,19 @@ class Account extends ActiveRecordBase {
         }
     }
 
+    /**
+     * Get Demo Websites
+     *
+     * @return string
+     */
+    public function get_demo_websites() {
+        $websites =  $this->prepare(
+            'SELECT DISTINCT `website_id` FROM `company_packages`'
+            , 'i'
+            , array()
+        )->get_col();
+
+        return implode(', ', $websites);
+    }
+
 }

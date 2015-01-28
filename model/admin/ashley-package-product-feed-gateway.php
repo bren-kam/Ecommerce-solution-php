@@ -408,7 +408,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
 			// Price
 			foreach ( $sku_pieces as $sp ) {
-                echo  "\nPirece: $sp - ";
+                echo  "\nPrice: $sp - ";
 				if ( isset( $this->ashley_products[$series . $sp] ) ) {
 					if ( 0 == $this->ashley_products[$series . $sp]['price'] ) {
 						$new_price = 0;

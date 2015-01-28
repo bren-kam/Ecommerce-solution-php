@@ -442,6 +442,29 @@ class CronsController extends BaseController {
         echo "Finished.\n";
     }
 
+    public function sm_post_scheduled() {
+        $website_sm_post = new WebsiteSmPost();
+        $posts = $website_sm_post->get_all_unposted();
+
+        foreach ( $posts as $post ) {
+            echo "{$post->id} {$post->post_at} {$post->timezone}...";
+            if ( $post->can_post() ) {
+                echo "posting";
+                $success = $post->post();
+                if ( !$success ) {
+                    echo "..." . $post->sm_message;
+                }
+            } else {
+                echo "don't post yet";
+            }
+
+            echo "\n";
+        }
+
+        echo "Finished\n";
+
+    }
+
     /**
      * Login
      *
