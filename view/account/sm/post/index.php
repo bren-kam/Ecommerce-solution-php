@@ -78,12 +78,22 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
                 <div class="panel-body">
                     <?php foreach ( $website_sm_accounts as $website_sm_account ): ?>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>">
-                                <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
-                            </label>
-                        </div>
+                        <?php if  ( $website_sm_account->sm == 'foursquare' ): ?>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>" <?php if ( !$website_sm_account->auth_information_array['venue-id'] ) echo 'disabled' ?> >
+                                    <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
+                                    <?php if ( !$website_sm_account->auth_information_array['venue-id'] ) echo '<a href="/sm/settings/?id='.$website_sm_account->id.'">Set Venue ID to enable posting here.</a>' ?>
+                                </label>
+                            </div>
+                        <?php else: ?>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>">
+                                    <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
+                                </label>
+                            </div>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </section>

@@ -43,7 +43,7 @@ class SmController extends BaseController {
         foreach ( $website_sm_accounts as $website_sm_account ) {
 
             $actions = '<a href="/sm/delete/?id=' . $website_sm_account->id . '&_nonce=' . $delete_nonce . '" ajax="1" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>';
-            if ( $website_sm_account->sm == 'facebook' ) {
+            if ( $website_sm_account->sm == 'facebook' || $website_sm_account->sm == 'foursquare' ) {
                 $actions .= ' | <a href="/sm/settings/?id=' . $website_sm_account->id . '">Settings</a>';
             }
 
@@ -112,6 +112,9 @@ class SmController extends BaseController {
                     $fb_pages[$fb_page['id']] = $fb_page;
                 }
                 break;
+            case 'foursquare':
+                $fs_venue_id = isset( $website_sm_account->auth_information_array['venue-id'] ) ? $website_sm_account->auth_information_array['venue-id'] : false;
+                break;
             default:
                 return new RedirectResponse('/sm/');
                 break;
@@ -119,21 +122,30 @@ class SmController extends BaseController {
 
         if ( $this->verified() ) {
 
-            $post_as_page = isset( $fb_pages[ $_POST['fb_post_as'] ] );
-            $post_as = $post_as_page ? $fb_pages[ $_POST['fb_post_as'] ] : $website_sm_account->auth_information_array['me'];
-            $website_sm_account->title = $post_as['name'];
-            $website_sm_account->sm_reference_id = $post_as['id'];
-            $website_sm_account->auth_information_array['post-as'] = $post_as_page ? $post_as : 'me';
-            $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
-            $website_sm_account->save();
+            switch ( $website_sm_account->sm ) {
+                case 'facebook':
+                    $post_as_page = isset( $fb_pages[ $_POST['fb_post_as'] ] );
+                    $post_as = $post_as_page ? $fb_pages[ $_POST['fb_post_as'] ] : $website_sm_account->auth_information_array['me'];
+                    $website_sm_account->title = $post_as['name'];
+                    $website_sm_account->sm_reference_id = $post_as['id'];
+                    $website_sm_account->auth_information_array['post-as'] = $post_as_page ? $post_as : 'me';
+                    $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
+                    $website_sm_account->save();
+                    break;
+                case 'foursquare':
+                    $website_sm_account->auth_information_array['venue-id'] = $_POST['fs_venue_id'];
+                    $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
+                    $website_sm_account->save();
+                    break;
+            }
+
 
             $this->notify( 'Settings saved!' );
             return new RedirectResponse( '/sm/' );
         }
-
         return $this->get_template_response('settings')
             ->menu_item('sm/settings')
-            ->set( compact( 'website_sm_account', 'fb_pages' ) );
+            ->set( compact( 'website_sm_account', 'fb_pages', 'fs_venue_id' ) );
     }
 
     /**
@@ -268,6 +280,63 @@ class SmController extends BaseController {
     }
 
     /**
+     * Foursquare Connect
+     */
+    public function foursquare_connect() {
+        library('foursquare');
+
+        $foursquare = new FoursquareAPI( Config::key('foursquare-client-id') , Config::key('foursquare-secret') );
+        $auth_url = $foursquare->AuthenticationLink( Config::key('foursquare-redirect') );
+
+        url::redirect( $auth_url );
+    }
+
+    /**
+     * Foursquare Callback
+     * @return RedirectResponse
+     */
+    public function foursquare_callback() {
+        library('foursquare');
+
+        $foursquare = new FoursquareAPI( Config::key('foursquare-client-id') , Config::key('foursquare-secret') );
+
+        try {
+            $token = $foursquare->GetToken( $_GET['code'], Config::key('foursquare-redirect') );
+            $me_str = $foursquare->GetPrivate( 'users/self' );
+            $me = json_decode( $me_str )->response->user;
+
+            if ( !$me->id ) {
+                throw new Exception('Could not get User Information');
+            }
+        } catch (Exception $e) {
+            throw $e;
+            $this->notify( 'There was an error connecting with Foursquare: ' . $e->getMessage(), false );
+            url::redirect( $_SESSION['sm-callback-referer'] );
+        }
+
+        $website_sm_account = new WebsiteSmAccount();
+        $website_sm_account->get_by_sm_reference_id( 'foursquare', $me->id, $_SESSION['sm-callback-website-id'] );
+        if ( !$website_sm_account->id ) {
+            $website_sm_account->website_id = $_SESSION['sm-callback-website-id'];
+            $website_sm_account->sm = 'foursquare';
+            $website_sm_account->sm_reference_id = $me->id;
+            $website_sm_account->title = $me->firstName . ' ' . $me->lastName;
+            $website_sm_account->photo = '';
+            $website_sm_account->create();
+        }
+
+        $website_sm_account->auth_information_array = [
+            'access-token' => $token
+            , 'me' => $me
+        ];
+        $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
+        $website_sm_account->save();
+
+        $redirect_url = 'http://' . url::domain( $_SESSION['sm-callback-referer'] ) . '/sm/settings/?id=' . $website_sm_account->id;
+        url::redirect( $redirect_url );
+    }
+
+    /**
      * Get Logged In User
      * @return bool
      */
@@ -275,7 +344,8 @@ class SmController extends BaseController {
 
         // connect_* are public, but need a referer and a website-id
         $public_url = strpos( $_SERVER['REQUEST_URI'], '/sm/facebook-connect/' ) !== FALSE
-                   || strpos( $_SERVER['REQUEST_URI'], '/sm/twitter-connect/' ) !== FALSE;
+                   || strpos( $_SERVER['REQUEST_URI'], '/sm/twitter-connect/' ) !== FALSE
+                   || strpos( $_SERVER['REQUEST_URI'], '/sm/foursquare-connect/' ) !== FALSE;
 
         if ( $public_url ) {
 

@@ -26,3 +26,6 @@
 div.datepicker {
   z-index: 2000!important;
 }
+#photo img {
+  max-width: 200px;
+}
