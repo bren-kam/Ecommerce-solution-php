@@ -177,4 +177,32 @@ class url extends Base_Class {
 		
 		return self::add_query_arg( $key, false, $query );
 	}
+
+	/**
+	 * Reduce URL
+	 *
+	 * Make a short URL using tiny url
+	 *
+	 * @param  string $url
+	 * @return string
+	 */
+	public static function reduce_url( $url ) {
+	    $curl = curl_init();
+	    $post_data = [
+			'format' => 'text',
+			'apikey' => 'D4FCA03B8489B46EB0F8',
+			'provider' => 'bit_ly',
+			'url' => $url
+		];
+
+	    $api_url = 'http://tiny-url.info/api/v1/create';
+	    curl_setopt($curl, CURLOPT_URL, $api_url);
+	    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	    curl_setopt($curl, CURLOPT_POST, 1);
+	    curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+	    $result = curl_exec($curl);
+	    curl_close($curl);
+
+	    return $result;
+	}
 }

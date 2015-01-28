@@ -244,6 +244,31 @@ class WebsiteYextLocation extends ActiveRecordBase {
             $response = $yext->post( "lists", $yext_list );
         }
 
+        $yext_location = (array) $yext->get("locations/{$location->id}");
+        if ( empty($yext_location['lists']) ) {
+            $yext_location['lists'] = [[
+                'id' => $yext_list['id']
+                , 'name' => $yext_list['name']
+                , 'type' => 'PRODUCTS'
+            ]];
+        } else {
+            $found = false;
+            foreach( $yext_location['lists'] as $list ) {
+                if ( $list->name == $yext_list['name'] ) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ( !$found ) {
+                $yext_location['lists'][] = [
+                    'id' => $yext_list['id']
+                    , 'name' => $yext_list['name']
+                    , 'type' => 'PRODUCTS'
+                ];
+            }
+        }
+        $yext->put("locations/{$location->id}", $yext_location);
+
         // Cleanup
         unset( $yext_lists_items );
         unset( $products );
@@ -300,24 +325,20 @@ class WebsiteYextLocation extends ActiveRecordBase {
             }
         }
 
-        // We need 4 images
-        if ( count($images) < 4 ) {
+        if ( empty( $images ) ) {
             return;
         }
 
-        shuffle( $images );
+        $images = array_reverse( $images );
 
-        $images = array_slice( $images, 0, 4 );
+        $current_image_list = isset( $yext_location->photos ) ? $yext_location->photos : [];
+        $new_image_list = array_merge(
+            $current_image_list,
+            $images
+        );
+        $new_image_list = array_slice( $new_image_list, 0, 5 );
 
-        if ( isset( $yext_location->photos ) && count($yext_location->photos) == 1 ) {
-            $yext_location->photos = array_merge(
-                [ $yext_location->photos[0] ],
-                $images
-            );
-        } else {
-            $yext_location->photos = $images;
-        }
-
+        $yext_location->photos = $new_image_list;
         $yext->put( "locations/{$location->id}", $yext_location );
 
     }

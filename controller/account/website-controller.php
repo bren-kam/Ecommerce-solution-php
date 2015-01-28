@@ -133,7 +133,8 @@ class WebsiteController extends BaseController {
 
                     case 'contact-us':
                         $pagemeta = array(
-                            'email' => $_POST['tEmail']
+                            'email' => $_POST['tEmail'],
+                            'hide-contact-form' => isset( $_POST['cbHideContactForm'] ) && $_POST['cbHideContactForm'] == 'yes'
                         );
                     break;
 
@@ -178,7 +179,7 @@ class WebsiteController extends BaseController {
                 $website_location = new WebsiteLocation();
                 $locations = $website_location->get_by_website( $this->user->account->id );
 
-                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps', 'email' );
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps', 'email', 'hide-contact-form' );
 
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
@@ -199,7 +200,7 @@ class WebsiteController extends BaseController {
                 $cv->add_validation( 'zip', 'zip', _('The "Zip" field must contain a valid zip code') );
                 $contact_validation = $cv->js_validation();
 
-                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'email', 'contact_validation' );
+                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'email', 'hide_contact_form', 'contact_validation' );
             break;
 
             case 'current-offer':
@@ -685,14 +686,14 @@ class WebsiteController extends BaseController {
         // Get settings
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
-            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window'
+            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'banner-links-new-window', 'banner-hide-navigation-arrows'
             , 'images-alt'
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'sidebar-image-width', 'timezone' )
+                , array( 'sidebar-image-width' )
             );
         }
         if ( $this->user->account->is_new_template() ) {
@@ -716,7 +717,7 @@ class WebsiteController extends BaseController {
             ->add_validation( 'req', _('The "Banners - Height" field is required') )
             ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
 
-        $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
+        $form->add_field( 'text', _('Delay (in seconds)'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
             ->add_validation( 'num', _('The "Banners - Speed" field may only contain a number') );
 
@@ -744,6 +745,8 @@ class WebsiteController extends BaseController {
             ->attribute( 'maxlength', '6' );
 
         $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
+
+        $form->add_field( 'checkbox', _('Hide Navigation Arrows'), 'banner-hide-navigation-arrows', $settings['banner-hide-navigation-arrows'] );
 
         $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
 
@@ -805,10 +808,10 @@ class WebsiteController extends BaseController {
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Other') );
 
-        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
-            $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
-                ->options( data::timezones( false, false, true ) );
-        }
+        //if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
+        //    $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+        //        ->options( data::timezones( false, false, true ) );
+        //}
 
         $form->add_field( 'text', _('Logo Link URL'), 'logo-link', $settings['logo-link'] )
             ->add_validation( 'url', _('The "Logo Link" must be a valid link') );
@@ -1587,6 +1590,10 @@ class WebsiteController extends BaseController {
             case 'mlm':
                 $key = 'multiple-location-map';
             break;
+
+            case 'hcf':
+                $key = 'hide-contact-form';
+                break;
 
             default:
                 $response->check( false, _('An error occurred when trying to change your setting. Please refresh the page and try again') );

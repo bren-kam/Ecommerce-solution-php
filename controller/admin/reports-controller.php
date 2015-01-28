@@ -22,6 +22,7 @@ class ReportsController extends BaseController {
             'product_catalog' => _('Product Catalog')
             , 'blog' => _('Blog')
             , 'email_marketing' => _('Email Marketing')
+            , 'geo_marketing' => 'GeoMarketing'
             , 'shopping_cart' => _('Shopping Cart')
             , 'room_planner' => _('Room Planner')
             , 'craigslist' => _('Craigslist')
@@ -61,6 +62,10 @@ class ReportsController extends BaseController {
 
         if ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
             $reports_array['ApiExtLog'] = _('External API Log');
+
+        if ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) || $this->user->has_permission( User::ROLE_ADMIN )){
+            $reports_array['MyAccounts'] = _('My Accounts');
+        }
 
         $form_reports->add_field( 'select', _('Report'), 'sReport' )
             ->add_validation( 'req', _('You must select a report to download') )
@@ -174,6 +179,7 @@ class ReportsController extends BaseController {
             'product_catalog'
             , 'blog'
             , 'email_marketing'
+            , 'geo_marketing'
             , 'shopping_cart'
             , 'room_planner'
             , 'craigslist'

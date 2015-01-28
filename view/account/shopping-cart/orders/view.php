@@ -21,7 +21,7 @@
             <div class="panel-body">
                 <ul>
                     <li><strong>Email:</strong> <?php echo $order->email ?></li>
-                    <li><strong>Phone:</strong> <?php echo $order->phone ?></li>
+                    <li><strong>Phone:</strong> <?php echo ( empty( $order->phone ) ) ? 'N/A' : $order->phone; ?></li>
 
                     <li><strong>Shipping Method:</strong> <?php echo $order->shipping_method ?></li>
                     <?php if ( $order->website_ashley_express_shipping_method_id ): ?>
@@ -67,7 +67,7 @@
                 <?php if ( $order->shipping_track_number ): ?>
                     <p>
                         <strong>Express Delivery Tracking Codes:</strong><br>
-                        <?php echo $order->shipping_track_number ?>
+                        <?php echo str_replace( ',', "<br>\n", $order->shipping_track_number ); ?>
                     </p>
                 <?php endif; ?>
             </div>
@@ -137,7 +137,14 @@
             </header>
 
             <div class="panel-body">
-
+                <div class="row">
+                    <div class="col-lg-2"><strong>Image</strong></div>
+                    <div class="col-lg-7"><strong>Description</strong></div>
+                    <div class="col-lg-1 text-right"><strong>Price</strong></div>
+                    <div class="col-lg-1 text-right"><strong>Quantity</strong></div>
+                    <div class="col-lg-1 text-right"><strong>Total</strong></div>
+                </div>
+                <div class="row"><div class="col-lg-12">&nbsp;</div></div>
                 <?php foreach ( $order->items as $item ): ?>
                     <div class="row">
                         <div class="col-lg-2">

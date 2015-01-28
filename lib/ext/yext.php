@@ -9,10 +9,10 @@
 class YEXT {
 
     const OFFER_ID = 1756;
-    public static $SUBSCRIPTION_ID = 9999999999;  // We need to create it after the first location
+    public static $SUBSCRIPTION_ID = 680224;
 
     public static $customer_id = 639457;
-    public static $url = 'https://api-sandbox.yext.com/v1/';
+    public static $url = 'https://api.yext.com/v1/';
     public static $base_service = 'customers/639457/';
     public static $api_key = 'PmHIbdjdLcUViKfge8LU';
 
@@ -87,18 +87,20 @@ class YEXT {
         $report = null;
 
         try {
-            $report_key = $this->_request( 'get', 'powerlistings/startReport', [
+            $report_key_response = $this->_request( 'get', 'powerlistings/startReport', [
                 'format' => 'json'
                 , 'customerId' => self::$customer_id
                 , 'metrics' => implode(',', $metrics)
                 , 'dimensions' => implode(',', $dimensions)
                 , 'dateStart' => $date_start
                 , 'dateEnd' => $date_end
-            ])->key;
+            ]);
 
-            if ( !$report_key ) {
+            if ( !isset( $report_key_response->key ) ) {
                 throw new Exception( 'Could not get Report Key' );
             }
+
+            $report_key = $report_key_response->key;
 
             while ( true ) {
                 $response = $this->_request( 'get', 'powerlistings/getReport', [

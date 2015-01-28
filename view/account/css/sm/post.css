@@ -1,0 +1,28 @@
+.datetime-container {
+  margin-bottom: 15px;
+}
+.datetime-container .form-control {
+  display: inline-block;
+  width: auto;
+  float: left;
+  margin-right: 15px;
+}
+.datetime-container:after {
+  content: " ";
+  /* Older browser do not support empty content */
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+#show-posted,
+#show-account {
+  width: auto;
+  display: inline-block;
+}
+.fb-user-thumb i {
+  font-size: 5em;
+}
+div.datepicker {
+  z-index: 2000!important;
+}

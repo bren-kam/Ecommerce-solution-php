@@ -17,6 +17,13 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        // Get settings
+        if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) && $this->user->account->is_new_template() ) {
+            $settings_array = array( 'timezone' );
+
+            $settings = $this->user->account->get_settings( $settings_array );
+        }
+
         $form = new BootstrapForm( 'fSettings' );
         $form->submit( _('Update') );
 
@@ -51,6 +58,10 @@ class SettingsController extends BaseController {
             ->attribute( 'maxlength', 20 )
             ->add_validation( 'phone', _('The "Cell Phone" field must contain a valid phone number') );
 
+        if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) && $this->user->account->is_new_template() && isset($settings) ) {
+            $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+                ->options( data::timezones( false, false, true ) );
+        }
 
         if ( $form->posted() ) {
             $this->user->contact_name = $_POST['tContactName'];
@@ -61,6 +72,16 @@ class SettingsController extends BaseController {
 
             if ( !empty( $_POST['tPassword'] ) )
                 $this->user->set_password( $_POST['tPassword'] );
+
+            if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) && $this->user->account->is_new_template() && isset($settings_array) ) {
+                $new_settings = array();
+
+                foreach ( $settings_array as $k ) {
+                    $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+                }
+
+                $this->user->account->set_settings( $new_settings );
+            }
 
             $this->notify( _('You have successfully updated your settings!') );
         }
@@ -100,11 +121,11 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function billing_information() {
-        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
 
-        if ( $this->verified() ) {
-            library('arb');
-
+        if ( $this->verified() && !empty( $settings['arb-subscription-gateway'] ) ) {
+            library('arb-' . $settings['arb-subscription-gateway']);
+			
             // Create instance of ARB
             $arb = new arb( $this->user->account->title );
 
@@ -134,8 +155,25 @@ class SettingsController extends BaseController {
             // Test and print results
             $success = $arb->success;
 
-            if ( $success )
-                $this->user->account->set_settings(array( 'arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+            if ( $success ) {
+                $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+                $subject = $this->user->account->title . ' Updated Billing Information';
+                $message = $this->user->contact_name . ' has updated the billing information for ' . $this->user->account->title . '.';
+                fn::mail('kerry@greysuitretail.com', $success, $message, 'noreply@greysuitretail.com');
+                $this->notify('Your billing information has been successfully updated!');
+            } else {
+                $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
+
+                $ticket = new Ticket();
+                $ticket->user_id = $this->user->id;
+                $ticket->assigned_to_user_id = User::TECHNICAL;
+                $ticket->website_id = $this->user->account->id;
+                $ticket->summary = 'Billing information update failed';
+                $ticket->message = $this->user->contact_name . " tried and failed to update their billing information. The following information is available:\n" . fn::info( $arb->error, false ) . "\n\nMore information:\n" . fn::info( $arb->response );
+                $ticket->status = Ticket::STATUS_OPEN;
+                $ticket->priority = Ticket::PRIORITY_URGENT;
+                $ticket->create();
+            }
         }
 
         return $this->get_template_response( 'billing-information' )
@@ -151,40 +189,54 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function services() {
-        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount');
+        $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway', 'yext-customer-reviews');
         $success = false;
 
-        if ( $this->verified() && $settings['arb-subscription-amount'] > 0 ) {
+        if ( $this->verified() && $settings['arb-subscription-amount'] > 0 && !empty( $settings['arb-subscription-gateway'] ) ) {
             $services = array(
                 'shopping-cart'         => 50
                 , 'blog'                => 100
                 , 'email-marketing'     => 100
-                , 'social-media'        => 100
+                , 'social-media'        => 99
                 , 'geo-marketing'       => 100
                 , 'gm-reviews'          => 100
             );
 
             $new_price = $settings['arb-subscription-amount'];
-            $new_services = $old_services = array();
+            $new_services = $old_services = $new_settings = array();
 
             foreach ( $services as $service => $price ) {
-                if ( !in_array( $service, array('gm-reviews') ) ) {
-                    $service_name = str_replace('-', '_', $service);
-                    if ($this->user->account->$service_name && !isset($_POST[$service])) {
-                        $new_price -= $price;
-                        $old_services[] = ucwords(str_replace('-', ' ', $service));
-                        $this->user->account->$service_name = 0;
-                    } elseif (!$this->user->account->$service_name && isset($_POST[$service])) {
-                        $new_price += $price;
-                        $new_services[] = ucwords(str_replace('-', ' ', $service));
-                        $this->user->account->$service_name = 1;
-                    }
+                switch ( $service ) {
+                    case 'gm-reviews':
+                        if ( '1' == $settings['yext-customer-reviews']  && !isset($_POST[$service] ) ) {
+                            $new_price -= $price;
+                            $old_services[] = 'GeoMarketing Customer Reviews';
+                            $new_settings['yext-customer-reviews'] = '';
+                        } elseif ( '1' != $settings['yext-customer-reviews'] && isset($_POST[$service] ) ) {
+                            $new_price += $price;
+                            $new_services[] = 'GeoMarketing Customer Reviews';
+                            $new_settings['yext-customer-reviews'] = '1';
+                        }
+                    break;
+
+                    default:
+                        $service_name = str_replace('-', '_', $service);
+                        if ($this->user->account->$service_name && !isset($_POST[$service])) {
+                            $new_price -= $price;
+                            $old_services[] = ucwords(str_replace('-', ' ', $service));
+                            $this->user->account->$service_name = 0;
+                        } elseif (!$this->user->account->$service_name && isset($_POST[$service])) {
+                            $new_price += $price;
+                            $new_services[] = ucwords(str_replace('-', ' ', $service));
+                            $this->user->account->$service_name = 1;
+                        }
+                    break;
                 }
 
             }
 
             if ( $_POST['new-price'] == $new_price ) {
-                library('arb');
+                library('arb-' . $settings['arb-subscription-gateway']);
 
                 // Create instance of ARB
                 $arb = new arb($this->user->account->title);
@@ -205,7 +257,8 @@ class SettingsController extends BaseController {
                 $success = $arb->success;
 
                 if ( $success ) {
-                    $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
+                    $new_settings['arb-subscription-amount'] = $new_price;
+                    $this->user->account->set_settings( $new_settings );
                     $this->user->account->save();
 
                     // Create a ticket with changes
@@ -215,6 +268,23 @@ class SettingsController extends BaseController {
                     $ticket->website_id = $this->user->account->id;
                     $ticket->summary = 'Account Service Change';
                     $ticket->message = "New Services:\n" . implode("\n", $new_services) . "\n\nOld Services:\n" . implode("\n", $old_services);
+                    $ticket->status = Ticket::STATUS_OPEN;
+                    $ticket->priority = Ticket::PRIORITY_URGENT;
+                    $ticket->create();
+
+                    $this->notify('Your services changes have been successfully submitted!');
+
+                    // Reget the settings
+                    $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
+                } else {
+                    $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
+
+                    $ticket = new Ticket();
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to_user_id = User::TECHNICAL;
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->summary = 'Service Change update failed';
+                    $ticket->message = $this->user->contact_name . " tried and failed to update their billing information. The following information is available:\n" . fn::info( $arb->error, false ) . "\n\nMore information:\n" . fn::info( $arb->response );
                     $ticket->status = Ticket::STATUS_OPEN;
                     $ticket->priority = Ticket::PRIORITY_URGENT;
                     $ticket->create();

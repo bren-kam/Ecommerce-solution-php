@@ -1983,6 +1983,17 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->reset_prices( $category_ids, $this->user->account->id, $brand->id );
 
+        // Reset pricing settings for this brand/category
+        $website_auto_price = new WebsiteAutoPrice();
+        $website_auto_price->get( $_GET['bid'], $_GET['cid'], $this->user->account->id );
+        if ( $website_auto_price->website_id ) {
+            $website_auto_price->alternate_price = 0;
+            $website_auto_price->price = 0;
+            $website_auto_price->sale_price = 0;
+            $website_auto_price->ending = 0;
+            $website_auto_price->save();
+        }
+
         $brand = ( $brand->id ) ? $brand->name . ' ' : '';
         $response->notify( _('Prices have been removed for ') . $brand . $category->name . ' category.' );
 
@@ -2004,10 +2015,33 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        // Delete from database
+        // Delete auto price setting
         $auto_price = new WebsiteAutoPrice();
         $auto_price->get( $_GET['bid'], $_GET['cid'], $this->user->account->id );
         $auto_price->remove();
+
+        // Also remove all prices
+        $category = new Category();
+        $category->get_all();
+        $category->get( $_GET['cid'] );
+
+        $categories = $category->get_all_children( $category->id );
+
+        $category_ids = array( $category->id );
+
+        foreach ( $categories as $cat ) {
+            $category_ids[] = $cat->id;
+        }
+
+        // Get brand
+        $brand = new Brand();
+        $brand->get( $_GET['bid'] );
+
+        // Now autoprice
+        $account_product = new AccountProduct();
+        $account_product->reset_prices( $category_ids, $this->user->account->id, $brand->id );
+
+        // Notify
         $response->notify( _('Auto Price have been deleted.') );
 
         return $response;
