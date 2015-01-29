@@ -6,7 +6,6 @@ PostForm = {
     init: function() {
         PostForm.setupValidation();
         MediaManager.submit = PostForm.setImage;
-        $('#mm-submit').text('Use Image');
 
         // Date Picker - No Conflict with jQueryUI
         var datepicker = $.fn.datepicker.noConflict();

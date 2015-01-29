@@ -43,7 +43,7 @@ class PostController extends BaseController {
                 $website_sm_post->content = $_POST['content'];
                 $website_sm_post->photo = $_POST['photo'];
                 $website_sm_post->link = $_POST['link'];
-                if ( strpos( $website_sm_post->link, 'http' ) === false ) {
+                if ( $website_sm_post->link && strpos( $website_sm_post->link, 'http' ) === false ) {
                     $website_sm_post->link = 'http://' . $website_sm_post->link;
                 }
                 $website_sm_post->timezone = $_POST['timezone'];

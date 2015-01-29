@@ -249,7 +249,7 @@ class WebsiteSmPost extends ActiveRecordBase {
         $tweet_msg = $this->content;
 
         if ( $this->link ) {
-            $tweet_msg .= ' ' . url::reduce_url( $this->link );
+            $tweet_msg .= ' ' . $this->link;
         }
 
         if ( $this->photo ) {
