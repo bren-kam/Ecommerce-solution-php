@@ -34,7 +34,7 @@
                     <?php if ( isset( $fs_venue_id ) ): ?>
                         <div class="form-group">
                             <label for="fs-venue-id">Foursquare Venue ID (post will be written as tips under this Venue ID)</label>
-                            <input type="text" class="form-control" id="fs-venue-id" name="fs_venue_id" value="<?php echo $fs_venue_is ?>" />
+                            <input type="text" class="form-control" id="fs-venue-id" name="fs_venue_id" value="<?php echo $fs_venue_id ?>" />
                         </div>
                     <?php endif; ?>
 

@@ -31,6 +31,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <input type="hidden" name="photo" value="" />
                         <button type="button" class="btn btn-xs btn-default" title="Open Media Manager"
                                 data-media-manager
+                                data-submit-text="Use Image"
                                 data-upload-url="<?php echo $upload_url ?>"
                                 data-search-url="<?php echo $search_url ?>"
                                 data-delete-url="<?php echo $delete_url ?>"

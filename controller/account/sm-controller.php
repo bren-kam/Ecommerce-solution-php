@@ -133,7 +133,23 @@ class SmController extends BaseController {
                     $website_sm_account->save();
                     break;
                 case 'foursquare':
+
+                    try {
+                        library('foursquare');
+                        $foursquare = new FoursquareAPI( Config::key('foursquare-client-id') , Config::key('foursquare-secret') );
+                        $response = $foursquare->GetPublic( "venues/{$_POST['fs_venue_id']}" );
+                        $venue = json_decode($response)->response->venue;
+                        if ( !$venue->id )
+                            throw new Exception( 'Venue not found' );
+                    } catch (Exception $e) {
+                        $this->notify( "Invalid venue ID '{$_POST['fs_venue_id']}': " . $e->getMessage(), false );
+                        return new RedirectResponse( '/sm/settings/?id=' . $website_sm_account->id );
+                    }
+
+                    $website_sm_account->title = $venue->name;
+                    $website_sm_account->sm_reference_id = $venue->id;
                     $website_sm_account->auth_information_array['venue-id'] = $_POST['fs_venue_id'];
+                    $website_sm_account->auth_information_array['venue'] = $venue;
                     $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
                     $website_sm_account->save();
                     break;
@@ -199,6 +215,9 @@ class SmController extends BaseController {
             $website_sm_account->title = $me['name'];
             $website_sm_account->photo = '';
             $website_sm_account->create();
+            $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+        } else {
+            $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
         }
         $website_sm_account->auth_information_array = [
             'access-token' => $token
@@ -269,6 +288,9 @@ class SmController extends BaseController {
             $website_sm_account->title = $me->name;
             $website_sm_account->photo = '';
             $website_sm_account->create();
+            $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+        } else {
+            $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
         }
         $website_sm_account->auth_information_array = [
             'access-token' => $token['oauth_token']
@@ -323,8 +345,10 @@ class SmController extends BaseController {
             $website_sm_account->title = $me->firstName . ' ' . $me->lastName;
             $website_sm_account->photo = '';
             $website_sm_account->create();
+            $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+        } else {
+            $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
         }
-
         $website_sm_account->auth_information_array = [
             'access-token' => $token
             , 'me' => $me
@@ -355,6 +379,9 @@ class SmController extends BaseController {
 
             $_SESSION['sm-callback-website-id'] = $_REQUEST['website-id'];
             $_SESSION['sm-callback-referer'] = $_SERVER['HTTP_REFERER'];
+            // for notifications
+            $this->user = new stdClass;
+            $this->user->id = $_REQUEST['user-id'];
 
             return true;
         }
