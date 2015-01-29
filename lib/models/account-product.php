@@ -20,6 +20,9 @@ class AccountProduct extends ActiveRecordBase {
     // Columns from other tables
     public $brand_id, $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
 
+    public $four_piece_skus = array( 'D265-01','D313-01','D314-01','D315-01','D389-01','D408-01','D314-124','D329-124','D542-024','D542-030' );
+    public $one_piece_skus = array( 'D299-08','D328-320','D553-124','D553-130','D569-224','D542-124','D542-130','D608-624','D608-630' );
+
     /**
      * Setup the account initial data
      */
@@ -239,8 +242,11 @@ class AccountProduct extends ActiveRecordBase {
             )
         )->query();
 
-        if ( $run_2pc )
-            $this->auto_price_2pc( $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id );
+        if ( $run_2pc ) {
+            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 2);
+            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 4, " AND p.`sku` IN('" . implode( "','", $this->four_piece_skus ) . "'" );
+            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 1, " AND p.`sku` IN('" . implode( "','", $this->one_piece_skus ) . "'" );
+        }
     }
 
     /**
@@ -253,8 +259,10 @@ class AccountProduct extends ActiveRecordBase {
      * @param float $alternate_price
      * @param float $price_ending
      * @param int $account_id
+     * @param int $multiple [optional]
+     * @param string $where [optional]
      **/
-    protected function auto_price_2pc( array $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+    protected function auto_price_multiple( array $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, $multiple = 2, $where = '' ) {
         // These categories need to be doubled in price because the items are sold in couples
         $double_categories = array(
             132 // Dining Room > Side Chairs
@@ -267,18 +275,19 @@ class AccountProduct extends ActiveRecordBase {
             return;
 
         $set = array();
+        $multiple = (int) $multiple;
 
         // Round to the ending
         $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
-            $set[] = 'wp.`price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
+            $set[] = 'wp.`price` = ceilEnding( p.`price` * $multiple * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
         if ( $sale_price > 0 )
-            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
+            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * $multiple * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
 
         if ( $alternate_price > 0 )
-            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
+            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * $multiple * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
 
         if ( empty( $set ) )
             return;
@@ -303,13 +312,13 @@ class AccountProduct extends ActiveRecordBase {
         $inner_join = '';
         // Add the where by Brand
         if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != 1048576 ) {
-            $where = ' AND p.`brand_id` = ' . (int) $brand_id;
+            $where .= ' AND p.`brand_id` = ' . (int) $brand_id;
         } else if ( is_numeric($brand_id) && $brand_id == 1048576 ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         } else {
             // 2pc only applied to Ashley products
-            $where = ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ';
+            $where .= ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ';
         }
 
         // Run once
@@ -324,6 +333,7 @@ class AccountProduct extends ActiveRecordBase {
             )
         )->query();
     }
+
     /**
      * Get Max price
      *
