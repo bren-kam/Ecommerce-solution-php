@@ -281,13 +281,13 @@ class AccountProduct extends ActiveRecordBase {
         $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
-            $set[] = 'wp.`price` = ceilEnding( p.`price` * $multiple * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
+            $set[] = 'wp.`price` = ceilEnding( p.`price` * ' . $multiple  . ' * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
         if ( $sale_price > 0 )
-            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * $multiple * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
+            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * ' . $multiple  . ' * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
 
         if ( $alternate_price > 0 )
-            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * $multiple * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
+            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * ' . $multiple  . ' * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
 
         if ( empty( $set ) )
             return;
