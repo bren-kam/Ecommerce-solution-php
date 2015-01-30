@@ -1,17 +1,20 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Notes for an account
+ * @page Edit Account > Passwords
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
  * @var Account $account
- * @var array $notes
- * @var BootstrapValidator $v
- *
+ * @var string $errs
+ * @var array $passwords
  */
+
+nonce::field( 'get', '_get' );
+nonce::field( 'delete', '_delete' );
+nonce::field( 'add_edit', '_add_edit' );
 ?>
 
 <div class="row-fluid">
@@ -33,8 +36,8 @@
                         <li><a href="/accounts/dns/?aid=<?php echo $account->id ?>">DNS</a></li>
                     <?php endif; ?>
 
-                    <li class="active"><a href="/accounts/notes/?aid=<?php echo $account->id ?>">Notes</a></li>
-                    <li><a href="/accounts/passwords/?aid=<?php echo $account->id ?>">Passwords</a></li>
+                    <li><a href="/accounts/notes/?aid=<?php echo $account->id ?>">Notes</a></li>
+                    <li class="active"><a href="/accounts/passwords/?aid=<?php echo $account->id ?>">Passwords</a></li>
                     <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">Customize <b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -45,57 +48,45 @@
                         </ul>
                     </li>
                 </ul>
-                <h3>Notes: <?php echo $account->title ?></h3>
+                <h3>Passwords: <?php echo $account->title ?></h3>
             </header>
 
             <div class="panel-body">
 
-                <form name="fAddNote" id="fAddNote" method="post" action="/accounts/notes/?aid=<?php echo $_GET['aid']; ?>" role="form">
-                    <div class="form-group">
-                        <label for="taNote">Note:</label>
-                        <textarea name="taNote" id="taNote" cols="50" rows="3" class="form-control"></textarea>
+            <?php if ( $errs ): ?>
+                <div class="alert alert-danger"><?php echo $errs ?></div>
+            <?php endif; ?>
+
+                <form name="fEditPassword" id="fEditPassword" action="" method="post" role="form">
+
+                    <div class="adv-table">
+                        <table class="display table table-bordered table-striped" ajax="/accounts/passwords/list-passwords/?aid=<?php echo $account->id ?>" perPage="30,50,100" id="datatable-passwords">
+                            <thead>
+                                <tr>
+                                    <th sort="1">Title</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>URL</th>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
 
-                    <p class="clearfix">
-                        <button type="submit" class="btn btn-primary pull-right">Add Note</button>
-                    </p>
-
-                    <?php nonce::field( 'notes' ); ?>
+                    <p><a id="create-password" href="/accounts/passwords/add-edit/?aid=<?php echo $account->id ?>" class="btn btn-primary" title="<?php echo _('Create Password'); ?>" data-modal><?php echo _('Create Password'); ?></a></p>
                 </form>
-                <?php echo $v->js_validation(); ?>
 
             </div>
         </section>
-
-        <?php
-            $delete_note_url = url::add_query_arg( '_nonce', nonce::create('delete_note'), '/accounts/delete-note/' );
-
-            if ( is_array( $notes ) )
-            foreach ( $notes as $note ):
-
-            $date = new DateTime( $note->date_created );
-            $delete_note_url = url::add_query_arg( 'anid', $note->id, $delete_note_url );
-        ?>
-
-        <section class="panel">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <strong><?php echo $note->contact_name; ?></strong>
-                        <br /><?php echo $date->format( 'F j, Y' ); ?>
-                        <?php
-                        if ( $note->user_id == $user->user_id )
-                            echo '<br /><a href="', $delete_note_url, '" title="' . _('Delete') . '" class="delete-note">' . _('Delete') . '</a>';
-                        ?>
-                    </div>
-                    <div class="col-lg-9">
-                        <?php echo $note->message; ?>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <?php endforeach; ?>
     </div>
 </div>
 

@@ -52,6 +52,9 @@ class Config {
         , 'twitter-key'         => 'pGE8dsjZLQCBN75GbovCpyPQg'
         , 'twitter-secret'      => 'AFyU22nW126LMmkAsKdhFHp0pUFZj5jmTaz2Udj4QmQV61bnC9'
         , 'twitter-redirect'    => 'http://account.dev.greysuitretail.com/sm/twitter-callback/'
+
+        // Encryption-Decryption
+        , 'crypto-key'         => 'e4r+wYPQC4bQKikzN4ExKw=='
 	);
 
     /**
