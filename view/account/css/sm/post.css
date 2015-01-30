@@ -23,3 +23,9 @@
 .fb-user-thumb i {
   font-size: 5em;
 }
+div.datepicker {
+  z-index: 2000!important;
+}
+#photo img {
+  max-width: 200px;
+}

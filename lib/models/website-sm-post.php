@@ -2,7 +2,7 @@
 
 class WebsiteSmPost extends ActiveRecordBase {
 
-    public $id, $website_sm_post_id, $website_sm_account_id, $content, $photo, $link, $post_at, $posted, $created_at;
+    public $id, $website_sm_post_id, $website_sm_account_id, $content, $photo, $link, $post_at, $timezone, $posted, $created_at, $sm_message;
 
     public $website_id, $sm;
 
@@ -107,7 +107,9 @@ class WebsiteSmPost extends ActiveRecordBase {
                 , 'photo' => $this->photo
                 , 'link' => $this->link
                 , 'post_at' => $this->post_at
+                , 'timezone' => $this->timezone
                 , 'posted' => $this->posted
+                , 'sm_message' => $this->sm_message
             ]
             , 'issssi'
         );
@@ -123,7 +125,9 @@ class WebsiteSmPost extends ActiveRecordBase {
                 , 'photo' => $this->photo
                 , 'link' => $this->link
                 , 'post_at' => $this->post_at
+                , 'timezone' => $this->timezone
                 , 'posted' => $this->posted
+                , 'sm_message' => $this->sm_message
             ]
             , [  'website_sm_post_id' => $this->id ]
             , 'ssssi'
@@ -147,17 +151,27 @@ class WebsiteSmPost extends ActiveRecordBase {
      */
     public function post() {
 
-        switch ($this->sm) {
-            case 'facebook';
-                $success = $this->post_facebook();
-                break;
-            case 'twitter';
-                $success = $this->post_twitter();
-                break;
-        }
+        try {
+            switch ($this->sm) {
+                case 'facebook';
+                    $success = $this->post_facebook();
+                    break;
+                case 'twitter';
+                    $success = $this->post_twitter();
+                    break;
+                case 'foursquare';
+                    $success = $this->post_foursquare();
+                    break;
+            }
 
-        if ( $success ) {
             $this->posted = 1;
+            $this->sm_message = '';
+            $this->save();
+            return true;
+
+        } catch( Exception $e ) {
+            $this->posted = 2;
+            $this->sm_message = $e->getMessage();
             $this->save();
         }
 
@@ -176,7 +190,17 @@ class WebsiteSmPost extends ActiveRecordBase {
 
         library('facebook_v4/facebook');
         Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
-        $session = new Facebook\FacebookSession( $website_sm_account->auth_information_array['access-token'] );
+
+        // Default: write on user's wall
+        $post_url = '/me/feed';
+        $access_token = $website_sm_account->auth_information_array['access-token'];
+        if ( isset( $website_sm_account->auth_information_array['post-as']['id'] ) ) {
+            // Post somewhere else
+            $post_url = "/{$website_sm_account->auth_information_array['post-as']['id']}/feed";
+            $access_token = $website_sm_account->auth_information_array['post-as']['access_token'];
+        }
+
+        $session = new Facebook\FacebookSession( $access_token );
 
         $post_fields = [];
 
@@ -193,7 +217,7 @@ class WebsiteSmPost extends ActiveRecordBase {
         $request = new Facebook\FacebookRequest(
             $session
             , 'POST'
-            , '/me/feed'
+            , $post_url
             , $post_fields
         );
 
@@ -230,14 +254,86 @@ class WebsiteSmPost extends ActiveRecordBase {
 
         if ( $this->photo ) {
             $media = $connection->upload( 'media/upload', [ 'media' => $this->photo ] );
+            if ( $media->errors )
+                throw new Exception( $media->errors[0]->message );
             $data['media_ids'] = [ $media->media_id ];
         }
 
         $data['status'] = $tweet_msg;
         $tweet = $connection->post( 'statuses/update', $data );
+        if ( $tweet->errors )
+            throw new Exception( $tweet->errors[0]->message );
 
         return $tweet->id;
+    }
 
+    public function post_foursquare() {
+
+        $website_sm_account = new WebsiteSmAccount();
+        $website_sm_account->get( $this->website_sm_account_id, $this->website_id );
+
+        library('foursquare');
+        $foursquare = new FoursquareAPI( Config::key('foursquare-client-id') , Config::key('foursquare-secret') );
+        $foursquare->SetAccessToken( $website_sm_account->auth_information_array['access-token'] );
+
+        $data = [
+            'venueId' => $website_sm_account->auth_information_array['venue-id']
+            , 'text' => $this->content
+        ];
+
+        if ( $this->link ) {
+            $data['url'] = $this->link;
+        }
+
+        $response = $foursquare->GetPrivate( 'tips/add', $data, true );
+        $tip = json_decode( $response )->response->tip;
+
+        if ( $this->photo ) {
+            $photo_path = tempnam('/tmp', 'fsimg');
+            file_put_contents( $photo_path, file_get_contents( $this->photo ) );
+            $photo_data = [
+                'tipId' => $tip->id
+                , 'photo' => "@{$photo_path}"
+            ];
+            if ( $this->link ) {
+                $photo_data['postUrl'] = $this->link;
+            }
+            $photo_response = $foursquare->FILE( 'photos/add', $photo_data, true );
+            $photo = json_decode( $photo_response )->response->photo;
+            return $photo->id;
+        }
+
+        return $tip->id;
+    }
+
+    /**
+     * Get Unposted
+     * @return WebsiteSmPost[]
+     */
+    public function get_all_unposted() {
+        return $this->get_results(
+            "SELECT p.*, p.website_sm_post_id as id, a.sm, a.website_id FROM website_sm_post p INNER JOIN website_sm_account a ON p.website_sm_account_id = a.website_sm_account_id WHERE p.posted = 0 ORDER BY p.post_at"
+            , PDO::FETCH_CLASS, 'WebsiteSmPost'
+        );
+    }
+
+
+    /**
+     * Can Post
+     * @return bool
+     */
+    public function can_post() {
+        // no schedule, can be posted anytime
+        if ( !$this->post_at ) {
+            return true;
+        }
+
+        $now = new DateTime();
+        $now->getTimezone();
+
+        $post_at = new DateTime( $this->post_at, new DateTimeZone( $this->timezone ) );
+
+        return $post_at < $now;
     }
 
 }
