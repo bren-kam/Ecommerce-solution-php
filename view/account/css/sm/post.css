@@ -30,7 +30,7 @@ div.datepicker {
   display: inline-block;
 }
 #photo img {
-  margin-top: 5px;
+  margin-top: 15px;
   display: block;
   max-width: 200px;
 }
@@ -44,6 +44,10 @@ div.datepicker {
   font-size: 2em;
   margin-right: 15px;
   vertical-align: middle;
+}
+#post-to-title {
+  margin-top: 15px;
+  padding-left: 0px;
 }
 #post-to-container .checkbox {
   border: 1px solid #aaa;

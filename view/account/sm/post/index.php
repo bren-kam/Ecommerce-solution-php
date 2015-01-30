@@ -23,7 +23,7 @@ $delete_nonce = nonce::create( 'delete' );
                     </div>
 
                     <div class="row">
-                        <div class="col-lg-10" id="post-actions">
+                        <div class="col-lg-9" id="post-actions">
                             <a href="javascript:;"  title="Open Media Manager"
                                     data-media-manager
                                     data-submit-text="Use Image"
@@ -37,7 +37,7 @@ $delete_nonce = nonce::create( 'delete' );
                             <a href="javascript:;" id="show-link-container"><i class="fa fa-link"></i></a>
                             <input type="text" class="form-control" id="link" name="link" placeholder="Link"/>
                         </div>
-                        <div class="col-lg-2 text-right">
+                        <div class="col-lg-3 text-right">
                             <select class="form-control" id="post-at-toggle">
                                 <option value="now">Post Now</option>
                                 <option value="later">Post Later</option>
@@ -76,7 +76,7 @@ $delete_nonce = nonce::create( 'delete' );
                         </div>
                     </div>
 
-                    <p class="panel-heading">Post To Account(s):</p>
+                    <p class="panel-heading" id="post-to-title">Post To Account(s):</p>
                     <div class="row" id="post-to-container">
                         <div class="col-lg-4">
                             <div class="checkbox">
@@ -120,21 +120,7 @@ $delete_nonce = nonce::create( 'delete' );
         <div class="col-lg-4">
             <section class="panel">
                 <header class="panel-heading">
-                    Accounts:
-                    <div class="pull-right">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="ddAddSMAccount" data-toggle="dropdown" aria-expanded="true">
-                                <i class="fa fa-plus"></i>
-                                Add Social Media Account
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="ddAddSMAccount">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/facebook-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-facebook"></i> Facebook</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/twitter-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-twitter"></i> Twitter</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/foursquare-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-foursquare"></i> Foursquare</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                    Manage Accounts:
                 </header>
 
                 <div class="panel-body">
@@ -149,6 +135,22 @@ $delete_nonce = nonce::create( 'delete' );
                             </label>
                         </div>
                     <?php endforeach; ?>
+
+                    <p>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="ddAddSMAccount" data-toggle="dropdown" aria-expanded="true">
+                                <i class="fa fa-plus"></i>
+                                Add Social Media Account
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="ddAddSMAccount">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/facebook-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-facebook"></i> Facebook</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/twitter-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-twitter"></i> Twitter</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/foursquare-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-foursquare"></i> Foursquare</a></li>
+                            </ul>
+                        </div>
+                    </p>
+
                 </div>
             </section>
         </div>
