@@ -17,6 +17,38 @@ PostForm = {
             , startDate: 'today'
         });
 
+        $('#show-link-container').click( function() {
+            $('#link').css('visibility', 'visible');
+        });
+
+        $('#post-at-toggle').change(function() {
+            if ( $(this).val() == 'now') {
+                $('#post-at-container').hide();
+                $('#post-at').val('');
+            } else if ( $(this).val() == 'later') {
+                $('#post-at-container').removeClass('hidden').show();
+            }
+        });
+
+        $('#post-to-all').change(function() {
+            if ( $(this).prop('checked') ) {
+                $('#post-to-container .checkbox').addClass('active');
+            } else {
+                $('#post-to-container .checkbox').removeClass('active');
+            }
+            $('#post-to-container :checkbox').prop('checked', $(this).prop('checked') );
+        });
+
+        $('#post-to-container :checkbox').change(function() {
+            if ( $(this).prop('checked') ) {
+                $(this).parents('.checkbox:first').addClass('active');
+            } else {
+                $(this).parents('.checkbox:first').removeClass('active');
+                $('#post-to-all').prop( 'checked', false )
+                    .parents('.checkbox:first').removeClass('active');
+            }
+        });
+
     }
 
     /**
@@ -36,7 +68,7 @@ PostForm = {
 
         if ( file && MediaManager.isImage( file ) ) {
             $( MediaManager.targetOptions.imageTarget )
-                .find('img:first').attr('src', file.url).end()
+                .find('img:first').attr('src', file.url).removeClass('hidden').end()
                 .find('input').val(file.url).end();
         }
     }

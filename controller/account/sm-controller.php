@@ -12,11 +12,12 @@ class SmController extends BaseController {
     }
 
     /**
-     * Redirect to Facebook
+     * Redirect to Post
      *
      * @return RedirectResponse
      */
     protected function index() {
+        return new RedirectResponse('/sm/post/');
         return $this->get_template_response( 'index' )
             ->menu_item( 'sm/account' );
     }
@@ -61,11 +62,12 @@ class SmController extends BaseController {
 
     /**
      * Delete
-     * @return AjaxResponse
+     * @return RedirectResponse
      */
     public function delete() {
-        $response = new AjaxResponse( $this->verified() );
-        if ( $response->has_error() ) {
+
+        $response = new RedirectResponse('/sm/');
+        if ( !$this->verified() ) {
             return $response;
         }
 
@@ -73,8 +75,7 @@ class SmController extends BaseController {
         $website_sm_account->get( $_GET['id'], $this->user->account->id );
         if ( $website_sm_account->id ) {
             $website_sm_account->remove();
-            $response->notify( 'Account Removed' );
-            $response->add_response( 'reload_datatable', 'reload_datatable' );
+            $this->notify( 'Account Removed' );
         }
 
         return $response;
