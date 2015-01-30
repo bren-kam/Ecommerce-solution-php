@@ -49,6 +49,7 @@ $delete_nonce = nonce::create( 'delete' );
                         <div class="image-selector pull-left" id="photo">
                             <input type="hidden" name="photo" value="" />
                             <img src="//placehold.it/150x150&amp;text=No+Image" class="hidden"/>
+                            <a id="remove-image" href="javascript:;" class="hidden"><i class="fa fa-trash-o"> </i></a>
                         </div>
                     </div>
 

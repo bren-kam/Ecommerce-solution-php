@@ -49,6 +49,10 @@ PostForm = {
             }
         });
 
+        $('#remove-image').click(function() {
+            $(this).siblings().attr('src', '').val('').hide().end().hide();
+        });
+
     }
 
     /**
@@ -68,7 +72,8 @@ PostForm = {
 
         if ( file && MediaManager.isImage( file ) ) {
             $( MediaManager.targetOptions.imageTarget )
-                .find('img:first').attr('src', file.url).removeClass('hidden').end()
+                .find('img:first').attr('src', file.url).removeClass('hidden').show().end()
+                .find('a').removeClass('hidden').show().end()
                 .find('input').val(file.url).end();
         }
     }

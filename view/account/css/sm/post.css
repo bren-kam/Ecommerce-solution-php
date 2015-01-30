@@ -28,11 +28,18 @@ div.datepicker {
 }
 #photo {
   display: inline-block;
+  position: relative;
 }
 #photo img {
   margin-top: 15px;
   display: block;
   max-width: 200px;
+}
+#photo #remove-image {
+  position: absolute;
+  top: 15px;
+  right: 5px;
+  color: red;
 }
 #link {
   visibility: hidden;
