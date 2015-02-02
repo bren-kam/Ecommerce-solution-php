@@ -97,7 +97,7 @@ class PostController extends BaseController {
         }
 
         $where = '';
-        if ( $_REQUEST['posted'] ) {
+        if ( isset($_REQUEST['posted']) ) {
             $where .= " AND posted = {$_REQUEST['posted']}";
         }
 

@@ -33,10 +33,11 @@
                         <div class="row-fluid">
                             <div class="col-sm-6 col-md-8">
 
+                                <?php echo $website_sm_post->content ?>
+
                                 <?php if ( $website_sm_post->link ): ?>
-                                    <a href="<?php echo $website_sm_post->link ?>" target="_blank"><?php echo $website_sm_post->content ?></a>
-                                <?php else: ?>
-                                    <?php echo $website_sm_post->content ?>
+                                    <br>
+                                    <a href="<?php echo $website_sm_post->link ?>" target="_blank"><?php echo $website_sm_post->link ?></a>
                                 <?php endif; ?>
 
                             </div>

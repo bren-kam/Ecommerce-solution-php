@@ -220,6 +220,13 @@ class LocationsController extends BaseController {
             $error_messages = [];
             foreach( [ 'videoUrls', 'emails', 'specialties', 'services', 'brands', 'languages', 'keywords' ] as $element ) {
                 $post[$element] = explode( "\n", $post[$element] );
+
+                foreach ( $post[$element] as $line_k => $line ) {
+                    if ( !$line ) {
+                        unset($post[$element][$line_k]);
+                    }
+                }
+
                 if ( count( $post[$element] ) > 10 ) {
                     $error_messages[] = "The field '$element' can not have more than 10 lines";
                 }
