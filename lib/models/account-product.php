@@ -244,8 +244,8 @@ class AccountProduct extends ActiveRecordBase {
 
         if ( $run_2pc ) {
             $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 2);
-            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 4, " AND p.`sku` IN('" . implode( "','", $this->four_piece_skus ) . "'" );
-            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 1, " AND p.`sku` IN('" . implode( "','", $this->one_piece_skus ) . "'" );
+            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 4, " AND p.`sku` IN('" . implode( "','", $this->four_piece_skus ) . "')" );
+            $this->auto_price_multiple($category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id, 1, " AND p.`sku` IN('" . implode( "','", $this->one_piece_skus ) . "')" );
         }
     }
 
