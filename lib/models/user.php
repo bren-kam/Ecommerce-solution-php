@@ -11,7 +11,6 @@ class User extends ActiveRecordBase {
     const KERRY = 1;
     const JEFF = 214;
     const TECHNICAL = 493; // Jack
-    const CHAD = 247; // Sales
     const CHRIS = 73; // Products
     const CRAIG = 54; // Accounting
     const RODRIGO = 305; // Design
@@ -19,6 +18,7 @@ class User extends ActiveRecordBase {
     const RAFFERTY = 19;
     const KEVIN_DORAN = 251;
     const CATALOG_MANAGER = 2734;
+    const DAVID = 35;
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
