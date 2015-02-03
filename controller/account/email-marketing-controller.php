@@ -104,7 +104,7 @@ class EmailMarketingController extends BaseController {
             library('sendgrid-api');
             $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_sender_address();
-            $name = ( empty ( $_POST['from_name'] ) ) ? $this->user->contact_name : $_POST['from_email'];
+            $name = ( empty ( $_POST['from_name'] ) ) ? $this->user->contact_name : $_POST['from_name'];
             $email = ( empty( $_POST['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $_POST['from_email'];
             $sendgrid->sender_address->edit( $this->user->account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'] );
 
