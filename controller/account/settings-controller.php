@@ -100,18 +100,27 @@ class SettingsController extends BaseController {
      */
     protected function logo_and_phone() {
         if ( $this->verified() ) {
+            $new_settings = array();
+            $new_settings['logo-title'] = $_POST['tLogoTitle'];
+            $new_settings['logo-alt'] = $_POST['tLogoAlt'];
+            $new_settings['logo-link'] = $_POST['tLogoLink'];
+
             $this->user->account->phone = $_POST['tPhone'];
+            $this->user->account->set_settings($new_settings);
             $this->user->account->user_id_updated = $this->user->id;
             $this->user->account->save();
 
             $this->notify( _('The "Logo and Phone" section has been updated successfully!' ) );
         }
 
+        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link');
+
         $this->resources->javascript( 'fileuploader', 'settings/logo-and-phone' );
 
         return $this->get_template_response( 'logo-and-phone' )
             ->kb( 117 )
             ->add_title( _('Logo and Phone') )
+            ->set( array( 'settings' => $settings ) )
             ->select( 'logo-and-phone' );
     }
 
