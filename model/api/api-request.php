@@ -405,6 +405,15 @@ class ApiRequest {
                     return;
                 }
 
+                // Save Credentials to Password Manager
+                $account_password = new AccountPassword();
+                $account_password->title = "cPanel/FTP";
+                $account_password->username = $username;
+                $account_password->password = $password;
+                $account_password->url = $domain;
+                $account_password->website_id = $account->id;
+                $account_password->create();
+
                 // Update the domain field
                 $account->ftp_username = security::encrypt($username, ENCRYPTION_KEY, true);
                 $account->ftp_password = security::encrypt($password, ENCRYPTION_KEY, true);

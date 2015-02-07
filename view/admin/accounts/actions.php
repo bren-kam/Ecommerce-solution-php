@@ -33,6 +33,7 @@
                     <?php endif; ?>
 
                     <li><a href="/accounts/notes/?aid=<?php echo $account->id ?>">Notes</a></li>
+                    <li><a href="/accounts/passwords/?aid=<?php echo $account->id ?>">Passwords</a></li>
                     <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">Customize <b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -43,7 +44,7 @@
                         </ul>
                     </li>
                 </ul>
-                <h3>Other Settings: <?php echo $account->title ?></h3>
+                <h3>Actions: <?php echo $account->title ?></h3>
             </header>
 
             <div class="panel-body">

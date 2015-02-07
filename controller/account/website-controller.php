@@ -134,7 +134,7 @@ class WebsiteController extends BaseController {
                     case 'contact-us':
                         $pagemeta = array(
                             'email' => $_POST['tEmail'],
-                            'hide-contact-form' => isset( $_POST['cbHideContactForm'] ) && $_POST['cbHideContactForm'] == 'yes'
+                            'hide-contact-form' => $_POST['cbHideContactForm'] == 'yes'? true : false
                         );
                     break;
 
