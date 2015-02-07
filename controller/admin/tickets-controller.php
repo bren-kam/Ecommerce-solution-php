@@ -119,9 +119,8 @@ class TicketsController extends BaseController {
 
         // Special words
         $words = array(
-            User::CHAD => '@sales'  // Chad
-            , User::CATALOG_MANAGER => '@products' // Chris
-            , User::CRAIG => '@accounting' // Craig
+            User::DAVID => '@products'
+            , User::DAVID => '@accounting'
         );
 
         // Special hash priorities
@@ -269,6 +268,7 @@ class TicketsController extends BaseController {
                 $ticket->email
                 , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
+                  . "\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . "."
                     . "\n\n{$comment}"
                     . "\n\n**Support Issue**"
                     . "\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )

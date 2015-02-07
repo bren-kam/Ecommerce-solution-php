@@ -17,6 +17,13 @@ class SettingsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        // Get settings
+        if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) && $this->user->account->is_new_template() ) {
+            $settings_array = array( 'timezone' );
+
+            $settings = $this->user->account->get_settings( $settings_array );
+        }
+
         $form = new BootstrapForm( 'fSettings' );
         $form->submit( _('Update') );
 
@@ -51,6 +58,10 @@ class SettingsController extends BaseController {
             ->attribute( 'maxlength', 20 )
             ->add_validation( 'phone', _('The "Cell Phone" field must contain a valid phone number') );
 
+        if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) && $this->user->account->is_new_template() && isset($settings) ) {
+            $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+                ->options( data::timezones( false, false, true ) );
+        }
 
         if ( $form->posted() ) {
             $this->user->contact_name = $_POST['tContactName'];
@@ -61,6 +72,16 @@ class SettingsController extends BaseController {
 
             if ( !empty( $_POST['tPassword'] ) )
                 $this->user->set_password( $_POST['tPassword'] );
+
+            if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) && $this->user->account->is_new_template() && isset($settings_array) ) {
+                $new_settings = array();
+
+                foreach ( $settings_array as $k ) {
+                    $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+                }
+
+                $this->user->account->set_settings( $new_settings );
+            }
 
             $this->notify( _('You have successfully updated your settings!') );
         }

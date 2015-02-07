@@ -1473,6 +1473,12 @@ class AccountsController extends BaseController {
 		// What other sites we might need to omit
 		$omit_sites = ( !$this->user->has_permission( User::ROLE_ADMIN ) ) ? ', 96, 114, 115, 116' : '';
 
+		// Omitting all demo sites for non super-admins
+		//if(!$this->user->has_permission( User::ROLE_SUPER_ADMIN )){
+		//	$demo_websites = $account->get_demo_websites();
+		//	$omit_sites .=', '.$demo_websites;
+		//}
+
 		// Form the where
 		$dt->add_where( " AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" );
 

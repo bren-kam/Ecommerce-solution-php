@@ -21,7 +21,7 @@
             <div class="panel-body">
                 <ul>
                     <li><strong>Email:</strong> <?php echo $order->email ?></li>
-                    <li><strong>Phone:</strong> <?php echo $order->phone ?></li>
+                    <li><strong>Phone:</strong> <?php echo ( empty( $order->phone ) ) ? 'N/A' : $order->phone; ?></li>
 
                     <li><strong>Shipping Method:</strong> <?php echo $order->shipping_method ?></li>
                     <?php if ( $order->website_ashley_express_shipping_method_id ): ?>
