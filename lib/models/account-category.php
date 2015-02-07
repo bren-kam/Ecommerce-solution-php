@@ -102,7 +102,7 @@ class AccountCategory extends ActiveRecordBase {
         $values = "( $account_id, " . implode( " ), ( $account_id, ", $category_ids ) . ' )';
 
         // Insert into blocked list
-        $this->query( "INSERT INTO `website_blocked_category` ( `website_id`, `category_id` ) VALUES $values" );
+        $this->query( "INSERT INTO `website_blocked_category` ( `website_id`, `category_id` ) VALUES $values ON DUPLICATE KEY UPDATE `website_id` = VALUES(`website_id`)" );
     }
 
     /**

@@ -52,6 +52,12 @@ class Config {
         , 'twitter-key'         => 'bC39I7UBwjTfF7FBsg1NxF9GL'
         , 'twitter-secret'      => 'IZFZSKFQGPGw0vXa8MzV2vshmRWt2OQy2Sm4H7ayH5LJIUupiF'
         , 'twitter-redirect'    => 'http://account.testing.greysuitretail.com/sm/twitter-callback/'
+
+        // Foursquare
+        , 'foursquare-client-id' => 'F0PYNIMLTK1NJD32JV40G53SH1OJC4BWPJZWTFGYWXZK4AWG'
+        , 'foursquare-secret'    => 'LU32XUXDS54FTSIDMC3GPMOEH3U22SAHLTW4VUOKVJCES5VQ'
+        , 'foursquare-redirect'  => 'http://account.testing.greysuitretail.com/sm/foursquare-callback/'
+
 	);
 
     /**

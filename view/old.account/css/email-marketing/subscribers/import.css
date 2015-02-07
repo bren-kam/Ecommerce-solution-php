@@ -1,4 +1,0 @@
-.generic { width: auto !important }
-.generic th, .generic td { border: 1px solid #BCBCBC; border-bottom: 0 !important;  padding: 3px 5px }
-.generic th { font-weight: bold }
-.generic tr.last td { border-bottom: 1px solid #BCBCBC !important }

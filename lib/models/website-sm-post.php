@@ -159,6 +159,9 @@ class WebsiteSmPost extends ActiveRecordBase {
                 case 'twitter';
                     $success = $this->post_twitter();
                     break;
+                case 'foursquare';
+                    $success = $this->post_foursquare();
+                    break;
             }
 
             $this->posted = 1;
@@ -246,7 +249,7 @@ class WebsiteSmPost extends ActiveRecordBase {
         $tweet_msg = $this->content;
 
         if ( $this->link ) {
-            $tweet_msg .= ' ' . url::reduce_url( $this->link );
+            $tweet_msg .= ' ' . $this->link;
         }
 
         if ( $this->photo ) {
@@ -262,6 +265,45 @@ class WebsiteSmPost extends ActiveRecordBase {
             throw new Exception( $tweet->errors[0]->message );
 
         return $tweet->id;
+    }
+
+    public function post_foursquare() {
+
+        $website_sm_account = new WebsiteSmAccount();
+        $website_sm_account->get( $this->website_sm_account_id, $this->website_id );
+
+        library('foursquare');
+        $foursquare = new FoursquareAPI( Config::key('foursquare-client-id') , Config::key('foursquare-secret') );
+        $foursquare->SetAccessToken( $website_sm_account->auth_information_array['access-token'] );
+
+        $data = [
+            'venueId' => $website_sm_account->auth_information_array['venue-id']
+            , 'text' => $this->content
+        ];
+
+        if ( $this->link ) {
+            $data['url'] = $this->link;
+        }
+
+        $response = $foursquare->GetPrivate( 'tips/add', $data, true );
+        $tip = json_decode( $response )->response->tip;
+
+        if ( $this->photo ) {
+            $photo_path = tempnam('/tmp', 'fsimg');
+            file_put_contents( $photo_path, file_get_contents( $this->photo ) );
+            $photo_data = [
+                'tipId' => $tip->id
+                , 'photo' => "@{$photo_path}"
+            ];
+            if ( $this->link ) {
+                $photo_data['postUrl'] = $this->link;
+            }
+            $photo_response = $foursquare->FILE( 'photos/add', $photo_data, true );
+            $photo = json_decode( $photo_response )->response->photo;
+            return $photo->id;
+        }
+
+        return $tip->id;
     }
 
     /**
