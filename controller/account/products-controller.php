@@ -595,9 +595,12 @@ class ProductsController extends BaseController {
             ->attribute( 'maxlength', '150' )
             ->add_validation( 'req', 'email', _('The "Request-a-Quote Email" field must contain a valid email') );
 
-        $form->add_field( 'text', _('Request-a-Quote Button Text'), 'request-a-quote-button', empty($settings['request-a-quote-button']) ? 'Request a Quote' : $settings['request-a-quote-button'] )
+        if ( $this->user->account->is_new_template() ) {
+            $form->add_field( 'text', _('Request-a-Quote Button Text'), 'request-a-quote-button', empty($settings['request-a-quote-button']) ? 'Request a Quote' : $settings['request-a-quote-button'] )
                     ->attribute( 'maxlength', '150' );
-
+        } else {
+            $settings['request-a-quote-button'] = 'Request a Quote';
+        }
 
         foreach( $checkboxes as $setting => $nice_name ) {
             $form->add_field( 'checkbox', $nice_name, $setting, $settings[$setting] );
