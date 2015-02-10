@@ -1,1 +1,0 @@
-swfobject.embedSWF("/media/flash/open-flash-chart.swf", "dEmailStatistics", "787", "387", "9.0.0", "", null, { wmode:"transparent" } );

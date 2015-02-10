@@ -1,7 +1,0 @@
-#sStatus { position: absolute; left: 417px; top: -43px; width: 150px; }
-#sAssignedTo { position: absolute; left: 587px; top: -43px; width: 150px; }
-.normal { color: #6abe00 }
-.high { color: #d70000 }
-.urgent { color: #fff; background: #d70000 }
-.normal, .high, .urgent { display: block; text-align:center; padding: 7px 5px 10px; font-weight: bold }
-span.urgent{ padding: 7px 5px 9px; margin-bottom: 1px; }

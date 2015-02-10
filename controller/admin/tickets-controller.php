@@ -119,9 +119,8 @@ class TicketsController extends BaseController {
 
         // Special words
         $words = array(
-            User::CHAD => '@sales'  // Chad
-            , User::CATALOG_MANAGER => '@products' // Chris
-            , User::CRAIG => '@accounting' // Craig
+            User::DAVID => '@products'
+            , User::DAVID => '@accounting'
         );
 
         // Special hash priorities

@@ -35,7 +35,58 @@ div.datepicker {
 }
 
 #photo {
+  display: inline-block;
+  position: relative;
   img {
+    margin-top: 15px;
+    display: block;
     max-width: 200px;
   }
+
+  #remove-image {
+    position: absolute;
+    top: 15px;
+    right: 5px;
+    color: red;
+  }
+
 }
+
+#link {
+  visibility: hidden;
+  display: inline-block;
+  width: 50%;
+}
+
+#post-actions {
+  a {
+    color: #666;
+    font-size: 2em;
+    margin-right: 15px;
+    vertical-align: middle;
+  }
+}
+
+
+#post-to-title {
+  margin-top: 15px;
+  padding-left: 0px;
+}
+#post-to-container {
+
+  .checkbox {
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    padding: 15px;
+    opacity: 0.6;
+
+    &.active {
+      border-color: #444;
+      opacity: 1;
+    }
+
+    font-size: 16px;
+  }
+
+}
+

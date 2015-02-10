@@ -109,7 +109,6 @@ class IndexProducts extends ActiveRecordBase {
                 AND wp.blocked = 0
                 AND wp.active = 1
                 AND w.status = 1
-                AND w.live = 1
                 AND wbc.category_id IS NULL
                 $where
             GROUP BY p.product_id $group_by";
