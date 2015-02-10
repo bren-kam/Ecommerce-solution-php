@@ -364,9 +364,7 @@ class SettingsController extends BaseController {
         $account_file->create();
 
         // Update account logo
-        $this->user->account->logo = $account_file->file_path;
-        $this->user->account->user_id_updated = $this->user->id;
-        $this->user->account->save();
+        $this->user->account->set_settings( 'website-logo', $account_file->file_path );
 
         // Add the response
         $response->add_response( 'image', $account_file->file_path );
