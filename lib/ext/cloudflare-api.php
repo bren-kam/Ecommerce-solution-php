@@ -111,7 +111,7 @@ class CloudFlareAPI {
     public function purge( $domain ) {
         $this->execute( 'fpurge_ts', array(
             'z' => $domain
-            , 'v' => '1'
+            , 'v' => 1
         ) );
 
         return $this->success;
@@ -135,12 +135,14 @@ class CloudFlareAPI {
 
         // Initialize cURL and set options
         $ch = curl_init();
-        curl_setopt( $ch, CURLOPT_URL, self::URL );
-        curl_setopt( $ch, CURLOPT_HEADER, 0 );
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->request );
+		
+		$url = self::URL;
+        curl_setopt( $ch, CURLOPT_FORBID_REUSE, true );
+        curl_setopt( $ch, CURLOPT_URL, $url );
         curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->request );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 
         // Perform the request and get the response
         $this->raw_response = curl_exec( $ch );
