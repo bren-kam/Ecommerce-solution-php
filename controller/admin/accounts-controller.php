@@ -1675,23 +1675,6 @@ class AccountsController extends BaseController {
     }
 
     /**
-     * Purge Cache
-     * @return RedirectResponse
-     */
-    protected function purge_cache() {
-        if ( !isset( $_GET['aid'] ) )
-            return new RedirectResponse( '/accounts/' );
-
-        $account = new Account();
-        $account->get( $_GET['aid'] );
-        $account->purge_varnish_cache();
-
-        $this->notify( _("Purged cache for '{$account->domain}'") );
-
-        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
-    }
-
-    /**
      * Run Ashley Express Feed
      *
      * @return RedirectResponse
