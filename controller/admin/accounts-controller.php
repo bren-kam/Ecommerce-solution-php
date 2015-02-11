@@ -1933,7 +1933,7 @@ class AccountsController extends BaseController {
             return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
 
         library('cloudflare-api');
-        $cloudflare = new CloudFlareAPI();
+        $cloudflare = new CloudFlareAPI( $account );
         $cloudflare->purge( $cloudflare_domain );
 
         $this->notify( _("CloudFlare cache purged.") );
