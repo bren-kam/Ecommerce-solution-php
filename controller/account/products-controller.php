@@ -96,6 +96,16 @@ class ProductsController extends BaseController {
             $index = new IndexProducts();
             $index->index_product_bulk( $_POST['products'], $this->user->account->id );
 
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify( _('Your product(s) have been successfully added!') );
 
             return new RedirectResponse('/products/');
@@ -186,6 +196,16 @@ class ProductsController extends BaseController {
                         $account_category = new AccountCategory();
                         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+                        // Clear CloudFlare Cache
+                        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+                        if ( $cloudflare_domain ) {
+                            library('cloudflare-client-api');
+                            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                            $cloudflare->purge( $cloudflare_domain );
+                        }
+
+                        // Notification
                         $this->notify( $quantity . ' ' . _('brand products added successfully!') );
                     }
                 }
@@ -245,6 +265,16 @@ class ProductsController extends BaseController {
                 $index = new IndexProducts();
                 $index->index_product_by_sku( $skus, $this->user->account->id );
 
+                // Clear CloudFlare Cache
+                $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+                if ( $cloudflare_domain ) {
+                    library('cloudflare-client-api');
+                    $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                    $cloudflare->purge( $cloudflare_domain );
+                }
+
+                // Notification
                 $this->notify( $quantity . ' ' . _('products added successfully!') );
                 $success = true;
             }
@@ -484,6 +514,15 @@ class ProductsController extends BaseController {
             $index = new IndexProducts();
             $index->index_website( $this->user->account->id );
 
+            // Clear Cloudflare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
@@ -528,6 +567,16 @@ class ProductsController extends BaseController {
             $index = new IndexProducts();
             $index->index_product_bulk( $_POST['unblock-products'], $this->user->account->id );
 
+            // Clear Cloudflare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify( _('Blocked Products have been successfully updated!') );
         }
 
@@ -549,7 +598,16 @@ class ProductsController extends BaseController {
             $index = new IndexProducts();
             $index->index_website( $this->user->account->id );
 
+            // Clear Cloudflare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
 
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify( _('Hidden categories have been successfully updated!') );
         }
 
@@ -612,6 +670,16 @@ class ProductsController extends BaseController {
 
             $this->user->account->set_settings( $new_settings );
 
+            // Clear Cloudflare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify( _('Your settings have been successfully saved!') );
 
             // Refresh to get all the changes
@@ -882,6 +950,15 @@ class ProductsController extends BaseController {
         $index = new IndexProducts();
         $index->index_website( $this->user->account->id );
 
+        // Clear Cloudflare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         // Let them know
         $response->notify( 'All discontinued products have been removed' );
 
@@ -1035,7 +1112,7 @@ class ProductsController extends BaseController {
     }
 
     /**
-     * Remove All Discontinued Products
+     * Block Products
      *
      * @return AjaxResponse
      */
@@ -1066,6 +1143,15 @@ class ProductsController extends BaseController {
         // Update index for all Websites having this products
         $index = new IndexProducts();
         $index->index_product( $_GET['pid'], $this->user->account->id );
+
+        // Clear Cloudflare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         $response->notify( 'Product blocked' );
         return $response;
@@ -1642,7 +1728,16 @@ class ProductsController extends BaseController {
         $index = new IndexProducts();
         $index->index_product_bulk( array_keys($_POST['v']), $this->user->account->id );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
 
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
+        // Notification
         $response->notify( 'Your products has been updated' );
 
         return $response;
@@ -1682,6 +1777,15 @@ class ProductsController extends BaseController {
 
         $index = new IndexProducts();
         $index->index_product_bulk( $sequence, $this->user->account->id );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         return $response;
     }
@@ -1946,6 +2050,15 @@ class ProductsController extends BaseController {
             $this->notify( _('Your prices have been successfully updated!') );
         }
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         // Refresh
         $response->add_response( 'refresh', 1 );
 
@@ -1999,6 +2112,15 @@ class ProductsController extends BaseController {
             $website_auto_price->save();
         }
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         $brand = ( $brand->id ) ? $brand->name . ' ' : '';
         $response->notify( _('Prices have been removed for ') . $brand . $category->name . ' category.' );
 
@@ -2045,6 +2167,15 @@ class ProductsController extends BaseController {
         // Now autoprice
         $account_product = new AccountProduct();
         $account_product->reset_prices( $category_ids, $this->user->account->id, $brand->id );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Notify
         $response->notify( _('Auto Price have been deleted.') );
@@ -2232,6 +2363,16 @@ class ProductsController extends BaseController {
         $index = new IndexProducts();
         $index->index_website( $this->user->account->id );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
+        // Notification
         $this->notify( _('All account prices has been reseted.') );
 
         return new RedirectResponse( "/products/settings/" );

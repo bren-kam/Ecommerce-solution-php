@@ -122,12 +122,22 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Delete all files
         ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
 
-        if ( is_array( $accounts ) )
-        foreach( $accounts as $account ) {
-            // Need to make this not timeout and remove half the products first
-            // @fix
-            echo "Running: " . $account->title . "\n";
-            $this->run( $account, $file );
+        if ( is_array( $accounts ) ) {
+            library('cloudflare-client-api');
+
+            foreach ($accounts as $account) {
+                // Need to make this not timeout and remove half the products first
+                // @fix
+                echo "Running: " . $account->title . "\n";
+                $this->run($account, $file);
+                // Clear CloudFlare Cache
+                $cloudflare = new CloudFlareClientAPI( $account );
+                $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+                if ($cloudflare_domain) {
+                    $cloudflare->purge($cloudflare_domain);
+                }
+            }
         }
     }
 

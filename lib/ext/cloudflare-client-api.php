@@ -1,14 +1,13 @@
 <?php
 /**
- * CloudFlare API
+ * CloudFlare Client API
  *
  * @author Kerry Jones
  * @date 2/10/2015
- * @url https://www.cloudflare.com/docs/host-api.html
  * @url https://www.cloudflare.com/docs/client-api.html
  */
 
-class CloudFlareAPI {
+class CloudFlareClientAPI {
     const DEBUG = false;
     const URL = 'https://www.cloudflare.com/api_json.html';
     const API_KEY = '3ae56edd68513db53cdab4cb7e59f270df71c';
@@ -172,7 +171,7 @@ class CloudFlareAPI {
 
         $api_log = new ApiExtLog();
         $api_log->website_id = $this->account->id;
-        $api_log->api = 'CloudFlare API';
+        $api_log->api = 'CloudFlare Client API';
         $api_log->method = $method;
         $api_log->url = self::URL;
         $api_log->request = json_encode( $this->request );
