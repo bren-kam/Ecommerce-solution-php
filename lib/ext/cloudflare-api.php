@@ -15,6 +15,20 @@ class CloudFlareAPI {
     const EMAIL = 'technical@greysuitretail.com';
 
     /**
+     * @var Account
+     */
+    protected $account;
+
+    /**
+     * Construct class
+     *
+     * @param Account $account This is for logging
+     */
+    public function __construct( Account $account ) {
+        $this->account = $account;
+    }
+
+    /**
      * A few variables that will determine the basic status
      */
     protected $message = NULL;
@@ -123,8 +137,6 @@ class CloudFlareAPI {
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_URL, self::URL );
         curl_setopt( $ch, CURLOPT_HEADER, 0 );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->request );
