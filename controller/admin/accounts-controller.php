@@ -461,6 +461,7 @@ class AccountsController extends BaseController {
             , 'arb-subscription-gateway'
             , 'yext-max-locations'
             , 'yext-customer-reviews'
+            , 'cloudflare-domain'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -502,7 +503,8 @@ class AccountsController extends BaseController {
         }
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
-        $ft->add_field( 'checkbox', _('Geo Marketing - Enable Customer Reviews'), 'cbAYextCustomerReviews', $settings['yext-customer-reviews'] );
+        $ft->add_field( 'text', _('Geo Marketing - Enable Customer Reviews'), 'tYextCustomerReviews', $settings['yext-customer-reviews'] );
+        $ft->add_field( 'text', _('CloudFlare Domain'), 'tCloudFlareDomain', $settings['cloudflare-domain'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -548,7 +550,8 @@ class AccountsController extends BaseController {
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
                 , 'arb-subscription-gateway' => isset($_POST['sARBSubscriptionGateway']) ? $_POST['sARBSubscriptionGateway'] : $settings['arb-subscription-gateway']
                 , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
-                , 'yext-customer-reviews' => (int) $_POST['cbAYextCustomerReviews']
+                , 'yext-customer-reviews' => (int) $_POST['tYextCustomerReviews']
+                , 'cloudflare-domain' => $_POST['tCloudFlareDomain']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -584,7 +587,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-domain' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -1877,6 +1880,11 @@ class AccountsController extends BaseController {
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Cancel YEXT Subscription
+     *
+     * @return RedirectResponse
+     */
     public function cancel_yext_subscription() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );
@@ -1904,6 +1912,30 @@ class AccountsController extends BaseController {
         $account->set_settings( array( 'yext-subscription-id' => '' ) );
 
         $this->notify( _("Subscription cancelled.") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    /**
+     * Purge Cloudflare Cache
+     *
+     * @return RedirectResponse
+     */
+    public function purge_cloudflare_cache() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( !$cloudflare_domain )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        $cloudflare = new CloudFlareAPI();
+        $cloudflare->purge( $cloudflare_domain );
+
+        $this->notify( _("CloudFlare cache purged.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 }
