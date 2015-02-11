@@ -1932,6 +1932,7 @@ class AccountsController extends BaseController {
         if ( !$cloudflare_domain )
             return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
 
+        library('cloudflare-api');
         $cloudflare = new CloudFlareAPI();
         $cloudflare->purge( $cloudflare_domain );
 
