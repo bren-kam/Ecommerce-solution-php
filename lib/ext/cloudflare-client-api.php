@@ -104,6 +104,8 @@ class CloudFlareClientAPI {
     /**
      * Purge
      *
+     * @date 2/10/2014
+     *
      * @param string $domain
      * @return bool
      */
@@ -111,6 +113,68 @@ class CloudFlareClientAPI {
         $this->execute( 'fpurge_ts', array(
             'z' => $domain
             , 'v' => 1
+        ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Purge File
+     *
+     * @date 2/12/2014
+     *
+     * @param string $domain
+     * @param string $url
+     * @return bool
+     */
+    public function purge_file( $domain, $url ) {
+        $this->execute( 'zone_file_purge', array(
+            'z' => $domain
+            , 'url' => $url
+        ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Minifcation
+     *
+     * @date 2/12/2014
+     *
+     * @param string $domain
+     * @param int $value
+     *  0 = off
+     *  1 = JavaScript only
+     *  2 = CSS only
+     *  3 = JavaScript and CSS
+     *  4 = HTML only
+     *  5 = JavaScript and HTML
+     *  6 = CSS and HTML
+     *  7 = CSS, JavaScript, and HTML
+     * @return bool
+     */
+    public function minify( $domain, $value = 4 ) {
+        $this->execute( 'minify', array(
+            'z' => $domain
+            , 'v' => $value
+        ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Mirage2
+     *
+     * @date 2/12/2014
+     *
+     * @param string $domain
+     * @param bool $on
+     * @return bool
+     */
+    public function mirage2( $domain, $on ) {
+        $this->execute( 'mirage2', array(
+            'z' => $domain
+            , 'v' => (int) $on
         ) );
 
         return $this->success;
@@ -134,7 +198,7 @@ class CloudFlareClientAPI {
 
         // Initialize cURL and set options
         $ch = curl_init();
-		
+
 		$url = self::URL;
         curl_setopt( $ch, CURLOPT_FORBID_REUSE, true );
         curl_setopt( $ch, CURLOPT_URL, $url );
@@ -151,14 +215,15 @@ class CloudFlareClientAPI {
 
         // Close cURL
         curl_close($ch);
-        
+
+        $this->success = 'success' == $this->response->result;
+
         // Set the response
-        if ( $this->response->msg ) {
+        if ( $this->success ) {
+            $this->message = 'Success!';
+        } else {
             $this->error = true;
             $this->message = ( isset( $this->errors[$this->response->msg] ) ) ? $this->errors[$this->response->msg] : $this->response->msg;
-        } else {
-            $this->success = true;
-            $this->message = 'Success!';
         }
 
         // If we're debugging lets give as much info as possible
