@@ -1832,6 +1832,15 @@ class ProductsController extends BaseController {
 
         $this->user->account->set_settings( array( 'top-categories' => json_encode( $sequence ) ) );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+        }
+
         return $response;
     }
 
