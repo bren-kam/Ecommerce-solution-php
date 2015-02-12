@@ -1106,6 +1106,16 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
+        // Notification
         $response->notify( 'Product removed.' );
 
         return $response;
@@ -1184,6 +1194,7 @@ class ProductsController extends BaseController {
         $account_brand_category = new AccountBrandCategory();
         $account_brand_category->get( $this->user->account->id, $_GET['bid'], $_GET['cid']);
         $account_brand_category->image_url = $account_category->image_url;
+
         if ( $account_brand_category->website_id ) {
             $account_brand_category->save();
         } else {
@@ -1193,6 +1204,16 @@ class ProductsController extends BaseController {
             $account_brand_category->create();
         }
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
+        // Notification
         $response->notify( 'Your category image has been set');
 
         return $response;
@@ -1241,6 +1262,15 @@ class ProductsController extends BaseController {
 		}
 
         $coupons = $website_coupon->get_by_account( $this->user->account->id );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Add to response
         $response = new CustomResponse( $this->resources, 'products/edit' );
@@ -1423,6 +1453,16 @@ class ProductsController extends BaseController {
         $index = new IndexProducts();
         $index->index_product( $account_product->product_id, $this->user->account->id );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
+        // Notification
         $response->notify( 'Product updated' );
 
         return $response;
@@ -1810,6 +1850,16 @@ class ProductsController extends BaseController {
         $website_top_brand = new WebsiteTopBrand();
         $website_top_brand->update_sequence( $this->user->account->id, $sequence );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        }
+
         return $response;
     }
 
@@ -1838,7 +1888,8 @@ class ProductsController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         return $response;
@@ -1867,6 +1918,16 @@ class ProductsController extends BaseController {
         	->remove()
         	->updateBrandsSequence();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        }
+
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
@@ -1890,6 +1951,15 @@ class ProductsController extends BaseController {
         $this->user->account->link_brands = $_POST['checked'];
         $this->user->account->user_id_updated = $this->user->id;
         $this->user->account->save();
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
@@ -1921,6 +1991,16 @@ class ProductsController extends BaseController {
         $website_top_brand->brand_id = $_POST['bid'];
         $website_top_brand->sequence = $_POST['s'];
         $website_top_brand->create();
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        }
 
         $response->add_response( 'brand', $brand );
 

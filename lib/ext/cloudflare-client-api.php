@@ -127,7 +127,7 @@ class CloudFlareClientAPI {
      * @param string $url
      * @return bool
      */
-    public function purge_file( $domain, $url ) {
+    public function purge_url( $domain, $url ) {
         $this->execute( 'zone_file_purge', array(
             'z' => $domain
             , 'url' => $url
