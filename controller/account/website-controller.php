@@ -2578,8 +2578,10 @@ class WebsiteController extends BaseController {
 
             // Make URLs work on SSL and non-SSL
             $footer = preg_replace( '/http(s?):\/\//i', '//', $footer );
+
             // Make S3 Images work on SSL and non-SSL
             $footer = preg_replace( '/\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', '//s3.amazonaws.com/$1.retailcatalog.us/$2"', $footer );
+
             // Encode Entities
             $footer = htmlentities( $footer );
 
@@ -2642,7 +2644,7 @@ class WebsiteController extends BaseController {
             }
 
             // Notification
-            $this->notify('Your Top Site Navigation  settings have been saved!');
+            $this->notify('Your Top Site Navigation settings have been saved!');
         }
 
         $page = new AccountPage();

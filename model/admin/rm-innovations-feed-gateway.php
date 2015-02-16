@@ -10,7 +10,7 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
 
     const DB_URL = 'RMInnovations';  // This is a FreeTDS DSN Name
     const DB_USER = 'ImagineRetailer';
-    const DB_PASS = 'YzdaXPH8!21';
+    const DB_PASS = '{)@Pfg54SV@e';
     const DB_NAME = 'ImagineRetailer';
 
     const BRAND_ID = 920;
