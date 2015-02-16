@@ -461,6 +461,7 @@ class AccountsController extends BaseController {
             , 'arb-subscription-gateway'
             , 'yext-max-locations'
             , 'yext-customer-reviews'
+            , 'cloudflare-domain'
         );
 
         $test_ashley_feed_url = "/accounts/test-ashley-feed/?aid={$account->id}&_nonce=" . nonce::create( 'test_ashley_feed' );
@@ -502,7 +503,8 @@ class AccountsController extends BaseController {
         }
 
         $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
-        $ft->add_field( 'checkbox', _('Geo Marketing - Enable Customer Reviews'), 'cbAYextCustomerReviews', $settings['yext-customer-reviews'] );
+        $ft->add_field( 'text', _('Geo Marketing - Enable Customer Reviews'), 'tYextCustomerReviews', $settings['yext-customer-reviews'] );
+        $ft->add_field( 'text', _('CloudFlare Domain'), 'tCloudFlareDomain', $settings['cloudflare-domain'] );
 
         $server = new Server();
         $servers = $server->get_all();
@@ -548,7 +550,8 @@ class AccountsController extends BaseController {
                 , 'arb-subscription-amount' => $_POST['tARBSubscriptionAmount']
                 , 'arb-subscription-gateway' => isset($_POST['sARBSubscriptionGateway']) ? $_POST['sARBSubscriptionGateway'] : $settings['arb-subscription-gateway']
                 , 'yext-max-locations' => (int) $_POST['tYextMaxLocation']
-                , 'yext-customer-reviews' => (int) $_POST['cbAYextCustomerReviews']
+                , 'yext-customer-reviews' => (int) $_POST['tYextCustomerReviews']
+                , 'cloudflare-domain' => $_POST['tCloudFlareDomain']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -584,7 +587,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-domain' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -1094,6 +1097,15 @@ class AccountsController extends BaseController {
         $install_service = new InstallService();
         $install_service->install_website( $account, $this->user->id );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         // Let them know it's been installed
         $this->notify( _('Website has been successfully installed') );
 
@@ -1123,6 +1135,15 @@ class AccountsController extends BaseController {
         $install_service = new InstallService();
         $install_service->install_package( $account, $this->user->id );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         // Let them know it's been installed
         $this->notify( _('The website package has been successfully installed') );
 
@@ -1146,6 +1167,17 @@ class AccountsController extends BaseController {
 
         $account_product->deactivate_by_account( $_GET['aid'] );
         $account_category->delete_by_account( $_GET['aid'] );
+
+        // Clear CloudFlare Cache
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         $this->notify( _('All categories and products have been removed.') );
 
@@ -1181,6 +1213,15 @@ class AccountsController extends BaseController {
         $account->status = Account::STATUS_INACTIVE;
         $account->user_id_updated = $this->user->id;
         $account->save();
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Give them a notification
         $this->notify( _('The account, "' . $account->title . '", has been deactivated.' ) );
@@ -1220,6 +1261,15 @@ class AccountsController extends BaseController {
         // Run the feed
         $ashley_specific_feed = new AshleySpecificFeedGateway();
         $ashley_specific_feed->run( $account );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Give them a notification
         $this->notify( _('The Ashley Feed has been successfully run!') );
@@ -1284,6 +1334,17 @@ class AccountsController extends BaseController {
         // Get the account category
         $account_category = new AccountCategory();
         $account_category->reorganize_categories( $_GET['aid'], new Category() );
+
+        // Clear CloudFlare Cache
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Give them a notification
         $this->notify( _('The categories have been successfully reorganized!') );
@@ -1666,24 +1727,18 @@ class AccountsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->reset_price_by_account( $_GET['aid'] );
 
-        $this->notify( _('All account prices has been reseted.') );
-
-        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
-    }
-
-    /**
-     * Purge Cache
-     * @return RedirectResponse
-     */
-    protected function purge_cache() {
-        if ( !isset( $_GET['aid'] ) )
-            return new RedirectResponse( '/accounts/' );
-
-        $account = new Account();
+        // Clear CloudFlare Cache
+        $account = new Account;
         $account->get( $_GET['aid'] );
-        $account->purge_varnish_cache();
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
 
-        $this->notify( _("Purged cache for '{$account->domain}'") );
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
+        $this->notify( _('All account prices has been reseted.') );
 
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
@@ -1705,6 +1760,15 @@ class AccountsController extends BaseController {
         // Run the feed
         $ashley_express_feed = new AshleyExpressFeedGateway();
         $ashley_express_feed->run_flag_products( $account );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Give them a notification
         $this->notify( _('The Ashley Express Feed has been successfully run!') );
@@ -1811,6 +1875,15 @@ class AccountsController extends BaseController {
         ssh2_exec( $ssh_connection, "cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
         ssh2_exec( $ssh_connection, "sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         echo 'Finished!'; die;
     }
 
@@ -1829,6 +1902,15 @@ class AccountsController extends BaseController {
         if (  $account->id ) {
             $account->status = Account::STATUS_ACTIVE;
             $account->save();
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
         }
 
         $this->notify( _("Account reactivated") );
@@ -1871,12 +1953,26 @@ class AccountsController extends BaseController {
         if (  $account->id ) {
             $index = new IndexProducts();
             $index->index_website( $account->id );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
         }
 
         $this->notify( _("All Products Indexed!") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 
+    /**
+     * Cancel YEXT Subscription
+     *
+     * @return RedirectResponse
+     */
     public function cancel_yext_subscription() {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse( '/accounts/' );
@@ -1904,6 +2000,31 @@ class AccountsController extends BaseController {
         $account->set_settings( array( 'yext-subscription-id' => '' ) );
 
         $this->notify( _("Subscription cancelled.") );
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    /**
+     * Purge Cloudflare Cache
+     *
+     * @return RedirectResponse
+     */
+    public function purge_cloudflare_cache() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+        if ( !$cloudflare_domain )
+            return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+
+        library('cloudflare-client-api');
+        $cloudflare = new CloudFlareClientAPI( $account );
+        $cloudflare->purge( $cloudflare_domain );
+
+        $this->notify( _("CloudFlare cache purged.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }
 }

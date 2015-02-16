@@ -3,7 +3,7 @@ class AccountCategory extends ActiveRecordBase {
     public $website_id, $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $image_url, $top, $date_updated;
 
     // Available from other tables
-    public $parent_category_id;
+    public $parent_category_id, $slug;
 
     /**
      * Setup the account initial data
@@ -21,7 +21,7 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function get( $account_id, $category_id ) {
         $this->prepare(
-            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id AND wc.`category_id` = :category_id"
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top`, c.`slug` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id AND wc.`category_id` = :category_id"
             , 'ii'
             , array( ':account_id' => $account_id, ':category_id' => $category_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -35,7 +35,7 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function get_all( $account_id ) {
         return $this->prepare(
-            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id"
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top`, c.`slug` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id"
             , 'ii'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );

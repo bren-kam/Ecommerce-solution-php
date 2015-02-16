@@ -110,6 +110,16 @@ class SettingsController extends BaseController {
             $this->user->account->user_id_updated = $this->user->id;
             $this->user->account->save();
 
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify( _('The "Logo and Phone" section has been updated successfully!' ) );
         }
 
@@ -364,9 +374,16 @@ class SettingsController extends BaseController {
         $account_file->create();
 
         // Update account logo
-        $this->user->account->logo = $account_file->file_path;
-        $this->user->account->user_id_updated = $this->user->id;
-        $this->user->account->save();
+        $this->user->account->set_settings( 'website-logo', $account_file->file_path );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
 
         // Add the response
         $response->add_response( 'image', $account_file->file_path );

@@ -452,16 +452,6 @@ class Account extends ActiveRecordBase {
     }
 
     /**
-     * Purge Varnish Cache
-     */
-    public function purge_varnish_cache() {
-        try {
-            exec("varnishadm -T localhost:6082 ban req.http.host == {$this->domain}");
-            exec("varnishadm -T localhost:6082 ban req.http.host == www.{$this->domain}");
-        } catch (Exception $e) { /* Probably Varnish is not installed */ }
-    }
-
-    /**
      * Resynchronize Sendgrid Email Lists
      */
     public function resync_sendgrid_lists() {

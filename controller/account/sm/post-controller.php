@@ -79,6 +79,7 @@ class PostController extends BaseController {
 
         return $this->get_template_response( 'sm/post/index' )
             ->menu_item( 'sm/post' )
+            ->kb(99)
             ->set( compact( 'website_sm_accounts', 'website_sm_posts', 'timezones', 'time_options' ) );
 
     }
