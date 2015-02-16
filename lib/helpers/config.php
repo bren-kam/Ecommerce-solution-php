@@ -58,6 +58,8 @@ class Config {
         , 'foursquare-secret'    => 'LU32XUXDS54FTSIDMC3GPMOEH3U22SAHLTW4VUOKVJCES5VQ'
         , 'foursquare-redirect'  => 'http://account.testing.greysuitretail.com/sm/foursquare-callback/'
 
+        // Encryption-Decryption
+        , 'crypto-key'           => 'e4r+wYPQC4bQKikzN4ExKw=='
 	);
 
     /**

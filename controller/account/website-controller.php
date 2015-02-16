@@ -99,6 +99,16 @@ class WebsiteController extends BaseController {
                 $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : $_POST['tTitle'];
                 $title = trim( $title );
 
+                // Clear CloudFlare Cache
+                $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+                if ( $cloudflare_domain ) {
+                    library('cloudflare-client-api');
+                    $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                    $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
+                    $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $slug . '/' );
+                }
+
                 // Update the page
                 $page->slug = $slug;
                 $page->title = $title;
@@ -134,7 +144,7 @@ class WebsiteController extends BaseController {
                     case 'contact-us':
                         $pagemeta = array(
                             'email' => $_POST['tEmail'],
-                            'hide-contact-form' => isset( $_POST['cbHideContactForm'] ) && $_POST['cbHideContactForm'] == 'yes'
+                            'hide-contact-form' => $_POST['cbHideContactForm'] == 'yes'? true : false
                         );
                     break;
 
@@ -347,7 +357,6 @@ class WebsiteController extends BaseController {
         $category->get( $this->user->account->id, $_GET['cid'] );
 
         if ( $this->verified() ) {
-
             $category->title = $_POST['tTitle'];
             $category->content = $_POST['taContent'];
             $category->meta_title = $_POST['tMetaTitle'];
@@ -356,6 +365,16 @@ class WebsiteController extends BaseController {
             $category->top = $_POST['rPosition'];
             $category->save();
 
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/category/' . $category->slug . '/' );
+            }
+
+            // Notification
             $this->notify( _('Your category has been successfully saved!') );
 
             return new RedirectResponse('/website/categories/');
@@ -484,6 +503,16 @@ class WebsiteController extends BaseController {
                 )
             );
 
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $settings['page_sale-slug'] . '/' );
+            }
+
+            // Notification
             $this->notify( _('Your sale page has been successfully saved!') );
 
             // Refresh to get all the changes
@@ -522,6 +551,16 @@ class WebsiteController extends BaseController {
                 )
             );
 
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $settings['page_room-planner-slug'] . '/' );
+            }
+
+            // Notification
             $this->notify( _('Your room planner page has been successfully saved!') );
 
             // Refresh to get all the changes
@@ -541,6 +580,7 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     protected function home_page_layout() {
+        // Handle Post
         if ( $this->verified() ) {
             $layout = array();
 
@@ -548,6 +588,15 @@ class WebsiteController extends BaseController {
                 list( $name, $disabled ) = explode( '|', $element );
                 $name = strtolower( $name );
                 $layout[] = compact( 'name', 'disabled' );
+            }
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
             }
 
             $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
@@ -625,6 +674,17 @@ class WebsiteController extends BaseController {
             }
 
             $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify('Your Navigation settings have been saved!');
         }
 
@@ -654,6 +714,17 @@ class WebsiteController extends BaseController {
             }
 
             $this->user->account->set_settings( array( 'footer-navigation' => json_encode( $footer_navigation ) ) );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify('Your Footer Navigation settings have been saved!');
         }
 
@@ -691,6 +762,7 @@ class WebsiteController extends BaseController {
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
         );
+
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
                 , array( 'sidebar-image-width' )
@@ -829,6 +901,16 @@ class WebsiteController extends BaseController {
             
             $this->user->account->set_settings( $new_settings );
 
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify( _('Your settings have been successfully saved!') );
 
             // Refresh to get all the changes
@@ -985,6 +1067,15 @@ class WebsiteController extends BaseController {
         $page->get( $_GET['apid'], $this->user->account->id );
         $page->remove();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();
 
@@ -1133,6 +1224,16 @@ class WebsiteController extends BaseController {
             $attachment->create();
         }
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
+        }
+
+
         $response->add_response( 'url', $image_url );
 
         return $response;
@@ -1194,6 +1295,15 @@ class WebsiteController extends BaseController {
         $attachment->key = 'sidebar-image';
         $attachment->value = $image_url;
         $attachment->create();
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
         
         $element_box = '<div class="element-box" id="dAttachment_' . $attachment->id . '">';
         $element_box .= '<h2>' . _('Sidebar Image') . '</h2>';
@@ -1290,6 +1400,15 @@ class WebsiteController extends BaseController {
         $attachment->value = $image_url;
         $attachment->create();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         $response->add_response( 'id', $attachment->id );
         $response->add_response( 'url', $image_url );
 
@@ -1355,6 +1474,15 @@ class WebsiteController extends BaseController {
         $attachment->value = $video_url;
         $attachment->save();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_domain );
+        }
+
         // Add the response
         $response->add_response( 'refresh', 1 );
 
@@ -1419,7 +1547,16 @@ class WebsiteController extends BaseController {
         $attachment->key = 'banner';
         $attachment->value = $banner_url;
         $attachment->create();
-        
+
+         // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+        }
+
         // Create new box
 
         $enable_disable_url = url::add_query_arg( array(
@@ -1516,6 +1653,15 @@ class WebsiteController extends BaseController {
         $attachment->value = $banner_url;
         $attachment->create();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+        }
+
         // Add the response
         $response->add_response( 'id', $attachment->id );
         $response->add_response( 'url', $banner_url );
@@ -1604,6 +1750,19 @@ class WebsiteController extends BaseController {
         $account_pagemeta = new AccountPagemeta();
         $account_pagemeta->add_bulk_by_page( $_POST['apid'], array( $key => $_POST['v'] ) );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            $page = new AccountPage();
+            $page->get( $_POST['apid'], $this->user->account );
+
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
+        }
+
+
         return $response;
     }
 
@@ -1621,6 +1780,16 @@ class WebsiteController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->remove_sale_items( $this->user->account->id );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI( $this->user->account );
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $this->user->account->get_settings('page_sale-slug') . '/' );
+        }
+
 
         // Let them know we did so successfully
         $response->check( false, _('All sale items were removed!') );
@@ -1673,6 +1842,15 @@ class WebsiteController extends BaseController {
         $attachment->meta = $meta;
         $attachment->save();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge($cloudflare_domain);
+        }
+
         $response->notify( 'Sidebar information updated.' );
         return $response;
     }
@@ -1696,6 +1874,15 @@ class WebsiteController extends BaseController {
 
         $attachment->status = $_GET['s'];
         $attachment->save();
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge($cloudflare_domain);
+        }
 
         $response->add_response( 'id', $attachment->id );
 
@@ -1722,6 +1909,16 @@ class WebsiteController extends BaseController {
         $attachment->value = $_POST['taEmail'];
         $attachment->save();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge($cloudflare_domain);
+        }
+
+        // Notification
         $response->notify( 'Sidebar email updated.' );
 
         return $response;
@@ -1756,6 +1953,16 @@ class WebsiteController extends BaseController {
 
         $attachment->remove();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge($cloudflare_domain);
+        }
+
+
         return $response;
     }
 
@@ -1777,6 +1984,15 @@ class WebsiteController extends BaseController {
 
         $attachment = new AccountPageAttachment();
         $attachment->update_sequence( $this->user->account->id, $sequence );
+
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge($cloudflare_domain);
+        }
 
         return $response;
     }
@@ -1981,6 +2197,15 @@ class WebsiteController extends BaseController {
             $location->create();
         }
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
+        }
+
         $response->add_response( 'location', $location );
 
         return $response;
@@ -2028,6 +2253,15 @@ class WebsiteController extends BaseController {
         $location->get( $_GET['wlid'], $this->user->account->id );
         $location->remove();
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
+        }
+
         return $response;
     }
 
@@ -2051,6 +2285,15 @@ class WebsiteController extends BaseController {
         $location = new WebsiteLocation();
         $location->update_sequence( $this->user->account->id, $sequence );
 
+        // Clear CloudFlare Cache
+        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+        if ( $cloudflare_domain ) {
+            library('cloudflare-client-api');
+            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
+        }
+
         return $response;
     }
 
@@ -2071,6 +2314,17 @@ class WebsiteController extends BaseController {
             $header = htmlentities( $header );
 
             $this->user->account->set_settings( array( 'header' => $header ) );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify('Your Header settings have been saved!');
         }
 
@@ -2140,6 +2394,15 @@ class WebsiteController extends BaseController {
                 $brand->brand_id = $_GET['bid'];
                 $brand->website_id = $this->user->account->id;
                 $brand->create();
+            }
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI($this->user->account);
+                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/brand/' . $brand->slug . '/' );
             }
 
             $this->notify( _('Your brand has been successfully saved!') );
@@ -2213,6 +2476,16 @@ class WebsiteController extends BaseController {
         if ( $this->verified() ) {
             $html_header = htmlentities( $_POST['html-header'] );
             $this->user->account->set_settings( array( 'html-header' => $html_header ) );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
             $this->notify('Your HTML Header settings have been saved!');
         }
 
@@ -2236,6 +2509,16 @@ class WebsiteController extends BaseController {
         if ( $this->verified() ) {
             $text_404 = format::strip_only( $_POST['text-404'], '<script>' );
             $this->user->account->set_settings( array( 'text-404' => $text_404 ) );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
             $this->notify('Your 404 Page Text has been saved!');
         }
 
@@ -2295,12 +2578,25 @@ class WebsiteController extends BaseController {
 
             // Make URLs work on SSL and non-SSL
             $footer = preg_replace( '/http(s?):\/\//i', '//', $footer );
+
             // Make S3 Images work on SSL and non-SSL
             $footer = preg_replace( '/\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', '//s3.amazonaws.com/$1.retailcatalog.us/$2"', $footer );
+
             // Encode Entities
             $footer = htmlentities( $footer );
 
             $this->user->account->set_settings( array( 'footer' => $footer ) );
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
             $this->notify('Your Footer settings have been saved!');
         }
 
@@ -2337,7 +2633,18 @@ class WebsiteController extends BaseController {
             }
 
             $this->user->account->set_settings( array( 'top-site-navigation' => json_encode( $top_site_navigation ) ) );
-            $this->notify('Your Top Site Navigation  settings have been saved!');
+
+            // Clear CloudFlare Cache
+            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+
+            if ( $cloudflare_domain ) {
+                library('cloudflare-client-api');
+                $cloudflare = new CloudFlareClientAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_domain );
+            }
+
+            // Notification
+            $this->notify('Your Top Site Navigation settings have been saved!');
         }
 
         $page = new AccountPage();
@@ -2345,12 +2652,13 @@ class WebsiteController extends BaseController {
 
         $top_site_navigation = $this->user->account->get_settings('top-site-navigation');
 
-        if ( empty( $top_site_navigation ) )
+        if ( empty( $top_site_navigation ) ) {
             $top_site_navigation = array(
-                (object) array( 'name' => 'Products', 'url' => 'products' )
+                (object)array('name' => 'Products', 'url' => 'products')
             );
-        else
-            $top_site_navigation = json_decode( $top_site_navigation );
+        } else {
+            $top_site_navigation = json_decode($top_site_navigation);
+        }
 
         $this->resources
             ->css( 'jquery.nestable', 'website/top-site-navigation' )

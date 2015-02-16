@@ -1147,8 +1147,21 @@ class AccountProduct extends ActiveRecordBase {
             $account_category = new AccountCategory();
             $category = new Category();
 
+            // Cloudflare library
+            library('cloudflare-client-api');
+
             foreach ( $website_ids as $website_id ) {
                 $account_category->reorganize_categories( $website_id, $category );
+
+                // Clear CloudFlare Cache
+                $account = new Account();
+                $account->get( $website_id );
+                $cloudflare_domain = $account->get_settings('cloudflare-domain');
+
+                if ( $cloudflare_domain ) {
+                    $cloudflare = new CloudFlareClientAPI( $account );
+                    $cloudflare->purge( $cloudflare_domain );
+                }
             }
         }
     }
