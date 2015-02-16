@@ -249,6 +249,7 @@ class AnalyticsController extends BaseController {
         $sparklines['search_engines'] = $analytics->sparkline( 'search_engines' );
 
         $top_traffic_sources = $analytics->get_traffic_sources();
+        $top_geographic_traffic_sources = $analytics->get_geo_traffic_sources();
         $top_keywords = $analytics->get_keywords();
 
         // Get the dates
@@ -265,8 +266,69 @@ class AnalyticsController extends BaseController {
         return $this->get_template_response( 'traffic-sources-overview' )
             ->add_title( _('Traffic Sources Overview') )
             ->menu_item( 'analytics/traffic-sources-overview' )
-            ->set( compact( 'sparklines', 'visits_plotting_array', 'traffic_sources', 'top_traffic_sources', 'top_keywords', 'pie_chart', 'date_start', 'date_end' ) );
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'traffic_sources', 'top_traffic_sources', 'top_geographic_traffic_sources', 'top_keywords', 'pie_chart', 'date_start', 'date_end' ) );
     }
+
+    /**
+     * Get Traffic Sources
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function geo_traffic_sources() {
+        if ( !$this->user->account->live )
+            return new RedirectResponse('/');
+
+        // Get analytics
+        $date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : '';
+        $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
+
+        // Setup analytics
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/geo-traffic-sources/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
+
+        // Get all the data
+        $records = $analytics->get_metric_by_date( 'visits' );
+        $total = array_merge( $analytics->get_traffic_sources_totals(), $analytics->get_totals() );
+        $geo_traffic_sources = $analytics->get_geo_traffic_sources( 0 );
+
+        // Setup Javascript chart
+        $visits_plotting_array = array();
+
+        // Visits plotting
+        if ( is_array( $records ) )
+        foreach ( $records as $r_date => $r_value ) {
+            $visits_plotting_array[] = array( $r_date, $r_value );
+        }
+
+        // Sparklines
+        $sparklines['visits'] = $analytics->create_sparkline( $records );
+        $sparklines['pages_by_visits'] = $analytics->sparkline( 'pages_by_visits' );
+        $sparklines['time_on_site'] = $analytics->sparkline( 'time_on_site' );
+        $sparklines['new_visits'] = $analytics->sparkline( 'new_visits' );
+        $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
+
+        // Get the dates
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('n/j/Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('n/j/Y');
+
+        $this->resources
+            ->css( 'analytics/analytics' )
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
+
+        return $this->get_template_response( 'geo-traffic-sources' )
+            ->add_title( _('Geographic Traffic Sources') )
+            ->menu_item( 'analytics/geo-traffic-sources' )
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'geo_traffic_sources', 'date_start', 'date_end' ) );
+    }
+
 
     /**
      * Get Traffic Sources
@@ -387,6 +449,70 @@ class AnalyticsController extends BaseController {
             ->menu_item( 'analytics/keywords' )
             ->set( compact( 'sparklines', 'total', 'visits_plotting_array', 'keywords', 'date_start', 'date_end' ) );
     }
+
+    /**
+     * Get City
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function city() {
+        if ( !$this->user->account->live )
+            return new RedirectResponse('/');
+
+        if ( !isset( $_GET['c'] ) )
+            return new RedirectResponse('/analytics/geo-traffic-sources/');
+
+        // Get analytics
+        $date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : '';
+        $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
+
+        // Setup analytics
+        try {
+            $analytics = new Analytics( $date_start, $date_end );
+            $analytics->setup( $this->user->account );
+        } catch ( GoogleAnalyticsOAuthException $e ) {
+            $_SESSION['google-analytics-callback'] = '/analytics/city/';
+            return new RedirectResponse( '/analytics/oauth2/' );
+        }
+        $analytics->set_ga_filter( 'city==' . $_GET['c'] );
+
+        // Get all the data
+        $records = $analytics->get_metric_by_date( 'visits' );
+        $total = array_merge( $analytics->get_traffic_sources_totals(), $analytics->get_totals() );
+
+        // Setup Javascript chart
+        $visits_plotting_array = array();
+
+        // Visits plotting
+        if ( is_array( $records ) )
+        foreach ( $records as $r_date => $r_value ) {
+            $visits_plotting_array[] = array( $r_date, $r_value );
+        }
+
+        // Sparklines
+        $sparklines['visits'] = $analytics->create_sparkline( $records );
+        $sparklines['pages_by_visits'] = $analytics->sparkline( 'pages_by_visits' );
+        $sparklines['time_on_site'] = $analytics->sparkline( 'time_on_site' );
+        $sparklines['new_visits'] = $analytics->sparkline( 'new_visits' );
+        $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
+
+        // Get the dates
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('n/j/Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('n/j/Y');
+
+        $this->resources
+            ->css( 'analytics/analytics' )
+            ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'analytics/analytics', 'bootstrap-datepicker' )
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
+
+        return $this->get_template_response( 'city' )
+            ->add_title( _('City') )
+            ->menu_item( 'analytics/geo-traffic-sources' )
+            ->set( compact( 'sparklines', 'visits_plotting_array', 'total', 'date_start', 'date_end' ) );
+    }
+
 
     /**
      * Get Keyword

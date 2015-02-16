@@ -577,8 +577,11 @@ class ProductsController extends BaseController {
             , 'hide-browse-by-brand'
             , 'replace-price-note'
             , 'disable-map-pricing'
+            , 'myregistry-button-code'
         );
+
         $settings = $this->user->account->get_settings( $settings_array );
+
         $checkboxes = array(
         	'category-show-price-note' 	=> _('Show Price Note on Category Page')
         	, 'hide-skus' 				=> _('Hide Manufacturer SKUs')
@@ -595,12 +598,21 @@ class ProductsController extends BaseController {
             ->attribute( 'maxlength', '150' )
             ->add_validation( 'req', 'email', _('The "Request-a-Quote Email" field must contain a valid email') );
 
-        $form->add_field( 'text', _('Request-a-Quote Button Text'), 'request-a-quote-button', empty($settings['request-a-quote-button']) ? 'Request a Quote' : $settings['request-a-quote-button'] )
+        if ( $this->user->account->is_new_template() ) {
+            $form->add_field( 'text', _('Request-a-Quote Button Text'), 'request-a-quote-button', empty($settings['request-a-quote-button']) ? 'Request a Quote' : $settings['request-a-quote-button'] )
                     ->attribute( 'maxlength', '150' );
-
+        } else {
+            $settings['request-a-quote-button'] = 'Request a Quote';
+        }
 
         foreach( $checkboxes as $setting => $nice_name ) {
             $form->add_field( 'checkbox', $nice_name, $setting, $settings[$setting] );
+        }
+
+        if ( $this->user->account->is_new_template() ) {
+            $form->add_field( 'blank', '' );
+            $form->add_field( 'text', _('MyRegistry Site Key'), 'myregistry-button-code', ($settings['myregistry-button-code']) )
+                            ->attribute( 'maxlength', '128' );
         }
 
         if ( $form->posted() ) {
@@ -608,6 +620,10 @@ class ProductsController extends BaseController {
 
             foreach ( $settings_array as $k ) {
                 $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            if( $this->user->account->is_new_template() && isset( $_POST['myregistry-button-code'] ) ){
+                $new_settings['myregistry-button-code'] = $_POST['myregistry-button-code'];
             }
 
             $this->user->account->set_settings( $new_settings );
