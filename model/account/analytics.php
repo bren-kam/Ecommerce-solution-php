@@ -222,6 +222,51 @@ class Analytics {
     }
 
     /**
+     * Gets the rows for all traffic sources by geographic regions
+     *
+     * @param int $limit [optional]
+     * @return array
+     */
+    public function get_geo_traffic_sources( $limit = 25 ) {
+        // Make sure we can get any number we want
+        if ( 0 == $limit )
+            $limit = 10000;
+
+        // Declare variables
+        $traffic_sources = array();
+
+        if ( !is_null( $this->ga_filter ) ) {
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
+            $ga_filter = explode( ',', $ga_filter );
+            foreach ($ga_filter as &$v)
+                $v = "ga:$v";
+            $ga_filter_str = implode( ',', $ga_filter );
+        }
+
+        // Get data
+        $response = $this->ga->query( array(
+            'dimensions' => 'ga:city'
+            , 'metrics' => 'ga:visits,ga:pageviewsPerVisit,ga:avgTimeOnSite,ga:percentNewVisits,ga:visitBounceRate'
+            , 'sort' => '-ga:visits'
+            , 'filters' => $ga_filter_str
+        ) );
+
+        if ( isset( $response['rows'] ) )
+        foreach ( $response['rows'] as $row ) {
+            $traffic_sources[] = array(
+                'city' => $row[0]
+                , 'visits' => $row[1]
+                , 'pages_by_visits' => number_format( $row[2], 2 )
+                , 'time_on_site' => dt::sec_to_time( $row[3] )
+                , 'new_visits' => number_format( $row[4], 2 )
+                , 'bounce_rate' => number_format( $row[5], 2 )
+            );
+        }
+
+        return $traffic_sources;
+    }
+
+    /**
      * Gets the rows for all traffic sources
      *
      * @param int $limit [optional]

@@ -145,6 +145,38 @@ nonce::field( 'get_graph', '_get_graph' );
                 </p>
             </div>
         </section>
+
+        <section class="panel">
+            <header class="panel-heading">
+                Top Traffic Sources by Geographic Region
+            </header>
+
+            <div class="panel-body">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>City</th>
+                            <th class="text-right">Visits</th>
+                            <th class="text-right">% New Visits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ( $top_geographic_traffic_sources as $tts ) : ?>
+                            <tr>
+                                <td><a href="/analytics/city/?c=<?php echo urlencode( $tts['city'] ); ?>" title="<?php echo $tts['city'], ' / '; ?>"><?php echo $tts['city']; ?></a></td>
+                                <td class="text-right"><?php echo number_format( $tts['visits'] ); ?></td>
+                                <td class="text-right"><?php echo $tts['new_visits']; ?>%</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <p class="text-right">
+                    <a href="/analytics/geo-traffic-sources/" class="btn btn-primary">View Report</a>
+                </p>
+            </div>
+        </section>
     </div>
 
     <div class="col-lg-6">
