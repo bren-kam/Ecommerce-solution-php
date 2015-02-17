@@ -1,17 +1,16 @@
 <?php
 /**
- * CloudFlare Client API
+ * CloudFlare Host API
  *
  * @author Kerry Jones
- * @date 2/10/2015
- * @url https://www.cloudflare.com/docs/client-api.html
+ * @date 2/16/2015
+ * @url https://www.cloudflare.com/docs/host-api.html
  */
 
-class CloudFlareClientAPI {
+class CloudFlareHostAPI {
     const DEBUG = false;
-    const URL = 'https://www.cloudflare.com/api_json.html';
-    const API_KEY = '3ae56edd68513db53cdab4cb7e59f270df71c';
-    const EMAIL = 'technical@greysuitretail.com';
+    const URL = 'https://api.cloudflare.com/host-gw.html';
+    const HOST_API_KEY = 'replace_me';
 
     /**
      * @var Account
@@ -102,82 +101,24 @@ class CloudFlareClientAPI {
     }
 
     /**
-     * Purge
+     * User Create
      *
-     * @date 2/10/2015
+     * @date 2/16/2015
      *
-     * @param string $domain
-     * @return bool
+     * @param string $email
+     * @param string $password
+     * @param int $user_id
+     * @return string $user_key
      */
-    public function purge( $domain ) {
-        $this->execute( 'fpurge_ts', array(
-            'z' => $domain
-            , 'v' => 1
+    public function user_create( $email, $password, $user_id ) {
+        $this->execute( 'user_create', array(
+            'cloudflare_email' => $email
+            , 'cloudflare_pass' => $password
+            , 'cloudflare_username' => $email
+            , 'unique_id' => $user_id
         ) );
 
-        return $this->success;
-    }
-
-    /**
-     * Purge File
-     *
-     * @date 2/12/2015
-     *
-     * @param string $domain
-     * @param string $url
-     * @return bool
-     */
-    public function purge_url( $domain, $url ) {
-        $this->execute( 'zone_file_purge', array(
-            'z' => $domain
-            , 'url' => $url
-        ) );
-
-        return $this->success;
-    }
-
-    /**
-     * Minifcation
-     *
-     * @date 2/12/2015
-     *
-     * @param string $domain
-     * @param int $value
-     *  0 = off
-     *  1 = JavaScript only
-     *  2 = CSS only
-     *  3 = JavaScript and CSS
-     *  4 = HTML only
-     *  5 = JavaScript and HTML
-     *  6 = CSS and HTML
-     *  7 = CSS, JavaScript, and HTML
-     * @return bool
-     */
-    public function minify( $domain, $value = 4 ) {
-        $this->execute( 'minify', array(
-            'z' => $domain
-            , 'v' => $value
-        ) );
-
-        return $this->success;
-    }
-
-    /**
-     * Mirage2
-     *
-     * @date 2/12/2015
-     *
-     * @param string $domain
-     * @param bool $on
-     * @return bool
-     */
-    public function mirage2( $domain, $on ) {
-        $this->execute( 'mirage2', array(
-            'z' => $domain
-            , 'v' => (int) $on
-        ) );
-
-        return $this->success;
+        return $this->response->response->user_key;
     }
 
     /**
@@ -190,9 +131,8 @@ class CloudFlareClientAPI {
     public function execute( $method, $params = array() ) {
         // Set Request Parameters
         $this->request = array_merge( array(
-                'tkn'       => self::API_KEY
-                , 'email'   => self::EMAIL
-                , 'a'       => $method
+                'host_key'       => self::HOST_API_KEY
+                , 'act'       => $method
             ), $params
         ) ;
 
