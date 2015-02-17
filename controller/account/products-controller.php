@@ -1872,8 +1872,8 @@ class ProductsController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         return $response;
@@ -1940,8 +1940,8 @@ class ProductsController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         // Add the response
@@ -2014,8 +2014,8 @@ class ProductsController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         $response->add_response( 'brand', $brand );

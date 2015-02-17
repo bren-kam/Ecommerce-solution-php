@@ -105,8 +105,8 @@ class WebsiteController extends BaseController {
                 if ( $cloudflare_domain ) {
                     library('cloudflare-client-api');
                     $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                    $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
-                    $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $slug . '/' );
+                    $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
+                    $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $slug . '/' );
                 }
 
                 // Update the page
@@ -371,7 +371,7 @@ class WebsiteController extends BaseController {
             if ( $cloudflare_domain ) {
                 library('cloudflare-client-api');
                 $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/category/' . $category->slug . '/' );
+                $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/category/' . $category->slug . '/' );
             }
 
             // Notification
@@ -509,7 +509,7 @@ class WebsiteController extends BaseController {
             if ( $cloudflare_domain ) {
                 library('cloudflare-client-api');
                 $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $settings['page_sale-slug'] . '/' );
+                $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $settings['page_sale-slug'] . '/' );
             }
 
             // Notification
@@ -557,7 +557,7 @@ class WebsiteController extends BaseController {
             if ( $cloudflare_domain ) {
                 library('cloudflare-client-api');
                 $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $settings['page_room-planner-slug'] . '/' );
+                $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $settings['page_room-planner-slug'] . '/' );
             }
 
             // Notification
@@ -596,7 +596,7 @@ class WebsiteController extends BaseController {
             if ( $cloudflare_domain ) {
                 library('cloudflare-client-api');
                 $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+                $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
             }
 
             $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
@@ -1230,7 +1230,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
         }
 
 
@@ -1554,7 +1554,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
         }
 
         // Create new box
@@ -1659,7 +1659,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
         }
 
         // Add the response
@@ -1759,7 +1759,7 @@ class WebsiteController extends BaseController {
 
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
         }
 
 
@@ -1787,7 +1787,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $this->user->account->get_settings('page_sale-slug') . '/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' . $this->user->account->get_settings('page_sale-slug') . '/' );
         }
 
 
@@ -2203,7 +2203,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI($this->user->account);
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
         $response->add_response( 'location', $location );
@@ -2259,7 +2259,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI($this->user->account);
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
         return $response;
@@ -2291,7 +2291,7 @@ class WebsiteController extends BaseController {
         if ( $cloudflare_domain ) {
             library('cloudflare-client-api');
             $cloudflare = new CloudFlareClientAPI($this->user->account);
-            $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
+            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
         return $response;
@@ -2402,7 +2402,7 @@ class WebsiteController extends BaseController {
             if ( $cloudflare_domain ) {
                 library('cloudflare-client-api');
                 $cloudflare = new CloudFlareClientAPI($this->user->account);
-                $cloudflare->purge_file( $cloudflare_domain, 'http://' . $this->user->account->domain . '/brand/' . $brand->slug . '/' );
+                $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/brand/' . $brand->slug . '/' );
             }
 
             $this->notify( _('Your brand has been successfully saved!') );
