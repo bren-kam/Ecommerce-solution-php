@@ -22,6 +22,7 @@ class ApiRequest {
         , 'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.'
 		, 'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.'
 		, 'failed-set-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.'
+		, 'failed-set-geo-marketing-reviews' => 'Update GeoMarketing Reviews failed. Please verify you have sent the correct parameters.'
 		, 'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.'
 		, 'ssl-required' => 'You must make the call to the secured version of our website.'
 		, 'success-add-order-item' => 'Add Order Item succeeded!'
@@ -34,6 +35,7 @@ class ApiRequest {
         , 'success-update-social-media' => 'Update Social Media succeeded!'
 		, 'success-update-user' => 'Update User succeeded!'
 		 ,'success-set-arb-subscription' => 'Update User ARB Subscription succeeded!'
+		 ,'success-set-geo-marketing-reviews' => 'Update GeoMarketing Reviews succeeded!'
 	);
 	
 	/**
@@ -51,6 +53,7 @@ class ApiRequest {
         , 'update-social-media'
 		, 'update_user'
 		, 'set_arb_subscription'
+        , 'set_geo_marketing_reviews'
         , 'sendgrid_event_callback'
 	);
 	
@@ -650,6 +653,32 @@ class ApiRequest {
         ) );
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
+	}
+
+	/**
+	 * Set Geo Marketing Reviews
+	 */
+	protected function set_geo_marketing_reviews() {
+        /**
+         * @param int $geo_marketing_reviews
+         * @param int $website_id
+         */
+        extract( $this->get_parameters( 'reviews', 'website_id' ) );
+
+        // Make sure we can edit this website
+        if ( !$this->verify_website( $website_id ) )
+            return;
+
+        $account = new Account();
+        $account->get( $website_id );
+
+        // Protection
+		$account->set_settings( array(
+            'yext-customer-reviews' => $reviews
+        ) );
+
+		$this->add_response( array( 'success' => true, 'message' => 'success-set-geo-marketing-reviews' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
 	}
 
