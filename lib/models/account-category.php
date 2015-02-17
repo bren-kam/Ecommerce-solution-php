@@ -449,7 +449,8 @@ class AccountCategory extends ActiveRecordBase {
     protected function update_brand_categories( $account_id ) {
         return $this->prepare(
             "INSERT INTO website_brand_category(`website_id`, `brand_id`, `category_id`, `image_url`)
-                SELECT wp.`website_id`, p.`brand_id`, p.`category_id`, CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/small/', pi.`image` )
+                SELECT wp.`website_id`, p.`brand_id`, p.`category_id`,
+                    CASE SUBSTR(pi.`image`, 1, 4) WHEN 'http' THEN pi.`image` ELSE CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/small/', pi.`image` ) END
                 FROM `products` p
                 INNER JOIN `industries` i ON ( p.`industry_id` = i.`industry_id` )
                 INNER JOIN `product_images` pi ON ( p.`product_id` = pi.`product_id` )
