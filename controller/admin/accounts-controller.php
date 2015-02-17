@@ -502,8 +502,8 @@ class AccountsController extends BaseController {
                 ));
         }
 
-        $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
-        $ft->add_field( 'text', _('Geo Marketing - Enable Customer Reviews'), 'tYextCustomerReviews', $settings['yext-customer-reviews'] );
+        $ft->add_field( 'text', _('GeoMarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
+        $ft->add_field( 'text', _('GeoMarketing - Review Services'), 'tYextCustomerReviews', $settings['yext-customer-reviews'] );
         $ft->add_field( 'text', _('CloudFlare Domain'), 'tCloudFlareDomain', $settings['cloudflare-domain'] );
 
         $server = new Server();
