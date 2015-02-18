@@ -516,8 +516,16 @@ var ProductForm = {
             }
         });
     }
-
 }
+
+// Show warning for ashley feeds
+var show_ashley_warning = function(){
+    var warningModal = $('#warningModal');
+
+    if (warningModal.length){
+        warningModal.modal('show');
+    }
+};
 
 /**
  * Initialize
@@ -528,5 +536,6 @@ jQuery(function(){
     ProductTagEditor.init();
     ProductAttributeEditor.init();
     ProductForm.init();
+    show_ashley_warning();
 });
 

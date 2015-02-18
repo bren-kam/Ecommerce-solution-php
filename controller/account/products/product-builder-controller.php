@@ -36,6 +36,13 @@ class ProductBuilderController extends BaseController {
      * @return TemplateResponse
      */
     protected function add_edit() {
+        //Check if connected to Ashley feed
+        $ashley_feed_settings = $this->user->account->get_settings('ashley-ftp-username', 'ashley-ftp-password');
+        $show_warning = false;
+        if(!empty($ashley_feed_settings['ashley-ftp-username']) && !empty($ashley_feed_settings['ashley-ftp-password'])){
+            $show_warning=true;
+        }
+
         // Determine if we're adding or editing the product
         $product_id = ( isset( $_GET['pid'] ) ) ? (int) $_GET['pid'] : false;
 
@@ -196,7 +203,7 @@ class ProductBuilderController extends BaseController {
             ->kb( 57 )
             ->menu_item( 'products/product-builder/add' )
             ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
+            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts', 'show_warning' ) );
     }
 
     /**
