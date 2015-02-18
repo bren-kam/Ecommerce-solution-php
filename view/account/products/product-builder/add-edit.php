@@ -47,7 +47,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Warning</h4>
+                    <h4 class="modal-title">Notification</h4>
                 </div>
                 <div class="modal-body">
                     <p>Exclusive/Proprietary Ashley products are not allowed to be added to your website.</p>
