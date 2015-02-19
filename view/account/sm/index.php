@@ -14,7 +14,6 @@
                         <ul class="dropdown-menu" role="menu" aria-labelledby="ddAddSMAccount">
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/facebook-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-facebook"></i> Facebook</a></li>
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/twitter-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-twitter"></i> Twitter</a></li>
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/foursquare-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-foursquare"></i> Foursquare</a></li>
                         </ul>
                     </div>
                 </div>
