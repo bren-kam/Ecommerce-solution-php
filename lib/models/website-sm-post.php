@@ -209,8 +209,9 @@ class WebsiteSmPost extends ActiveRecordBase {
 
         if ( $this->photo ) {
             $post_fields['picture'] = $this->photo;
-            $post_fields['caption'] = $this->link ? $this->link : '';
-            $post_fields['description'] = $this->link ? $this->link : '';
+            $post_fields['caption'] = $this->link ? $this->link : ' ';
+            $post_fields['description'] = $this->link ? $this->link : ' ';
+            $post_fields['name'] = $this->link ? $this->link : ' ';
         }
 
         $request = new Facebook\FacebookRequest(
