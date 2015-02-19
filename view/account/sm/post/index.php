@@ -119,8 +119,8 @@ $delete_nonce = nonce::create( 'delete' );
                         <div class="checkbox">
                             <label>
                                 <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
+                                <a href="/sm/delete/?id=<?php echo $website_sm_account->id ?>. '&amp;_nonce=<?php echo $delete_nonce ?>" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>
                                 <?php if ( $website_sm_account->sm == 'facebook' ): ?>
-                                    <a href="/sm/delete/?id=<?php echo $website_sm_account->id ?>. '&amp;_nonce=<?php echo $delete_nonce ?>" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>
                                     | <a href="/sm/settings/?id=<?php echo $website_sm_account->id ?>">Settings</a>
                                 <?php endif; ?>
                             </label>
