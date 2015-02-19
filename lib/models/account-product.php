@@ -270,7 +270,7 @@ class AccountProduct extends ActiveRecordBase {
             , 142 // Dining Room > Bar Stools
         );
         // 2pc only works for Ashley products
-        $ashley_brand_ids = array(8, 170, 171, 588, 805);
+        $ashley_brand_ids = array(8, 170, 171, 588, 805, Brand::ARTIFICIAL_ASHLEY_EXPRESS);
         if ( $brand_id != 0 && !in_array( (int)$brand_id, $ashley_brand_ids ) )
             return;
 

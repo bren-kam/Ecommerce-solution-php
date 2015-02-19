@@ -1,5 +1,7 @@
 <?php
 class Brand extends ActiveRecordBase {
+    const ARTIFICIAL_ASHLEY_EXPRESS = 1048576;
+
     // The columns we will have access to
     public $id, $brand_id, $name, $slug, $link, $image;
 
