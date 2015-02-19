@@ -89,22 +89,12 @@ $delete_nonce = nonce::create( 'delete' );
                         </div>
                         <?php foreach ( $website_sm_accounts as $website_sm_account ): ?>
                             <div class="col-lg-4">
-                                <?php if  ( $website_sm_account->sm == 'foursquare' ): ?>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>" <?php if ( !$website_sm_account->auth_information_array['venue-id'] ) echo 'disabled' ?> >
-                                            <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
-                                            <?php if ( !$website_sm_account->auth_information_array['venue-id'] ) echo '<a href="/sm/settings/?id='.$website_sm_account->id.'">Set Venue ID to enable posting here.</a>' ?>
-                                        </label>
-                                    </div>
-                                <?php else: ?>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>">
-                                            <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
-                                        </label>
-                                    </div>
-                                <?php endif; ?>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>">
+                                        <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
+                                    </label>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -129,7 +119,7 @@ $delete_nonce = nonce::create( 'delete' );
                         <div class="checkbox">
                             <label>
                                 <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
-                                <?php if ( $website_sm_account->sm == 'facebook' || $website_sm_account->sm == 'foursquare' ): ?>
+                                <?php if ( $website_sm_account->sm == 'facebook' ): ?>
                                     <a href="/sm/delete/?id=<?php echo $website_sm_account->id ?>. '&amp;_nonce=<?php echo $delete_nonce ?>" confirm="Do you want to remove this Social Media Account? Cannot be undone">Delete</a>
                                     | <a href="/sm/settings/?id=<?php echo $website_sm_account->id ?>">Settings</a>
                                 <?php endif; ?>
@@ -147,7 +137,6 @@ $delete_nonce = nonce::create( 'delete' );
                             <ul class="dropdown-menu" role="menu" aria-labelledby="ddAddSMAccount">
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/facebook-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-facebook"></i> Facebook</a></li>
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/twitter-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-twitter"></i> Twitter</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/foursquare-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-foursquare"></i> Foursquare</a></li>
                             </ul>
                         </div>
                     </p>
