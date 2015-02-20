@@ -161,6 +161,18 @@ class TicketsController extends BaseController {
             }
         }
 
+        $topic_assignation_map = [
+            'accounting' => User::DAVID
+            , 'design' => User::DESIGN_TEAM
+            , 'development' => User::TECHNICAL
+            , 'bug' => User::TECHNICAL
+            , 'feature-request' => User::TECHNICAL
+        ];
+
+        if ( isset($_POST['tTicketTopic']) && isset($topic_assignation_map[$_POST['tTicketTopic']]) ) {
+            $assigned_to_user_id = $topic_assignation_map[$_POST['tTicketTopic']];
+        }
+
         // Get browser information
         $browser = fn::browser();
 
@@ -185,7 +197,7 @@ class TicketsController extends BaseController {
             $ticket_upload = new TicketUpload();
             $ticket_upload->add_relations( $ticket->id, $_POST['uploads'] );
         }
-        
+
         // Add statistics
         library('statistics-api');
         $stat = new Stat_API( Config::key('rs-key') );
