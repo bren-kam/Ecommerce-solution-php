@@ -1,6 +1,6 @@
 <?php
 class AccountCategory extends ActiveRecordBase {
-    public $website_id, $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $image_url, $top, $date_updated;
+    public $website_id, $category_id, $product_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $image_url, $top, $date_updated;
 
     // Available from other tables
     public $parent_category_id, $slug;
@@ -65,12 +65,13 @@ class AccountCategory extends ActiveRecordBase {
             , 'meta_title' => strip_tags($this->meta_title)
             , 'meta_description' => strip_tags($this->meta_description)
             , 'meta_keywords' => strip_tags($this->meta_keywords)
+            , 'product_id' => $this->product_id
             , 'image_url' => strip_tags($this->image_url)
             , 'top' => $this->top
         ), array(
             'website_id' => $this->website_id
         , 'category_id' => $this->category_id
-        ), 'ssssssi', 'ii' );
+        ), 'sssssisi', 'ii' );
     }
 
     /**
@@ -417,7 +418,7 @@ class AccountCategory extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`date_updated`, c.`slug` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`website_id`, wc.`product_id`, wc.`image_url`, wc.`date_updated`, c.`slug` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'AccountCategory' );
@@ -467,5 +468,40 @@ class AccountCategory extends ActiveRecordBase {
         )->query();
     }
 
+    /**
+     * Update category image and linked product
+     *
+     * @param $product_id
+     * @return bool
+     */
+    public function reassign_image( $product_id ){
+        // Find distinct categories which got affected
+        $categories = $this->prepare(
+            "SELECT DISTINCT wc.`category_id`, wc.`website_id` FROM `website_categories` AS wc LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = wc.`product_id`) LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wc.`product_id` = :product_id AND ( p.`publish_visibility` = 'deleted' OR p.`status` = 'discontinued' )"
+            , 'i'
+            , array( ':product_id' => $product_id )
+        )->get_results( PDO::FETCH_CLASS, 'AccountCategory' );
+
+        //Find a product which can be used to replace the image
+        foreach ( $categories as $category) {
+            $product = $this->prepare( "select p.`product_id`, pa.`image` AS image, i.`name` AS industry FROM products AS p LEFT JOIN product_images AS pa ON (pa.product_id = p.product_id)  LEFT JOIN industries as i ON ( i.`industry_id` = p.`industry_id`) WHERE p.`category_id` = :category_id AND p.`status` = 'in-stock' AND p.`publish_visibility` = 'public' LIMIT 1"
+                , 'i'
+                , array( ':category_id' => $category->category_id )
+            )->get_row( PDO::FETCH_CLASS, 'Product' );
+
+            if( $product ){
+                $image_url = $product->get_image_url($product->image, 'small', $product->industry, $product->id );
+
+                $account_category = new AccountCategory();
+                $account_category->get($category->website_id, $category->category_id);
+
+                $account_category->product_id = $product->product_id;
+                $account_category->image_url = $image_url;
+                $account_category->save();
+            }
+        }
+
+        return $categories;
+    }
 
 }
