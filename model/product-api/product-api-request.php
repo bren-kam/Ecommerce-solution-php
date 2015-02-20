@@ -310,6 +310,9 @@ class ProductApiRequest {
             // Delete the product
             $product->publish_visibility = 'deleted';
             $product->save();
+
+            // Reassign different product to categories linked for image
+            $account_category->reassign_image($product->id);
         }
 
         $this->add_response( array( 'success' => true, 'message' => 'success-delete-product' ) );
