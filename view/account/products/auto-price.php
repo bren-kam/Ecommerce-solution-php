@@ -119,7 +119,7 @@ nonce::field('add_auto_price', '_add_auto_price');
                                 <select id="brand-id" class="form-control">
                                     <option value="0">-- All --</option>
                                     <?php if ( $user->account->get_settings( 'ashley-express' ) ) : ?>
-                                        <option value="1048576">-- Ashley Express Program --</option>
+                                        <option value="<?php echo Brand::ARTIFICIAL_ASHLEY_EXPRESS; ?>">-- Ashley Express Program --</option>
                                     <?php endif; ?>
                                     <?php foreach ( $brands as $brand ): ?>
                                         <option value="<?php echo $brand->id; ?>"><?php echo $brand->name; ?></option>

@@ -1,16 +1,22 @@
 <?php
 /**
- * CloudFlare Host API
+ * CloudFlare API v4
  *
  * @author Kerry Jones
- * @date 2/16/2015
- * @url https://www.cloudflare.com/docs/host-api.html
+ * @date 2/19/2015
+ * @url https://www.cloudflare.com/docs/next/
  */
 
-class CloudFlareHostAPI {
+class CloudFlareAPI {
+    const HEADER_TYPE_PATCH = 'PATCH';
+    const HEADER_TYPE_POST = 'POST';
+    const HEADER_TYPE_GET = 'GET';
+    const HEADER_TYPE_DELETE = 'DELETE';
+
     const DEBUG = false;
-    const URL = 'https://api.cloudflare.com/host-gw.html';
-    const HOST_API_KEY = 'replace_me';
+    const URL = 'https://api.cloudflare.com/client/v4/';
+    const API_KEY = '3ae56edd68513db53cdab4cb7e59f270df71c';
+    const EMAIL = 'technical@greysuitretail.com';
 
     /**
      * @var Account
@@ -36,15 +42,6 @@ class CloudFlareHostAPI {
     protected $response = NULL;
     protected $error = NULL;
     protected $params = array();
-
-    /**
-     * Basic Error messages
-     */
-    protected $errors = array(
-        'E_UNAUTH' => 'Authentication could not be completed'
-        , 'E_INVLDINPUT' => 'Input was not valid'
-        , 'E_MAXAPI' => 'You have exceeded your allowed number of API calls'
-    );
 
     /**
      * Get private message variable
@@ -101,24 +98,85 @@ class CloudFlareHostAPI {
     }
 
     /**
-     * User Create
+     * Create Zone
      *
-     * @date 2/16/2015
+     * @date 2/19/2015
      *
-     * @param string $email
-     * @param string $password
-     * @param int $user_id
-     * @return string $user_key
+     * @param string $domain
+     * @param bool $jump_start (auto search DNS names)
+     * @return bool
      */
-    public function user_create( $email, $password, $user_id ) {
-        $this->execute( 'user_create', array(
-            'cloudflare_email' => $email
-            , 'cloudflare_pass' => $password
-            , 'cloudflare_username' => $email
-            , 'unique_id' => $user_id
+    public function create_zone( $domain, $jump_start = false ) {
+        $this->execute( self::HEADER_TYPE_POST, 'zones', array(
+            'name' => $domain
+            , 'jump_start' => $jump_start
         ) );
 
-        return $this->response->response->user_key;
+        return $this->response->result->id;
+    }
+
+    /**
+     * Edit Zone
+     *
+     * @date 2/19/2015
+     *
+     * @param string $zone_id
+     * @param string $plan_id
+     * @return bool
+     */
+    public function edit_zone( $zone_id, $plan_id ) {
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id, array(
+            'plan' => $plan_id
+        ) );
+
+        return $this->response->result->id;
+    }
+
+    /**
+     * Purge
+     *
+     * @date 2/19/2015
+     *
+     * @param string $zone_id
+     * @return bool
+     */
+    public function purge( $zone_id ) {
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id, array(
+            'purge_everything' => true
+        ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Purge URL
+     *
+     * @date 2/19/2015
+     *
+     * @param string $zone_id
+     * @param string|array $url
+     * @return bool
+     */
+    public function purge_url( $zone_id, $url ) {
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id, array(
+            'files' => $url
+        ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Available Plans
+     *
+     * @date 2/19/2015
+     *
+     * @param string $zone_id
+     * @return bool
+     */
+    public function available_plans( $zone_id ) {
+        $this->execute( self::HEADER_TYPE_GET, 'zones/' . $zone_id . '/available_plans' );
+
+        return $this->response->result;
     }
 
     /**
@@ -128,21 +186,20 @@ class CloudFlareHostAPI {
      * @param array $params an array of the parameters to be sent
      * @return stdClass object
      */
-    public function execute( $method, $params = array() ) {
-        // Set Request Parameters
-        $this->request = array_merge( array(
-                'host_key'       => self::HOST_API_KEY
-                , 'act'       => $method
-            ), $params
-        ) ;
-
+    public function execute( $type, $method, $params = array() ) {
         // Initialize cURL and set options
         $ch = curl_init();
 
 		$url = self::URL;
         curl_setopt( $ch, CURLOPT_FORBID_REUSE, true );
-        curl_setopt( $ch, CURLOPT_URL, $url );
+        curl_setopt( $ch, CURLOPT_URL, $url . $method );
         curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, $type );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'X-Auth-Key: ' . self::API_KEY,
+            'X-Auth-Email: ' . self::EMAIL
+        ));
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->request );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
@@ -156,15 +213,9 @@ class CloudFlareHostAPI {
         // Close cURL
         curl_close($ch);
 
-        $this->success = 'success' == $this->response->result;
-
-        // Set the response
-        if ( $this->success ) {
-            $this->message = 'Success!';
-        } else {
-            $this->error = true;
-            $this->message = ( isset( $this->errors[$this->response->msg] ) ) ? $this->errors[$this->response->msg] : $this->response->msg;
-        }
+        $this->success = $this->response->success;
+        $this->message = implode( "\n", $this->response->messages );
+        $this->error = implode( "\n", $this->response->errors );
 
         // If we're debugging lets give as much info as possible
         if ( self::DEBUG ) {
@@ -176,7 +227,7 @@ class CloudFlareHostAPI {
 
         $api_log = new ApiExtLog();
         $api_log->website_id = $this->account->id;
-        $api_log->api = 'CloudFlare Client API';
+        $api_log->api = 'CloudFlare API v4';
         $api_log->method = $method;
         $api_log->url = self::URL;
         $api_log->request = json_encode( $this->request );
