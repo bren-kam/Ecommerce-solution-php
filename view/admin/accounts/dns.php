@@ -64,59 +64,64 @@
     <h4>Records</h4>
 
     <?php if ( is_array( $records ) ) : ?>
-    <form name="fEditDNS" id="fEditDNS" action="" method="post" err="The records you have entered do not match the type you have selected." role="form">
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th><?php echo _('Name'); ?></th>
-                    <th><?php echo _('Type'); ?></th>
-                    <th><?php echo _('TTL'); ?></th>
-                    <th><?php echo _('Records'); ?></th>
-                    <th>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ( $records as $record ): ?>
-                <tr>
-                    <td>
-                        <input type="text" name="changes[<?php echo $record->id; ?>][name]" class="form-control disabled" disabled="disabled" placeholder="Domain" value="<?php echo $record->name; ?>" />
-                        <input class="action disabled" type="hidden" disabled="disabled" name="changes[<?php echo $record->id; ?>][action]" value="" />
-                    </td>
-                    <td>
-                        <select name="changes[<?php echo $record->id; ?>][type]" class="form-control disabled changes-type" disabled="disabled">
-                            <?php
-                            $types = array( 'A', 'CNAME', 'MX', 'NS', 'TXT' );
-
-                            foreach ( $types as $type ) {
-                                $selected = ( $type == $record->type ) ? ' selected="Selected"' : '';
-                                ?>
-                                <option value="<?php echo $type; ?>"<?php echo $selected; ?>><?php echo $type; ?></option>
-                            <?php } ?>
-                        </select>
-                    </td>
-                    <td>
-                        <input type="text" name="changes[<?php echo $record->id; ?>][ttl]" class="form-control disabled" placeholder="TTL" value="<?php echo $record->ttl; ?>" disabled="disabled" />
-                    </td>
-                    <td>
-                        <input type="text" name="changes[<?php echo $record->id; ?>][content]" class="form-control disabled" placeholder="Content" value="<?php echo $record->content; ?>" disabled="disabled" />
-                    </td>
-                    <td>
-                        <a href="#" class="edit-record cloudflare" title="Edit Record"><i class="fa fa-pencil"></i></a>
-                        <a href="#" class="delete-record" title="Delete Record"><i class="fa fa-trash-o"></i></a>
-                    </td>
-                </tr>
+        <p>Your name servers:</p>
+        <ul>
+            <?php foreach( $zone_details->name_servers as $ns ): ?>
+            <li><?php echo $ns; ?></li>
             <?php endforeach; ?>
-            </tbody>
-        </table>
+        </ul>
+        <form name="fEditDNS" id="fEditDNS" action="" method="post" err="The records you have entered do not match the type you have selected." role="form">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><?php echo _('Name'); ?></th>
+                        <th><?php echo _('Type'); ?></th>
+                        <th><?php echo _('TTL'); ?></th>
+                        <th><?php echo _('Records'); ?></th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ( $records as $record ): ?>
+                    <tr>
+                        <td>
+                            <input type="text" name="changes[<?php echo $record->id; ?>][name]" class="form-control disabled" disabled="disabled" placeholder="Domain" value="<?php echo $record->name; ?>" />
+                            <input class="action disabled" type="hidden" disabled="disabled" name="changes[<?php echo $record->id; ?>][action]" value="" />
+                        </td>
+                        <td>
+                            <select name="changes[<?php echo $record->id; ?>][type]" class="form-control disabled changes-type" disabled="disabled">
+                                <?php
+                                $types = array( 'A', 'CNAME', 'MX', 'NS', 'TXT' );
 
-        <p><a href="#" id="aAddRecord" class="btn btn-default" title="Add Record">Add Record</a></p>
+                                foreach ( $types as $type ) {
+                                    $selected = ( $type == $record->type ) ? ' selected="Selected"' : '';
+                                    ?>
+                                    <option value="<?php echo $type; ?>"<?php echo $selected; ?>><?php echo $type; ?></option>
+                                <?php } ?>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="changes[<?php echo $record->id; ?>][ttl]" class="form-control disabled" placeholder="TTL" value="<?php echo $record->ttl; ?>" disabled="disabled" />
+                        </td>
+                        <td>
+                            <input type="text" name="changes[<?php echo $record->id; ?>][content]" class="form-control disabled" placeholder="Content" value="<?php echo $record->content; ?>" disabled="disabled" />
+                        </td>
+                        <td>
+                            <a href="#" class="edit-record cloudflare" title="Edit Record"><i class="fa fa-pencil"></i></a>
+                            <a href="#" class="delete-record" title="Delete Record"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
 
-        <p>
-            <button type="submit" class="btn btn-primary pull-right">Save DNS</button>
-        </p>
+            <p><a href="#" id="aAddRecord" class="btn btn-default" title="Add Record">Add Record</a></p>
 
-        <?php nonce::field('dns'); ?>
+            <p>
+                <button type="submit" class="btn btn-primary pull-right">Save DNS</button>
+            </p>
+
+            <?php nonce::field('dns'); ?>
         <?php else: ?>
         <p>Please adjust your name servers to the following:</p>
         <ul>
