@@ -12,6 +12,7 @@ class CloudFlareAPI {
     const HEADER_TYPE_POST = 'POST';
     const HEADER_TYPE_GET = 'GET';
     const HEADER_TYPE_DELETE = 'DELETE';
+    const HEADER_TYPE_PUT = 'PUT';
 
     const DEBUG = false;
     const URL = 'https://api.cloudflare.com/client/v4/';
@@ -133,6 +134,20 @@ class CloudFlareAPI {
     }
 
     /**
+     * Zone Details
+     *
+     * @date 2/20/2015
+     *
+     * @param string $zone_id
+     * @return bool
+     */
+    public function zone_details( $zone_id ) {
+        $this->execute( self::HEADER_TYPE_GET, 'zones/' . $zone_id );
+
+        return $this->response->result;
+    }
+
+    /**
      * Purge
      *
      * @date 2/19/2015
@@ -200,6 +215,59 @@ class CloudFlareAPI {
         ) );
 
         return $this->success;
+    }
+
+    /**
+     * Update DNS Record
+     *
+     * @date 2/20/2015
+     *
+     * @param string $zone_id
+     * @param string $dns_zone_id
+     * @param string $type (A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF)
+     * @param string $name
+     * @param string $content
+     * @param int $ttl [optional] 1 = automatic
+     * @return bool
+     */
+    public function update_dns_record( $zone_id, $dns_zone_id, $type, $name, $content, $ttl = 1 ) {
+        $this->execute( self::HEADER_TYPE_PUT, 'zones/' . $zone_id . '/dns_records/' . $dns_zone_id, array(
+            'type' => $type
+            , 'name' => $name
+            , 'content' => $content
+            , 'ttl' => $ttl
+        ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Delete DNS Records
+     *
+     * @date 2/20/2015
+     *
+     * @param string $zone_id
+     * @param string $dns_zone_id
+     * @return bool
+     */
+    public function delete_dns_records( $zone_id, $dns_zone_id ) {
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id . '/dns_records/' . $dns_zone_id );
+
+        return $this->success;
+    }
+
+    /**
+     * List DNS Records
+     *
+     * @date 2/20/2015
+     *
+     * @param string $zone_id
+     * @return bool
+     */
+    public function list_dns_record( $zone_id ) {
+        $this->execute( self::HEADER_TYPE_GET, 'zones/' . $zone_id . '/dns_records' );
+
+        return $this->response->result;
     }
 
     /**

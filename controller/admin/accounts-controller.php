@@ -782,15 +782,20 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
+        // Cloudflare
+        library('cloudflare-api');
+        $cloudflare = new CloudFlareAPI( $account );
+        $cloudflare_zone_id = $account->get_settings('cloudflare-zone-id');
+
         library('r53');
         $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
+        $zone_id = $account->get_settings( 'r53-zone-id' );
 
         $v = new Validator( 'fEditDNS' );
 
         // Declare variables
         $domain_name = url::domain( $account->domain, false );
         $full_domain_name = $domain_name . '.';
-        $zone_id = $account->get_settings( 'r53-zone-id' );
         $errs = false;
 
         // Handle form actions
@@ -799,33 +804,58 @@ class AccountsController extends BaseController {
 
             if ( empty( $errs ) && isset( $_POST['changes'] ) && is_array( $_POST['changes'] ) ) {
                 $changes = array();
-                $change_count = count( $_POST['changes']['name'] );
 
-                for( $i = 0; $i < $change_count; $i++ ) {
-                    // Get the records
-                    $records = format::trim_deep( explode( "\n", $_POST['changes']['records'][$i] ) );
+                if ( $cloudflare_zone_id ) {
+                    foreach ( $_POST['changes'] as $dns_zone_id => $records ) {
+                        switch( $_POST['changes'][$dns_zone_id]['action'] ) {
+                            default:
+                                continue;
+                            break;
 
-                    switch( $_POST['changes']['action'][$i] ) {
-                        default:
-                            continue;
-                        break;
+                            case '1':
+                                $cloudflare->create_dns_record( $zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['type']['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
+                            break;
 
-                        case '1':
-                            $action = 'CREATE';
-                        break;
+                            case '2':
+                                $cloudflare->update_dns_record( $zone_id, $dns_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['type']['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
+                            break;
 
-                        case '0':
-                            $action = 'DELETE';
-                        break;
+                            case '0':
+                                $cloudflare->delete_dns_record( $cloudflare_zone_id, $dns_zone_id );
+                                continue;
+                            break;
+                        }
+                    }
+                } else {
+                    $change_count = count( $_POST['changes']['name'] );
+
+                    for( $i = 0; $i < $change_count; $i++ ) {
+                        // Get the records
+                        $records = format::trim_deep( explode( "\n", $_POST['changes']['records'][$i] ) );
+
+                        switch( $_POST['changes']['action'][$i] ) {
+                            default:
+                                continue;
+                            break;
+
+                            case '1':
+                                $action = 'CREATE';
+                            break;
+
+                            case '0':
+                                $action = 'DELETE';
+                            break;
+                        }
+
+                        /**
+                         * @var string $action
+                         */
+                        $changes[] = $r53->prepareChange( $action, $_POST['changes']['name'][$i], $_POST['changes']['type'][$i], $_POST['changes']['ttl'][$i], $records );
                     }
 
-                    /**
-                     * @var string $action
-                     */
-                    $changes[] = $r53->prepareChange( $action, $_POST['changes']['name'][$i], $_POST['changes']['type'][$i], $_POST['changes']['ttl'][$i], $records );
+                    $response = $r53->changeResourceRecordSets( $zone_id, $changes );
                 }
 
-                $response = $r53->changeResourceRecordSets( $zone_id, $changes );
             }
         }
 
@@ -885,15 +915,42 @@ class AccountsController extends BaseController {
 
                 $zone_id = '';
             break;
+
+            case 'transfer':
+                // Create Cloudflare Account
+                $cloudflare_zone_id = $cloudflare->create_zone($domain_name);
+
+                $account->set_settings( array( 'cloudflare-zone-id' => $cloudflare_zone_id ) );
+
+                // Get records from Route 53
+                $r53->getHostedZone( $zone_id );
+                $records = $r53->listResourceRecordSets( $zone_id );
+
+                if ( is_array( $records['ResourceRecordSets'] ) ) {
+                    lib( 'misc/dns-sort' );
+                    new DNSSort( $records['ResourceRecordSets'] );
+                }
+
+                foreach ( $records['ResourceRecordSets'] as $record ) {
+                    if ( in_array( $record['Type'], array( 'NS', 'SOA' ) ) )
+                        continue;
+
+                    $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'] );
+                }
+            break;
         }
 
-        if ( !empty( $zone_id ) ) {
-            $r53->getHostedZone( $zone_id );
-            $records = $r53->listResourceRecordSets( $zone_id );
+        if ( $cloudflare_zone_id ) {
+            $records = $cloudflare->list_dns_records( $cloudflare_zone_id );
+        } else {
+            if (!empty($zone_id)) {
+                $r53->getHostedZone($zone_id);
+                $records = $r53->listResourceRecordSets($zone_id);
 
-            if ( is_array( $records['ResourceRecordSets'] ) ) {
-                lib( 'misc/dns-sort' );
-                new DNSSort( $records['ResourceRecordSets'] );
+                if (is_array($records['ResourceRecordSets'])) {
+                    lib('misc/dns-sort');
+                    new DNSSort($records['ResourceRecordSets']);
+                }
             }
         }
 
@@ -912,10 +969,12 @@ class AccountsController extends BaseController {
             ->javascript('accounts/dns')
             ->css('accounts/edit', 'accounts/dns');
 
+        $zone_details = ( $cloudflare_zone_id ) ? $cloudflare->zone_details( $cloudflare_zone_id ) : false;
+
         return $this->get_template_response('dns')
             ->kb( 8 )
             ->select( 'accounts', 'edit' )
-            ->set( compact( 'account', 'zone_id', 'errs', 'domain_name', 'full_domain_name', 'records' ) );
+            ->set( compact( 'account', 'zone_id', 'cloudflare_zone_id', 'errs', 'domain_name', 'full_domain_name', 'records', 'zone_details' ) );
     }
 
     /**

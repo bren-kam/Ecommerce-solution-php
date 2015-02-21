@@ -21,17 +21,22 @@ var DNS = {
         var row = $(this).parents('tr:first');
         var new_row = row.clone();
 
-        // current row action=0 (delete)
-        row.find('*').removeClass('disabled').removeAttr('disabled');
-        row.find('.action').val('0');
+        if (e.hasClass('cloudflare') ) {
+            row.find('*').removeClass('disabled').removeAttr('disabled');
+            row.find('.action').val('2');
+        } else {
+            // current row action=0 (delete)
+            row.find('*').removeClass('disabled').removeAttr('disabled');
+            row.find('.action').val('0');
 
-        // new row action=1 (add)
-        new_row.find('*').removeClass('disabled').removeAttr('disabled');
-        new_row.find('.action').val('1');
+            // new row action=1 (add)
+            new_row.find('*').removeClass('disabled').removeAttr('disabled');
+            new_row.find('.action').val('1');
 
-        // show
-        row.after(new_row);
-        row.hide();
+            // show
+            row.after(new_row);
+            row.hide();
+        }
     }
 
     , deleteRecord: function(e) {
