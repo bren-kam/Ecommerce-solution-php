@@ -118,6 +118,9 @@ class ProductBuilderController extends BaseController {
                 foreach ( $accounts as $account ) {
                     $account_category->reorganize_categories( $account->id, $category );
                 }
+
+                // Reassign different product to categories linked for image
+                $account_category->reassign_image($product->id);
             }
 
             $product->category_id = $_POST['sCategory'];
@@ -329,6 +332,9 @@ class ProductBuilderController extends BaseController {
 
             // Reorganize their categories
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            // Reassign different product to categories linked for image
+            $account_category->reassign_image($product->id);
 
             // Update index for this product/website
             $index = new IndexProducts();

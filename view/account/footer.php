@@ -43,6 +43,19 @@
                         <input type="text" class="form-control" name="tTicketSummary" id="tTicketSummary" placeholder="Enter Summary..." />
                     </div>
 
+                    <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ): ?>
+                        <div class="form-group">
+                            <label for="tTicketTopic">Topic:</label>
+                            <select name="tTicketTopic" id="tTicketTopic" class="form-control">
+                                <option value="accounting">Accounting</option>
+                                <option value="design">Design</option>
+                                <option value="development">Development</option>
+                                <option value="bug">Bug</option>
+                                <option value="feature-request">Feature Request</option>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="form-group">
                         <label for="taTicketMessage">Message:</label>
                         <textarea rows="5" class="form-control" id="taTicketMessage" name="taTicketMessage" placeholder="Enter Message..."></textarea>
