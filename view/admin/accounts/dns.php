@@ -82,6 +82,33 @@
                     </tr>
                 </thead>
                 <tbody>
+                <tr class="hidden">
+                   <td>
+                       <input type="text" name="changes[][name]" class="form-control disabled" disabled="disabled" placeholder="Domain" />
+                       <input class="action disabled" type="hidden" disabled="disabled" name="changes[][action]" value="" />
+                   </td>
+                   <td>
+                       <select name="changes[][type]" class="form-control disabled changes-type" disabled="disabled">
+                           <?php
+                           $types = array( 'A', 'CNAME', 'MX', 'NS', 'TXT' );
+
+                           foreach ( $types as $type ) {
+                               ?>
+                               <option value="<?php echo $type; ?>"><?php echo $type; ?></option>
+                           <?php } ?>
+                       </select>
+                   </td>
+                   <td>
+                       <input type="text" name="changes[][ttl]" class="form-control disabled" placeholder="TTL" disabled="disabled" />
+                   </td>
+                   <td>
+                       <input type="text" name="changes[][content]" class="form-control disabled" placeholder="Content" disabled="disabled" />
+                   </td>
+                   <td>
+                       <a href="#" class="edit-record cloudflare" title="Edit Record"><i class="fa fa-pencil"></i></a>
+                       <a href="#" class="delete-record" title="Delete Record"><i class="fa fa-trash-o"></i></a>
+                   </td>
+               </tr>
                 <?php foreach ( $records as $record ): ?>
                     <tr>
                         <td>

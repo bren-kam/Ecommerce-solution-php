@@ -3,11 +3,13 @@ var DNS = {
 
     , init: function() {
         // Generate row template
-        DNS._template = $('.edit-record:first').parents('tr').clone();
+        var first = $('.edit-record:first');
+        DNS._template = first.parents('tr').clone().removeClass('hidden');
         DNS._template.find('input').removeAttr('value');
         DNS._template.find('select').prop('selectedIndex', 0);
         DNS._template.find('textarea').text('');
         DNS._template.find('*').removeClass('disabled').removeAttr('disabled');
+        first.remove();
 
         $(document).on( 'click', '.edit-record', DNS.editRecord );
         $(document).on( 'click', '.delete-record', DNS.deleteRecord );

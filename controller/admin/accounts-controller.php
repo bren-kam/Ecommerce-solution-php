@@ -972,6 +972,7 @@ class AccountsController extends BaseController {
         $zone_details = ( $cloudflare_zone_id ) ? $cloudflare->zone_details( $cloudflare_zone_id ) : false;
 
         return $this->get_template_response('dns')
+            ->add_title( 'DNS' )
             ->kb( 8 )
             ->select( 'accounts', 'edit' )
             ->set( compact( 'account', 'zone_id', 'cloudflare_zone_id', 'errs', 'domain_name', 'full_domain_name', 'records', 'zone_details' ) );
@@ -1017,6 +1018,7 @@ class AccountsController extends BaseController {
             ->css('accounts/notes');
 
         return $this->get_template_response('notes')
+            ->add_title( 'Notes' )
             ->kb( 3 )
             ->select( 'accounts' )
             ->set( compact( 'account', 'notes', 'v' ) );
