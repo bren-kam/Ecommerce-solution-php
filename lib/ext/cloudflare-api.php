@@ -250,7 +250,7 @@ class CloudFlareAPI {
      * @param string $dns_zone_id
      * @return bool
      */
-    public function delete_dns_records( $zone_id, $dns_zone_id ) {
+    public function delete_dns_record( $zone_id, $dns_zone_id ) {
         $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id . '/dns_records/' . $dns_zone_id );
 
         return $this->success;
