@@ -180,6 +180,29 @@ class CloudFlareAPI {
     }
 
     /**
+     * Create DNS Record
+     *
+     * @date 2/20/2015
+     *
+     * @param string $zone_id
+     * @param string $type (A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF)
+     * @param string $name
+     * @param string $content
+     * @param int $ttl [optional] 1 = automatic
+     * @return bool
+     */
+    public function create_dns_record( $zone_id, $type, $name, $content, $ttl = 1 ) {
+        $this->execute( self::HEADER_TYPE_POST, 'zones/' . $zone_id . '/dns_records', array(
+            'type' => $type
+            , 'name' => $name
+            , 'content' => $content
+            , 'ttl' => $ttl
+        ) );
+
+        return $this->success;
+    }
+
+    /**
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
@@ -189,7 +212,9 @@ class CloudFlareAPI {
     public function execute( $type, $method, $params = array() ) {
         // Initialize cURL and set options
         $ch = curl_init();
-
+		
+		$this->request = json_encode( $params );
+		
 		$url = self::URL;
         curl_setopt( $ch, CURLOPT_FORBID_REUSE, true );
         curl_setopt( $ch, CURLOPT_URL, $url . $method );
@@ -215,7 +240,7 @@ class CloudFlareAPI {
 
         $this->success = $this->response->success;
         $this->message = implode( "\n", $this->response->messages );
-        $this->error = implode( "\n", $this->response->errors );
+        $this->error = $this->response->errors;
 
         // If we're debugging lets give as much info as possible
         if ( self::DEBUG ) {
