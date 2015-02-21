@@ -102,7 +102,7 @@
                        <input type="text" name="changes[][ttl]" class="form-control disabled" placeholder="TTL" disabled="disabled" />
                    </td>
                    <td>
-                       <input type="text" name="changes[][content]" class="form-control disabled" placeholder="Content" disabled="disabled" />
+                       <textarea name="changes[][content]" class="form-control disabled changes-records" cols="40" rows="3" disabled="disabled"></textarea>
                    </td>
                    <td>
                        <a href="#" class="edit-record cloudflare" title="Edit Record"><i class="fa fa-pencil"></i></a>
@@ -131,7 +131,7 @@
                             <input type="text" name="changes[<?php echo $record->id; ?>][ttl]" class="form-control disabled" placeholder="TTL" value="<?php echo $record->ttl; ?>" disabled="disabled" />
                         </td>
                         <td>
-                            <textarea name="changes[<?php echo $record->id; ?>][content]" class="form-control disabled changes-records" cols="40" rows="1" disabled="disabled"><?php echo $record->content; ?></textarea>
+                            <textarea name="changes[<?php echo $record->id; ?>][content]" class="form-control disabled changes-records" cols="40" rows="3" disabled="disabled"><?php echo $record->content; ?></textarea>
                         </td>
                         <td>
                             <a href="#" class="edit-record cloudflare" title="Edit Record"><i class="fa fa-pencil"></i></a>
