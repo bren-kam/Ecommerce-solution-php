@@ -264,7 +264,7 @@ class CloudFlareAPI {
      * @param string $zone_id
      * @return bool
      */
-    public function list_dns_record( $zone_id ) {
+    public function list_dns_records( $zone_id ) {
         $this->execute( self::HEADER_TYPE_GET, 'zones/' . $zone_id . '/dns_records' );
 
         return $this->response->result;
