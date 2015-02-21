@@ -1,6 +1,6 @@
 var DNS = {
     _template: null
-
+    , _field: 0
     , init: function() {
         // Generate row template
         var first = $('.edit-record:first');
@@ -57,8 +57,13 @@ var DNS = {
         e.preventDefault();
         var row = DNS._template.clone();
 
+        DNS._field += 1;
+
         // new row action=1 (add)
         row.find('.action').val('1');
+        row.find('input,select').each( function() {
+            $(this).attr('name', $(this).attr('name').replace( '[]', '[' + DNS._field + ']' ));
+        });
 
         // show
         $('#fEditDNS tbody').append(row);
