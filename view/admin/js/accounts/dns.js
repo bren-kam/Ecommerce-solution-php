@@ -61,7 +61,9 @@ var DNS = {
 
         // new row action=1 (add)
         row.find('.action').val('1');
-        row.find('input,select').each( function() {
+
+        if ( row.hasClass('cloudflare') )
+        row.find('input,select,textarea').each( function() {
             $(this).attr('name', $(this).attr('name').replace( '[]', '[' + DNS._field + ']' ));
         });
 

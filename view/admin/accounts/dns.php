@@ -82,7 +82,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr class="hidden">
+                <tr class="hidden cloudflare">
                    <td>
                        <input type="text" name="changes[][name]" class="form-control disabled" disabled="disabled" placeholder="Domain" />
                        <input class="action disabled" type="hidden" disabled="disabled" name="changes[][action]" value="" />
