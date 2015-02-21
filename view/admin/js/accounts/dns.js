@@ -21,7 +21,7 @@ var DNS = {
         var row = $(this).parents('tr:first');
         var new_row = row.clone();
 
-        if (e.hasClass('cloudflare') ) {
+        if ($(this).hasClass('cloudflare') ) {
             row.find('*').removeClass('disabled').removeAttr('disabled');
             row.find('.action').val('2');
         } else {
