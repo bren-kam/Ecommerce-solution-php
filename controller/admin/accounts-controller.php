@@ -813,11 +813,11 @@ class AccountsController extends BaseController {
                             break;
 
                             case '1':
-                                $cloudflare->create_dns_record( $zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
+                                $cloudflare->create_dns_record( $cloudflare_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
                             break;
 
                             case '2':
-                                $cloudflare->update_dns_record( $zone_id, $dns_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
+                                $cloudflare->update_dns_record( $cloudflare_zone_id, $dns_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
                             break;
 
                             case '0':
