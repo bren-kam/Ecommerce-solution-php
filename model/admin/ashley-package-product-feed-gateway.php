@@ -692,7 +692,13 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     }
 
     protected function get_discontinued_prodcts_by_sku() {
-        return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price`, `weight` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'deleted'", PDO::FETCH_ASSOC ), 'sku', true );
+        return ar::assign_key( $this->get_results(
+            "SELECT p.`sku`, p.`name`, p.`price`, p.`weight`
+            FROM `products` p
+            LEFT JOIN `products` p2 ON p.sku = p2.sku AND p.user_id_created = p2.user_id_created AND p.brand_id = p2.brand_id AND p2.publish_visibility != 'deleted'
+            WHERE p.`user_id_created` = 353 AND p.`publish_visibility` = 'deleted' AND p.`sku` != '' AND p2.`product_id` is null;"
+            , PDO::FETCH_ASSOC ), 'sku', true 
+        );
     }
 
 }
