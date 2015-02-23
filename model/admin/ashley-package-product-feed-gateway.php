@@ -256,6 +256,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected function get_data() {
         // Get Ashley Products by SKU
         $this->ashley_products = $this->get_ashley_products_by_sku();
+        $this->discontinued_ashley_products = $this->get_discontinued_prodcts_by_sku();
 
         echo "get_ashley_products_by_sku() completed\n";
 		flush();
@@ -471,10 +472,10 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             echo "\nVerifying if piece is discontinued";
             foreach ( $sku_pieces as $sp ) {
                 echo  "\nPiece: $sp - ";
-                if ( !isset( $this->ashley_products[$series . $sp] ) && isset( $this->discontinued_ashley_products[$series . $sp] ) ) {
+                if ( isset( $this->discontinued_ashley_products[$series . $sp] ) ) {
                     echo "\nProduct Package '{$product->sku}'' is discontinued as '{$sp}' is discontinued";
                     // $product->publish_visibility = 'deleted';
-                } elseif ( !isset( $this->ashley_products[$series . '-' . $sp] ) && isset( $this->discontinued_ashley_products[$series . '-' . $sp] ) ) {
+                } elseif ( isset( $this->discontinued_ashley_products[$series . '-' . $sp] ) ) {
                     echo "\nProduct Package '{$product->sku}'' is discontinued as '{$sp}' is discontinued";
                     // $product->publish_visibility = 'deleted';
                 }
