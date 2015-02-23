@@ -937,6 +937,11 @@ class AccountsController extends BaseController {
 
                     $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'] );
                 }
+
+                $cloudflare->change_ipv6( $cloudflare_zone_id );
+                $cloudflare->change_minify( $cloudflare_zone_id );
+                $cloudflare->change_security_level( $cloudflare_zone_id );
+                $cloudflare->change_mirage( $cloudflare_zone_id );
             break;
         }
 
