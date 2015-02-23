@@ -134,6 +134,19 @@ class CloudFlareAPI {
     }
 
     /**
+     * List Zones
+     *
+     * @date 2/23/2015
+     *
+     * @return bool
+     */
+    public function list_zones() {
+        $this->execute( self::HEADER_TYPE_GET, 'zones' );
+
+        return $this->response->result;
+    }
+
+    /**
      * Zone Details
      *
      * @date 2/20/2015
