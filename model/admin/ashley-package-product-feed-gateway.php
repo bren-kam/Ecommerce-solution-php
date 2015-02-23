@@ -473,11 +473,11 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             foreach ( $sku_pieces as $sp ) {
                 echo  "\nPiece: $sp - ";
                 if ( isset( $this->discontinued_ashley_products[$series . $sp] ) ) {
-                    echo "\nProduct Package '{$product->sku}'' is discontinued as '{$sp}' is discontinued";
-                    // $product->publish_visibility = 'deleted';
+                    echo "\nProduct Package '{$product->sku}'' marked as discontinued as '{$sp}' is discontinued";
+                    $product->publish_visibility = 'deleted';
                 } elseif ( isset( $this->discontinued_ashley_products[$series . '-' . $sp] ) ) {
-                    echo "\nProduct Package '{$product->sku}'' is discontinued as '{$sp}' is discontinued";
-                    // $product->publish_visibility = 'deleted';
+                    echo "\nProduct Package '{$product->sku}'' marked as discontinued as '{$sp}' is discontinued";
+                    $product->publish_visibility = 'deleted';
                 }
             }
 
