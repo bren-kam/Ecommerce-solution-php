@@ -46,6 +46,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected $ashley_products;
 
     /**
+     * Hold DISCONTINUED Ashley Products by sku
+     * @var array
+     */
+    protected $discontinued_ashley_products;
+
+    /**
      * Hold the ashley brands
      */
     protected $brands = array(
@@ -462,6 +468,18 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             echo "\nPackage Weight: $new_weight";
             $product->weight = $new_weight;
 
+            echo "\nVerifying if piece is discontinued";
+            foreach ( $sku_pieces as $sp ) {
+                echo  "\nPiece: $sp - ";
+                if ( !isset( $this->ashley_products[$series . $sp] ) && isset( $this->discontinued_ashley_products[$series . $sp] ) ) {
+                    echo "\nProduct Package '{$product->sku}'' is discontinued as '{$sp}' is discontinued";
+                    // $product->publish_visibility = 'deleted';
+                } elseif ( !isset( $this->ashley_products[$series . '-' . $sp] ) && isset( $this->discontinued_ashley_products[$series . '-' . $sp] ) ) {
+                    echo "\nProduct Package '{$product->sku}'' is discontinued as '{$sp}' is discontinued";
+                    // $product->publish_visibility = 'deleted';
+                }
+            }
+
             // Update the price
             if ( !$new_product ) {
                 $product->save();
@@ -672,4 +690,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected function get_ashley_products_by_sku() {
         return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price`, `weight` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
     }
+
+    protected function get_discontinued_prodcts_by_sku() {
+        return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price`, `weight` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'deleted'", PDO::FETCH_ASSOC ), 'sku', true );
+    }
+
 }
