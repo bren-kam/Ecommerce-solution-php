@@ -212,22 +212,43 @@ class CloudFlareAPI {
     /**
      * Create DNS Record
      *
-     * @date 2/20/2015
+     * @date 2/23/2015
+     * @version 1.1
      *
      * @param string $zone_id
      * @param string $type (A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF)
      * @param string $name
      * @param string $content
      * @param int $ttl [optional] 1 = automatic
+     * @param string $domain
      * @return bool
      */
-    public function create_dns_record( $zone_id, $type, $name, $content, $ttl = 1 ) {
-        $this->execute( self::HEADER_TYPE_POST, 'zones/' . $zone_id . '/dns_records', array(
+    public function create_dns_record( $zone_id, $type, $name, $content, $ttl = 1, $domain = '' ) {
+        $arguments = array(
             'type' => $type
             , 'name' => $name
             , 'content' => $content
             , 'ttl' => $ttl
-        ) );
+        );
+
+        switch ( strtolower( $type ) ) {
+            case 'mx':
+                list ( $priority, $content ) = explode( ' ', $content );
+                $arguments['priority'] = $priority;
+                $arguments['content'] = $content;
+            break;
+
+            case 'a':
+                if ( $name == $domain )
+                    $arguments['proxied'] = true;
+            break;
+
+            case 'cname':
+                if ( $content == $domain )
+                    $arguments['proxied'] = true;
+        }
+
+        $this->execute( self::HEADER_TYPE_POST, 'zones/' . $zone_id . '/dns_records', $arguments );
 
         return $this->success;
     }

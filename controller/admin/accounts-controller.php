@@ -935,7 +935,7 @@ class AccountsController extends BaseController {
                     if ( in_array( $record['Type'], array( 'NS', 'SOA' ) ) )
                         continue;
 
-                    $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'] );
+                    $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'], $account->domain );
                 }
 
                 $cloudflare->change_ipv6( $cloudflare_zone_id );
