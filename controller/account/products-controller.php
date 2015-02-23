@@ -507,9 +507,6 @@ class ProductsController extends BaseController {
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
-            // Clear public website cache
-            $this->user->account->purge_varnish_cache();
-
             // Update index for all Websites having this products
             $index = new IndexProducts();
             $index->index_website( $this->user->account->id );

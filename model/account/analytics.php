@@ -227,7 +227,7 @@ class Analytics {
      * @param int $limit [optional]
      * @return array
      */
-    public function get_geo_traffic_sources( $limit = 25 ) {
+    public function get_geo_traffic_sources( $limit = 10 ) {
         // Make sure we can get any number we want
         if ( 0 == $limit )
             $limit = 10000;
@@ -263,7 +263,7 @@ class Analytics {
             );
         }
 
-        return $traffic_sources;
+        return array_slice($traffic_sources, 0, $limit);
     }
 
     /**
@@ -272,7 +272,7 @@ class Analytics {
      * @param int $limit [optional]
      * @return array
      */
-    public function get_traffic_sources( $limit = 5 ) {
+    public function get_traffic_sources( $limit = 10 ) {
         // Make sure we can get any number we want
         if ( 0 == $limit )
             $limit = 10000;
@@ -309,7 +309,7 @@ class Analytics {
             );
         }
 
-        return $traffic_sources;
+        return array_slice($traffic_sources, 0, $limit);
     }
 
     /**
@@ -318,7 +318,7 @@ class Analytics {
      * @param int $limit [optional]
      * @return array
      */
-    public function get_keywords( $limit = 5 ) {
+    public function get_keywords( $limit = 10 ) {
         // Make sure we can get any number we want
         if ( 0 == $limit )
             $limit = 10000;
@@ -363,7 +363,7 @@ class Analytics {
             );
         }
 
-        return $keywords;
+        return array_slice($keywords, 0, $limit);
     }
 
     /**
@@ -372,7 +372,7 @@ class Analytics {
      * @param int $limit
      * @return array
      */
-    public function get_content_overview( $limit = 5 ) {
+    public function get_content_overview( $limit = 10 ) {
         // Make sure we can get any number we want
         if ( 0 == $limit )
             $limit = 4000;
@@ -408,7 +408,7 @@ class Analytics {
             );
         }
 
-        return $content_overview;
+        return array_slice($content_overview, 0, $limit);
     }
 
     /***** CALCULATIVE FUNCTIONS *****/

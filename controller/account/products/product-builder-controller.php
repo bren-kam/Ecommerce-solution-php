@@ -36,6 +36,13 @@ class ProductBuilderController extends BaseController {
      * @return TemplateResponse
      */
     protected function add_edit() {
+        //Check if connected to Ashley feed
+        $ashley_feed_settings = $this->user->account->get_settings('ashley-ftp-username', 'ashley-ftp-password');
+        $show_warning = false;
+        if(!empty($ashley_feed_settings['ashley-ftp-username']) && !empty($ashley_feed_settings['ashley-ftp-password'])){
+            $show_warning=true;
+        }
+
         // Determine if we're adding or editing the product
         $product_id = ( isset( $_GET['pid'] ) ) ? (int) $_GET['pid'] : false;
 
@@ -111,6 +118,9 @@ class ProductBuilderController extends BaseController {
                 foreach ( $accounts as $account ) {
                     $account_category->reorganize_categories( $account->id, $category );
                 }
+
+                // Reassign different product to categories linked for image
+                $account_category->reassign_image($product->id);
             }
 
             $product->category_id = $_POST['sCategory'];
@@ -196,7 +206,7 @@ class ProductBuilderController extends BaseController {
             ->kb( 57 )
             ->menu_item( 'products/product-builder/add' )
             ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
+            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts', 'show_warning' ) );
     }
 
     /**
@@ -322,6 +332,9 @@ class ProductBuilderController extends BaseController {
 
             // Reorganize their categories
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            // Reassign different product to categories linked for image
+            $account_category->reassign_image($product->id);
 
             // Update index for this product/website
             $index = new IndexProducts();

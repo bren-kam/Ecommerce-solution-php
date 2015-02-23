@@ -452,6 +452,10 @@ class CronsController extends BaseController {
     }
 
     public function sm_post_scheduled() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
         $website_sm_post = new WebsiteSmPost();
         $posts = $website_sm_post->get_all_unposted();
 
@@ -472,6 +476,31 @@ class CronsController extends BaseController {
 
         echo "Finished\n";
 
+    }
+
+    /**
+     * Reorganize Categories ALL
+     *
+     *
+     * @return HtmlResponse
+     */
+    protected function reorganize_categories_all() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        $account = new Account();
+        $accounts = $account->list_all( array(' AND a.status=1 ', '', '', 10000 ) );
+        $account_category = new AccountCategory();
+        $category = new Category();
+
+        foreach ( $accounts as $a ) {
+            echo "#{$a->id}...<br>\n";
+            flush();
+            $account_category->reorganize_categories( $a->website_id, $category );
+        }
+
+        return new HtmlResponse( 'Finished' );
     }
 
     /**

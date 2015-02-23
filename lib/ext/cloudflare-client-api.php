@@ -104,7 +104,7 @@ class CloudFlareClientAPI {
     /**
      * Purge
      *
-     * @date 2/10/2014
+     * @date 2/10/2015
      *
      * @param string $domain
      * @return bool
@@ -121,7 +121,7 @@ class CloudFlareClientAPI {
     /**
      * Purge File
      *
-     * @date 2/12/2014
+     * @date 2/12/2015
      *
      * @param string $domain
      * @param string $url
@@ -139,7 +139,7 @@ class CloudFlareClientAPI {
     /**
      * Minifcation
      *
-     * @date 2/12/2014
+     * @date 2/12/2015
      *
      * @param string $domain
      * @param int $value
@@ -165,7 +165,7 @@ class CloudFlareClientAPI {
     /**
      * Mirage2
      *
-     * @date 2/12/2014
+     * @date 2/12/2015
      *
      * @param string $domain
      * @param bool $on

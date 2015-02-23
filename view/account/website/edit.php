@@ -33,6 +33,12 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
                 </header>
 
                 <div class="panel-body">
+                    <?php if ( $errs ) { ?>
+                        <div class="alert alert-danger">
+                            <?php echo $errs; ?>
+                        </div>
+                    <?php } ?>
+
                     <div class="form-group">
                         <label for="tTitle">Title:</label>
                         <input type="text" class="form-control" name="tTitle" id="tTitle" placeholder="Title" value="<?php echo $page->title ?>"/>

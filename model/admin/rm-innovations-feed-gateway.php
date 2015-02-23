@@ -143,7 +143,10 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         echo "Brand #{$brand->id}\n";
 
         $product = new Product();
-        $product->get_by_sku( $row->sku_code );
+        $product_id = $product->get_var("SELECT product_id FROM products WHERE sku = '{$row->sku_code}' AND user_id_created = " . self::USER_ID);
+        if ( $product_id ) {
+            $product->get( $product_id );
+        }
 
         if ( !$product->id ) {
             if ( $row->ecommerce != 'Y' ) {

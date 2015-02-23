@@ -374,7 +374,7 @@ class SettingsController extends BaseController {
         $account_file->create();
 
         // Update account logo
-        $this->user->account->set_settings( 'website-logo', $account_file->file_path );
+        $this->user->account->set_settings( array( 'website-logo' => $account_file->file_path ) );
 
         // Clear CloudFlare Cache
         $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
