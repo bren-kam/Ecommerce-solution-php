@@ -117,6 +117,7 @@ class WebsiteController extends BaseController {
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
                 $page->top = $_POST['rPosition'];
+                $page->header_script = $_POST['taHeaderScript'];
                 $page->save();
 
                 // Update custom meta

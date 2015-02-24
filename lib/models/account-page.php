@@ -1,6 +1,6 @@
 <?php
 class AccountPage extends ActiveRecordBase {
-    public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile, $status, $top, $date_created, $date_updated;
+    public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile, $status, $top, $header_script, $date_created, $date_updated;
 
     // Artificial field
     public $products;
@@ -24,7 +24,7 @@ class AccountPage extends ActiveRecordBase {
      */
     public function get( $account_page_id, $account_id ) {
         $this->prepare(
-            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile`, `top` FROM `website_pages` WHERE `website_page_id` = :account_page_id AND `website_id` = :account_id'
+            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile`, `top`, `header_script` FROM `website_pages` WHERE `website_page_id` = :account_page_id AND `website_id` = :account_id'
             , 'ii'
             , array( ':account_page_id' => $account_page_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -40,7 +40,7 @@ class AccountPage extends ActiveRecordBase {
      */
     public function get_by_slug( $account_id, $slug ) {
         $this->prepare(
-            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile`, `top` FROM `website_pages` WHERE `website_id` = :account_id AND `slug` = :slug'
+            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile`, `top`, `header_script` FROM `website_pages` WHERE `website_id` = :account_id AND `slug` = :slug'
             , 'is'
             , array( ':account_id' => $account_id, ':slug' => $slug )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -150,8 +150,9 @@ class AccountPage extends ActiveRecordBase {
             , 'meta_keywords' => strip_tags($this->meta_keywords)
             , 'mobile' => $this->mobile
             , 'top' => $this->top
+            , 'header_script' => $this->header_script
         ), array( 'website_page_id' => $this->id )
-        , 'ssssssi', 'i' );
+        , 'ssssssiis', 'i' );
     }
 
     /**
@@ -169,6 +170,7 @@ class AccountPage extends ActiveRecordBase {
                 , 'meta_title' => NULL
                 , 'meta_description' => NULL
                 , 'meta_keywords' => NULL
+                , 'header_script' => NULL
                 , 'mobile' => NULL
                 , 'top' => 1
                 , 'status' => 1

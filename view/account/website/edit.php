@@ -32,6 +32,7 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
                     Edit Page
                 </header>
 
+
                 <div class="panel-body">
                     <?php if ( $errs ) { ?>
                         <div class="alert alert-danger">
@@ -90,6 +91,12 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
                         <label for="tMetaKeywords">Meta Keywords:</label>
                         <input type="text" class="form-control" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $page->meta_keywords ?>"/>
                     </div>
+
+                    <div class="form-group">
+                        <label for="taHeaderScript">Header Script:</label>
+                        <textarea class="form-control" name="taHeaderScript" id="taHeaderScript"><?php echo $page->header_script ?></textarea>
+                    </div>
+
                     <?php if ( $user->account->is_new_template() ): ?>
                         <div class="checkbox">
                             <label>
