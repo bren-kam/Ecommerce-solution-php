@@ -1930,6 +1930,7 @@ CREATE TABLE `website_categories` (
   `image_url` varchar(200) NOT NULL,
   `top` tinyint(1) NOT NULL DEFAULT '1',
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `header_script` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`website_id`,`category_id`),
   KEY `fk_wca_idx` (`website_id`),
   KEY `fk_wca2_idx` (`category_id`)
@@ -2232,6 +2233,7 @@ CREATE TABLE `website_pages` (
   `updated_user_id` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `header_script` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`website_page_id`),
   UNIQUE KEY `website_id` (`website_id`,`slug`),
   KEY `fk_wp_idx` (`website_id`)
