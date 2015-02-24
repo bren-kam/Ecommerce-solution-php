@@ -134,6 +134,19 @@ class CloudFlareAPI {
     }
 
     /**
+     * List Zones
+     *
+     * @date 2/23/2015
+     *
+     * @return bool
+     */
+    public function list_zones() {
+        $this->execute( self::HEADER_TYPE_GET, 'zones' );
+
+        return $this->response->result;
+    }
+
+    /**
      * Zone Details
      *
      * @date 2/20/2015
@@ -194,25 +207,54 @@ class CloudFlareAPI {
         return $this->response->result;
     }
 
+    /********** DNS SETTINGS **********/
+
     /**
      * Create DNS Record
      *
-     * @date 2/20/2015
+     * @date 2/23/2015
+     * @version 1.1
      *
      * @param string $zone_id
      * @param string $type (A, AAAA, CNAME, TXT, SRV, LOC, MX, NS, SPF)
      * @param string $name
      * @param string $content
      * @param int $ttl [optional] 1 = automatic
+     * @param string $domain
      * @return bool
      */
-    public function create_dns_record( $zone_id, $type, $name, $content, $ttl = 1 ) {
-        $this->execute( self::HEADER_TYPE_POST, 'zones/' . $zone_id . '/dns_records', array(
+    public function create_dns_record( $zone_id, $type, $name, $content, $ttl = 1, $domain = '' ) {
+        $arguments = array(
             'type' => $type
             , 'name' => $name
             , 'content' => $content
             , 'ttl' => $ttl
-        ) );
+        );
+
+        $full_domain = $domain . '.';
+
+        switch ( strtolower( $type ) ) {
+            case 'mx':
+                list ( $priority, $content ) = explode( ' ', $content );
+                $arguments['priority'] = $priority;
+
+                if ( '.' == substr( $content, -1 ) )
+                    $content = substr( $content, 0, -1 );
+
+                $arguments['content'] = $content;
+            break;
+
+            case 'a':
+                if ( $name == $full_domain )
+                    $arguments['proxied'] = true;
+            break;
+
+            case 'cname':
+                if ( $content == $full_domain )
+                    $arguments['proxied'] = true;
+        }
+
+        $this->execute( self::HEADER_TYPE_POST, 'zones/' . $zone_id . '/dns_records', $arguments );
 
         return $this->success;
     }
@@ -268,6 +310,72 @@ class CloudFlareAPI {
         $this->execute( self::HEADER_TYPE_GET, 'zones/' . $zone_id . '/dns_records' );
 
         return $this->response->result;
+    }
+
+    /********** CLOUDFLARE SETTINGS ***********/
+
+    /**
+     * Change IPV6 setting
+     *
+     * @date 2/23/2015
+     *
+     * @param string $zone_id
+     * @param string $value [optional] ('off', 'on', 'safe')
+     * @return bool
+     */
+    public function change_ipv6( $zone_id, $value = 'on' ) {
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/ipv6', compact( 'value' ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Change Minify settings
+     *
+     * @date 2/23/2015
+     *
+     * @param string $zone_id
+     * @param string $html [optional] ('on', 'off')
+     * @param string $css [optional] ('on', 'off')
+     * @param string $js [optional] ('on', 'off')
+     * @return bool
+     */
+    public function change_minify( $zone_id, $html = 'on', $css = 'off', $js = 'off' ) {
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/minify', array(
+            'value' => compact( 'css', 'html', 'js' )
+        ));
+
+        return $this->success;
+    }
+
+    /**
+     * Change Mirage Setting
+     *
+     * @date 2/23/2015
+     *
+     * @param string $zone_id
+     * @param string $value [optional] ('off', 'on')
+     * @return bool
+     */
+    public function change_mirage( $zone_id, $value = 'on' ) {
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/mirage', compact( 'value' ) );
+
+        return $this->success;
+    }
+
+    /**
+     * Change Security Level setting
+     *
+     * @date 2/23/2015
+     *
+     * @param string $zone_id
+     * @param string $value [optional] ('essentially_off', 'low', 'medium', 'high', 'under_attack')
+     * @return bool
+     */
+    public function change_security_level( $zone_id, $value = 'medium' ) {
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/security_level', compact( 'value' ) );
+
+        return $this->success;
     }
 
     /**
