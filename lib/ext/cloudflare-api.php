@@ -250,7 +250,7 @@ class CloudFlareAPI {
             break;
 
             case 'cname':
-                if ( $content == $full_domain )
+                if ( $name == 'www' )
                     $arguments['proxied'] = true;
         }
 
