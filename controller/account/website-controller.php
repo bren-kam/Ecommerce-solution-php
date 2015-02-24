@@ -117,7 +117,9 @@ class WebsiteController extends BaseController {
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
                 $page->top = $_POST['rPosition'];
-                $page->header_script = $_POST['taHeaderScript'];
+                if ( isset( $_POST['taHeaderScript'] ) ) {
+                    $page->header_script = $_POST['taHeaderScript'];
+                }
                 $page->save();
 
                 // Update custom meta
@@ -363,6 +365,9 @@ class WebsiteController extends BaseController {
             $category->meta_description = $_POST['tMetaDescription'];
             $category->meta_keywords = $_POST['tMetaKeywords'];
             $category->top = $_POST['rPosition'];
+            if ( isset( $_POST['taHeaderScript'] ) ) {
+                $category->header_script = $_POST['taHeaderScript'];
+            }
             $category->save();
 
             // Clear CloudFlare Cache
