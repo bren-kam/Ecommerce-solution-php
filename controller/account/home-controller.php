@@ -16,14 +16,24 @@ class HomeController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        return new RedirectResponse( '/website/' );
 
-        $this->resources->css('dashboard/dashboard');
-        $advertising_url = $this->user->account->get_settings('advertising-url');
+        $website_order = new WebsiteOrder();
+        $website_order_item = new WebsiteOrderItem();
+
+        $website_orders = $website_order->list_all([ " AND `website_id` = " . $this->user->account->id, '', 'ORDER BY website_order_id DESC', 5 ]);
+        foreach ( $website_orders as $wo ) {
+            $wo->items = $website_order_item->get_all( $wo->website_order_id );
+        }
+
+        $website_reach = new WebsiteReach();
+        $website_reaches = $website_reach->list_all( [ " AND wr.`website_id` = " . $this->user->account->id, '', 'ORDER BY website_reach_id DESC', 5] );
+        foreach( $website_reaches as $wr ) {
+            $wr->get_info();
+        }
 
         return $this->get_template_response( 'index' )
             ->select('dashboard')
-            ->set( compact( 'advertising_url' ) );
+            ->set( compact('website_orders', 'website_reaches') );
     }
 
     /**
