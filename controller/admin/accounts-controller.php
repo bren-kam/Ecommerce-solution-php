@@ -944,7 +944,7 @@ class AccountsController extends BaseController {
                     $upgrade_plan = false;
 
                     foreach ( $available_plans as $plan ) {
-                        if ( 'pro' == $plan->legacy_id )
+                        if ( 'pro' == $plan->legacy_id ) {
                             $upgrade_plan = $plan;
                             break;
                         }
