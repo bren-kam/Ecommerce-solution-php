@@ -938,10 +938,26 @@ class AccountsController extends BaseController {
                     $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'], url::domain($account->domain, false) );
                 }
 
+                // See if they need to upgrade to pro
+                if ( $account->shopping_cart ) {
+                    $available_plans = $cloudflare->available_plans( $cloudflare_zone_id );
+                    $upgrade_plan = false;
+
+                    foreach ( $available_plans as $plan ) {
+                        if ( 'pro' == $plan->legacy_id )
+                            $upgrade_plan = $plan;
+                            break;
+                        }
+                    }
+
+                    $cloudflare->edit_zone( $cloudflare_zone_id, $upgrade_plan );
+                }
+
                 $cloudflare->change_security_level( $cloudflare_zone_id );
                 $cloudflare->change_ipv6( $cloudflare_zone_id );
                 $cloudflare->change_minify( $cloudflare_zone_id );
                 $cloudflare->change_mirage( $cloudflare_zone_id );
+                $cloudflare->change_polish( $cloudflare_zone_id );
             break;
         }
 

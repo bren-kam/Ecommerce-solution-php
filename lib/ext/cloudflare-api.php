@@ -379,6 +379,21 @@ class CloudFlareAPI {
     }
 
     /**
+     * Change Polish image optimization
+     *
+     * @date 2/23/2015
+     *
+     * @param string $zone_id
+     * @param string $value [optional] ('off', 'lossless', 'lossy')
+     * @return bool
+     */
+    public function change_polish( $zone_id, $value = 'lossless' ) {
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/polish', compact( 'value' ) );
+
+        return $this->success;
+    }
+
+    /**
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
