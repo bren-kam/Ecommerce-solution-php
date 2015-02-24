@@ -341,7 +341,9 @@ class CloudFlareAPI {
      * @return bool
      */
     public function change_minify( $zone_id, $html = 'on', $css = 'off', $js = 'off' ) {
-        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/minify', compact( 'css', 'html', 'js' ) );
+        $this->execute( self::HEADER_TYPE_PATCH, 'zones/' . $zone_id . '/settings/minify', array(
+            'value' => compact( 'css', 'html', 'js' )
+        ));
 
         return $this->success;
     }
