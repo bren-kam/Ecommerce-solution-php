@@ -93,6 +93,7 @@ var AutoPriceExample = {
 
     init: function() {
         $('#update').click( AutoPriceExample.update );
+        AutoPriceExample.update();
     }
 
     , update: function() {
@@ -106,6 +107,11 @@ var AutoPriceExample = {
             , newMsrp = ''
             , newPrice = ''
             , newSalePrice = '';
+
+        if ( !$.isNumeric(ending) ) {
+            ending = '0';
+            $('#example_ending').val(ending);
+        }
 
         if ( msrp > 0 )
             newMsrp = '(MSRP $' + Math.ceilEnding( wholeSalePrice * ( msrp + 1 ) , ending).numberFormat( 2 ).replace( '.00', '' ) + ')';
