@@ -231,20 +231,26 @@ class CloudFlareAPI {
             , 'ttl' => $ttl
         );
 
+        $full_domain = $domain . '.';
+
         switch ( strtolower( $type ) ) {
             case 'mx':
                 list ( $priority, $content ) = explode( ' ', $content );
                 $arguments['priority'] = $priority;
+
+                if ( '.' == substr( $content, -1 ) )
+                    $content = substr( $content, 0, -1 );
+
                 $arguments['content'] = $content;
             break;
 
             case 'a':
-                if ( $name == $domain )
+                if ( $name == $full_domain )
                     $arguments['proxied'] = true;
             break;
 
             case 'cname':
-                if ( $content == $domain )
+                if ( $content == $full_domain )
                     $arguments['proxied'] = true;
         }
 
