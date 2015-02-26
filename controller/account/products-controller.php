@@ -1973,7 +1973,7 @@ class ProductsController extends BaseController {
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
-        $this->log( 'remove-top-brand', $this->user->contact_name . ' removed a top brand' . $this->user->account->title, $_GET['bid'] );
+        $this->log( 'remove-top-brand', $this->user->contact_name . ' removed a top brand from ' . $this->user->account->title, $_GET['bid'] );
 
         return $response;
     }
