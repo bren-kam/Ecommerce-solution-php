@@ -7,7 +7,7 @@ class ActionLog extends ActiveRecordBase {
      * Setup the account initial data
      */
     public function __construct() {
-        parent::__construct( 'api_log' );
+        parent::__construct( 'action_log' );
     }
 
     /**
