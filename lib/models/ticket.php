@@ -105,6 +105,8 @@ class Ticket extends ActiveRecordBase {
                 , d.`title` AS website
                 , MAX(tc.`date_created`) AS last_updated_at
                 , tcu.`contact_name` AS last_updated_by
+                , a.`jira_id`
+                , a.`jira_key`
             FROM `tickets` AS a
             LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
             LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` )

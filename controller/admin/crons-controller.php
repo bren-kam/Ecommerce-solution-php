@@ -503,6 +503,53 @@ class CronsController extends BaseController {
         return new HtmlResponse( 'Finished' );
     }
 
+    protected function jira_get_updates() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        library('jira');
+        $jira = new Jira();
+
+        $ticket = new Ticket();
+        $ticket_comment = new TicketComment();
+
+        $tickets_in_jira = $ticket->list_all( [ ' AND a.`jira_id` IS NOT NULL AND a.`status` = 0 ', '', '', 9999 ] );
+        foreach ( $tickets_in_jira as $ticket ) {
+
+            echo "Getting comments for ticket {$ticket->ticket_id} {$ticket->jira_key}\n";
+            // Pull Comments from Jira
+            $jira_comments = $jira->get_comments_by_issue( $ticket->jira_id );
+
+            if ( isset($jira_comments->comments) ) {
+                // Get GSR Ticket Comment by Jira ID
+                $ticket_comment_list = $ticket_comment->get_by_ticket( $ticket->ticket_id );
+                $ticket_comments = [];
+                foreach ( $ticket_comment_list as $tc ) {
+                    $ticket_comments[$tc->jira_id] = $tc;
+                }
+
+                foreach ( $jira_comments->comments as $jira_comment ) {
+                    // Create Comment if not found
+                    if ( !isset($ticket_comments[(int)$jira_comment->id]) ) {
+                        echo "Creating comment Jira#{$jira_comment->id}\n";
+                        $tc = new TicketComment();
+                        $tc->ticket_id = $ticket->ticket_id;
+                        $tc->user_id = User::DEVELOPMENT;
+                        $tc->comment = $jira_comment->body;
+                        $tc->jira_id = $jira_comment->id;
+                        $tc->private = isset($jira_comment->visibility);
+                        $tc->create();
+                    }
+                }
+            }
+
+        }
+
+        echo "Finished\n";
+
+    }
+
     /**
      * Login
      *

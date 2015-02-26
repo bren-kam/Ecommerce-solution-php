@@ -61,6 +61,7 @@ class TicketComment extends ActiveRecordBase {
             , 'user_id' => $this->user_id
             , 'comment' => strip_tags($this->comment, '<br><a>')
             , 'private' => $this->private
+            , 'jira_id' => $this->jira_id
             , 'date_created' => $this->date_created
         ), 'iisis' );
 

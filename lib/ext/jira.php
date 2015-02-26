@@ -31,6 +31,15 @@ class Jira {
     }
 
     /**
+     * Get Comments By Issue
+     * @param  int $issue_id
+     * @return stdClass
+     */
+    public function get_comments_by_issue( $issue_id ) {
+        return $this->_request( 'get', "rest/api/2/issue/{$issue_id}/comment" );
+    }
+
+    /**
      * Request
      *
      * @param $method
@@ -38,7 +47,7 @@ class Jira {
      * @param $data
      * @return stdObject
      */
-    private function _request( $method, $service, $data ) {
+    private function _request( $method, $service, $data = [] ) {
 
         $parameters = [];
         if ( $method == 'get') {
