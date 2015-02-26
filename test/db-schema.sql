@@ -1648,6 +1648,7 @@ CREATE TABLE `ticket_comments` (
   `private` tinyint(1) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `jira_id` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`ticket_comment_id`),
   KEY `ticket_id` (`ticket_id`,`user_id`),
   KEY `fk_tc_idx` (`ticket_id`)
@@ -1692,6 +1693,8 @@ CREATE TABLE `tickets` (
   `browser_version` varchar(20) NOT NULL,
   `browser_platform` varchar(50) NOT NULL,
   `browser_user_agent` varchar(200) NOT NULL,
+  `jira_id` int(11) NULL DEFAULT NULL,
+  `jira_key` VARCHAR(255) NULL DEFAULT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ticket_id`),
