@@ -276,6 +276,24 @@ abstract class BaseController {
     }
 
     /**
+     * Log Action
+     *
+     * @param string $action
+     * @param string $description
+     * @param string $extra
+     * @return int
+     */
+    protected function log( $action, $description, $extra = '' ) {
+        $action_log = new ActionLog();
+        $action_log->user_id = $this->user->id;
+        $action_log->website_id = $this->user->account->id;
+        $action_log->action = $action;
+        $action_log->description = $description;
+        $action_log->extra = $extra;
+        return $action_log->create();
+    }
+
+    /**
      * Load a response
      *
      * @var string $response
