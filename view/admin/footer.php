@@ -58,7 +58,7 @@
 
                     <div class="form-group">
                         <label for="taTicketMessage">Message:</label>
-                        <textarea rows="5" class="form-control" id="taTicketMessage" name="taTicketMessage" placeholder="Enter Message..."></textarea>
+                        <textarea rows="5" class="form-control" id="taTicketMessage" name="taTicketMessage" placeholder="Please include as much relevant information as possible"></textarea>
                     </div>
 
                     <p>

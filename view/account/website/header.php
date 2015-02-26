@@ -11,6 +11,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                 Website Header
             </header>
             <div class="panel-body">
+                <p>If you add any content to the text box, your phone number that is displayed in the top right will disappear, and you'll have to re-add it with any customizations made to your header</p>
                 <form method="post" role="form">
                     <div class="form-group">
                         <label for="text">Website Header:</label>
