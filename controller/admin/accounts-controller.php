@@ -132,7 +132,7 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
-        $v = new Validator( 'fEditAccount' );
+        $v = new BootstrapValidator( 'fEditAccount' );
         $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
         $v->add_validation( 'tProducts', 'req', _('The "Products" field is required') );
         $v->add_validation( 'tProducts', 'num', _('The "Products" field must contain a number') );
@@ -283,11 +283,13 @@ class AccountsController extends BaseController {
             ->javascript('accounts/edit', 'bootstrap-switch.min')
             ->css('accounts/edit');
 
+        $js_validation = $v->js_validation();
+
         $template_response = $this->get_template_response('edit')
             ->kb( 4 )
             ->select( 'accounts', 'accounts/index' )
             ->add_title( _('Edit') )
-            ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes' ) );
+            ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes', 'js_validation' ) );
 
         return $template_response;
     }
