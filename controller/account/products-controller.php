@@ -107,6 +107,7 @@ class ProductsController extends BaseController {
 
             // Notification
             $this->notify( _('Your product(s) have been successfully added!') );
+            $this->log( 'add-product-by-hand', $this->user->contact_name . ' has added products by hand to ' . $this->user->account->title, $_POST['products'] );
 
             return new RedirectResponse('/products/');
         }
@@ -188,6 +189,7 @@ class ProductsController extends BaseController {
                         $quantity *= -1;
 
                         $this->notify( _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog."), false );
+                        $this->log( 'catalog-dump-failed', $this->user->contact_name . ' has failed to dump a catalog into ' . $this->user->account->title, $_POST['hBrandID'] );
                     } else {
                         // Add bulk
                         $quantity = $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
@@ -207,6 +209,7 @@ class ProductsController extends BaseController {
 
                         // Notification
                         $this->notify( $quantity . ' ' . _('brand products added successfully!') );
+                        $this->log( 'catalog-dump', $this->user->contact_name . ' has dumped a catalog into ' . $this->user->account->title, $_POST['hBrandID'] );
                     }
                 }
             }
@@ -253,6 +256,7 @@ class ProductsController extends BaseController {
                 $quantity *= -1;
 
                 $this->notify( _("There is not enough free space to add these products. Delete at least $quantity products, or expand the size of the product catalog."), false );
+                $this->log( 'add-bulk-failed', $this->user->contact_name . ' did not have enough space to add bulk products to ' . $this->user->account->title, $skus );
             } else {
                 // Add bulk
                 list( $quantity, $already_existed, $not_added_skus ) = $account_product->add_bulk_all( $this->user->account->id, $this->user->account->get_industries(), $skus );
@@ -276,6 +280,7 @@ class ProductsController extends BaseController {
 
                 // Notification
                 $this->notify( $quantity . ' ' . _('products added successfully!') );
+                $this->log( 'add-bulk', $this->user->contact_name . ' added bulk products to ' . $this->user->account->title, $skus );
                 $success = true;
             }
 
@@ -313,6 +318,7 @@ class ProductsController extends BaseController {
             $index->index_product_by_sku( $skus, $this->user->account->id );
 
             $this->notify( _('Blocked Products have been successfully updated!') );
+            $this->log( 'block-products', $this->user->contact_name . ' blocked products on ' . $this->user->account->title, $skus );
         }
 
         $blocked_products = $account_product->get_blocked( $this->user->account->id );
@@ -368,6 +374,7 @@ class ProductsController extends BaseController {
             $index->index_website( $this->user->account->id );
 
             $this->notify( _('Hidden categories have been successfully updated!') );
+            $this->log( 'hide-categories', $this->user->contact_name . ' hid categories on ' . $this->user->account->title, $_POST['sCategoryIDs'] );
 
             return new RedirectResponse( '/products/hide-categories/' );
         }
@@ -522,6 +529,7 @@ class ProductsController extends BaseController {
 
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
+            $this->log( 'auto-price', $this->user->contact_name . ' auto-priced ' . $this->user->account->title, $_POST['auto-price'] );
         }
 
         // Get example product
@@ -575,6 +583,7 @@ class ProductsController extends BaseController {
 
             // Notification
             $this->notify( _('Blocked Products have been successfully updated!') );
+            $this->log( 'unblock-products', $this->user->contact_name . ' unblocked products on ' . $this->user->account->title, $_POST['unblock-products'] );
         }
 
         return new RedirectResponse('/products/block-products/');
@@ -606,6 +615,7 @@ class ProductsController extends BaseController {
 
             // Notification
             $this->notify( _('Hidden categories have been successfully updated!') );
+            $this->log( 'unblock-products', $this->user->contact_name . ' unhid products on ' . $this->user->account->title, $_POST['unhide-categories'] );
         }
 
         return new RedirectResponse('/products/hide-categories/');
@@ -694,6 +704,7 @@ class ProductsController extends BaseController {
 
             // Notification
             $this->notify( _('Your settings have been successfully saved!') );
+            $this->log( 'product-settings', $this->user->contact_name . ' has changed product settings on ' . $this->user->account->title, $_POST );
 
             // Refresh to get all the changes
             return new RedirectResponse('/products/settings/');
@@ -798,6 +809,8 @@ class ProductsController extends BaseController {
             $output[] = array( $product->name, $product->sku, $category, $product->brand, $product->created_by );
         }
 
+        $this->log( 'export-products', $this->user->contact_name . ' generated a product export on ' . $this->user->account->title );
+
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
     }
 
@@ -816,6 +829,8 @@ class ProductsController extends BaseController {
         foreach ( $products as $product ) {
             $output[] = array( $product->sku, $product->price, $product->price_note, $product->name );
         }
+
+        $this->log( 'download-non-autoprice-products', $this->user->contact_name . ' downloaded non-autopriceable products ' . $this->user->account->title );
 
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-non-autoprice-products.csv' );
     }
@@ -974,6 +989,7 @@ class ProductsController extends BaseController {
 
         // Let them know
         $response->notify( 'All discontinued products have been removed' );
+        $this->log( 'remove-all-discontinued-products', $this->user->contact_name . ' removed all discontinued products on ' . $this->user->account->title );
 
         return $response;
     }
@@ -1089,7 +1105,7 @@ class ProductsController extends BaseController {
     }
 
     /**
-     * Remove All Discontinued Products
+     * Remove
      *
      * @return AjaxResponse
      */
@@ -1130,6 +1146,7 @@ class ProductsController extends BaseController {
 
         // Notification
         $response->notify( 'Product removed.' );
+        $this->log( 'remove-product', $this->user->contact_name . ' removed product on ' . $this->user->account->title, $_GET['pid'] );
 
         return $response;
     }
@@ -1177,6 +1194,8 @@ class ProductsController extends BaseController {
         }
 
         $response->notify( 'Product blocked' );
+        $this->log( 'block-product', $this->user->contact_name . ' has blocked a product on ' . $this->user->account->title, $_GET['pid'] );
+
         return $response;
     }
 
@@ -1228,6 +1247,7 @@ class ProductsController extends BaseController {
 
         // Notification
         $response->notify( 'Your category image has been set');
+        $this->log( 'set-category-image', $this->user->contact_name . ' set a category image on ' . $this->user->account->title, $_GET );
 
         return $response;
     }
@@ -1477,6 +1497,7 @@ class ProductsController extends BaseController {
 
         // Notification
         $response->notify( 'Product updated' );
+        $this->log( 'update-product', $this->user->contact_name . ' updated a product on ' . $this->user->account->title, $_POST );
 
         return $response;
     }
@@ -1673,6 +1694,7 @@ class ProductsController extends BaseController {
         );
 
         $response->notify( 'You product request has been received, we will contact you soon.' );
+        $this->log( 'add-product-request', $this->user->contact_name . ' created a product request ' . $this->user->account->title );
         $response->add_response( 'close_modal', 'close_modal' );
 
         return $response;
@@ -1792,6 +1814,7 @@ class ProductsController extends BaseController {
 
         // Notification
         $response->notify( 'Your products has been updated' );
+        $this->log( 'set-product-prices', $this->user->contact_name . ' set product prices on ' . $this->user->account->title, $_POST['v'] );
 
         return $response;
     }
@@ -1840,6 +1863,8 @@ class ProductsController extends BaseController {
             $cloudflare->purge( $cloudflare_domain );
         }
 
+        $this->log( 'update-product-sequence', $this->user->contact_name . ' updated product sequence ' . $this->user->account->title );
+
         return $response;
     }
 
@@ -1873,6 +1898,8 @@ class ProductsController extends BaseController {
             $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
 
+        $this->log( 'update-brand-sequence', $this->user->contact_name . ' updated brand sequence ' . $this->user->account->title );
+
         return $response;
     }
 
@@ -1885,7 +1912,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+        $response->check( isset( $_POST['s'] ), _('Unable to update top category sequence. Please contact your Online Specialist.') );
 
         // Return if there is an error
         if ( $response->has_error() )
@@ -1904,6 +1931,8 @@ class ProductsController extends BaseController {
             $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
             $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
+
+        $this->log( 'update-top-category-sequence', $this->user->contact_name . ' updated top category  sequence ' . $this->user->account->title );
 
         return $response;
     }
@@ -1944,6 +1973,8 @@ class ProductsController extends BaseController {
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
+        $this->log( 'remove-top-brand', $this->user->contact_name . ' removed a top brand from ' . $this->user->account->title, $_GET['bid'] );
+
         return $response;
     }
 
@@ -1976,6 +2007,8 @@ class ProductsController extends BaseController {
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        $this->log( 'set-brands-to-link', $this->user->contact_name . ' brands to link on ' . $this->user->account->title );
 
         return $response;
     }
@@ -2016,6 +2049,8 @@ class ProductsController extends BaseController {
         }
 
         $response->add_response( 'brand', $brand );
+
+        $this->log( 'add-top-brand', $this->user->contact_name . ' added a top brand to ' . $this->user->account->title, $_POST['bid'] );
 
         return $response;
     }
@@ -2161,6 +2196,8 @@ class ProductsController extends BaseController {
             $cloudflare->purge( $cloudflare_domain );
         }
 
+        $this->log( 'multiply-prices', $this->user->contact_name . ' multiplied prices on ' . $this->user->account->title );
+
         // Refresh
         $response->add_response( 'refresh', 1 );
 
@@ -2225,6 +2262,7 @@ class ProductsController extends BaseController {
 
         $brand = ( $brand->id ) ? $brand->name . ' ' : '';
         $response->notify( _('Prices have been removed for ') . $brand . $category->name . ' category.' );
+        $this->log( 'remove-auto-price', $this->user->contact_name . ' removed auto-pricing for a category on ' . $this->user->account->title, $_GET );
 
         return $response;
     }
@@ -2281,6 +2319,7 @@ class ProductsController extends BaseController {
 
         // Notify
         $response->notify( _('Auto Price have been deleted.') );
+        $this->log( 'delete-auto-price', $this->user->contact_name . ' deleted auto-pricing for a category on ' . $this->user->account->title, $_GET );
 
         return $response;
     }
@@ -2313,6 +2352,7 @@ class ProductsController extends BaseController {
         try {
             $auto_price->create();
             $response->notify( _('Auto Price has been added successfully.') );
+            $this->log( 'add-auto-price', $this->user->contact_name . ' added auto-pricing for a category on ' . $this->user->account->title, $_POST );
         } catch ( ModelException $e ) {
             switch ( $e->getCode() ) {
                 case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
@@ -2382,6 +2422,7 @@ class ProductsController extends BaseController {
         $account_product->save();
 
         $response->notify( 'Your product has been removed from the Manual Price list.' );
+        $this->log( 'remove-manually-priced', $this->user->contact_name . ' removed manually-priced mark from product on ' . $this->user->account->title, $_GET['product-id'] );
 
         return $response;
     }
@@ -2397,6 +2438,8 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->null_manually_priced_by_account( $this->user->account->id );
 
+        $this->log( 'remove-all-manually-priced', $this->user->contact_name . ' removed all manually-priced products on ' . $this->user->account->title );
+
         return new RedirectResponse( '/products/manually-priced/' );
     }
 
@@ -2410,6 +2453,8 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->lock_prices_by_account( $this->user->account->id );
+
+        $this->log( 'manually-price-lock-all', $this->user->contact_name . ' locked all products as manually-priced on ' . $this->user->account->title );
 
         return new RedirectResponse( '/products/manually-priced/' );
     }
@@ -2475,7 +2520,9 @@ class ProductsController extends BaseController {
         }
 
         // Notification
-        $this->notify( _('All account prices has been reseted.') );
+        $this->notify( _('All account prices has been reset.') );
+
+        $this->log( 'reset-all-prices', $this->user->contact_name . ' reset all prices on ' . $this->user->account->title );
 
         return new RedirectResponse( "/products/settings/" );
     }
