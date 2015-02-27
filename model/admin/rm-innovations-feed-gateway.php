@@ -204,7 +204,7 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         if ( $row->width_1 )
             $specifications[] = array( 'Width', "{$row->width_1}'{$row->width_2}\"" );
         if ( $row->length_1 )
-            $specifications[] = array( 'Depth', "{$row->length_1}'{$row->length_2}\"" );
+            $specifications[] = array( 'Length', "{$row->length_1}'{$row->length_2}\"" );
         if ( $row->shape_name )
             $specifications[] = array( 'Shape', "{$row->shape_name}" );
         if ( $row->background_color_name )
