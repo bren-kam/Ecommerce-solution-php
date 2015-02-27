@@ -1,4 +1,17 @@
-<?php nonce::field( 'upload_logo', '_upload_logo' ); ?>
+<?php
+/**
+ * Logo and phone
+ *
+ * @var array $settings
+ */
+if ( $settings['website-logo'] ) {
+    $logo = $settings['website-logo'];
+} else {
+    $logo = $user->account->logo ? $user->account->logo : '//placehold.it/200x200&text=No Logo';
+}
+
+nonce::field( 'upload_logo', '_upload_logo' );
+?>
 
 <div class="row-fluid">
     <div class="col-lg-12">
@@ -15,7 +28,7 @@
                     <div class="form-group">
                         <label for="logo">Logo:</label>
                         <p>
-                            <img src="<?php echo $user->account->logo ? $user->account->logo : '//placehold.it/200x200&text=No Logo'; ?>" id="logo" />
+                            <img src="<?php echo $logo; ?>" id="logo" />
                             <button type="button" class="btn btn-default btn-sm" id="upload">Upload Logo</button>
                             <div class="progress progress-sm hidden" id="upload-loader">
                                 <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">

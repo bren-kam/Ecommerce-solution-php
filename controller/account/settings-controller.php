@@ -125,14 +125,14 @@ class SettingsController extends BaseController {
             $this->log( 'logo-and-phone', $this->user->contact_name . ' has updated logo and phone settings on ' . $this->user->account->title, $_POST['products'] );
         }
 
-        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link');
+        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link', 'website-logo');
 
         $this->resources->javascript( 'fileuploader', 'settings/logo-and-phone' );
 
         return $this->get_template_response( 'logo-and-phone' )
             ->kb( 117 )
             ->add_title( _('Logo and Phone') )
-            ->set( array( 'settings' => $settings ) )
+            ->set( compact( 'settings' ) )
             ->select( 'logo-and-phone' );
     }
 
