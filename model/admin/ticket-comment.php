@@ -103,7 +103,7 @@ class TicketComment extends ActiveRecordBase {
         if ( $uploads ) {
             $comment_text .= "\n\n--\n\n*Attachments*\n\n";
             foreach( $uploads as $upload ) {
-                $comment_text .= "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload}\n";
+                $comment_text .= "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}\n";
             }
         }
 

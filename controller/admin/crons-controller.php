@@ -543,11 +543,14 @@ class CronsController extends BaseController {
                 }
             }
 
-            // Pull Comments from Jira
+            // Get Issue information from Jira
             echo "Updating Ticket {$ticket->ticket_id} information from Jira issue {$ticket->jira_key}\n";
             $jira_issue = $jira->get_issue( $ticket->jira_id );
             if ( isset( $jira_issue->fields->status ) ) {
-                $status = $jira_issue->fields->status->name == 'Done' ? Ticket::STATUS_CLOSED : Ticket::STATUS_OPEN;
+                if ( $jira_issue->fields->status->name == 'Done' ) {
+                    $ticket->status = Ticket::STATUS_CLOSED;
+                }
+
                 $ticket->status = $status;
                 $ticket->save();
             }

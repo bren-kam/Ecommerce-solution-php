@@ -205,4 +205,17 @@ class Ticket extends ActiveRecordBase {
         return false;
     }
 
+    /**
+     * Update Jira Issue
+     * @return bool
+     */
+    public function update_jira_issue() {
+        library('jira');
+        $jira = new Jira();
+
+        $issue_response = $jira->update_issue_status( $this->jira_id, 33 );  // In Progress
+
+        return false;
+    }
+
 }

@@ -21,6 +21,30 @@ class Jira {
     }
 
     /**
+     * Update Issue
+     * @param  int $issue_id
+     * @param  array $data
+     * @return stdClass
+     */
+    public function update_issue( $issue_id, $data ) {
+        return $this->_request( 'put', "rest/api/2/issue/{$issue_id}", $data );
+    }
+
+    /**
+     * Update Issue Status
+     * @param  int $issue_id
+     * @param  int $status_id
+     * @return stdClass
+     */
+    public function update_issue_status( $issue_id, $status_id ) {
+        return $this->_request( 'post', "rest/api/2/issue/{$issue_id}/transitions?expand=transitions.fields", [
+            "transition" => [
+                "id" => $status_id
+            ]
+        ]);
+    }
+
+    /**
      * Create Comment
      * @param  int $issue_id
      * @param  array $data
