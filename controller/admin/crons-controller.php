@@ -517,10 +517,9 @@ class CronsController extends BaseController {
         $tickets_in_jira = $ticket->list_all( [ ' AND a.`jira_id` IS NOT NULL AND a.`status` = 0 ', '', '', 9999 ] );
         foreach ( $tickets_in_jira as $ticket ) {
 
-            echo "Getting comments for ticket {$ticket->ticket_id} {$ticket->jira_key}\n";
             // Pull Comments from Jira
+            echo "Getting comments for ticket {$ticket->ticket_id} {$ticket->jira_key}\n";
             $jira_comments = $jira->get_comments_by_issue( $ticket->jira_id );
-
             if ( isset($jira_comments->comments) ) {
                 // Get GSR Ticket Comment by Jira ID
                 $ticket_comment_list = $ticket_comment->get_by_ticket( $ticket->ticket_id );
@@ -542,6 +541,15 @@ class CronsController extends BaseController {
                         $tc->create();
                     }
                 }
+            }
+
+            // Pull Comments from Jira
+            echo "Updating Ticket {$ticket->ticket_id} information from Jira issue {$ticket->jira_key}\n";
+            $jira_issue = $jira->get_issue( $ticket->jira_id );
+            if ( isset( $jira_issue->fields->status ) ) {
+                $status = $jira_issue->fields->status->name == 'Done' ? Ticket::STATUS_CLOSED : Ticket::STATUS_OPEN;
+                $ticket->status = $status;
+                $ticket->save();
             }
 
         }
