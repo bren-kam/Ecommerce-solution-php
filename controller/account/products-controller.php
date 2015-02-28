@@ -317,6 +317,13 @@ class ProductsController extends BaseController {
             $index = new IndexProducts();
             $index->index_product_by_sku( $skus, $this->user->account->id );
 
+            // Reassign different product to categories linked for image
+            foreach($skus as $sku){
+                $account_category = new AccountCategory();
+                $account_product = $account_product->get_by_sku($this->user->account->id, $sku);
+                $account_category->reassign_image( $this->user->account->id, $account_product->product_id );
+            }
+
             $this->notify( _('Blocked Products have been successfully updated!') );
             $this->log( 'block-products', $this->user->contact_name . ' blocked products on ' . $this->user->account->title, $skus );
         }
@@ -1135,6 +1142,9 @@ class ProductsController extends BaseController {
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
+        // Reassign different product to categories linked for image
+        $account_category->reassign_image( $this->user->account->id, $account_product->product_id );
+
         // Clear CloudFlare Cache
         $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
 
@@ -1184,6 +1194,9 @@ class ProductsController extends BaseController {
         $index = new IndexProducts();
         $index->index_product( $_GET['pid'], $this->user->account->id );
 
+        // Reassign different product to categories linked for image
+        $account_category->reassign_image( $this->user->account->id, $product->product_id );
+
         // Clear Cloudflare Cache
         $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
 
@@ -1219,6 +1232,7 @@ class ProductsController extends BaseController {
 
         // Get variables
         $account_category->get( $this->user->account->id, $_GET['cid'] );
+        $account_category->product_id = intval( urldecode( $_GET['i'] ) );
         $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
         $account_category->save();
 
