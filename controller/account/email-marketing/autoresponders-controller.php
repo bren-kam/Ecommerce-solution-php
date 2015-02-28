@@ -87,9 +87,11 @@ class AutorespondersController extends BaseController {
 
             if ( $email_autoresponder->id ) {
                 $email_autoresponder->save();
+                $this->log( 'update-auto-responder', $this->user->contact_name . ' updated an autoresponder on ' . $this->user->account->title, $_POST );
             } else {
                 $email_autoresponder->website_id = $this->user->account->id;
                 $email_autoresponder->create();
+                $this->log( 'create-auto-responder', $this->user->contact_name . ' created an autoresponder on ' . $this->user->account->title, $_POST );
             }
 
             $this->notify( _('Your autoresponder has been added/updated successfully!') );
@@ -180,6 +182,8 @@ class AutorespondersController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'delete-auto-responder', $this->user->contact_name . ' deleted an autoresponder on ' . $this->user->account->title, $_GET['eaid'] );
 
         return $response;
     }

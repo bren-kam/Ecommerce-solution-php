@@ -29,7 +29,7 @@
 
                 <?php else: ?>
                     <div class="alert alert-info">
-                        You have not yet sent out an email. <a href="/email-marketing/emails/send/">Click here</a> to get started.
+                        You have not yet sent out an email. <a href="/email-marketing/campaigns/create/">Click here</a> to get started.
                     </div>
                 <?php endif; ?>
             </div>

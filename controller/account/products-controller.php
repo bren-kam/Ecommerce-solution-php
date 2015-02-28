@@ -1932,7 +1932,7 @@ class ProductsController extends BaseController {
             $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
         }
 
-        $this->log( 'update-top-category-sequence', $this->user->contact_name . ' updated top category  sequence ' . $this->user->account->title );
+        $this->log( 'update-top-category-sequence', $this->user->contact_name . ' updated top category sequence ' . $this->user->account->title );
 
         return $response;
     }
