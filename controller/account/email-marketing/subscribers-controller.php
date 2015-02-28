@@ -104,6 +104,7 @@ class SubscribersController extends BaseController {
 
             if ( $email->id ) {
                 $email->save();
+                $this->log( 'update-subscriber', $this->user->contact_name . ' updated an email subscriber on ' . $this->user->account->title, $email->id );
 
                 // Delete existing lists
                 $email_lists = $email_list->get_by_email( $email->id, $this->user->account->id );
@@ -123,6 +124,7 @@ class SubscribersController extends BaseController {
                     $email->website_id = $this->user->account->id;
                     $email->status = 1;
                     $email->create();
+                    $this->log( 'create-subscriber', $this->user->contact_name . ' created an email subscriber on ' . $this->user->account->title, $email->id );
                 }
             }
 
@@ -183,6 +185,8 @@ class SubscribersController extends BaseController {
             $output[] = array( $subscriber->email, $subscriber->name, $subscriber->phone );
         }
 
+        $this->log( 'export-subscribers', $this->user->contact_name . ' exported email subscribers on ' . $this->user->account->title );
+
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-email-subscribers.csv' );
     }
 
@@ -206,6 +210,7 @@ class SubscribersController extends BaseController {
 
             $email->complete_import( $this->user->account->id, $sendgrid, explode( '|', $_POST['hEmailLists'] ) );
 
+            $this->log( 'import-subscribers', $this->user->contact_name . ' imported email subscribers on ' . $this->user->account->title );
             $this->notify( _('Your emails have been imported successfully!') );
             return new RedirectResponse( '/email-marketing/subscribers/' );
         }
@@ -315,6 +320,7 @@ class SubscribersController extends BaseController {
         }
 
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+        $this->log( 'unsubscribe-subscriber', $this->user->contact_name . ' unsubscribed an email subscriber on ' . $this->user->account->title, $email->id );
 
         return $response;
     }
