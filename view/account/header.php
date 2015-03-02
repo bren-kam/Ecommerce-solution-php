@@ -141,6 +141,13 @@
         <!-- sidebar menu start-->
         <ul class="sidebar-menu" id="nav-accordion">
 
+            <li class="sub-menu">
+                <a href="/" <?php if ( $template->in_menu_item('dashboard') ) echo 'class="active"'?>>
+                    <i class="fa fa-tachometer"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
             <?php if ( $user->account->pages ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('website') ) echo 'class="active"' ?>>
