@@ -41,29 +41,28 @@ class HomeController extends BaseController {
         // Setup analytics
         $analytics = new Analytics( $date_start_visitors, $date_end_visitors );
 
-        try {
-            $analytics->setup( $this->user->account );
+        // try {
+        //     $analytics->setup( $this->user->account );
+        //     // Get all the data
+        //     $visitors_data = $analytics->get_metric_by_date( 'visits' );
+        //     if ( !$visitors_data ) {
+        //         return new RedirectResponse( '/analytics/oauth2/' );
+        //     }
 
-            // Get all the data
-            $visitors_data = $analytics->get_metric_by_date( 'visits' );
-            if ( !$visitors_data ) {
-                return new RedirectResponse( '/analytics/oauth2/' );
-            }
+        //     $visitors = array();
+        //     if ( is_array( $visitors_data ) ){
+        //         foreach ( $visitors_data as $r_date => $r_value ) {
+        //             $visitors[date("M d, Y", substr($r_date, 0, -3))] = $r_value;
+        //         }
+        //     }
 
-            $visitors = array();
-            if ( is_array( $visitors_data ) ){
-                foreach ( $visitors_data as $r_date => $r_value ) {
-                    $visitors[date("M d, Y", substr($r_date, 0, -3))] = $r_value;
-                }
-            }
-
-        } catch ( GoogleAnalyticsOAuthException $e ) {
-            $_SESSION['google-analytics-callback'] = '/analytics/';
-            return new RedirectResponse( '/analytics/oauth2/' );
-        } catch ( ModelException $e ) {
-            $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
-            return new RedirectResponse('/');
-        }
+        // } catch ( GoogleAnalyticsOAuthException $e ) {
+        //     $_SESSION['google-analytics-callback'] = '/analytics/';
+        //     return new RedirectResponse( '/analytics/oauth2/' );
+        // } catch ( ModelException $e ) {
+        //     $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
+        //     return new RedirectResponse('/');
+        // }
 
         $date_start_visitors = new DateTime( $date_start_visitors );
         $date_start_visitors = $date_start_visitors->format('n/j/Y');
@@ -97,13 +96,15 @@ class HomeController extends BaseController {
         $date_end_signups = new DateTime( $date_end_signups );
         $date_end_signups = $date_end_signups->format('n/j/Y');
 
+        $kbh_home_articles = [];
+
         $this->resources
                 ->javascript( 'chart', 'jquery.flot/excanvas', 'bootstrap-datepicker', 'home/home' )
                 ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'index' )
             ->select('dashboard')
-            ->set( compact('website_orders', 'website_reaches', 'visitors', 'signups', 'date_start_visitors', 'date_end_visitors', 'date_start_signups', 'date_end_signups') );
+            ->set( compact('website_orders', 'website_reaches', 'visitors', 'signups', 'date_start_visitors', 'date_end_visitors', 'date_start_signups', 'date_end_signups', 'kbh_home_articles') );
     }
 
     /**

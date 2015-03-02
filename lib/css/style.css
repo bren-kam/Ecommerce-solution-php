@@ -4908,3 +4908,27 @@ div#ticket-uploader {
 .kb-article-content img {
   max-width: 100%;
 }
+.twt-feed.purple-bg {
+  background-color: #d23393;
+}
+.twt-feed h1 {
+  font-weight: normal;
+}
+.twt-panel {
+  border: 1px solid #f1f1f1;
+}
+.twt-category {
+  font-size: 14px;
+  text-align: center;
+}
+.twt-category .title {
+  font-size: 20px;
+}
+.twt-category .title i {
+  font-size: 22px;
+  color: #A8C80A;
+}
+.twt-category .purple {
+  color: #D23393;
+  font-weight: bold;
+}
