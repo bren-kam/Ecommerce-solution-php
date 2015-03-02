@@ -120,7 +120,7 @@ class ProductBuilderController extends BaseController {
                 }
 
                 // Reassign different product to categories linked for image
-                $account_category->reassign_image($product->id);
+                $account_category->reassign_image( $account->id, $product->id );
             }
 
             $product->category_id = $_POST['sCategory'];
@@ -338,7 +338,7 @@ class ProductBuilderController extends BaseController {
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
             // Reassign different product to categories linked for image
-            $account_category->reassign_image($product->id);
+            $account_category->reassign_image( $this->user->account->id, $product->id );
 
             // Update index for this product/website
             $index = new IndexProducts();
