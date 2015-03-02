@@ -159,7 +159,7 @@ class RelatedProductsController extends BaseController {
         // Add jquery
         $response->add_response( 'reload_datatable', 'reload_datatable' );
 
-        $this->log( 'delete-related-product-group', $this->user->contact_name . ' deleted  a related product group on ' . $this->user->account->title );
+        $this->log( 'delete-related-product-group', $this->user->contact_name . ' deleted a related product group on ' . $this->user->account->title, $_GET['wpgid'] );
 
         return $response;
     }
