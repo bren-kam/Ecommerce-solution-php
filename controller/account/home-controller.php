@@ -96,7 +96,8 @@ class HomeController extends BaseController {
         $date_end_signups = new DateTime( $date_end_signups );
         $date_end_signups = $date_end_signups->format('n/j/Y');
 
-        $kbh_home_articles = [];
+        $kbh_article = new KnowledgeBaseArticle();
+        $kbh_home_articles = $kbh_article->get_by_ids([124, 48, 92, 137, 53, 120]);
 
         $this->resources
                 ->javascript( 'chart', 'jquery.flot/excanvas', 'bootstrap-datepicker', 'home/home' )
