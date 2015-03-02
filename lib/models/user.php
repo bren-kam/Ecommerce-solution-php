@@ -18,7 +18,7 @@ class User extends ActiveRecordBase {
     const RAFFERTY = 19;
     const KEVIN_DORAN = 251;
     const CATALOG_MANAGER = 2734;
-    const DAVID = 35;
+    const DAVID = 52;
     const DESIGN_TEAM = 1970;
     const DEVELOPMENT = 2696;
 

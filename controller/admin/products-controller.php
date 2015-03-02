@@ -129,10 +129,12 @@ ProductsController extends BaseController {
                     // Recategorize them
                     foreach ( $accounts as $account ) {
                         $account_category->reorganize_categories( $account->id, $category );
+
+                        // Reassign different product to categories linked for image
+                        $account_category->reassign_image( $account->id, $product->id );
                     }
 
-                    // Reassign different product to categories linked for image
-                    $account_category->reassign_image($product->id);
+
                 }
 
                 $product->category_id = $_POST['sCategory'];
@@ -528,7 +530,6 @@ ProductsController extends BaseController {
 
             // Get variables
             $accounts = $account->get_by_product( $product->id );
-            $account_category->reassign_image($product->id);
 
             // Delete product from all accounts
             $account_product->delete_by_product( $product->id );
@@ -543,7 +544,9 @@ ProductsController extends BaseController {
             $product->save();
 
             // Reassign different product to categories linked for image
-            $account_category->reassign_image($product->id);
+            foreach ( $accounts as $account ) {
+                $account_category->reassign_image($account->id, $product->id);
+            }
 
             // Update index for all Websites having this products
             $index = new IndexProducts();

@@ -62,10 +62,14 @@ class FacebookController extends BaseController {
 
             if ( $page->id ) {
                 $page->save();
+
                 $this->notify( _('Your facebook page has been updated successfully!') );
+                $this->log( 'update-facebook-page', $this->user->contact_name . ' updated a facebook page on ' . $this->user->account->title, $page->id );
             } else {
                 $page->create();
+
                 $this->notify( _('Your facebook page has been added successfully!') );
+                $this->log( 'create-facebook-page', $this->user->contact_name . ' created a facebook page on ' . $this->user->account->title, $page->id );
             }
 
             return new RedirectResponse('/social-media/facebook/');
@@ -155,6 +159,7 @@ class FacebookController extends BaseController {
                 $about_us->save();
 
                 $this->notify( _('Your About Us page has been successfully updated!') );
+                $this->log( 'update-social-media-about-us', $this->user->contact_name . ' updated the social media About Us page on ' . $this->user->account->title, $about_us->id );
             }
         }
 
@@ -217,6 +222,7 @@ class FacebookController extends BaseController {
                 $contact_us->save();
 
                 $this->notify( _('Your Contact Us page has been successfully updated!') );
+                $this->log( 'update-social-media-contact-us', $this->user->contact_name . ' updated the social media Contact Us page on ' . $this->user->account->title, $contact_us->id );
             }
         }
 
@@ -275,6 +281,7 @@ class FacebookController extends BaseController {
                 $email_sign_up->save();
 
                 $this->notify( _('Your Email Sign Up page has been successfully updated!') );
+                $this->log( 'update-social-media-email-sign-up', $this->user->contact_name . ' updated the social media Email Sign Up page on ' . $this->user->account->title, $email_sign_up->id );
             }
         }
 
@@ -338,6 +345,7 @@ class FacebookController extends BaseController {
                 $products->save();
 
                 $this->notify( _('Your Products page has been successfully updated!') );
+                $this->log( 'update-social-media-products', $this->user->contact_name . ' updated the social media Products page on ' . $this->user->account->title, $products->id );
             }
         }
 
@@ -400,6 +408,7 @@ class FacebookController extends BaseController {
                 $current_ad->save();
 
                 $this->notify( _('Your Current Ad page has been successfully updated!') );
+                $this->log( 'update-social-media-current-ad', $this->user->contact_name . ' updated the social media Current Ad page on ' . $this->user->account->title, $current_ad->id );
             }
         }
 
@@ -449,6 +458,7 @@ class FacebookController extends BaseController {
             $facebook_site->save();
 
             $this->notify( _('Your Facebook Site page has been successfully updated!') );
+            $this->log( 'update-social-media-facebook-site', $this->user->contact_name . ' updated the social media Facebook Site page on ' . $this->user->account->title, $facebook_site->id );
         }
 
         $this->resources
@@ -515,6 +525,7 @@ class FacebookController extends BaseController {
                 $share_and_save->save();
 
                 $this->notify( _('Your Share And Save page has been successfully updated!') );
+                $this->log( 'update-social-media-share-and-save', $this->user->contact_name . ' updated the social media Share and Save page on ' . $this->user->account->title, $share_and_save->id );
             }
         }
 
@@ -636,6 +647,7 @@ class FacebookController extends BaseController {
                 $sm_sweepstakes->save();
 
                 $this->notify( _('Your Sweepstakes page has been successfully updated!') );
+                $this->log( 'update-social-media-sweepstakes', $this->user->contact_name . ' updated the social media Sweepstakes page on ' . $this->user->account->title, $sm_sweepstakes->id );
             }
         }
 
@@ -763,6 +775,7 @@ class FacebookController extends BaseController {
                 $fan_offer->save();
 
                 $this->notify( _('Your Fan Offer page has been successfully updated!') );
+                $this->log( 'update-social-media-fan-offer', $this->user->contact_name . ' updated the social media Fan Offer page on ' . $this->user->account->title, $fan_offer->id );
             }
         }
 
@@ -809,6 +822,7 @@ class FacebookController extends BaseController {
             $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved!') );
+            $this->log( 'update-social-media-settings', $this->user->contact_name . ' updated social media settings on ' . $this->user->account->title );
 
             // Refresh to get all the changes
             return new RedirectResponse('/social-media/facebook/settings/');
@@ -896,6 +910,7 @@ class FacebookController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+        $this->log( 'delete-facebook-page', $this->user->contact_name . ' deleted a facebook page on ' . $this->user->account->title, $_GET['smfbpid'] );
 
         return $response;
     }

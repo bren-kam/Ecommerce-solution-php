@@ -164,6 +164,8 @@ class ReachesController extends BaseController {
 
         $reach_comment->create();
 
+        $this->log( 'comment-on-reach', $this->user->contact_name . ' commented on a reach on ' . $this->user->account->title, $_POST );
+
         // Send emails
         $comment = strip_tags( $reach_comment->comment );
 
@@ -229,6 +231,8 @@ class ReachesController extends BaseController {
         // Then delete ticket
         $reach_comment->remove();
 
+        $this->log( 'delete-reach-comment', $this->user->contact_name . ' deleted a reach comment on ' . $this->user->account->title, $reach_comment->id );
+
         return $response;
     }
 
@@ -257,6 +261,8 @@ class ReachesController extends BaseController {
 
         // Update ticket
         $reach->save();
+
+        $this->log( 'update-reach-assigned-to', $this->user->contact_name . ' changed who a reach was assigned to on  ' . $this->user->account->title, $reach->id );
 
         // Send out email
         $priorities = array(
@@ -306,6 +312,8 @@ class ReachesController extends BaseController {
         // Update
         $reach->save();
 
+        $this->log( 'update-reach-priority', $this->user->contact_name . ' updated reach priority on ' . $this->user->account->title, $reach->id )
+        ;
         return $response;
     }
 
@@ -334,6 +342,8 @@ class ReachesController extends BaseController {
 
         // Update
         $reach->save();
+
+        $this->log( 'update-reach-status', $this->user->contact_name . ' updated reach status on ' . $this->user->account->title, $reach->id );
 
         return $response;
     }

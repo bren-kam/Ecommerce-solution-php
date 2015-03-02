@@ -91,6 +91,8 @@ class AuthorizedUsersController extends BaseController {
                 $auth_user_website->shopping_cart = ( isset( $_POST['cbShoppingCart'] ) ) ? 1 : 0;
                 $auth_user_website->geo_marketing = ( isset( $_POST['cbGeoMarketing'] ) ) ? 1 : 0;
                 $auth_user_website->save();
+
+                $this->log( 'update-authorized-user', $this->user->contact_name . ' update authorized user on ' . $this->user->account->title, $_POST );
             } else {
                 if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST )) {
                     $role = ( 'representative' == $_POST['sRole'] ) ? User::ROLE_MARKETING_SPECIALIST : User::ROLE_AUTHORIZED_USER;
@@ -111,6 +113,8 @@ class AuthorizedUsersController extends BaseController {
                         , isset( $_POST['cbShoppingCart'] )
                         , $role
                     );
+
+                    $this->log( 'add-authorized-user', $this->user->contact_name . ' added an authorized user on ' . $this->user->account->title, $_POST );
                 } catch ( ModelException $e ) {
                     $this->notify( _('This user already has an account which is ineligible to be added as an authorized user, please use another email address.' ), false );
                     $success = false;
@@ -198,7 +202,7 @@ class AuthorizedUsersController extends BaseController {
      * 
      * 
      */
-    public function send_activation_link() {
+    protected function send_activation_link() {
          // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
         
@@ -209,7 +213,9 @@ class AuthorizedUsersController extends BaseController {
         // Send activation link
         $auth_user_website = new AuthUserWebsite();
         $auth_user_website->send_activation_link( $_GET["uid"] , $this->user->account );
-        
+
+        $this->log( 'send-authorized-user-activation-link', $this->user->contact_name . ' send an activation link to an authorized user on ' . $this->user->account->title, $_GET['uid'] );
+
         return $response;
     }
 
@@ -237,6 +243,8 @@ class AuthorizedUsersController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'delete-authorized-user', $this->user->contact_name . ' deleted an authorized user on  ' . $this->user->account->title, $_GET['uid'] );
 
         return $response;
     }

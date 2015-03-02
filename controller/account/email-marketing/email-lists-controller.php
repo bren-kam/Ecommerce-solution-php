@@ -92,6 +92,8 @@ class EmailListsController extends BaseController {
 
                 if ( $success )
                     $email_list->save();
+
+                $this->log( 'update-email-list', $this->user->contact_name . ' updated an email list for ' . $this->user->account->title, $email_list->id );
             } else {
                 $email_list->website_id = $this->user->account->id;
 
@@ -116,6 +118,8 @@ class EmailListsController extends BaseController {
 
                 if ( $success )
                     $email_list->create();
+
+                $this->log( 'create-email-list', $this->user->contact_name . ' created an email list for ' . $this->user->account->title, $email_list->id );
             }
 
             if ( $success ) {
@@ -214,6 +218,8 @@ class EmailListsController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'delete-email-list', $this->user->contact_name . ' deleted an email list for ' . $this->user->account->title, $email_list->id );
 
         return $response;
     }

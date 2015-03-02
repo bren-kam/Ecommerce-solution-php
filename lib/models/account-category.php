@@ -472,26 +472,43 @@ class AccountCategory extends ActiveRecordBase {
     /**
      * Update category image and linked product
      *
+     * @param $website_id
      * @param $product_id
      * @return bool
      */
-    public function reassign_image( $product_id ){
+    public function reassign_image( $website_id, $product_id ){
         // Find distinct categories which got affected
         $categories = $this->prepare(
-            "SELECT DISTINCT wc.`category_id`, wc.`website_id` FROM `website_categories` AS wc LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = wc.`product_id`) LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wc.`product_id` = :product_id AND ( p.`publish_visibility` = 'deleted' OR p.`status` = 'discontinued' )"
+            "SELECT DISTINCT wc.`category_id`, wc.`website_id`
+            FROM `website_categories` AS wc
+            LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = wc.`product_id` AND wc.`website_id` = wp.`website_id` )
+            LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` )
+            WHERE wc.`website_id` = :website_id AND wp.`product_id` = :product_id AND ( wp.`blocked` = 1 OR wp.`active` = 0 OR  p.`publish_visibility` = 'deleted' OR p.`status` = 'discontinued' )"
             , 'i'
-            , array( ':product_id' => $product_id )
+            , array( ':website_id' => $website_id, ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountCategory' );
 
-        //Find a product which can be used to replace the image
         foreach ( $categories as $category) {
-            $product = $this->prepare( "select p.`product_id`, pa.`image` AS image, i.`name` AS industry FROM products AS p LEFT JOIN product_images AS pa ON (pa.product_id = p.product_id)  LEFT JOIN industries as i ON ( i.`industry_id` = p.`industry_id`) WHERE p.`category_id` = :category_id AND p.`status` = 'in-stock' AND p.`publish_visibility` = 'public' LIMIT 1"
-                , 'i'
-                , array( ':category_id' => $category->category_id )
+            //Find a product which can be used to replace the image
+            $product = $this->prepare(
+                "SELECT wp.`product_id`, p.`name`, p.`category_id`, c.`parent_category_id`, c.`name`, pi.`image` AS image, i.`name` AS industry , p.`status`, p.`publish_visibility`
+                FROM `website_products` AS wp
+                LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` )
+                LEFT JOIN `website_categories` as wc ON (wc.`category_id` = p.`category_id` AND wp.`website_id` = wc.`website_id` )
+                LEFT JOIN `categories` as c ON ( wc.`category_id` = c.`category_id` )
+                LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` )
+                LEFT JOIN `industries` as i ON ( i.`industry_id` = p.`industry_id`)
+                WHERE
+                wp.`website_id` = :website_id
+                AND (c.`category_id` = :category_id  OR c.`parent_category_id` = :category_id)
+                AND p.`status` = 'in-stock' AND p.`publish_visibility` = 'public'
+                ORDER BY  p.`category_id` ASC LIMIT 1"
+                , 'ii'
+                , array( ':website_id' => $website_id, ':category_id' => $category->category_id )
             )->get_row( PDO::FETCH_CLASS, 'Product' );
 
             if( $product ){
-                $image_url = $product->get_image_url($product->image, 'small', $product->industry, $product->id );
+                $image_url = $product->get_image_url($product->image, 'small', $product->industry, $product->product_id );
 
                 $account_category = new AccountCategory();
                 $account_category->get($category->website_id, $category->category_id);
@@ -503,6 +520,23 @@ class AccountCategory extends ActiveRecordBase {
         }
 
         return $categories;
+    }
+
+    /**
+     * Get Website Category with Stale Images
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_all_with_stale_images( ) {
+        return $this->get_results(
+            "SELECT wc.`website_id`, wc.`category_id`, p.`product_id`, wc.`title` , wc.`image_url`, wp.`blocked`, wp.`active`, p.`publish_visibility`
+            FROM `website_categories` AS wc
+            LEFT JOIN `website_products` AS wp ON (wp.`product_id` = wc.`product_id` AND wc.`website_id`=wp.`website_id`)
+            LEFT JOIN `products` AS p ON (p.`product_id` = wp.`product_id`)
+            WHERE
+            (wp.`blocked`=1 OR wp.`active`=0 OR p.`publish_visibility`='deleted' OR p.`publish_visibility`='discontinued' )
+            ORDER BY wc.`title`", PDO::FETCH_ASSOC );
     }
 
 }

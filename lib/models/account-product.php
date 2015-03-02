@@ -811,6 +811,27 @@ class AccountProduct extends ActiveRecordBase {
 	}
 
     /**
+     * Fetch product by SKU
+     *
+     * @param int $account_id
+     * @param string $sku
+     * @return array
+     */
+    public function get_by_sku( $account_id, $sku){
+        if( empty( $account_id ) || empty ( $sku ) )
+            return;
+
+        $account_id = (int) $account_id;
+
+        return $this->prepare(
+                'SELECT p.`product_id`, p.`name`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p  ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND p.`sku` LIKE :sku'
+                , 'i'
+                , array( ':account_id' => $account_id, ':sku' => $sku.'%'  )
+            )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+
+    /**
      * Block Products
 	 *
      * @param int $account_id

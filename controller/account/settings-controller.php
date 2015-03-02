@@ -84,6 +84,7 @@ class SettingsController extends BaseController {
             }
 
             $this->notify( _('You have successfully updated your settings!') );
+            $this->log( 'update-settings', $this->user->contact_name . ' has updated his settings', $_POST );
         }
 
         return $this->get_template_response( 'index' )
@@ -121,16 +122,17 @@ class SettingsController extends BaseController {
 
             // Notification
             $this->notify( _('The "Logo and Phone" section has been updated successfully!' ) );
+            $this->log( 'logo-and-phone', $this->user->contact_name . ' has updated logo and phone settings on ' . $this->user->account->title, $_POST['products'] );
         }
 
-        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link');
+        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link', 'website-logo');
 
         $this->resources->javascript( 'fileuploader', 'settings/logo-and-phone' );
 
         return $this->get_template_response( 'logo-and-phone' )
             ->kb( 117 )
             ->add_title( _('Logo and Phone') )
-            ->set( array( 'settings' => $settings ) )
+            ->set( compact( 'settings' ) )
             ->select( 'logo-and-phone' );
     }
 
@@ -178,9 +180,11 @@ class SettingsController extends BaseController {
                 $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
                 $subject = $this->user->account->title . ' Updated Billing Information';
                 $message = $this->user->contact_name . ' has updated the billing information for ' . $this->user->account->title . '.';
-                fn::mail('kerry@greysuitretail.com', $success, $message, 'noreply@greysuitretail.com');
+                fn::mail('david@greysuitretail.com', $subject, $message, 'noreply@greysuitretail.com');
                 $this->notify('Your billing information has been successfully updated!');
+                $this->log( 'billing-information', $this->user->contact_name . ' updated their billing information on ' . $this->user->account->title );
             } else {
+                $this->log( 'billing-information', $this->user->contact_name . ' failed to updated their billing information on ' . $this->user->account->title );
                 $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
 
                 $ticket = new Ticket();
@@ -292,11 +296,13 @@ class SettingsController extends BaseController {
                     $ticket->create();
 
                     $this->notify('Your services changes have been successfully submitted!');
+                    $this->log( 'update-services', $this->user->contact_name . ' changed their services on ' . $this->user->account->title, $_POST );
 
                     // Reget the settings
                     $settings = $this->user->account->get_settings('arb-subscription-id', 'arb-subscription-amount', 'arb-subscription-gateway');
                 } else {
                     $this->notify('There was a problem while trying to update your account. A ticket has been submitted and you will be contacted shortly.', false);
+                    $this->log( 'update-services-failed', $this->user->contact_name . ' failed to changed their services on ' . $this->user->account->title, $_POST );
 
                     $ticket = new Ticket();
                     $ticket->user_id = $this->user->id;
@@ -387,6 +393,8 @@ class SettingsController extends BaseController {
 
         // Add the response
         $response->add_response( 'image', $account_file->file_path );
+
+        $this->log( 'upload-logo', $this->user->contact_name . ' uploaded a new logo on ' . $this->user->account->title );
 
         return $response;
     }
