@@ -245,7 +245,7 @@ class AuthorizedUsersController extends BaseController {
         $response->add_response( 'reload_datatable', 'reload_datatable' );
 
         $this->log( 'delete-authorized-user', $this->user->contact_name . ' deleted an authorized user on  ' . $this->user->account->title, $_GET['uid'] );
-        
+
         return $response;
     }
 }
