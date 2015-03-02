@@ -57,8 +57,10 @@ class RelatedProductsController extends BaseController {
 
                 if ( $group->id ) {
                     $group->save();
+                    $this->log( 'update-related-product-group', $this->user->contact_name . ' updated a related product group on ' . $this->user->account->title, $group->id );
                 } else {
                     $group->create();
+                    $this->log( 'create-related-product-group', $this->user->contact_name . ' created a related product group on ' . $this->user->account->title, $group->id );
                 }
 
                 $group->remove_relations();
@@ -156,6 +158,8 @@ class RelatedProductsController extends BaseController {
 
         // Add jquery
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'delete-related-product-group', $this->user->contact_name . ' deleted  a related product group on ' . $this->user->account->title );
 
         return $response;
     }

@@ -139,6 +139,8 @@ class ProductBuilderController extends BaseController {
             // Update the product
             $product->save();
 
+            $this->log( 'update-custom-product', $this->user->contact_name . ' updated a custom product on ' . $this->user->account->title, $product->id );
+
             // Delete all the things
             $product->delete_images();
             $product->delete_specifications();
@@ -225,6 +227,8 @@ class ProductBuilderController extends BaseController {
         $product->get( $product->id );
         $product->website_id = $this->user->account->id;
         $product->save();
+
+        $this->log( 'clone-custom-product', $this->user->contact_name . ' cloned a custom product on on ' . $this->user->account->title, $product->id );
 
         // Redirect to the new cloned product
         return new RedirectResponse( url::add_query_arg( 'pid', $product->id, '/products/product-builder/add-edit/' ) );
@@ -339,6 +343,8 @@ class ProductBuilderController extends BaseController {
             // Update index for this product/website
             $index = new IndexProducts();
             $index->index_product( $product->id, $this->user->account->id );
+
+            $this->log( 'delete-custom-product', $this->user->contact_name . ' deleted a custom product on on ' . $this->user->account->title, $product->id );
         }
 
         // Redraw the table
@@ -364,6 +370,8 @@ class ProductBuilderController extends BaseController {
         $product->website_id = $this->user->account->id;
         $product->user_id_created = $this->user->id;
         $product->create();
+
+        $this->log( 'create-custom-product', $this->user->contact_name . ' created a custom product on on ' . $this->user->account->title, $product->id );
 
         // Change Form
         $response->add_response( 'product_id', $product->id );
@@ -462,6 +470,8 @@ class ProductBuilderController extends BaseController {
 
         // Get image url
         $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";
+
+        $this->log( 'upload-custom-product-image', $this->user->contact_name . ' uploaded a custom product image on ' . $this->user->account->title, $product->id );
 
         $response->add_response( 'image_url', $image_url );
         $response->add_response( 'image_name', $image_name );
