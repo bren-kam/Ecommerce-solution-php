@@ -43,7 +43,6 @@ class HomeController extends BaseController {
 
         try {
             $analytics->setup( $this->user->account );
-
             // Get all the data
             $visitors_data = $analytics->get_metric_by_date( 'visits' );
             if ( !$visitors_data ) {
@@ -97,13 +96,16 @@ class HomeController extends BaseController {
         $date_end_signups = new DateTime( $date_end_signups );
         $date_end_signups = $date_end_signups->format('n/j/Y');
 
+        $kbh_article = new KnowledgeBaseArticle();
+        $kbh_home_articles = $kbh_article->get_by_ids([124, 48, 92, 137, 53, 120]);
+
         $this->resources
                 ->javascript( 'chart', 'jquery.flot/excanvas', 'bootstrap-datepicker', 'home/home' )
                 ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'index' )
             ->select('dashboard')
-            ->set( compact('website_orders', 'website_reaches', 'visitors', 'signups', 'date_start_visitors', 'date_end_visitors', 'date_start_signups', 'date_end_signups') );
+            ->set( compact('website_orders', 'website_reaches', 'visitors', 'signups', 'date_start_visitors', 'date_end_visitors', 'date_start_signups', 'date_end_signups', 'kbh_home_articles') );
     }
 
     /**
