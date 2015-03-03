@@ -1,0 +1,22 @@
+.panel .panel-heading {
+  background-color: #5CBDF0;
+  color: #fff;
+}
+.panel table {
+  border: 1px solid #ddd;
+}
+.panel table .cell-no-wrap {
+  white-space: nowrap;
+}
+.panel .white-box {
+  margin-top: 63px;
+  padding: 115px 15px 0px 15px;
+  border: 1px dashed #ddd;
+  background-color: #fff;
+  height: 205px;
+}
+.panel .white-box p {
+  color: #ddd;
+  font-size: 24px;
+  text-align: center;
+}
