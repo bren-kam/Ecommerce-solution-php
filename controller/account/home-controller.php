@@ -105,7 +105,8 @@ class HomeController extends BaseController {
 
         $this->resources
                 ->javascript( 'chart', 'jquery.flot/excanvas', 'bootstrap-datepicker', 'home/home' )
-                ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
+                ->css_url( Config::resource( 'bootstrap-datepicker-css' ) )
+                ->css('home/home');
 
         return $this->get_template_response( 'index' )
             ->select('dashboard')
