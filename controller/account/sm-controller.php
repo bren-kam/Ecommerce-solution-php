@@ -76,6 +76,7 @@ class SmController extends BaseController {
         if ( $website_sm_account->id ) {
             $website_sm_account->remove();
             $this->notify( 'Account Removed' );
+            $this->log( 'delete-social-media-account', $this->user->contact_name . ' deleted a social media account on ' . $this->user->account->title, $_GET['id'] );
         }
 
         return $response;
@@ -132,8 +133,8 @@ class SmController extends BaseController {
                     break;
             }
 
-
             $this->notify( 'Settings saved!' );
+            $this->log( 'update-social-media-settings', $this->user->contact_name . ' updated social media settings on ' . $this->user->account->title );
             return new RedirectResponse( '/sm/' );
         }
         return $this->get_template_response('settings')
@@ -149,6 +150,7 @@ class SmController extends BaseController {
         library('facebook_v4/facebook');
         Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
         $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
+        $this->log( 'request-facebook-connection', $this->user->contact_name . ' tried to connect to facebook on ' . $this->user->account->title );
 
         url::redirect( $helper->getLoginUrl( ['publish_actions', 'manage_pages'] ) );
     }
@@ -193,8 +195,10 @@ class SmController extends BaseController {
             $website_sm_account->photo = '';
             $website_sm_account->create();
             $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+            $this->log( 'facebook-connected', $this->user->contact_name . ' connected to Facebook on ' . $this->user->account->title );
         } else {
             $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
+            $this->log( 'facebook-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
         }
         $website_sm_account->auth_information_array = [
             'access-token' => $token
@@ -220,6 +224,8 @@ class SmController extends BaseController {
             'oauth/authorize'
             , ['oauth_token' => $request_token['oauth_token']]
         ) );
+
+        $this->log( 'request-twitter-connection', $this->user->contact_name . ' tried to connect to Twitter on ' . $this->user->account->title );
     }
 
     /**
@@ -266,8 +272,10 @@ class SmController extends BaseController {
             $website_sm_account->photo = '';
             $website_sm_account->create();
             $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+            $this->log( 'twitter-connected', $this->user->contact_name . ' connected to Twitter on ' . $this->user->account->title );
         } else {
             $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
+            $this->log( 'twitter-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
         }
         $website_sm_account->auth_information_array = [
             'access-token' => $token['oauth_token']
@@ -284,7 +292,6 @@ class SmController extends BaseController {
      * @return bool
      */
     protected function get_logged_in_user() {
-
         // connect_* are public, but need a referer and a website-id
         $public_url = strpos( $_SERVER['REQUEST_URI'], '/sm/facebook-connect/' ) !== FALSE
                    || strpos( $_SERVER['REQUEST_URI'], '/sm/twitter-connect/' ) !== FALSE;
