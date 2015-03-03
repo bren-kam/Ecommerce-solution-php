@@ -9,8 +9,6 @@ class HomeController extends BaseController {
 
         $this->view_base = 'home/';
         $this->title = 'Dashboard';
-
-        var_dump(security::encrypt( 'CE_2077500-', ENCRYPTION_KEY, true ));die;
     }
 
     /**
