@@ -924,6 +924,9 @@ class AccountsController extends BaseController {
 
                 $account->set_settings( array( 'cloudflare-zone-id' => $cloudflare_zone_id ) );
 
+                $server = new Server();
+                $server->get( $account->server_id );
+
                 // Get records from Route 53
                 $r53->getHostedZone( $zone_id );
                 $records = $r53->listResourceRecordSets( $zone_id );
@@ -932,12 +935,24 @@ class AccountsController extends BaseController {
                     lib( 'misc/dns-sort' );
                     new DNSSort( $records['ResourceRecordSets'] );
                 }
+                if ( !empty( $records['ResourceRecordSets'] ) ) {
+                    foreach ($records['ResourceRecordSets'] as $record) {
+                        if (in_array($record['Type'], array('NS', 'SOA')))
+                            continue;
 
-                foreach ( $records['ResourceRecordSets'] as $record ) {
-                    if ( in_array( $record['Type'], array( 'NS', 'SOA' ) ) )
-                        continue;
-
-                    $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'], url::domain($account->domain, false) );
+                        $cloudflare->create_dns_record($cloudflare_zone_id, $record['Type'], $record['Name'], current($record['ResourceRecords']), $record['TTL'], url::domain($account->domain, false));
+                    }
+                } else {
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $full_domain_name, $server->nodebalancer_ip, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'MX', $full_domain_name, '0 mail.' . $full_domain_name, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"', '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'mail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'CNAME', 'www.' . $full_domain_name, $full_domain_name, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'ftp.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'cpanel.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'whm.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'webmail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'webdisk.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
                 }
 
                 // See if they need to upgrade to pro
