@@ -1,6 +1,6 @@
 .panel .panel-heading {
   background-color: #5CBDF0;
-  color: #fff;
+  color: #fff!important;
 }
 .panel table {
   border: 1px solid #ddd;
