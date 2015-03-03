@@ -79,13 +79,19 @@
                                                 <a href="/shopping-cart/orders/view/?woid=<?php echo $order->website_order_id ?>"><strong><?php echo $order->name . ' - ' . reset($order->items)->name ?></strong></a>
                                             </td>
                                             <td class="text-right"><?php echo (new DateTime($order->date_created))->format('m/d/Y') ?></td>
-                                            <td class="text-right">$ <?php echo number_format($order->total_cost, 2) ?></td>
+                                            <td class="text-right cell-no-wrap">$ <?php echo number_format($order->total_cost, 2) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
 
                             <p><a href="/shopping-cart/orders/" class="btn btn-primary">See All</a></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="col-lg-6">
+                            <div class="white-box">
+                                <p>New Orders not Available</p>
+                            </div>
                         </div>
                     <?php endif; ?>
 
@@ -107,6 +113,12 @@
                             </table>
 
                             <p><a href="/product/reaches/" class="btn btn-primary">See All</a></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="col-lg-6">
+                            <div class="white-box">
+                                <p>New Reaches not Available</p>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -133,6 +145,14 @@
                         <div id="visitors-graph"></div>
                     </div>
                 </div>
+                <?php else: ?>
+                    <div class="row-fluid">
+                        <div class="col-lg-12">
+                            <div class="white-box">
+                                <p>Number of Visitors not Available</p>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <?php if ( $user->account->email_marketing == 1 ): ?>
@@ -157,9 +177,15 @@
                         <div id="signups-graph"></div>
                     </div>
                 </div>
+                <?php else: ?>
+                    <div class="row-fluid">
+                        <div class="col-lg-12">
+                            <div class="white-box">
+                                <p>Email Signups not Available</p>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
-
-
 
             </div>
         </section>

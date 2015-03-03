@@ -41,27 +41,31 @@ class HomeController extends BaseController {
         // Setup analytics
         $analytics = new Analytics( $date_start_visitors, $date_end_visitors );
 
-        try {
-            $analytics->setup( $this->user->account );
-            // Get all the data
-            $visitors_data = $analytics->get_metric_by_date( 'visits' );
-            if ( !$visitors_data ) {
-                return new RedirectResponse( '/analytics/oauth2/' );
-            }
-
-            $visitors = array();
-            if ( is_array( $visitors_data ) ){
-                foreach ( $visitors_data as $r_date => $r_value ) {
-                    $visitors[] = array( $r_date, $r_value );
+        $visitors_data = [];
+        $visitors = [];
+        if ( $this->user->account->live ) {
+            try {
+                $analytics->setup( $this->user->account );
+                // Get all the data
+                $visitors_data = $analytics->get_metric_by_date( 'visits' );
+                if ( !$visitors_data ) {
+                    return new RedirectResponse( '/analytics/oauth2/' );
                 }
-            }
 
-        } catch ( GoogleAnalyticsOAuthException $e ) {
-            $_SESSION['google-analytics-callback'] = '/analytics/';
-            return new RedirectResponse( '/analytics/oauth2/' );
-        } catch ( ModelException $e ) {
-            $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
-            return new RedirectResponse('/');
+                $visitors = array();
+                if ( is_array( $visitors_data ) ){
+                    foreach ( $visitors_data as $r_date => $r_value ) {
+                        $visitors[] = array( $r_date, $r_value );
+                    }
+                }
+
+            } catch ( GoogleAnalyticsOAuthException $e ) {
+                $_SESSION['google-analytics-callback'] = '/analytics/';
+                return new RedirectResponse( '/analytics/oauth2/' );
+            } catch ( ModelException $e ) {
+                $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
+                return new RedirectResponse('/');
+            }
         }
 
         $date_start_visitors = new DateTime( $date_start_visitors );
