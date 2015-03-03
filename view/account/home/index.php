@@ -7,8 +7,12 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var string $date_start
- * @var string $date_end
+ * @var string $date_start_visitors
+ * @var string $date_end_visitors
+ * @var string $date_start_signups
+ * @var string $date_end_signups
+ * @var array $visitors
+ * @var array $signups
  */
 ?>
 
@@ -126,7 +130,7 @@
                             </div>
                         </h2>
 
-                        <canvas id="visitors-graph" width="1200" height="250" style="padding: 15px;margin-left: -15px;"></canvas>
+                        <div id="visitors-graph"></div>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -150,7 +154,7 @@
                             </div>
                         </h2>
 
-                        <canvas id="signups-graph" width="1200" height="250" style="padding: 15px;margin-left: -15px;"></canvas>
+                        <div id="signups-graph"></div>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -164,6 +168,6 @@
 
 
 <script>
-    var AnalyticsSettings = <?php echo json_encode( array( 'plotting_label' => 'Page Views', 'visitors_keys' => array_keys($visitors), 'visitors_values' => array_values($visitors), 'signups_keys' => array_keys($signups), 'signups_values' => array_values($signups) ) ); ?>;
+    var AnalyticsSettings = <?php echo json_encode( array( 'visitors' => $visitors, 'signups' => $signups ) ); ?>;
 </script>
 

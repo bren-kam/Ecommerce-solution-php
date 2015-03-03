@@ -52,7 +52,7 @@ class HomeController extends BaseController {
             $visitors = array();
             if ( is_array( $visitors_data ) ){
                 foreach ( $visitors_data as $r_date => $r_value ) {
-                    $visitors[date("M d, Y", substr($r_date, 0, -3))] = $r_value;
+                    $visitors[] = array( $r_date, $r_value );
                 }
             }
 
@@ -87,7 +87,7 @@ class HomeController extends BaseController {
         $signups = array();
         if ( is_array( $signups_data ) ){
             foreach ( $signups_data as $index => $signup ) {
-                $signups[date( "M d, Y", strtotime($signup['date']))] = $signup['total'];
+                $signups[] = array( strtotime($signup['date']) . "000" , $signup['total'] );
             }
         }
 
@@ -100,7 +100,8 @@ class HomeController extends BaseController {
         $kbh_home_articles = $kbh_article->get_by_ids([124, 48, 92, 137, 53, 120]);
 
         $this->resources
-                ->javascript( 'chart', 'jquery.flot/excanvas', 'bootstrap-datepicker', 'home/home' )
+                ->css( 'home/home' )
+                ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/curvedLines', 'jquery.flot/excanvas', 'swfobject', 'home/home', 'bootstrap-datepicker' )
                 ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'index' )
