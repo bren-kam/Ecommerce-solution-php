@@ -191,6 +191,8 @@ class KbController extends BaseController {
         $rating->rating = (int) $_GET['r'];
         $rating->create();
 
+        $this->log( 'rate-kb-article', $this->user->contact_name . ' rated a Knowledge Base article on ' . $this->user->account->title, $_GET['aid'] );
+
         // If they didn't think it was helpful, let's make note of it so we can help them
         if ( KnowledgeBaseArticleRating::NEGATIVE == $_GET['r'] ) {
             // Get the article
@@ -246,5 +248,3 @@ class KbController extends BaseController {
         return $response;
     }
 }
-
-
