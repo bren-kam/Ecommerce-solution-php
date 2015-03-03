@@ -41,27 +41,31 @@ class HomeController extends BaseController {
         // Setup analytics
         $analytics = new Analytics( $date_start_visitors, $date_end_visitors );
 
-        try {
-            $analytics->setup( $this->user->account );
-            // Get all the data
-            $visitors_data = $analytics->get_metric_by_date( 'visits' );
-            if ( !$visitors_data ) {
-                return new RedirectResponse( '/analytics/oauth2/' );
-            }
-
-            $visitors = array();
-            if ( is_array( $visitors_data ) ){
-                foreach ( $visitors_data as $r_date => $r_value ) {
-                    $visitors[date("M d, Y", substr($r_date, 0, -3))] = $r_value;
+        $visitors_data = [];
+        $visitors = [];
+        if ( $this->user->account->live ) {
+            try {
+                $analytics->setup( $this->user->account );
+                // Get all the data
+                $visitors_data = $analytics->get_metric_by_date( 'visits' );
+                if ( !$visitors_data ) {
+                    return new RedirectResponse( '/analytics/oauth2/' );
                 }
-            }
 
-        } catch ( GoogleAnalyticsOAuthException $e ) {
-            $_SESSION['google-analytics-callback'] = '/analytics/';
-            return new RedirectResponse( '/analytics/oauth2/' );
-        } catch ( ModelException $e ) {
-            $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
-            return new RedirectResponse('/');
+                $visitors = array();
+                if ( is_array( $visitors_data ) ){
+                    foreach ( $visitors_data as $r_date => $r_value ) {
+                        $visitors[] = array( $r_date, $r_value );
+                    }
+                }
+
+            } catch ( GoogleAnalyticsOAuthException $e ) {
+                $_SESSION['google-analytics-callback'] = '/analytics/';
+                return new RedirectResponse( '/analytics/oauth2/' );
+            } catch ( ModelException $e ) {
+                $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
+                return new RedirectResponse('/');
+            }
         }
 
         $date_start_visitors = new DateTime( $date_start_visitors );
@@ -87,7 +91,7 @@ class HomeController extends BaseController {
         $signups = array();
         if ( is_array( $signups_data ) ){
             foreach ( $signups_data as $index => $signup ) {
-                $signups[date( "M d, Y", strtotime($signup['date']))] = $signup['total'];
+                $signups[] = array( strtotime($signup['date']) . "000" , $signup['total'] );
             }
         }
 
@@ -100,7 +104,8 @@ class HomeController extends BaseController {
         $kbh_home_articles = $kbh_article->get_by_ids([124, 48, 92, 137, 53, 120]);
 
         $this->resources
-                ->javascript( 'chart', 'jquery.flot/excanvas', 'bootstrap-datepicker', 'home/home' )
+                ->css( 'home/home' )
+                ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/curvedLines', 'jquery.flot/excanvas', 'swfobject', 'home/home', 'bootstrap-datepicker' )
                 ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'index' )

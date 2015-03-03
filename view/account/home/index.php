@@ -7,8 +7,12 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var string $date_start
- * @var string $date_end
+ * @var string $date_start_visitors
+ * @var string $date_end_visitors
+ * @var string $date_start_signups
+ * @var string $date_end_signups
+ * @var array $visitors
+ * @var array $signups
  */
 ?>
 
@@ -75,13 +79,19 @@
                                                 <a href="/shopping-cart/orders/view/?woid=<?php echo $order->website_order_id ?>"><strong><?php echo $order->name . ' - ' . reset($order->items)->name ?></strong></a>
                                             </td>
                                             <td class="text-right"><?php echo (new DateTime($order->date_created))->format('m/d/Y') ?></td>
-                                            <td class="text-right">$ <?php echo number_format($order->total_cost, 2) ?></td>
+                                            <td class="text-right cell-no-wrap">$ <?php echo number_format($order->total_cost, 2) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
 
                             <p><a href="/shopping-cart/orders/" class="btn btn-primary">See All</a></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="col-lg-6">
+                            <div class="white-box">
+                                <p>New Orders not Available</p>
+                            </div>
                         </div>
                     <?php endif; ?>
 
@@ -103,6 +113,12 @@
                             </table>
 
                             <p><a href="/product/reaches/" class="btn btn-primary">See All</a></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="col-lg-6">
+                            <div class="white-box">
+                                <p>New Reaches not Available</p>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -126,9 +142,17 @@
                             </div>
                         </h2>
 
-                        <canvas id="visitors-graph" width="1200" height="250" style="padding: 15px;margin-left: -15px;"></canvas>
+                        <div id="visitors-graph"></div>
                     </div>
                 </div>
+                <?php else: ?>
+                    <div class="row-fluid">
+                        <div class="col-lg-12">
+                            <div class="white-box">
+                                <p>Number of Visitors not Available</p>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <?php if ( $user->account->email_marketing == 1 ): ?>
@@ -150,12 +174,18 @@
                             </div>
                         </h2>
 
-                        <canvas id="signups-graph" width="1200" height="250" style="padding: 15px;margin-left: -15px;"></canvas>
+                        <div id="signups-graph"></div>
                     </div>
                 </div>
+                <?php else: ?>
+                    <div class="row-fluid">
+                        <div class="col-lg-12">
+                            <div class="white-box">
+                                <p>Email Signups not Available</p>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
-
-
 
             </div>
         </section>
@@ -164,6 +194,6 @@
 
 
 <script>
-    var AnalyticsSettings = <?php echo json_encode( array( 'plotting_label' => 'Page Views', 'visitors_keys' => array_keys($visitors), 'visitors_values' => array_values($visitors), 'signups_keys' => array_keys($signups), 'signups_values' => array_values($signups) ) ); ?>;
+    var AnalyticsSettings = <?php echo json_encode( array( 'visitors' => $visitors, 'signups' => $signups ) ); ?>;
 </script>
 

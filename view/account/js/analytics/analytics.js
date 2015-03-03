@@ -16,7 +16,7 @@ var Analytics = {
     , loadMainGraph: function() {
         $.plot(
             $('#large-graph')
-            , [{ label: AnalyticsSettings.plotting_label, data: AnalyticsSettings.plotting_data, color: '#FFA900' }]
+            , [{ label: AnalyticsSettings.plotting_label, data: AnalyticsSettings.plotting_data, color: '#97BBCD' }]
             , {
                 lines: { show: true, fill: true },
                 points: { show: true },
@@ -144,7 +144,7 @@ var Analytics = {
                 plotData = [{
                     label: name,
                     data: plots['plotting_array'],
-                    color: '#FFA900'
+                    color: '#97BBCD'
                 }];
 
                 $.plot( $('#large-graph'), plotData, graphOptions );

@@ -451,7 +451,7 @@ class Analytics {
             $sparkline[] = round( $sa * $factor );
         }
 
-        return "http://chart.apis.google.com/chart?cht=ls&amp;chs={$width}x{$height}&amp;chf=bg,s,FFFFFF00&amp;chm=B,f8e6b2,0,0.0,0.0&amp;chco=edc240&amp;chd=e:" . ar::extended_encoding( $sparkline );
+        return "http://chart.apis.google.com/chart?cht=ls&amp;chs={$width}x{$height}&amp;chf=bg,s,FFFFFF00&amp;chm=B,41CAC0,0,0.0,0.0&amp;chco=2fa9a0&amp;chd=e:" . ar::extended_encoding( $sparkline );
     }
 
     /**
@@ -490,7 +490,7 @@ class Analytics {
                     'alpha' => 1,
                     'start-angle' => 0,
                     'no-labels' => true,
-                    'gradient-fill' => true,
+                    'gradient-fill' => false,
                     'animate' => array(
                         array( 'type' => 'fade' )
                     ),
@@ -523,8 +523,8 @@ class Analytics {
         $bar_chart = array(
             'elements' => array(
                 array(
-                    'type' => 'bar_glass',
-                    'colour' => '#FFA900',
+                    'type' => 'bar',
+                    'colour' => '#97BBCD',
                     'on-show' => array(
                         'type' => 'grow-up',
                         'cascade' => 1,
