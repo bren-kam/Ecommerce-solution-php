@@ -447,7 +447,7 @@
                     <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
                     <?php if ( $user->account->get_settings( 'cloudflare-zone-id' ) ): ?>
                     <li <?php if ( '/settings/domain/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/domain/">Domain</a></li>
-                    <?php endif;
+                    <?php endif; ?>
                 </ul>
             </li>
 
