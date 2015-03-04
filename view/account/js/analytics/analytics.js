@@ -23,7 +23,7 @@ var Analytics = {
                 selection: { mode: 'x' },
                 grid: { hoverable: true, clickable: true },
                 legend: { position: 'se' },
-                xaxis: { mode: 'time' },
+                xaxis: { mode: 'time', minTickSize: [1, 'day'] },
                 yaxis: { min: 0 }
             }
         );
@@ -54,7 +54,7 @@ var Analytics = {
                 position: 'absolute',
                 display: 'none',
                 top: item.pageY - 25,
-                left: item.pageX + 10,
+                left: item.pageX - 180,
                 opacity: 0.80
             }).appendTo("body").fadeIn( 200 );
         } else {
@@ -80,7 +80,7 @@ var Analytics = {
                     selection: { mode: "x" },
                     grid: { hoverable: true, clickable: true },
                     legend: { position: "se" },
-                    xaxis: { mode: "time" },
+                    xaxis: { mode: "time", minTickSize: [1, 'day'] },
                     yaxis: { min: 0 }
                 }
 
@@ -96,7 +96,7 @@ var Analytics = {
                             selection: { mode: "x" },
                             grid: { hoverable: true, clickable: true },
                             legend: { position: "se" },
-                            xaxis: { mode: "time" },
+                            xaxis: { mode: "time", minTickSize: [1, 'day'] },
                             yaxis: {
                                 min: 0,
                                 max: 100,
@@ -126,7 +126,7 @@ var Analytics = {
                             selection: { mode: "x" },
                             grid: { hoverable: true, clickable: true },
                             legend: { position: "se" },
-                            xaxis: { mode: "time" },
+                            xaxis: { mode: "time", minTickSize: [1, 'day'] },
                             yaxis: { mode: "time", min: 0 }
                         }
                         break;

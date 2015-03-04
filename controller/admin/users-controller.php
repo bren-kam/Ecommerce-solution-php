@@ -83,12 +83,12 @@ class UsersController extends BaseController {
             ->add_validation( 'req', _('The "Contact Name" field is required') );
 
         $ft->add_field( 'text', _('Work Phone'), 'tWorkPhone', $user->work_phone )
-            ->attribute( 'maxlength', 20 )
-            ->add_validation( 'phone', _('The "Work Phone" field must contain a valid phone number') );
+            ->attribute( 'maxlength', 20 );
+//            ->add_validation( 'phone', _('The "Work Phone" field must contain a valid phone number') );
 
         $ft->add_field( 'text', _('Cell Phone'), 'tCellPhone', $user->cell_phone )
-            ->attribute( 'maxlength', 20 )
-            ->add_validation( 'phone', _('The "Cell Phone" field must contain a valid phone number') );
+            ->attribute( 'maxlength', 20 );
+//            ->add_validation( 'phone', _('The "Cell Phone" field must contain a valid phone number') );
 
         $ft->add_field( 'text', _('Store Name'), 'tStoreName', $user->store_name )
             ->attribute( 'maxlength', 80 );
