@@ -449,6 +449,8 @@ class SettingsController extends BaseController {
             }
         }
 
+        $records = $cloudflare->list_dns_records( $cloudflare_zone_id );
+
         // Put out notifications
         if ( isset( $response ) ) {
             if ( $response ) {
@@ -459,8 +461,7 @@ class SettingsController extends BaseController {
         }
 
         // Keep the resources that we need
-        $this->resources
-            ->javascript('settings/dns');
+        $this->resources->javascript('settings/dns');
 
         $zone_details = $cloudflare->zone_details( $cloudflare_zone_id );
 

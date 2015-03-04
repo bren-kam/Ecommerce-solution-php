@@ -29,7 +29,7 @@
             <div class="panel-body">
 
                 <div class="alert alert-warning">
-                    <strong>NOTICE</strong>
+                    <strong>WARNING!</strong><br>
                     Modifying this section can cause various parts or your entire website to go offline. Change at your own risk.
                 </div>
 
