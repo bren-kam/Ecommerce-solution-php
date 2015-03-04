@@ -865,36 +865,45 @@ class AccountsController extends BaseController {
         if ( isset( $_GET['a'] ) )
         switch ( $_GET['a'] ) {
             case 'create':
-                // We already have something, stop!
-                if ( !empty( $zone_id ) )
-                    break;
+                // Create Cloudflare Account
+                $cloudflare_zone_id = $cloudflare->create_zone($domain_name);
 
-                // Create the zone file
-                $zone = $r53->createHostedZone( $domain_name, md5(microtime()) );
-
-                $zone_id = $zone['HostedZone']['Id'];
-
-                // Set the settings
-                $account->set_settings( array( 'r53-zone-id' => $zone_id ) );
+                $account->set_settings( array( 'cloudflare-zone-id' => $cloudflare_zone_id ) );
 
                 $server = new Server();
                 $server->get( $account->server_id );
 
-                // Defaults
-                $changes = array(
-                    $r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', $server->nodebalancer_ip )
-                    , $r53->prepareChange( 'CREATE', $full_domain_name, 'MX', '14400', '0 mail.' . $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', $full_domain_name, 'TXT', '14400', '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"' )
-                    , $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'A', '14400', $server->ip )
-                    , $r53->prepareChange( 'CREATE', 'www.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-                    , $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', $server->ip )
-                    , $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', $server->ip )
-                    , $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', $server->ip )
-                    , $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', $server->ip )
-                    , $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', $server->ip )
-                );
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $full_domain_name, $server->nodebalancer_ip, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'MX', $full_domain_name, '0 mail.' . $full_domain_name, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"', '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'mail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'CNAME', 'www.' . $full_domain_name, $full_domain_name, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'ftp.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'cpanel.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'whm.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'webmail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'webdisk.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
 
-                $response = $r53->changeResourceRecordSets( $zone_id, $changes );
+                // See if they need to upgrade to pro
+                if ( $account->shopping_cart ) {
+                    $available_plans = $cloudflare->available_plans( $cloudflare_zone_id );
+                    $upgrade_plan = false;
+
+                    foreach ( $available_plans as $plan ) {
+                        if ( 'pro' == $plan->legacy_id ) {
+                            $upgrade_plan = $plan;
+                            break;
+                        }
+                    }
+
+                    $cloudflare->edit_zone( $cloudflare_zone_id, $upgrade_plan );
+                }
+
+                $cloudflare->change_security_level( $cloudflare_zone_id );
+                $cloudflare->change_ipv6( $cloudflare_zone_id );
+                $cloudflare->change_minify( $cloudflare_zone_id );
+                $cloudflare->change_mirage( $cloudflare_zone_id );
+                $cloudflare->change_polish( $cloudflare_zone_id );
             break;
 
             case 'delete':
