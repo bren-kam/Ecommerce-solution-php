@@ -400,75 +400,75 @@ class SettingsController extends BaseController {
     }
 
     /**
-         * Edit DNS for an account
-         *
-         * @return TemplateResponse|RedirectResponse
-         */
-        protected function dns() {
-            // Cloudflare
-            library('cloudflare-api');
-            $cloudflare = new CloudFlareAPI( $this->user->account );
-            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
+     * Edit DNS for an account
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function domain() {
+        // Cloudflare
+        library('cloudflare-api');
+        $cloudflare = new CloudFlareAPI( $this->user->account );
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( empty( $cloudflare_zone_id ) )
-                return new RedirectResponse('/settings/');
+        if ( empty( $cloudflare_zone_id ) )
+            return new RedirectResponse('/settings/');
 
-            $v = new Validator( 'fEditDNS' );
+        $v = new Validator( 'fEditDNS' );
 
-            // Declare variables
-            $domain_name = url::domain( $this->user->account->domain, false );
-            $full_domain_name = $domain_name . '.';
-            $errs = false;
+        // Declare variables
+        $domain_name = url::domain( $this->user->account->domain, false );
+        $full_domain_name = $domain_name . '.';
+        $errs = false;
 
-            // Handle form actions
-            if ( $this->verified() ) {
-                $errs = $v->validate();
+        // Handle form actions
+        if ( $this->verified() ) {
+            $errs = $v->validate();
 
-                if ( empty($errs) && isset($_POST['changes']) && is_array($_POST['changes'])) {
-                    foreach ($_POST['changes'] as $dns_zone_id => $records) {
-                        switch ($_POST['changes'][$dns_zone_id]['action']) {
-                            default:
-                                continue;
-                                break;
+            if ( empty($errs) && isset($_POST['changes']) && is_array($_POST['changes'])) {
+                foreach ($_POST['changes'] as $dns_zone_id => $records) {
+                    switch ($_POST['changes'][$dns_zone_id]['action']) {
+                        default:
+                            continue;
+                            break;
 
-                            case '1':
-                                $cloudflare->create_dns_record($cloudflare_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl']);
-                                break;
+                        case '1':
+                            $cloudflare->create_dns_record($cloudflare_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl']);
+                            break;
 
-                            case '2':
-                                $cloudflare->update_dns_record($cloudflare_zone_id, $dns_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl']);
-                                break;
+                        case '2':
+                            $cloudflare->update_dns_record($cloudflare_zone_id, $dns_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl']);
+                            break;
 
-                            case '0':
-                                $cloudflare->delete_dns_record($cloudflare_zone_id, $dns_zone_id);
-                                continue;
-                                break;
-                        }
+                        case '0':
+                            $cloudflare->delete_dns_record($cloudflare_zone_id, $dns_zone_id);
+                            continue;
+                            break;
                     }
-
                 }
+
             }
-
-            // Put out notifications
-            if ( isset( $response ) ) {
-                if ( $response ) {
-                    $this->notify( _('Your DNS Zone file has been successfully updated!') );
-                } else {
-                    $errs .= _('There was an error while trying to update your DNS Zone file. Please try again.');
-                }
-            }
-
-            // Keep the resources that we need
-            $this->resources
-                ->javascript('settings/dns');
-
-            $zone_details = $cloudflare->zone_details( $cloudflare_zone_id );
-
-            return $this->get_template_response('dns')
-                ->add_title( 'DNS | Domain' )
-                ->kb( 0 )
-                ->set( compact( 'account', 'zone_id', 'cloudflare_zone_id', 'errs', 'domain_name', 'full_domain_name', 'records', 'zone_details' ) );
         }
+
+        // Put out notifications
+        if ( isset( $response ) ) {
+            if ( $response ) {
+                $this->notify( _('Your DNS Zone file has been successfully updated!') );
+            } else {
+                $errs .= _('There was an error while trying to update your DNS Zone file. Please try again.');
+            }
+        }
+
+        // Keep the resources that we need
+        $this->resources
+            ->javascript('settings/dns');
+
+        $zone_details = $cloudflare->zone_details( $cloudflare_zone_id );
+
+        return $this->get_template_response('dns')
+            ->add_title( 'DNS | Domain' )
+            ->kb( 0 )
+            ->set( compact( 'account', 'zone_id', 'cloudflare_zone_id', 'errs', 'domain_name', 'full_domain_name', 'records', 'zone_details' ) );
+    }
 
 }
 
