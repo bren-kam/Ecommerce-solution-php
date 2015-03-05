@@ -517,6 +517,8 @@ class CronsController extends BaseController {
         $tickets_in_jira = $ticket->list_all( [ ' AND a.`jira_id` IS NOT NULL AND a.`status` = 0 ', '', '', 9999 ] );
         foreach ( $tickets_in_jira as $ticket ) {
 
+            $ticket->get( $ticket->ticket_id );
+
             // Pull Comments from Jira
             echo "Getting comments for ticket {$ticket->ticket_id} {$ticket->jira_key}\n";
             $jira_comments = $jira->get_comments_by_issue( $ticket->jira_id );
