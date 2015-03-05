@@ -60,7 +60,7 @@
                                 <?php if ($online_specialist->work_phone): ?>
                                     <p><span class="purple">P.</span> <?php echo $online_specialist->work_phone ?></p>
                                 <?php endif; ?>
-                                <p><span class="purple">E.</span> <?php echo $online_specialist->email ?></p>
+                                <p><span class="purple">E.</span> <?php echo str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email );  ?></p>
                             </div>
                         </section>
                     </div>
