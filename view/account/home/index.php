@@ -51,7 +51,7 @@
                             <div class="twt-feed purple-bg">
                                 <h1><?php echo $online_specialist->contact_name ?></h1>
                                 <a href="javascript:;">
-                                  <img src="/images/profile-avatar.jpg">
+                                  <img src="<?php echo $online_specialist->photo ? $online_specialist->photo : '/images/profile-avatar.jpg' ?>">
                                 </a>
                             </div>
                             <div class="weather-category twt-category">

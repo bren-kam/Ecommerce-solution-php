@@ -224,9 +224,13 @@ class UsersController extends BaseController {
             return new RedirectResponse('/users/');
         }
 
+        $this->resources
+            ->javascript( 'fileuploader', 'media-manager', 'users/add-edit' )
+            ->css( 'media-manager' );
+
         // Generate the form
         $template_response
-            ->set( array( 'form' => $ft->generate_form(), 'user_id' => $user_id ) )
+            ->set( array( 'form' => $ft->generate_form(), 'user_id' => $user_id, 'user_photo' => $user->photo ) )
             ->select( 'users', 'users/add' );
 
         return $template_response;
@@ -404,6 +408,153 @@ class UsersController extends BaseController {
             $response->add_response( 'jquery', jQuery::getResponse() );
         }
 
+        return $response;
+    }
+
+    /**
+     * Upload File
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['fn'] ), _('File failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'retailcatalog.us' );
+        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
+
+        // Change the name
+        $extension = strtolower( f::extension( $_GET['qqfile'] ) );
+        $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . $extension;
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $file_path = $file->upload_file( $result['file_path'], $file_name );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
+        $response->add_response( 'name', $file_name );
+        $response->add_response( 'url', $file_path );
+
+        return $response;
+    }
+
+    /**
+     * Delete File
+     *
+     * @return AjaxResponse
+     */
+    protected function delete_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['key'] ), _('Image failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate classes
+        $file = new File( 'retailcatalog.us' );
+
+        // Delete from Amazon
+        $file->delete_file( $_GET['key'] );
+
+        // Remove that file
+        jQuery('#file-' . format::slug( $_GET['key'] ) )->remove();
+
+        $files = $file->list_files();
+
+        // Get the files, see how many there are
+        if ( 0 == count( $files ) )
+            jQuery('#file-list')->append( '<p class="no-files">' . _('You have not uploaded any files.') . '</p>'); // Add a message
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Get Files
+     *
+     * AJAX Call, returns a list of files, based on a pattern and pagination parameters
+     *
+     * @return AjaxResponse
+     */
+    protected function get_files() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $pattern = isset( $_GET['pattern'] ) ? $_GET['pattern'] : null;
+        $page = isset( $_GET['page'] ) ? (int) $_GET['page'] : 0;
+        $limit = 50;
+        $offset = $page * $limit;
+
+        $file = new File( 'retailcatalog.us' );
+        $files = $file->search_files($pattern, $offset, $limit);
+
+        $files_response = array();
+        foreach ( $files as $file_name => $file ) {
+            $date = new DateTime();
+            $date->setTimestamp( $file['time'] );
+            $file_path = 'http://s3.amazonaws.com/retailcatalog.us/' . $file_name;
+            $file_id = format::slug( $file_name );
+
+            $files_response[] = array(
+                'name' => $file_id
+                , 'url' => $file_path
+                , 'date' => $date->format( 'F jS, Y')
+            );
+        }
+
+        // Add the response
+        $response->add_response( 'files', $files_response );
+
+        return $response;
+    }
+
+    /**
+     * Update Photo
+     * @return AjaxResponse
+     */
+    protected function update_photo() {
+        $response = new AjaxResponse( $this->verified() );
+        if ( $response->has_error() ) {
+            $response->notify('Something happened, please try again', false);
+            return $response;
+        }
+
+        $user = new User();
+        $user->get( $_REQUEST['user_id'] );
+        if ( !$user->id ) {
+            $response->notify('Bad user, please try again', false);
+            return $response;
+        }
+
+        $user->photo = $_REQUEST['photo'];
+        $user->save();
+        $response->notify('Profile Picture Updated!');
         return $response;
     }
 }

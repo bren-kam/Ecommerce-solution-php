@@ -29,7 +29,7 @@ class User extends ActiveRecordBase {
     public $id, $user_id, $company_id, $email, $contact_name, $store_name, $role, $date_created;
 
     // Columns available in getting a complete user
-    public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
+    public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip, $photo;
 
     // Artificial column
     public $phone;
@@ -69,6 +69,7 @@ class User extends ActiveRecordBase {
             , 'work_phone' => strip_tags($this->work_phone)
             , 'cell_phone' => strip_tags($this->cell_phone)
             , 'store_name' => strip_tags($this->store_name)
+            , 'photo' => $this->photo
             , 'status' => $this->status
             , 'role' => $this->role
             , 'billing_first_name' => strip_tags($this->billing_first_name)
@@ -78,7 +79,7 @@ class User extends ActiveRecordBase {
             , 'billing_state' => strip_tags($this->billing_state)
             , 'billing_zip' => strip_tags($this->billing_zip)
             , 'date_created' => $this->date_created
-        ), 'isssssiisssssss' );
+        ), 'issssssiisssssss' );
 
         $this->user_id = $this->id = $this->get_insert_id();
     }
@@ -94,6 +95,7 @@ class User extends ActiveRecordBase {
             , 'work_phone' => strip_tags($this->work_phone)
             , 'cell_phone' => strip_tags($this->cell_phone)
             , 'store_name' => strip_tags($this->store_name)
+            , 'photo' => $this->photo
             , 'status' => $this->status
             , 'role' => $this->role
             , 'billing_first_name' => strip_tags($this->billing_first_name)
@@ -104,7 +106,7 @@ class User extends ActiveRecordBase {
             , 'billing_zip' => strip_tags($this->billing_zip)
         ), array(
             'user_id' => $this->id
-        ), 'isssssiissssss', 'i' );
+        ), 'issssssiissssss', 'i' );
     }
 
     /**
@@ -152,7 +154,7 @@ class User extends ActiveRecordBase {
 	 */
 	public function get( $user_id ) {
         // Prepare the statement
-        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
+        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -185,7 +187,7 @@ class User extends ActiveRecordBase {
         $status_where = ( $status ) ? ' AND u.`status` = ' . self::STATUS_ACTIVE : '';
 
         $this->prepare(
-            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
+            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
             , 's'
             , array( ':email' => $email )
         )->get_row( PDO::FETCH_INTO, $this );
