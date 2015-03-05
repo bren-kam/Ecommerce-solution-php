@@ -780,10 +780,6 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
             return new RedirectResponse('/accounts/edit/?aid=' . $_GET['aid']);
 
-        // Make sure they have permission
-        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
-            return new RedirectResponse('/accounts/');
-
         // Cloudflare
         library('cloudflare-api');
         $cloudflare = new CloudFlareAPI( $account );
@@ -1013,8 +1009,7 @@ class AccountsController extends BaseController {
 
         // Keep the resources that we need
         $this->resources
-            ->javascript('accounts/dns')
-            ->css('accounts/edit', 'accounts/dns');
+            ->javascript('accounts/dns');
 
         $zone_details = ( $cloudflare_zone_id ) ? $cloudflare->zone_details( $cloudflare_zone_id ) : false;
 
