@@ -551,7 +551,10 @@ class CronsController extends BaseController {
                     $ticket->status = Ticket::STATUS_CLOSED;
                 }
 
-                $ticket->status = $status;
+                if ( $jira_issue->fields->status->name == 'Waiting for OS' ) {
+                    $ticket->assigned_to_user_id = $ticket->user_id;
+                }
+
                 $ticket->save();
             }
 
