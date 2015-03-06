@@ -89,6 +89,7 @@
                         </div>
                     <?php else: ?>
                         <div class="col-lg-6">
+                            <h2>New Orders</h2>
                             <section class="panel twt-panel no-service-box">
                                 <div class="twt-feed blue-bg">
                                     <h1>It looks like you haven't signed up for a shopping cart.</h1>
@@ -190,6 +191,7 @@
                 <?php else: ?>
                     <div class="row-fluid">
                         <div class="col-lg-12">
+                            <h2>Email Signups</h2>
                             <section class="panel twt-panel no-service-box">
                                 <div class="twt-feed blue-bg">
                                     <h1>It looks like you haven't signed up for email marketing.</h1>
