@@ -161,6 +161,18 @@ class TicketsController extends BaseController {
             }
         }
 
+        $topic_assignation_map = [
+            'accounting' => User::DAVID
+            , 'design' => User::DESIGN_TEAM
+            , 'development' => User::TECHNICAL
+            , 'bug' => User::TECHNICAL
+            , 'feature-request' => User::TECHNICAL
+        ];
+
+        if ( isset($_POST['tTicketTopic']) && isset($topic_assignation_map[$_POST['tTicketTopic']]) ) {
+            $assigned_to_user_id = $topic_assignation_map[$_POST['tTicketTopic']];
+        }
+
         // Get browser information
         $browser = fn::browser();
 
@@ -185,7 +197,7 @@ class TicketsController extends BaseController {
             $ticket_upload = new TicketUpload();
             $ticket_upload->add_relations( $ticket->id, $_POST['uploads'] );
         }
-        
+
         // Add statistics
         library('statistics-api');
         $stat = new Stat_API( Config::key('rs-key') );
@@ -308,6 +320,10 @@ class TicketsController extends BaseController {
                 );
             }
             $response->add_response( 'uploads', $response_uploads );
+        }
+
+        if ( $ticket->jira_id ) {
+            $ticket_comment->create_jira_comment();
         }
 
         return $response;
@@ -553,6 +569,23 @@ class TicketsController extends BaseController {
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
         fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+
+        // If assigned to Development, make sure it's on Jira
+        if ( $assigned_user->id == User::DEVELOPMENT ) {
+            if ( $ticket->jira_id ) {
+                $ticket->update_jira_issue();
+            } else {
+                $ticket->create_jira_issue();
+
+                $ticket_comment = new TicketComment();
+                $comments = $ticket_comment->get_by_ticket( $ticket->id );
+                if ( $comments ) {
+                    foreach ( $comments as $comment ) {
+                        $comment->create_jira_comment();
+                    }
+                }
+            }
+        }
 
         return $response;
     }

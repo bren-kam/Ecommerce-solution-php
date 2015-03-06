@@ -65,6 +65,7 @@ class AnalyticsController extends BaseController {
         $sparklines['time_on_site'] = $analytics->sparkline( 'time_on_site' );
 
         $content_overview_pages = $analytics->get_content_overview();
+        $top_geographic_traffic_sources = $analytics->get_geo_traffic_sources();
 
         // Get the dates
         $date_start = new DateTime( $analytics->date_start );
@@ -81,7 +82,7 @@ class AnalyticsController extends BaseController {
             ->kb( 62 )
             ->add_title( _('Dashboard') )
             ->menu_item( 'analytics/index' )
-            ->set( compact( 'sparklines', 'traffic_sources', 'pie_chart', 'visits_plotting_array', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );
+            ->set( compact( 'sparklines', 'traffic_sources', 'pie_chart', 'visits_plotting_array', 'total', 'content_overview_pages', 'top_geographic_traffic_sources', 'date_start', 'date_end' ) );
     }
 
     /**

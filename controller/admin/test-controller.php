@@ -296,11 +296,11 @@ class TestController extends BaseController {
     }
 
 
-        /**
-         * Add same child element as parent if dropdown in navigation
-         * @return HtmlResponse
-         */
-        public function update_navigation() {
+    /**
+     * Add same child element as parent if dropdown in navigation
+     * @return HtmlResponse
+     */
+    public function update_navigation() {
         $account = new Account();
 
         $websites = $account->get_results(
@@ -340,4 +340,52 @@ class TestController extends BaseController {
 
         return new HtmlResponse( 'success' );
     }
+
+    /**
+     * Updates product to be used for image for category based on the image URL
+     * @return HtmlResponse
+     */
+    public function update_category_product() {
+        set_time_limit(15000);
+
+        $category = new AccountCategory();
+
+        $dt = new DataTableResponse( $this->user );
+
+        $dt->add_where( ' AND wc.`product_id` = 0  AND wc.`image_url` <> ""' );
+        $total = $category->count_all($dt->get_variables());
+
+        while($total > 0){
+            $categories = $category->list_all($dt->get_variables());
+
+            foreach($categories as $cat){
+                $parts = (explode('/', str_replace('/products/', '', substr($cat->image_url, strpos($cat->image_url, '/products/')))));
+                $cat->get( $cat->website_id, $cat->category_id );
+                $cat->product_id = $parts[0];
+                $cat->save();
+            }
+
+            $total = $category->count_all($dt->get_variables());
+        }
+
+        return new HtmlResponse( 'success' );
+    }
+
+    /**
+     * Updates image of category where the product got deleted or discontinued or blocked
+     * @return HtmlResponse
+     */
+    public function update_category_image_if_stale(){
+        set_time_limit(15000);
+
+        $account_category = new AccountCategory();
+        $categories = $account_category->get_all_with_stale_images();
+
+        foreach ($categories as $category){
+            $account_category->reassign_image( $category['website_id'], $category['product_id'] );
+        }
+
+        return new HtmlResponse( 'success' );
+    }
+
 }

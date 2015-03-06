@@ -63,8 +63,12 @@ class CouponsController extends BaseController {
 
                 if ( $coupon->id ) {
                     $coupon->save();
+
+                    $this->log( 'update-coupon', $this->user->contact_name . ' updated a coupon on ' . $this->user->account->title, $_POST );
                 } else {
                     $coupon->create();
+
+                    $this->log( 'create-coupon', $this->user->contact_name . ' created a coupon on ' . $this->user->account->title, $_POST );
                 }
 
                 $coupon->delete_free_shipping_methods();
@@ -166,6 +170,8 @@ class CouponsController extends BaseController {
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
 
+        $this->log( 'delete-coupon', $this->user->contact_name . ' deleted a coupon on ' . $this->user->account->title, $_GET['wcid'] );
+
         return $response;
     }
 
@@ -204,6 +210,7 @@ class CouponsController extends BaseController {
             $coupon = new WebsiteCoupon();
             $coupon->add_relations_by_brand( $_POST['coupon'], $this->user->account->id, $_POST['brand'] );
             $this->notify( 'Your coupon has been added to the brand successfully' );
+            $this->log( 'apply-coupon-to-brand', $this->user->contact_name . ' applied a coupon to a brand on ' . $this->user->account->title, $_POST['brand'] );
         }
 
         return $this->get_template_response( 'apply-to-brand' )
@@ -227,6 +234,7 @@ class CouponsController extends BaseController {
         $this->resources
             ->javascript( 'shopping-cart/coupons/products' )
             ->css( 'shopping-cart/coupons/products' );
+
         return $this->get_template_response( 'products' )
             ->kb( 0 )
             ->menu_item( 'shopping-cart/coupons/products' )
@@ -306,10 +314,11 @@ class CouponsController extends BaseController {
 
             jQuery('.dt:first')->dataTable()->fnDraw();
             $response->add_response( 'jquery', jQuery::getResponse() );
+
+            $this->log( 'delete-coupon-relation', $this->user->contact_name . ' deleted a coupon from a product on ' . $this->user->account->title, $_GET );
         }
 
         return $response;
     }
 
 }
-

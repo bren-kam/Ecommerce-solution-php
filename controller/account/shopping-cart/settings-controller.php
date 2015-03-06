@@ -51,6 +51,8 @@ class SettingsController extends BaseController {
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
+            $this->log( 'update-shopping-cart-settings', $this->user->contact_name . ' updated shopping cart settings on ' . $this->user->account->title );
+
             return new RedirectResponse( '/shopping-cart/settings/' );
         }
 
@@ -134,6 +136,8 @@ class SettingsController extends BaseController {
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
+            $this->log( 'update-payment-settings', $this->user->contact_name . ' updated payment settings on ' . $this->user->account->title );
+
             return new RedirectResponse( '/shopping-cart/settings/payment-settings/' );
         }
 
@@ -180,6 +184,8 @@ class SettingsController extends BaseController {
             ) );
 
             $this->notify( _('Taxes successfully saved!') );
+            $this->log( 'update-taxes', $this->user->contact_name . ' updated tax settings on ' . $this->user->account->title );
+
             return new RedirectResponse('/shopping-cart/settings/taxes/');
         }
 

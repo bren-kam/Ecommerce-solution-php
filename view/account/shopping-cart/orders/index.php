@@ -3,6 +3,9 @@
         <section class="panel">
             <header class="panel-heading">
                 Orders
+                <div class="pull-right">
+                    <a class="btn btn-primary" href="/shopping-cart/orders/download/">Download as CSV</a>
+                </div>
             </header>
 
             <div class="panel-body">

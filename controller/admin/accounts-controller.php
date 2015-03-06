@@ -132,7 +132,7 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
-        $v = new Validator( 'fEditAccount' );
+        $v = new BootstrapValidator( 'fEditAccount' );
         $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
         $v->add_validation( 'tProducts', 'req', _('The "Products" field is required') );
         $v->add_validation( 'tProducts', 'num', _('The "Products" field must contain a number') );
@@ -283,11 +283,13 @@ class AccountsController extends BaseController {
             ->javascript('accounts/edit', 'bootstrap-switch.min')
             ->css('accounts/edit');
 
+        $js_validation = $v->js_validation();
+
         $template_response = $this->get_template_response('edit')
             ->kb( 4 )
             ->select( 'accounts', 'accounts/index' )
             ->add_title( _('Edit') )
-            ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes' ) );
+            ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes', 'js_validation' ) );
 
         return $template_response;
     }
@@ -502,8 +504,8 @@ class AccountsController extends BaseController {
                 ));
         }
 
-        $ft->add_field( 'text', _('Geomarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
-        $ft->add_field( 'text', _('Geo Marketing - Enable Customer Reviews'), 'tYextCustomerReviews', $settings['yext-customer-reviews'] );
+        $ft->add_field( 'text', _('GeoMarketing Max. Locations'), 'tYextMaxLocation', $settings['yext-max-locations'] );
+        $ft->add_field( 'text', _('GeoMarketing - Review Services'), 'tYextCustomerReviews', $settings['yext-customer-reviews'] );
         $ft->add_field( 'text', _('CloudFlare Domain'), 'tCloudFlareDomain', $settings['cloudflare-domain'] );
 
         $server = new Server();
@@ -782,15 +784,20 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
+        // Cloudflare
+        library('cloudflare-api');
+        $cloudflare = new CloudFlareAPI( $account );
+        $cloudflare_zone_id = $account->get_settings('cloudflare-zone-id');
+
         library('r53');
         $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
+        $zone_id = $account->get_settings( 'r53-zone-id' );
 
         $v = new Validator( 'fEditDNS' );
 
         // Declare variables
         $domain_name = url::domain( $account->domain, false );
         $full_domain_name = $domain_name . '.';
-        $zone_id = $account->get_settings( 'r53-zone-id' );
         $errs = false;
 
         // Handle form actions
@@ -799,33 +806,58 @@ class AccountsController extends BaseController {
 
             if ( empty( $errs ) && isset( $_POST['changes'] ) && is_array( $_POST['changes'] ) ) {
                 $changes = array();
-                $change_count = count( $_POST['changes']['name'] );
 
-                for( $i = 0; $i < $change_count; $i++ ) {
-                    // Get the records
-                    $records = format::trim_deep( explode( "\n", $_POST['changes']['records'][$i] ) );
+                if ( $cloudflare_zone_id ) {
+                    foreach ( $_POST['changes'] as $dns_zone_id => $records ) {
+                        switch( $_POST['changes'][$dns_zone_id]['action'] ) {
+                            default:
+                                continue;
+                            break;
 
-                    switch( $_POST['changes']['action'][$i] ) {
-                        default:
-                            continue;
-                        break;
+                            case '1':
+                                $cloudflare->create_dns_record( $cloudflare_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
+                            break;
 
-                        case '1':
-                            $action = 'CREATE';
-                        break;
+                            case '2':
+                                $cloudflare->update_dns_record( $cloudflare_zone_id, $dns_zone_id, $_POST['changes'][$dns_zone_id]['type'], $_POST['changes'][$dns_zone_id]['name'], $_POST['changes'][$dns_zone_id]['content'], $_POST['changes'][$dns_zone_id]['ttl'] );
+                            break;
 
-                        case '0':
-                            $action = 'DELETE';
-                        break;
+                            case '0':
+                                $cloudflare->delete_dns_record( $cloudflare_zone_id, $dns_zone_id );
+                                continue;
+                            break;
+                        }
+                    }
+                } else {
+                    $change_count = count( $_POST['changes']['name'] );
+
+                    for( $i = 0; $i < $change_count; $i++ ) {
+                        // Get the records
+                        $records = format::trim_deep( explode( "\n", $_POST['changes']['records'][$i] ) );
+
+                        switch( $_POST['changes']['action'][$i] ) {
+                            default:
+                                continue;
+                            break;
+
+                            case '1':
+                                $action = 'CREATE';
+                            break;
+
+                            case '0':
+                                $action = 'DELETE';
+                            break;
+                        }
+
+                        /**
+                         * @var string $action
+                         */
+                        $changes[] = $r53->prepareChange( $action, $_POST['changes']['name'][$i], $_POST['changes']['type'][$i], $_POST['changes']['ttl'][$i], $records );
                     }
 
-                    /**
-                     * @var string $action
-                     */
-                    $changes[] = $r53->prepareChange( $action, $_POST['changes']['name'][$i], $_POST['changes']['type'][$i], $_POST['changes']['ttl'][$i], $records );
+                    $response = $r53->changeResourceRecordSets( $zone_id, $changes );
                 }
 
-                $response = $r53->changeResourceRecordSets( $zone_id, $changes );
             }
         }
 
@@ -885,15 +917,63 @@ class AccountsController extends BaseController {
 
                 $zone_id = '';
             break;
+
+            case 'transfer':
+                // Create Cloudflare Account
+                $cloudflare_zone_id = $cloudflare->create_zone($domain_name);
+
+                $account->set_settings( array( 'cloudflare-zone-id' => $cloudflare_zone_id ) );
+
+                // Get records from Route 53
+                $r53->getHostedZone( $zone_id );
+                $records = $r53->listResourceRecordSets( $zone_id );
+
+                if ( is_array( $records['ResourceRecordSets'] ) ) {
+                    lib( 'misc/dns-sort' );
+                    new DNSSort( $records['ResourceRecordSets'] );
+                }
+
+                foreach ( $records['ResourceRecordSets'] as $record ) {
+                    if ( in_array( $record['Type'], array( 'NS', 'SOA' ) ) )
+                        continue;
+
+                    $cloudflare->create_dns_record( $cloudflare_zone_id, $record['Type'], $record['Name'], current( $record['ResourceRecords'] ), $record['TTL'], url::domain($account->domain, false) );
+                }
+
+                // See if they need to upgrade to pro
+                if ( $account->shopping_cart ) {
+                    $available_plans = $cloudflare->available_plans( $cloudflare_zone_id );
+                    $upgrade_plan = false;
+
+                    foreach ( $available_plans as $plan ) {
+                        if ( 'pro' == $plan->legacy_id ) {
+                            $upgrade_plan = $plan;
+                            break;
+                        }
+                    }
+
+                    $cloudflare->edit_zone( $cloudflare_zone_id, $upgrade_plan );
+                }
+
+                $cloudflare->change_security_level( $cloudflare_zone_id );
+                $cloudflare->change_ipv6( $cloudflare_zone_id );
+                $cloudflare->change_minify( $cloudflare_zone_id );
+                $cloudflare->change_mirage( $cloudflare_zone_id );
+                $cloudflare->change_polish( $cloudflare_zone_id );
+            break;
         }
 
-        if ( !empty( $zone_id ) ) {
-            $r53->getHostedZone( $zone_id );
-            $records = $r53->listResourceRecordSets( $zone_id );
+        if ( $cloudflare_zone_id ) {
+            $records = $cloudflare->list_dns_records( $cloudflare_zone_id );
+        } else {
+            if (!empty($zone_id)) {
+                $r53->getHostedZone($zone_id);
+                $records = $r53->listResourceRecordSets($zone_id);
 
-            if ( is_array( $records['ResourceRecordSets'] ) ) {
-                lib( 'misc/dns-sort' );
-                new DNSSort( $records['ResourceRecordSets'] );
+                if (is_array($records['ResourceRecordSets'])) {
+                    lib('misc/dns-sort');
+                    new DNSSort($records['ResourceRecordSets']);
+                }
             }
         }
 
@@ -912,10 +992,13 @@ class AccountsController extends BaseController {
             ->javascript('accounts/dns')
             ->css('accounts/edit', 'accounts/dns');
 
+        $zone_details = ( $cloudflare_zone_id ) ? $cloudflare->zone_details( $cloudflare_zone_id ) : false;
+
         return $this->get_template_response('dns')
+            ->add_title( 'DNS' )
             ->kb( 8 )
             ->select( 'accounts', 'edit' )
-            ->set( compact( 'account', 'zone_id', 'errs', 'domain_name', 'full_domain_name', 'records' ) );
+            ->set( compact( 'account', 'zone_id', 'cloudflare_zone_id', 'errs', 'domain_name', 'full_domain_name', 'records', 'zone_details' ) );
     }
 
     /**
@@ -958,6 +1041,7 @@ class AccountsController extends BaseController {
             ->css('accounts/notes');
 
         return $this->get_template_response('notes')
+            ->add_title( 'Notes' )
             ->kb( 3 )
             ->select( 'accounts' )
             ->set( compact( 'account', 'notes', 'v' ) );

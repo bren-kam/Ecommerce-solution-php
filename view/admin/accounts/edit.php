@@ -143,6 +143,7 @@
 
                     <?php nonce::field('edit') ?>
                 </form>
+                <?php echo $js_validation; ?>
             </div>
         </section>
     </div>

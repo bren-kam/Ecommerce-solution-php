@@ -623,7 +623,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      */
     protected function get_existing_products() {
         $products = $this->prepare(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id`, p.`timestamp` FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE p.`user_id_created` = :user_id_created GROUP BY p.`sku` ORDER BY `publish_visibility` DESC"
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id`, p.`timestamp` 
+            FROM `products` AS p
+            LEFT JOIN `products` as p2 ON p.sku = p2.sku AND p.user_id_created = p2.user_id_created AND p.product_id < p2.product_id
+            LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`)
+            LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` )
+            WHERE p.`user_id_created` = :user_id_created AND p2.product_id IS NULL
+            GROUP BY p.`sku`
+            ORDER BY p.`publish_visibility` DESC"
             , 'i'
             , array( ':user_id_created' => self::USER_ID )
         )->get_results( PDO::FETCH_CLASS, 'Product' );

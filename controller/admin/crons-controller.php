@@ -452,6 +452,10 @@ class CronsController extends BaseController {
     }
 
     public function sm_post_scheduled() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
         $website_sm_post = new WebsiteSmPost();
         $posts = $website_sm_post->get_all_unposted();
 
@@ -468,6 +472,89 @@ class CronsController extends BaseController {
             }
 
             echo "\n";
+        }
+
+        echo "Finished\n";
+
+    }
+
+    /**
+     * Reorganize Categories ALL
+     *
+     *
+     * @return HtmlResponse
+     */
+    protected function reorganize_categories_all() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        $account = new Account();
+        $accounts = $account->list_all( array(' AND a.status=1 ', '', '', 10000 ) );
+        $account_category = new AccountCategory();
+        $category = new Category();
+
+        foreach ( $accounts as $a ) {
+            echo "#{$a->id}...<br>\n";
+            flush();
+            $account_category->reorganize_categories( $a->website_id, $category );
+        }
+
+        return new HtmlResponse( 'Finished' );
+    }
+
+    protected function jira_get_updates() {
+        // Set it as a background job
+        if ( extension_loaded('newrelic') )
+            newrelic_background_job();
+
+        library('jira');
+        $jira = new Jira();
+
+        $ticket = new Ticket();
+        $ticket_comment = new TicketComment();
+
+        $tickets_in_jira = $ticket->list_all( [ ' AND a.`jira_id` IS NOT NULL AND a.`status` = 0 ', '', '', 9999 ] );
+        foreach ( $tickets_in_jira as $ticket ) {
+
+            // Pull Comments from Jira
+            echo "Getting comments for ticket {$ticket->ticket_id} {$ticket->jira_key}\n";
+            $jira_comments = $jira->get_comments_by_issue( $ticket->jira_id );
+            if ( isset($jira_comments->comments) ) {
+                // Get GSR Ticket Comment by Jira ID
+                $ticket_comment_list = $ticket_comment->get_by_ticket( $ticket->ticket_id );
+                $ticket_comments = [];
+                foreach ( $ticket_comment_list as $tc ) {
+                    $ticket_comments[$tc->jira_id] = $tc;
+                }
+
+                foreach ( $jira_comments->comments as $jira_comment ) {
+                    // Create Comment if not found
+                    if ( !isset($ticket_comments[(int)$jira_comment->id]) ) {
+                        echo "Creating comment Jira#{$jira_comment->id}\n";
+                        $tc = new TicketComment();
+                        $tc->ticket_id = $ticket->ticket_id;
+                        $tc->user_id = User::DEVELOPMENT;
+                        $tc->comment = $jira_comment->body;
+                        $tc->jira_id = $jira_comment->id;
+                        $tc->private = isset($jira_comment->visibility);
+                        $tc->create();
+                    }
+                }
+            }
+
+            // Get Issue information from Jira
+            echo "Updating Ticket {$ticket->ticket_id} information from Jira issue {$ticket->jira_key}\n";
+            $jira_issue = $jira->get_issue( $ticket->jira_id );
+            if ( isset( $jira_issue->fields->status ) ) {
+                if ( $jira_issue->fields->status->name == 'Done' ) {
+                    $ticket->status = Ticket::STATUS_CLOSED;
+                }
+
+                $ticket->status = $status;
+                $ticket->save();
+            }
+
         }
 
         echo "Finished\n";
