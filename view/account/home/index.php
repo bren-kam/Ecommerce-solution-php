@@ -60,7 +60,7 @@
                                 <?php if ($online_specialist->work_phone): ?>
                                     <p><span class="purple">P.</span> <?php echo $online_specialist->work_phone ?></p>
                                 <?php endif; ?>
-                                <p><span class="purple">E.</span> <?php echo str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email );  ?></p>
+                                <p><span class="purple">E.</span> <a href="mailto:<?php echo str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email );  ?>"><?php echo str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email );  ?></a></p>
                             </div>
                         </section>
                     </div>
@@ -76,7 +76,7 @@
                                     <?php foreach($website_orders as $order): ?>
                                         <tr>
                                             <td>
-                                                <a href="/shopping-cart/orders/view/?woid=<?php echo $order->website_order_id ?>"><strong><?php echo $order->name . ' - ' . reset($order->items)->name ?></strong></a>
+                                                <a href="/shopping-cart/orders/view/?woid=<?php echo $order->website_order_id ?>"><?php echo $order->name . ' - ' . reset($order->items)->name ?></a>
                                             </td>
                                             <td class="text-right"><?php echo (new DateTime($order->date_created))->format('m/d/Y') ?></td>
                                             <td class="text-right cell-no-wrap">$ <?php echo number_format($order->total_cost, 2) ?></td>
@@ -89,7 +89,7 @@
                         </div>
                     <?php else: ?>
                         <div class="col-lg-6">
-                            <section class="panel twt-panel">
+                            <section class="panel twt-panel no-service-box">
                                 <div class="twt-feed blue-bg">
                                     <h1>It looks like you haven't signed up for a shopping cart.</h1>
                                     <a href="javascript:;">
@@ -98,7 +98,7 @@
                                 </div>
                                 <div class="weather-category twt-category">
                                     <p>Add a shopping cart to your Website for a low monthly fee and.</p>
-                                    <p><a href="javascript:;" class="btn btn-primary">Let your website start making money!</a></p>
+                                    <p><a href="javascript:;" class="btn btn-primary" data-toggle="modal" data-target="#support-modal">Let your website start making money!</a></p>
                                 </div>
                             </section>
                         </div>
@@ -113,7 +113,7 @@
                                     <?php foreach($website_reaches as $reach): ?>
                                         <tr>
                                             <td>
-                                                <a href="/products/reaches/reach/?wrid=<?php echo $reach->website_reach_id ?>"><strong><?php echo $reach->name . ( $reach->meta['product-name'] ? ' - ' . $reach->meta['product-name'] : '' ) ?></strong></a>
+                                                <a href="/products/reaches/reach/?wrid=<?php echo $reach->website_reach_id ?>"><?php echo $reach->name . ( $reach->meta['product-name'] ? ' - ' . $reach->meta['product-name'] : '' ) ?></a>
                                             </td>
                                             <td class="text-right"><?php echo (new DateTime($reach->date_created))->format('m/d/Y') ?></td>
                                         </tr>
@@ -165,6 +165,7 @@
                 <?php endif; ?>
 
                 <?php if ( $user->account->email_marketing == 1 ): ?>
+                <br>
                 <div class="row-fluid">
                     <div class="col-lg-12">
                         <h2>
@@ -189,7 +190,7 @@
                 <?php else: ?>
                     <div class="row-fluid">
                         <div class="col-lg-12">
-                            <section class="panel twt-panel">
+                            <section class="panel twt-panel no-service-box">
                                 <div class="twt-feed blue-bg">
                                     <h1>It looks like you haven't signed up for a email marketing.</h1>
                                     <a href="javascript:;">
@@ -198,7 +199,7 @@
                                 </div>
                                 <div class="weather-category twt-category">
                                     <p>Sign up for Email Marketing to get full access to users information.</p>
-                                    <p><a href="javascript:;" class="btn btn-primary">Try it out Today!</a></p>
+                                    <p><a href="javascript:;" class="btn btn-primary" data-toggle="modal" data-target="#support-modal">Try it out Today!</a></p>
                                 </div>
                             </section>
                         </div>
