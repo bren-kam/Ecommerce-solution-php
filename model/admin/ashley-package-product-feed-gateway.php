@@ -366,6 +366,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $template = $this->package_templates[(string)$item->TemplateId];
             $sku = (string) $item->PackageName;
 
+            $sku = str_replace( '-', '/', $sku );
+
             $new_price = 0;
             $new_weight = 0;
 
