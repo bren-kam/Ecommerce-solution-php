@@ -1,13 +1,15 @@
 var DNS = {
     _template: null
-
+    , _field: 0
     , init: function() {
         // Generate row template
-        DNS._template = $('.edit-record:first').parents('tr').clone();
+        var first = $('.edit-record:first');
+        DNS._template = first.parents('tr').clone().removeClass('hidden');
         DNS._template.find('input').removeAttr('value');
         DNS._template.find('select').prop('selectedIndex', 0);
         DNS._template.find('textarea').text('');
         DNS._template.find('*').removeClass('disabled').removeAttr('disabled');
+        first.remove();
 
         $(document).on( 'click', '.edit-record', DNS.editRecord );
         $(document).on( 'click', '.delete-record', DNS.deleteRecord );
@@ -21,17 +23,22 @@ var DNS = {
         var row = $(this).parents('tr:first');
         var new_row = row.clone();
 
-        // current row action=0 (delete)
-        row.find('*').removeClass('disabled').removeAttr('disabled');
-        row.find('.action').val('0');
+        if ($(this).hasClass('cloudflare') ) {
+            row.find('*').removeClass('disabled').removeAttr('disabled');
+            row.find('.action').val('2');
+        } else {
+            // current row action=0 (delete)
+            row.find('*').removeClass('disabled').removeAttr('disabled');
+            row.find('.action').val('0');
 
-        // new row action=1 (add)
-        new_row.find('*').removeClass('disabled').removeAttr('disabled');
-        new_row.find('.action').val('1');
+            // new row action=1 (add)
+            new_row.find('*').removeClass('disabled').removeAttr('disabled');
+            new_row.find('.action').val('1');
 
-        // show
-        row.after(new_row);
-        row.hide();
+            // show
+            row.after(new_row);
+            row.hide();
+        }
     }
 
     , deleteRecord: function(e) {
@@ -50,8 +57,15 @@ var DNS = {
         e.preventDefault();
         var row = DNS._template.clone();
 
+        DNS._field += 1;
+
         // new row action=1 (add)
         row.find('.action').val('1');
+
+        if ( row.hasClass('cloudflare') )
+        row.find('input,select,textarea').each( function() {
+            $(this).attr('name', $(this).attr('name').replace( '[]', '[' + DNS._field + ']' ));
+        });
 
         // show
         $('#fEditDNS tbody').append(row);

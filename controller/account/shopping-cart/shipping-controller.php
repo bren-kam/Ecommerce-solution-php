@@ -71,12 +71,14 @@ class ShippingController extends BaseController {
             if ( $website_shipping_method_id ) {
                 $shipping_method->save();
 
+                $this->log( 'update-custom-shipping-method', $this->user->contact_name . ' updated a custom shipping method on ' . $this->user->account->title, $_POST );
                 $this->notify( _('Your shipping method has been updated successfully!') );
             } else {
                 $shipping_method->type = 'custom';
                 $shipping_method->website_id = $this->user->account->id;
                 $shipping_method->create();
 
+                $this->log( 'create-custom-shipping-method', $this->user->contact_name . ' created a custom shipping method on ' . $this->user->account->title, $_POST );
                 $this->notify( _('Your shipping method has been added successfully!') );
             }
 
@@ -171,12 +173,14 @@ class ShippingController extends BaseController {
             if ( $website_shipping_method_id ) {
                 $shipping_method->save();
 
+                $this->log( 'update-ups-shipping-method', $this->user->contact_name . ' updated a UPS shipping method on ' . $this->user->account->title, $shipping_method->id );
                 $this->notify( _('Your shipping method has been updated successfully!') );
             } else {
                 $shipping_method->type = 'ups';
                 $shipping_method->website_id = $this->user->account->id;
                 $shipping_method->create();
 
+                $this->log( 'create-ups-shipping-method', $this->user->contact_name . ' created a UPS shipping method on ' . $this->user->account->title, $shipping_method->id );
                 $this->notify( _('Your shipping method has been added successfully!') );
             }
 
@@ -276,12 +280,14 @@ class ShippingController extends BaseController {
                 $shipping_method->save();
 
                 $this->notify( _('Your shipping method has been updated successfully!') );
+                $this->log( 'update-fedex-shipping-method', $this->user->contact_name . ' updated a FedEx shipping method on ' . $this->user->account->title, $shipping_method->id );
             } else {
                 $shipping_method->type = 'fedex';
                 $shipping_method->website_id = $this->user->account->id;
                 $shipping_method->create();
 
                 $this->notify( _('Your shipping method has been added successfully!') );
+                $this->log( 'create-fedex-shipping-method', $this->user->contact_name . ' created a FedEx shipping method on ' . $this->user->account->title, $shipping_method->id );
             }
 
             return new RedirectResponse('/shopping-cart/shipping/');
@@ -388,12 +394,14 @@ class ShippingController extends BaseController {
             if ( $website_shipping_method_id ) {
                 $shipping_method->save();
 
+                $this->log( 'update-ashley-express-fedex-shipping-method', $this->user->contact_name . ' updated an Ashley Express FedEx shipping method on ' . $this->user->account->title, $shipping_method->id );
                 $this->notify( _('Your shipping method has been updated successfully!') );
             } else {
                 $shipping_method->type = 'ashley-express-fedex';
                 $shipping_method->website_id = $this->user->account->id;
                 $shipping_method->create();
 
+                $this->log( 'create-ashley-express-fedex-shipping-method', $this->user->contact_name . ' created an Ashley Express FedEx shipping method on ' . $this->user->account->title, $shipping_method->id );
                 $this->notify( _('Your shipping method has been added successfully!') );
             }
 
@@ -501,11 +509,13 @@ class ShippingController extends BaseController {
                 $shipping_method->save();
 
                 $this->notify( _('Your shipping method has been updated successfully!') );
+                $this->log( 'update-ashley-express-ups-shipping-method', $this->user->contact_name . ' updated an Ashley Express UPS shipping method on ' . $this->user->account->title, $shipping_method->id );
             } else {
                 $shipping_method->type = 'ashley-express-ups';
                 $shipping_method->website_id = $this->user->account->id;
                 $shipping_method->create();
 
+                $this->log( 'create-ashley-express-ups-shipping-method', $this->user->contact_name . ' create an Ashley Express UPS shipping method on ' . $this->user->account->title, $shipping_method->id );
                 $this->notify( _('Your shipping method has been added successfully!') );
             }
 
@@ -665,6 +675,7 @@ class ShippingController extends BaseController {
                 , 'taxable-shipping' => ( isset( $_POST['cbTaxableShipping'] ) ) ? '1' : '0'
             ));
 
+            $this->log( 'update-shipping-settings', $this->user->contact_name . ' updated shipping settings on ' . $this->user->account->title );
             $this->notify( _('Your settings have been successfully saved!') );
 
             // Simply refresh the page
@@ -827,6 +838,8 @@ class ShippingController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'delete-shipping-method', $this->user->contact_name . ' deleted a shipping method on ' . $this->user->account->title, $_GET['wsmid'] );
 
         return $response;
     }

@@ -8,6 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var bool|int $product_id
+ * @var bool $show_warning
  * @var Product $product
  * @var Account $account
  * @var array $brands
@@ -39,6 +40,26 @@ nonce::field( 'upload_image', '_upload_image' );
 nonce::field( 'get_attribute_items', '_get_attribute_items' );
 
 ?>
+
+<?php if($show_warning) { ?>
+    <!-- Modal -->
+    <div aria-hidden="false" aria-labelledby="warningModalLabel" role="dialog" tabindex="-1" id="warningModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Notification</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Exclusive/Proprietary Ashley products are not allowed to be added to your website.</p>
+                </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-default" type="button">I understand</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal -->
+<?php } ?>
 
 <form id="fAddEditProduct" role="form" method="post" <?php if ( $product->id ) echo 'action="?pid=' . $product->id . '"'; ?>>
 

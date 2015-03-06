@@ -46,6 +46,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected $ashley_products;
 
     /**
+     * Hold DISCONTINUED Ashley Products by sku
+     * @var array
+     */
+    protected $discontinued_ashley_products;
+
+    /**
      * Hold the ashley brands
      */
     protected $brands = array(
@@ -250,6 +256,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected function get_data() {
         // Get Ashley Products by SKU
         $this->ashley_products = $this->get_ashley_products_by_sku();
+        $this->discontinued_ashley_products = $this->get_discontinued_prodcts_by_sku();
 
         echo "get_ashley_products_by_sku() completed\n";
 		flush();
@@ -359,6 +366,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $template = $this->package_templates[(string)$item->TemplateId];
             $sku = (string) $item->PackageName;
 
+            $sku = str_replace( '-', '/', $sku );
+
             $new_price = 0;
             $new_weight = 0;
 
@@ -461,6 +470,18 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             echo "\nPackage Weight: $new_weight";
             $product->weight = $new_weight;
+
+            echo "\nVerifying if piece is discontinued";
+            foreach ( $sku_pieces as $sp ) {
+                echo  "\nPiece: $sp - ";
+                if ( isset( $this->discontinued_ashley_products[$series . $sp] ) ) {
+                    echo "\nProduct Package '{$product->sku}'' marked as discontinued as '{$sp}' is discontinued";
+                    $product->publish_visibility = 'deleted';
+                } elseif ( isset( $this->discontinued_ashley_products[$series . '-' . $sp] ) ) {
+                    echo "\nProduct Package '{$product->sku}'' marked as discontinued as '{$sp}' is discontinued";
+                    $product->publish_visibility = 'deleted';
+                }
+            }
 
             // Update the price
             if ( !$new_product ) {
@@ -672,4 +693,15 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected function get_ashley_products_by_sku() {
         return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price`, `weight` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
     }
+
+    protected function get_discontinued_prodcts_by_sku() {
+        return ar::assign_key( $this->get_results(
+            "SELECT p.`sku`, p.`name`, p.`price`, p.`weight`
+            FROM `products` p
+            LEFT JOIN `products` p2 ON p.sku = p2.sku AND p.user_id_created = p2.user_id_created AND p.brand_id = p2.brand_id AND p2.publish_visibility != 'deleted'
+            WHERE p.`user_id_created` = 353 AND p.`publish_visibility` = 'deleted' AND p.`sku` != '' AND p2.`product_id` is null;"
+            , PDO::FETCH_ASSOC ), 'sku', true 
+        );
+    }
+
 }

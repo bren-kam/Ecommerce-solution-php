@@ -173,6 +173,7 @@ class UsersController extends BaseController {
                 $user->set_password( $_POST['tPassword'] );
 
             $this->notify( _('Your user has been successfully updated!') );
+            $this->log( 'update-website-user', $this->user->contact_name . ' updated a website user on ' . $this->user->account->title, $user->id );
             return new RedirectResponse('/shopping-cart/users/');
         }
 
@@ -251,6 +252,8 @@ class UsersController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'delete-website-user', $this->user->contact_name . ' deleted a website user on ' . $this->user->account->title, $website_user->id );
 
         return $response;
     }

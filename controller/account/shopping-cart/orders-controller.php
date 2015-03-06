@@ -153,6 +153,8 @@ class OrdersController extends BaseController {
         $website_order->status = $_POST['s'];
         $website_order->save();
 
+        $this->log( 'update-order-status', $this->user->contact_name . ' updated the order status on ' . $this->user->account->title, $_POST );
+
         return $response;
     }
 }

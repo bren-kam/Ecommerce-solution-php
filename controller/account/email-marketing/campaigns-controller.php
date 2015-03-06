@@ -117,6 +117,8 @@ class CampaignsController extends BaseController {
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
 
+        $this->log( 'delete-campaign', $this->user->contact_name . ' deleted a campaign on ' . $this->user->account->title, $_GET['id'] );
+
         return $response;
     }
 
@@ -195,6 +197,7 @@ class CampaignsController extends BaseController {
         try {
             $email_message->test( $_POST['email'], $this->user->account );
             $response->notify( "Test email sent to {$_POST['email']}" );
+            $this->log( 'send-campaign-test', $this->user->contact_name . ' sent a campaign test for ' . $this->user->account->title, $email_message->email_template_id );
         } catch ( ModelException $e ) {
             $response->check( false, $e->getMessage() );
         }
@@ -261,8 +264,10 @@ class CampaignsController extends BaseController {
         // Save/Create campaign
         if ( $campaign->id ) {
             $campaign->save();
+            $this->log( 'update-campaign', $this->user->contact_name . ' updated a campaign for ' . $this->user->account->title, $campaign->id );
         } else {
             $campaign->create();
+            $this->log( 'create-campaign', $this->user->contact_name . ' created a campaign for ' . $this->user->account->title, $campaign->id );
         }
 
         // Save Associations (email lists)
@@ -303,6 +308,8 @@ class CampaignsController extends BaseController {
         }
 
         $response->notify( 'Draft Saved!' );
+        $this->log( 'save-campaign-draft', $this->user->contact_name . ' saved a campaign draft for ' . $this->user->account->title, $campaign->id );
+
         return $response;
     }
 
@@ -353,6 +360,8 @@ class CampaignsController extends BaseController {
         $campaign->schedule( $this->user->account, $email_lists );
 
         $this->notify( 'Campaign Saved and Scheduled for send!' );
+        $this->log( 'campaign-scheduled', $this->user->contact_name . ' scheduled a campaign for ' . $this->user->account->title, $campaign->id );
+
         return $response;
     }
 
@@ -403,6 +412,7 @@ class CampaignsController extends BaseController {
         $campaign->save();
 
         $this->notify( 'Campaign unscheduled' );
+        $this->log( 'unschedule-campaign', $this->user->contact_name . ' unscheduled a campaign for ' . $this->user->account->title, $campaign->id );
 
         return $response;
 

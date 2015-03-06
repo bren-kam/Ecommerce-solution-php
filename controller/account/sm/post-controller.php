@@ -16,9 +16,9 @@ class PostController extends BaseController {
         $website_sm_account = new WebsiteSmAccount();
         $website_sm_account_list = $website_sm_account->get_all( $this->user->account->id );
 
-        if ( empty( $website_sm_account_list ) ) {
-            return new RedirectResponse( '/sm/' );
-        }
+        // if ( empty( $website_sm_account_list ) ) {
+        //     return new RedirectResponse( '/sm/' );
+        // }
 
         $website_sm_accounts = [];
         foreach ( $website_sm_account_list as $a ) {
@@ -58,6 +58,8 @@ class PostController extends BaseController {
                 }
 
                 $website_sm_post->create();
+
+                $this->log( 'create-social-media-post', $this->user->contact_name . ' created a social media post on ' . $this->user->account->title, $website_sm_post->id );
 
                 if ( $website_sm_post->can_post() ) {
                     $website_sm_account = $website_sm_accounts[$website_sm_account_id];
@@ -158,7 +160,10 @@ class PostController extends BaseController {
             $post_at_datetime = new DateTime( $post_at );
             $post->post_at = $post_at_datetime->format('Y-m-d H:i:s');
             $post->save();
+
             $response->notify("Post #{$post->id} will run on " . $post_at_datetime->format('l jS F, h:i:s A'));
+            $this->log( 'update-social-media-post', $this->user->contact_name . ' updated a social media post on ' . $this->user->account->title, $post->id );
+
             $response->add_response('post_at', $post_at_datetime->format('l jS F, h:i:s A'));
         }
 
@@ -185,6 +190,7 @@ class PostController extends BaseController {
         $post->remove();
 
         $response->notify('Post removed!');
+        $this->log( 'remove-social-media-post', $this->user->contact_name . ' removed a social media post on ' . $this->user->account->title, $post->id );
 
         return $response;
     }

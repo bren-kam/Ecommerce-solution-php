@@ -1920,6 +1920,7 @@ DROP TABLE IF EXISTS `website_categories`;
 CREATE TABLE `website_categories` (
   `website_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
   `title` varchar(250) NOT NULL,
   `slug` varchar(150) NOT NULL,
   `content` text NOT NULL,
