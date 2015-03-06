@@ -587,7 +587,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-domain' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-zone-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
