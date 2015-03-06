@@ -68,7 +68,7 @@ var Analytics = {
                 $('<div class="graph-tooltip"><span class="tooltip-text">' + date_str + '</span><span class="tooltip-value">' + contents + ' ' + item.series.label + '</span></div>').css( {
                     position: 'absolute',
                     display: 'none',
-                    top: item.pageY - 25,
+                    top: item.pageY - 55,
                     left: item.pageX - 180,
                     opacity: 0.80
                 }).appendTo("body").fadeIn( 200 );
@@ -85,11 +85,10 @@ var Analytics = {
                     lines: { show: true, fill: true }
                     , points: { show: true }
                     , selection: { mode: 'x' }
-                    , grid: { hoverable: true, clickable: true }
+                    , grid: { hoverable: true, clickable: true  }
                     , legend: { position: 'se' }
                     , xaxis: { mode: 'time', minTickSize: [1, 'day'] }
                     , yaxis: { min: 0 }
-//                    series: { curvedLines: { apply: true, active: true, monotonicFit: true  } }
                 }
             );
         }
@@ -102,11 +101,10 @@ var Analytics = {
                     lines: { show: true, fill: true }
                     , points: { show: true }
                     , selection: { mode: 'x' }
-                    , grid: { hoverable: true, clickable: true }
+                    , grid: { hoverable: true, clickable: true, autoHighlight: true }
                     , legend: { position: 'se' }
                     , xaxis: { mode: 'time', minTickSize: [1, 'day'] }
                     , yaxis: { min: 0 }
-//                    series: { curvedLines: { apply: true, active: true, monotonicFit: true  } }
                 }
             );
         }

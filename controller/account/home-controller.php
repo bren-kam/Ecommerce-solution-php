@@ -91,7 +91,7 @@ class HomeController extends BaseController {
         $signups = array();
         if ( is_array( $signups_data ) ){
             foreach ( $signups_data as $index => $signup ) {
-                $signups[] = array( strtotime($signup['date']) . "000" , $signup['total'] );
+                $signups[] = array( intval( strtotime($signup['date']) .'000' ) , $signup['total'] );
             }
         }
 
@@ -105,7 +105,7 @@ class HomeController extends BaseController {
 
         $this->resources
                 ->css( 'home/home' )
-                ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/curvedLines', 'jquery.flot/excanvas', 'swfobject', 'home/home', 'bootstrap-datepicker' )
+                ->javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'home/home', 'bootstrap-datepicker' )
                 ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'index' )
