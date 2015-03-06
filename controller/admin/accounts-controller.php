@@ -587,7 +587,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-domain' );
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-zone-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -2097,14 +2097,14 @@ class AccountsController extends BaseController {
         $account = new Account();
         $account->get( $_GET['aid'] );
 
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-zone-id');
 
-        if ( !$cloudflare_domain )
+        if ( !$cloudflare_zone_id )
             return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
 
-        library('cloudflare-client-api');
-        $cloudflare = new CloudFlareClientAPI( $account );
-        $cloudflare->purge( $cloudflare_domain );
+        library('cloudflare-api');
+        $cloudflare = new CloudFlareAPI( $account );
+        $cloudflare->purge( $cloudflare_zone_id );
 
         $this->notify( _("CloudFlare cache purged.") );
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
