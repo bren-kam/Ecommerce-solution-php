@@ -192,13 +192,13 @@
                         <div class="col-lg-12">
                             <section class="panel twt-panel no-service-box">
                                 <div class="twt-feed blue-bg">
-                                    <h1>It looks like you haven't signed up for a email marketing.</h1>
+                                    <h1>It looks like you haven't signed up for email marketing.</h1>
                                     <a href="javascript:;">
                                         <img src="/images/email-marketing-round.png" />
                                     </a>
                                 </div>
                                 <div class="weather-category twt-category">
-                                    <p>Sign up for Email Marketing to get full access to users information.</p>
+                                    <p>Sign up for Email Marketing to get full access to users' information.</p>
                                     <p><a href="javascript:;" class="btn btn-primary" data-toggle="modal" data-target="#support-modal">Try it out Today!</a></p>
                                 </div>
                             </section>
