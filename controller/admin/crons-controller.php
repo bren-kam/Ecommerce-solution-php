@@ -439,6 +439,8 @@ class CronsController extends BaseController {
 
                     echo "\n $to...\n";
                     $success = fn::mail( $to, $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
+                    // Copy to Us
+                    $success = fn::mail( 'jack@greysuitretail.com', $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
                     var_dump($success);
 
                 } else {
