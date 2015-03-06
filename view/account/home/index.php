@@ -89,9 +89,18 @@
                         </div>
                     <?php else: ?>
                         <div class="col-lg-6">
-                            <div class="white-box">
-                                <p>New Orders not Available</p>
-                            </div>
+                            <section class="panel twt-panel">
+                                <div class="twt-feed blue-bg">
+                                    <h1>It looks like you haven't signed up for a shopping cart.</h1>
+                                    <a href="javascript:;">
+                                        <img src="/images/shopping-cart-round.png" />
+                                    </a>
+                                </div>
+                                <div class="weather-category twt-category">
+                                    <p>Add a shopping cart to your Website for a low monthly fee and.</p>
+                                    <p><a href="javascript:;" class="btn btn-primary">Let your website start making money!</a></p>
+                                </div>
+                            </section>
                         </div>
                     <?php endif; ?>
 
@@ -180,9 +189,18 @@
                 <?php else: ?>
                     <div class="row-fluid">
                         <div class="col-lg-12">
-                            <div class="white-box">
-                                <p>Email Signups not Available</p>
-                            </div>
+                            <section class="panel twt-panel">
+                                <div class="twt-feed blue-bg">
+                                    <h1>It looks like you haven't signed up for a email marketing.</h1>
+                                    <a href="javascript:;">
+                                        <img src="/images/email-marketing-round.png" />
+                                    </a>
+                                </div>
+                                <div class="weather-category twt-category">
+                                    <p>Sign up for Email Marketing to get full access to users information.</p>
+                                    <p><a href="javascript:;" class="btn btn-primary">Try it out Today!</a></p>
+                                </div>
+                            </section>
                         </div>
                     </div>
                 <?php endif; ?>
