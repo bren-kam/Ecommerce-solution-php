@@ -650,7 +650,7 @@ class ProductsController extends BaseController {
             , 'replace-price-note'
             , 'disable-map-pricing'
             , 'myregistry-button-code'
-            , 'hide-new-product-logo'
+            , 'show-new-product-logo'
         );
 
         $settings = $this->user->account->get_settings( $settings_array );
@@ -664,7 +664,7 @@ class ProductsController extends BaseController {
         	, 'hide-browse-by-brand' 	=> _('Hide Browse By Brand')
             , 'replace-price-note'      => _('Replace Price Note with Product Option')
             , 'disable-map-pricing'     => _('Disable Map Pricing')
-            , 'hide-new-product-logo'   => _('Hide New Product Logo')
+            , 'show-new-product-logo'   => _('Show New Product Logo')
         );
 
         // Create form
