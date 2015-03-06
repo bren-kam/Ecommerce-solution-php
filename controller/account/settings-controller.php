@@ -112,12 +112,12 @@ class SettingsController extends BaseController {
             $this->user->account->save();
 
             // Clear CloudFlare Cache
-            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
-                $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge( $cloudflare_domain );
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
 
             // Notification
@@ -383,12 +383,12 @@ class SettingsController extends BaseController {
         $this->user->account->set_settings( array( 'website-logo' => $account_file->file_path ) );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Add the response
