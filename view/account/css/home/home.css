@@ -6,21 +6,18 @@
 }
 .graph-tooltip {
   border: 1px solid #ccc;
-  z-index: 999;
-  white-space:nowrap;
 }
 .graph-tooltip .tooltip-text,
 .graph-tooltip .tooltip-value {
   background-color: white;
   display: inline-block;
   padding: 10px;
-  box-sizing: border-box;
-  white-space:normal;
 }
 .graph-tooltip .tooltip-value {
   background-color: #97BBCD;
   color: #fff;
   font-weight: 600;
+  text-align: right;
 }
 .datepicker .disabled {
   color: #ccc!important;
@@ -46,4 +43,7 @@
   color: #ddd;
   font-size: 24px;
   text-align: center;
+}
+.panel .no-service-box {
+  margin-top: 61px;
 }
