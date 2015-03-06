@@ -1180,12 +1180,12 @@ class AccountsController extends BaseController {
         $install_service->install_website( $account, $this->user->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Let them know it's been installed
@@ -1218,12 +1218,12 @@ class AccountsController extends BaseController {
         $install_service->install_package( $account, $this->user->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Let them know it's been installed
@@ -1253,12 +1253,12 @@ class AccountsController extends BaseController {
         // Clear CloudFlare Cache
         $account = new Account();
         $account->get( $_GET['aid'] );
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         $this->notify( _('All categories and products have been removed.') );
@@ -1297,12 +1297,12 @@ class AccountsController extends BaseController {
         $account->save();
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Give them a notification
@@ -1345,12 +1345,12 @@ class AccountsController extends BaseController {
         $ashley_specific_feed->run( $account );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Give them a notification
@@ -1420,12 +1420,12 @@ class AccountsController extends BaseController {
         // Clear CloudFlare Cache
         $account = new Account();
         $account->get( $_GET['aid'] );
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Give them a notification
@@ -1812,12 +1812,12 @@ class AccountsController extends BaseController {
         // Clear CloudFlare Cache
         $account = new Account;
         $account->get( $_GET['aid'] );
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         $this->notify( _('All account prices has been reseted.') );
@@ -1844,12 +1844,12 @@ class AccountsController extends BaseController {
         $ashley_express_feed->run_flag_products( $account );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Give them a notification
@@ -1958,12 +1958,12 @@ class AccountsController extends BaseController {
         ssh2_exec( $ssh_connection, "sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI( $account );
-            $cloudflare->purge( $cloudflare_domain );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         echo 'Finished!'; die;
@@ -1986,12 +1986,12 @@ class AccountsController extends BaseController {
             $account->save();
 
             // Clear CloudFlare Cache
-            $cloudflare_domain = $account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
                 $cloudflare = new CloudFlareClientAPI( $account );
-                $cloudflare->purge( $cloudflare_domain );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
         }
 
@@ -2037,12 +2037,12 @@ class AccountsController extends BaseController {
             $index->index_website( $account->id );
 
             // Clear CloudFlare Cache
-            $cloudflare_domain = $account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
                 $cloudflare = new CloudFlareClientAPI( $account );
-                $cloudflare->purge( $cloudflare_domain );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
         }
 
