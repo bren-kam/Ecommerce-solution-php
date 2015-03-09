@@ -1887,6 +1887,16 @@ class WebsiteController extends BaseController {
             $cloudflare->purge($cloudflare_zone_id);
         }
 
+        // Update GeoMarketing Locations
+        if ( $this->user->account->geo_marketing ) {
+            $location = new WebsiteYextLocation();
+            $locations = $location->get_all( $this->user->account->id );
+            foreach ( $locations as $location ) {
+                $location->do_upload_photos( $location );
+            }
+
+        }
+
         $response->notify( 'Sidebar information updated.' );
         return $response;
     }
@@ -1918,6 +1928,16 @@ class WebsiteController extends BaseController {
             library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
+        }
+
+        // Update GeoMarketing Locations
+        if ( $this->user->account->geo_marketing ) {
+            $location = new WebsiteYextLocation();
+            $locations = $location->get_all( $this->user->account->id );
+            foreach ( $locations as $location ) {
+                $location->do_upload_photos( $location );
+            }
+
         }
 
         $this->log( 'update-attachment-status', $this->user->contact_name . ' updated attachment status on ' . $this->user->account->title, $attachment->id );
