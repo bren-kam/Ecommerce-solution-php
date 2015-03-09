@@ -4932,3 +4932,6 @@ div#ticket-uploader {
   color: #D23393;
   font-weight: bold;
 }
+#taTicketMessage {
+  height: 210px;
+}
