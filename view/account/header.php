@@ -119,7 +119,7 @@
                                 <li class="big">
                                     <?php
                                         echo '<a href="mailto:' . $online_specialist->email . '"><i class="fa fa-life-ring"></i> Online Specialist: ' . $online_specialist->contact_name . '</a>';
-                                        echo '<a href="mailto:' . $online_specialist->email . '">' . $online_specialist->email . '</a>';
+                                        echo '<a href="mailto:' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '">' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '</a>';
                                         if ( $online_specialist->work_phone ) echo ' | <a href="tel:' . $online_specialist->work_phone . '">' . $online_specialist->work_phone . '</a>';
                                     ?>
                                 </li>
@@ -140,6 +140,13 @@
     <div id="sidebar"  class="nav-collapse ">
         <!-- sidebar menu start-->
         <ul class="sidebar-menu" id="nav-accordion">
+
+            <li class="sub-menu">
+                <a href="/" <?php if ( $template->in_menu_item('dashboard') ) echo 'class="active"'?>>
+                    <i class="fa fa-tachometer"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
 
             <?php if ( $user->account->pages ): ?>
                 <li class="sub-menu">
@@ -438,6 +445,9 @@
                         <li <?php if ( '/settings/logo-and-phone/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/logo-and-phone/">Logo &amp; Phone</a></li>
                     <?php endif; ?>
                     <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
+                    <?php if ( $user->account->get_settings( 'cloudflare-zone-id' ) ): ?>
+                    <li <?php if ( '/settings/domain/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/domain/">Domain</a></li>
+                    <?php endif; ?>
                 </ul>
             </li>
 

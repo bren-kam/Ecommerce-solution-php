@@ -36,6 +36,7 @@ class LoginController extends BaseController {
                 if ( $this->user->login( $_POST['email'], $_POST['password'] ) ) {
                     // Record the login
                     $this->user->record_login();
+                    $this->log( 'login', $this->user->contact_name . ' logged in to the account side.' );
 
                     $account = new Account();
                     $accounts = array_merge(
@@ -107,6 +108,7 @@ class LoginController extends BaseController {
             if ( $user->login($user->email, $password ) ) {
                 $this->user = $user;
                 $this->notify( _('Your account has been successfully activated!') );
+                $this->log( 'activate-account', $this->user->contact_name . ' activated their account.' );
                 return new RedirectResponse('/');
             }
         }

@@ -123,7 +123,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
 
         if ( is_array( $accounts ) ) {
-            library('cloudflare-client-api');
+            library('cloudflare-api');
 
             foreach ($accounts as $account) {
                 // Need to make this not timeout and remove half the products first
@@ -132,10 +132,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $this->run($account, $file);
                 // Clear CloudFlare Cache
                 $cloudflare = new CloudFlareClientAPI( $account );
-                $cloudflare_domain = $account->get_settings('cloudflare-domain');
+                $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-                if ($cloudflare_domain) {
-                    $cloudflare->purge($cloudflare_domain);
+                if ($cloudflare_zone_id) {
+                    $cloudflare->purge($cloudflare_zone_id);
                 }
             }
         }
@@ -339,7 +339,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $ticket->priority = Ticket::PRIORITY_HIGH;
             $ticket->status = Ticket::STATUS_OPEN;
             $ticket->summary = 'Ashley Feed Removing Too Many Products';
-            $ticket->message = 'Trying to remove ' . $remove_product_count . ' products';
+            $ticket->message = 'Trying to remove ' . $remove_product_count . ' products. Click the following link to override:' . "\nhttp://admin.greysuitretail.com/accounts/run-ashley-feed/?aid={$account->id}&override=1";
             $ticket->create();
             return;
         }

@@ -14,6 +14,7 @@ class LogoutController extends BaseController {
      */
     protected function index() {
         remove_cookie( AUTH_COOKIE );
+        $this->log( 'logout', $this->user->contact_name . ' logged out.' );
         return new RedirectResponse('/login/');
     }
 

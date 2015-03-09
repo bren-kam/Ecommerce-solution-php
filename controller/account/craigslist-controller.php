@@ -73,9 +73,13 @@ class CraigslistController extends BaseController {
 
                 if ( $ad->id ) {
                     $ad->save();
+
+                    $this->log( 'update-craigslist-ad', $this->user->contact_name . ' updated a craigslist ad on ' . $this->user->account->title, $ad->id );
                 } else {
                     $ad->website_id = $this->user->account->id;
                     $ad->create();
+
+                    $this->log( 'create-craigslist-ad', $this->user->contact_name . ' created a craigslist ad on ' . $this->user->account->title, $ad->id );
                 }
 
                 // Reset headlines
@@ -208,6 +212,8 @@ class CraigslistController extends BaseController {
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
 
+        $this->log( 'delete-craigslist-ad', $this->user->contact_name . ' deleted a craigslist ad on ' . $this->user->account->title, $craigslist_ad->id );
+
         return $response;
     }
 
@@ -239,6 +245,8 @@ class CraigslistController extends BaseController {
 
         // Redraw the table
         $response->add_response( 'reload_datatable', 'reload_datatable' );
+
+        $this->log( 'copy-craigslist-ad', $this->user->contact_name . ' copieda craigslist ad on ' . $this->user->account->title, $craigslist_ad->id );
 
         return $response;
     }

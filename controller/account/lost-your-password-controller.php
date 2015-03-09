@@ -75,6 +75,7 @@ class LostYourPasswordController extends BaseController {
                             $intro->send();
 
                             $success = _( 'You have been sent an email with further instructions to recover your password.' );
+                            $this->log( 'forgot-password-request', $this->user->contact_name . ' requested password reset.' );
                         }
                     } else {
                         $errs .= _('That email is not registered. Please try again.');

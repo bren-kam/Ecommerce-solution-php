@@ -85,7 +85,7 @@
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel-yext-subscription/' ); ?>" title="<?php echo _('Cancel YEXT Subscription'); ?>"><?php echo _('Cancel YEXT Subscription'); ?></a></p>
                 <?php } ?>
 
-                <?php if ( $settings['cloudflare-domain'] ) { ?>
+                <?php if ( $settings['cloudflare-zone-id'] ) { ?>
                     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/purge-cloudflare-cache/' ); ?>" title="<?php echo _('Purge Cache'); ?>"><?php echo _('Purge Cache'); ?></a></p>
                 <?php } ?>
             </div>

@@ -16,9 +16,9 @@ class PostController extends BaseController {
         $website_sm_account = new WebsiteSmAccount();
         $website_sm_account_list = $website_sm_account->get_all( $this->user->account->id );
 
-        if ( empty( $website_sm_account_list ) ) {
-            return new RedirectResponse( '/sm/' );
-        }
+        // if ( empty( $website_sm_account_list ) ) {
+        //     return new RedirectResponse( '/sm/' );
+        // }
 
         $website_sm_accounts = [];
         foreach ( $website_sm_account_list as $a ) {
