@@ -96,7 +96,7 @@ class TicketComment extends ActiveRecordBase {
         }
 
         $comment_text  = "By *{$this->name}* on " . (new DateTime( $this->date_created ))->format( 'F j, Y g:ia' );
-        $comment_text .= "\n\n{$this->comment}";
+        $comment_text .= "\n\n" . strip_tags($this->comment);
 
         $ticket_upload = new TicketUpload();
         $uploads = $ticket_upload->get_by_comment( $this->id );

@@ -1,0 +1,46 @@
+#visitors-graph,
+#signups-graph {
+  height: 400px;
+  position: relative;
+  margin-top: 15px;
+}
+.graph-tooltip {
+  border: 1px solid #ccc;
+}
+.graph-tooltip .tooltip-text,
+.graph-tooltip .tooltip-value {
+  background-color: white;
+  display: inline-block;
+  padding: 10px;
+}
+.graph-tooltip .tooltip-value {
+  background-color: #97BBCD;
+  color: #fff;
+  font-weight: 600;
+  text-align: right;
+}
+.datepicker .disabled {
+  color: #ccc!important;
+}
+.panel .panel-heading {
+  background-color: #5CBDF0;
+  color: #fff!important;
+}
+.panel table {
+  border: 1px solid #ddd;
+}
+.panel table .cell-no-wrap {
+  white-space: nowrap;
+}
+.panel .white-box {
+  margin-top: 63px;
+  padding: 115px 15px 0px 15px;
+  border: 1px dashed #ddd;
+  background-color: #fff;
+  height: 205px;
+}
+.panel .white-box p {
+  color: #ddd;
+  font-size: 24px;
+  text-align: center;
+}

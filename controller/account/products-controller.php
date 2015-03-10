@@ -97,12 +97,12 @@ class ProductsController extends BaseController {
             $index->index_product_bulk( $_POST['products'], $this->user->account->id );
 
             // Clear CloudFlare Cache
-            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
-                $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge( $cloudflare_domain );
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
 
             // Notification
@@ -199,12 +199,12 @@ class ProductsController extends BaseController {
                         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
                         // Clear CloudFlare Cache
-                        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+                        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-                        if ( $cloudflare_domain ) {
-                            library('cloudflare-client-api');
-                            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                            $cloudflare->purge( $cloudflare_domain );
+                        if ( $cloudflare_zone_id ) {
+                            library('cloudflare-api');
+                            $cloudflare = new CloudFlareAPI( $this->user->account );
+                            $cloudflare->purge( $cloudflare_zone_id );
                         }
 
                         // Notification
@@ -270,12 +270,12 @@ class ProductsController extends BaseController {
                 $index->index_product_by_sku( $skus, $this->user->account->id );
 
                 // Clear CloudFlare Cache
-                $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+                $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-                if ( $cloudflare_domain ) {
-                    library('cloudflare-client-api');
-                    $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                    $cloudflare->purge( $cloudflare_domain );
+                if ( $cloudflare_zone_id ) {
+                    library('cloudflare-api');
+                    $cloudflare = new CloudFlareAPI( $this->user->account );
+                    $cloudflare->purge( $cloudflare_zone_id );
                 }
 
                 // Notification
@@ -526,12 +526,12 @@ class ProductsController extends BaseController {
             $index->index_website( $this->user->account->id );
 
             // Clear Cloudflare Cache
-            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
-                $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge( $cloudflare_domain );
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
 
             // Notification
@@ -580,12 +580,12 @@ class ProductsController extends BaseController {
             $index->index_product_bulk( $_POST['unblock-products'], $this->user->account->id );
 
             // Clear Cloudflare Cache
-            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
-                $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge( $cloudflare_domain );
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
 
             // Notification
@@ -612,12 +612,12 @@ class ProductsController extends BaseController {
             $index->index_website( $this->user->account->id );
 
             // Clear Cloudflare Cache
-            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
-                $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge( $cloudflare_domain );
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
 
             // Notification
@@ -650,7 +650,7 @@ class ProductsController extends BaseController {
             , 'replace-price-note'
             , 'disable-map-pricing'
             , 'myregistry-button-code'
-            , 'show-new-product-logo'
+            , 'hide-new-product-logo'
         );
 
         $settings = $this->user->account->get_settings( $settings_array );
@@ -664,7 +664,7 @@ class ProductsController extends BaseController {
         	, 'hide-browse-by-brand' 	=> _('Hide Browse By Brand')
             , 'replace-price-note'      => _('Replace Price Note with Product Option')
             , 'disable-map-pricing'     => _('Disable Map Pricing')
-            , 'show-new-product-logo'   => _('Show New Product Logo')
+            , 'hide-new-product-logo'   => _('Hide New Product Logo')
         );
 
         // Create form
@@ -703,12 +703,12 @@ class ProductsController extends BaseController {
             $this->user->account->set_settings( $new_settings );
 
             // Clear Cloudflare Cache
-            $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-            if ( $cloudflare_domain ) {
-                library('cloudflare-client-api');
-                $cloudflare = new CloudFlareClientAPI( $this->user->account );
-                $cloudflare->purge( $cloudflare_domain );
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
             }
 
             // Notification
@@ -988,12 +988,12 @@ class ProductsController extends BaseController {
         $index->index_website( $this->user->account->id );
 
         // Clear Cloudflare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Let them know
@@ -1148,12 +1148,12 @@ class ProductsController extends BaseController {
         $account_category->reassign_image( $this->user->account->id, $account_product->product_id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Notification
@@ -1200,12 +1200,12 @@ class ProductsController extends BaseController {
         $account_category->reassign_image( $this->user->account->id, $product->product_id );
 
         // Clear Cloudflare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         $response->notify( 'Product blocked' );
@@ -1253,12 +1253,12 @@ class ProductsController extends BaseController {
         }
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Notification
@@ -1313,12 +1313,12 @@ class ProductsController extends BaseController {
         $coupons = $website_coupon->get_by_account( $this->user->account->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Add to response
@@ -1503,12 +1503,12 @@ class ProductsController extends BaseController {
         $index->index_product( $account_product->product_id, $this->user->account->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Notification
@@ -1820,12 +1820,12 @@ class ProductsController extends BaseController {
         $index->index_product_bulk( array_keys($_POST['v']), $this->user->account->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Notification
@@ -1871,12 +1871,12 @@ class ProductsController extends BaseController {
         $index->index_product_bulk( $sequence, $this->user->account->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         $this->log( 'update-product-sequence', $this->user->contact_name . ' updated product sequence ' . $this->user->account->title );
@@ -1905,13 +1905,13 @@ class ProductsController extends BaseController {
         $website_top_brand->update_sequence( $this->user->account->id, $sequence );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         $this->log( 'update-brand-sequence', $this->user->contact_name . ' updated brand sequence ' . $this->user->account->title );
@@ -1939,13 +1939,13 @@ class ProductsController extends BaseController {
         $this->user->account->set_settings( array( 'top-categories' => json_encode( $sequence ) ) );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         $this->log( 'update-top-category-sequence', $this->user->contact_name . ' updated top category sequence ' . $this->user->account->title );
@@ -1977,13 +1977,13 @@ class ProductsController extends BaseController {
         	->updateBrandsSequence();
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         // Add the response
@@ -2013,12 +2013,12 @@ class ProductsController extends BaseController {
         $this->user->account->save();
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Add the response
@@ -2055,13 +2055,13 @@ class ProductsController extends BaseController {
         $website_top_brand->create();
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/' );
-            $cloudflare->purge_url( $cloudflare_domain, 'http://' . $this->user->account->domain . '/products/' );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/' );
+            $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/products/' );
         }
 
         $response->add_response( 'brand', $brand );
@@ -2204,12 +2204,12 @@ class ProductsController extends BaseController {
         }
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         $this->log( 'multiply-prices', $this->user->contact_name . ' multiplied prices on ' . $this->user->account->title );
@@ -2268,12 +2268,12 @@ class ProductsController extends BaseController {
         }
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         $brand = ( $brand->id ) ? $brand->name . ' ' : '';
@@ -2325,12 +2325,12 @@ class ProductsController extends BaseController {
         $account_product->reset_prices( $category_ids, $this->user->account->id, $brand->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Notify
@@ -2527,12 +2527,12 @@ class ProductsController extends BaseController {
         $index->index_website( $this->user->account->id );
 
         // Clear CloudFlare Cache
-        $cloudflare_domain = $this->user->account->get_settings('cloudflare-domain');
+        $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
-        if ( $cloudflare_domain ) {
-            library('cloudflare-client-api');
-            $cloudflare = new CloudFlareClientAPI( $this->user->account );
-            $cloudflare->purge( $cloudflare_domain );
+        if ( $cloudflare_zone_id ) {
+            library('cloudflare-api');
+            $cloudflare = new CloudFlareAPI( $this->user->account );
+            $cloudflare->purge( $cloudflare_zone_id );
         }
 
         // Notification

@@ -1735,6 +1735,7 @@ CREATE TABLE `users` (
   `store_name` varchar(100) NOT NULL,
   `work_phone` varchar(20) NOT NULL,
   `cell_phone` varchar(20) NOT NULL,
+  `photo` varchar(255) NULL DEFAULT NULL,
   `billing_first_name` varchar(50) NOT NULL,
   `billing_last_name` varchar(50) NOT NULL,
   `billing_address1` varchar(150) NOT NULL,

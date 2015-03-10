@@ -36,7 +36,7 @@ nonce::field('add_auto_price', '_add_auto_price');
 
             <div class="panel-body">
                 <p>On this page, you can price out your items based on the wholesale price provided to us via the manufacturer feed.</p>
-                <p>Please enter your markup in the fields below, click "Save & Run". A "0" will be ignored.</p>
+                <p>Please enter your markup in the fields below, click "Save & Run".</p>
 
                 <?php if ( empty( $auto_price_candidates ) ) : ?>
                     <p>Because your manufacturer has not provided us with the wholesale price, your markups will not affect any products in your catalog.</p>

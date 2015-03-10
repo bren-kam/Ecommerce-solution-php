@@ -109,6 +109,7 @@ class EmailMarketingController extends BaseController {
             $sendgrid->sender_address->edit( $this->user->account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'] );
 
             $this->notify( _('Your email settings have been successfully saved!') );
+            $this->log( 'update-email-marketing-settings', $this->user->contact_name . ' updated email marketing settings on ' . $this->user->account->title );
 
             // Refresh to get all the changes
             return new RedirectResponse('/email-marketing/settings/');

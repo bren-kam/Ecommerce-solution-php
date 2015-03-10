@@ -1169,7 +1169,7 @@ class AccountProduct extends ActiveRecordBase {
             $category = new Category();
 
             // Cloudflare library
-            library('cloudflare-client-api');
+            library('cloudflare-api');
 
             foreach ( $website_ids as $website_id ) {
                 $account_category->reorganize_categories( $website_id, $category );
@@ -1177,11 +1177,11 @@ class AccountProduct extends ActiveRecordBase {
                 // Clear CloudFlare Cache
                 $account = new Account();
                 $account->get( $website_id );
-                $cloudflare_domain = $account->get_settings('cloudflare-domain');
+                $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
 
-                if ( $cloudflare_domain ) {
+                if ( $cloudflare_zone_id ) {
                     $cloudflare = new CloudFlareClientAPI( $account );
-                    $cloudflare->purge( $cloudflare_domain );
+                    $cloudflare->purge( $cloudflare_zone_id );
                 }
             }
         }
