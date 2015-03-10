@@ -10,7 +10,7 @@ class Account extends ActiveRecordBase {
     
     // The columns we will have access to
     public $id, $website_id, $company_package_id, $user_id, $os_user_id, $server_id, $title, $domain, $plan_name
-        , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog, $link_brands
+        , $plan_description, $theme, $products, $pages, $shopping_cart, $product_catalog, $link_brands
         , $room_planner, $blog, $craigslist, $email_marketing, $auth_user_email_marketing, $domain_registration
         , $mobile_marketing, $additional_email_Addresses, $social_media, $geo_marketing, $ftp_username, $ftp_password
         , $ga_profile_id, $ga_tracking_key, $wordpress_username, $wordpress_password, $mc_list_id, $version, $live
@@ -150,8 +150,6 @@ class Account extends ActiveRecordBase {
             , 'plan_name' => strip_tags($this->plan_name)
             , 'plan_description' => strip_tags($this->plan_description)
             , 'theme' => strip_tags($this->theme)
-            , 'logo' => strip_tags($this->logo)
-            , 'phone' => $this->phone
             , 'products' => $this->products
             , 'pages' => $this->pages
             , 'product_catalog' => $this->product_catalog
@@ -177,7 +175,7 @@ class Account extends ActiveRecordBase {
             , 'status' => $this->status
             , 'user_id_updated' => $this->user_id_updated
         ), array( 'website_id' => $this->id )
-        , 'iiiisssssssiiiiiiiiiiiisissssiii', 'i' );
+        , 'iiiisssssiiiiiiiiiiiisissssiii', 'i' );
     }
 
     /**

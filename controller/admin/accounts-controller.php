@@ -166,7 +166,6 @@ class AccountsController extends BaseController {
                     $account->title = $_POST['tTitle'];
                     $account->user_id = $_POST['sUserID'];
                     $account->os_user_id = $_POST['sOSUserID'];
-                    $account->phone = $_POST['tPhone'];
                     $account->products = $_POST['tProducts'];
                     $account->plan_name = $_POST['tPlan'];
                     $account->plan_description = $_POST['taPlanDescription'];
@@ -207,6 +206,7 @@ class AccountsController extends BaseController {
                         , 'city' => $_POST['tCity']
                         , 'state' => $_POST['sState']
                         , 'zip' => $_POST['tZip']
+                        , 'phone' => $_POST['tPhone']
                     ) );
 
                     $this->notify( _('This account has been successfully updated!') );
@@ -233,7 +233,7 @@ class AccountsController extends BaseController {
         }
 
         // Address
-        $address = $account->get_settings( 'address', 'city', 'state', 'zip' );
+        $address = $account->get_settings( 'address', 'city', 'state', 'zip', 'phone' );
         $states = data::states( false );
 
         $owner = new User();
@@ -690,8 +690,7 @@ class AccountsController extends BaseController {
                 $store['storename'] = $account->title;
 
                 // Set the phone if they have one
-                if ( !empty( $account->phone ) )
-                    $store['storephone'] = $account['phone'];
+                $store['storephone'] = $account->get_settings('phone');
 
                 $craigslist_customer_id = $account->get_settings('craigslist_customer_id');
 
