@@ -257,6 +257,62 @@ class UsersController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Download
+     * @return CsvResponse
+     */
+    protected function download() {
+        $user = new WebsiteUser();
+        $users = $user->get_by_account($this->user->account->id);
+
+        $csv = [];
+        $csv[] = [
+            'email'
+            , 'billing_first_name'
+            , 'billing_last_name'
+            , 'billing_address1'
+            , 'billing_address2'
+            , 'billing_city'
+            , 'billing_state'
+            , 'billing_zip'
+            , 'billing_phone'
+            , 'billing_alt_phone'
+            , 'shipping_first_name'
+            , 'shipping_last_name'
+            , 'shipping_address1'
+            , 'shipping_address2'
+            , 'shipping_city'
+            , 'shipping_state'
+            , 'shipping_zip'
+            , 'status'
+        ];
+        foreach ( $users as $user ) {
+            $csv[] = [
+                $user->email
+                , $user->billing_first_name
+                , $user->billing_last_name
+                , $user->billing_address1
+                , $user->billing_address2
+                , $user->billing_city
+                , $user->billing_state
+                , $user->billing_zip
+                , $user->billing_phone
+                , $user->billing_alt_phone
+                , $user->shipping_first_name
+                , $user->shipping_last_name
+                , $user->shipping_address1
+                , $user->shipping_address2
+                , $user->shipping_city
+                , $user->shipping_state
+                , $user->shipping_zip
+                , $user->status
+            ];
+        }
+
+        return new CsvResponse( $csv, 'shopping-cart-users-' . date('YmdHis') . '.csv' );
+    }
+
 }
 
 

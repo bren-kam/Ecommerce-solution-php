@@ -30,6 +30,23 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
     }
 
     /**
+     * Get by IDs
+     *
+     * @param int $id
+     */
+    public function get_by_ids( $ids = []) {
+        if ( !$ids )
+            return [];
+
+        return $this->prepare(
+            'SELECT `id`, `kb_category_id`, `kb_page_id`, `user_id`, `title`, `slug`, `content`, `status` FROM `kb_article` WHERE `id` IN ('.( implode(',', $ids) ).') AND `status` <> :status'
+            , 'i'
+            , array( ':status' => self::STATUS_DELETED )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
+    }
+
+
+    /**
      * Get by page
      *
      * @param int $kb_page_id

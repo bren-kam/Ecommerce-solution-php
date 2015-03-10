@@ -187,6 +187,23 @@ class Email extends ActiveRecordBase {
     }
 
     /**
+     * Aggregate Subscribers by Date
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return Email[]
+     */
+    public function aggregate_by_date( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT COUNT(e.`email_id`) AS total , DATE(e.`date_created`) AS date FROM `emails` AS e WHERE 1 $where $order_by GROUP BY date LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
      * Count all
      *
      * @param array $variables

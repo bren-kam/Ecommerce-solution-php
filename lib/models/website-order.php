@@ -138,4 +138,17 @@ class WebsiteOrder extends ActiveRecordBase {
         $sm->get( $this->website_shipping_method_id, $this->website_id );
         return $sm->type == 'ashley-express-ups' || $sm->type == 'ashley-express-fedex';
     }
+
+    /**
+     * Get By Account
+     * @param $account_id
+     * @return WebsiteOrder[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT wo.*, IF( '' = wo.`shipping_name`, CONCAT( wo.`shipping_first_name`, ' ', wo.`shipping_last_name` ), wo.`shipping_name` ) AS shipping_name, wsm.`name` AS shipping_method, wsm_ashley_express.`name` AS ashley_express_shipping_method FROM `website_orders` AS wo LEFT JOIN `website_shipping_methods` AS wsm ON ( wsm.`website_shipping_method_id` = wo.`website_shipping_method_id` ) LEFT JOIN `website_shipping_methods` AS wsm_ashley_express ON ( wsm_ashley_express.`website_shipping_method_id` = wo.`website_ashley_express_shipping_method_id` ) WHERE wo.`website_id` = :account_id"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteOrder');
+    }
 }

@@ -322,6 +322,10 @@ class TicketsController extends BaseController {
             $response->add_response( 'uploads', $response_uploads );
         }
 
+        if ( $ticket->jira_id ) {
+            $ticket_comment->create_jira_comment();
+        }
+
         return $response;
     }
 
@@ -565,6 +569,23 @@ class TicketsController extends BaseController {
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
         fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+
+        // If assigned to Development, make sure it's on Jira
+        if ( $assigned_user->id == User::DEVELOPMENT ) {
+            if ( $ticket->jira_id ) {
+                $ticket->update_jira_issue();
+            } else {
+                $ticket->create_jira_issue();
+
+                $ticket_comment = new TicketComment();
+                $comments = $ticket_comment->get_by_ticket( $ticket->id );
+                if ( $comments ) {
+                    foreach ( $comments as $comment ) {
+                        $comment->create_jira_comment();
+                    }
+                }
+            }
+        }
 
         return $response;
     }

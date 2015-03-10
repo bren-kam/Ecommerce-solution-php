@@ -132,4 +132,17 @@ class WebsiteUser extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Get By Account
+     * @param $account_id
+     * @return WebsiteUser[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT * FROM `website_users` WHERE website_id = :account_id"
+            , 'i'
+            , [ ':account_id' => $account_id ]
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteUser' );
+    }
 }

@@ -23,7 +23,7 @@ nonce::field( 'upload_logo', '_upload_logo' );
                 <form method="post" role="form">
                     <div class="form-group">
                         <label for="phone">Phone:</label>
-                        <input type="tel" class="form-control" name="tPhone" id="phone" value="<?php echo $user->account->phone ?>" />
+                        <input type="tel" class="form-control" name="tPhone" id="phone" value="<?php echo $settings['phone'] ?>" />
                     </div>
                     <div class="form-group">
                         <label for="logo">Logo:</label>

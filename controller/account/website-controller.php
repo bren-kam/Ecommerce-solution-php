@@ -117,6 +117,9 @@ class WebsiteController extends BaseController {
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
                 $page->top = $_POST['rPosition'];
+                if ( isset( $_POST['taHeaderScript'] ) ) {
+                    $page->header_script = $_POST['taHeaderScript'];
+                }
                 $page->save();
 
                 // Update custom meta
@@ -170,6 +173,8 @@ class WebsiteController extends BaseController {
                 }
 
                 $this->notify( _('Your page has been successfully saved!') );
+                $this->log( 'update-website-page', $this->user->contact_name . ' updated a website page on ' . $this->user->account->title, $page->id );
+                
 
                 return new RedirectResponse('/website/');
             }
@@ -293,6 +298,7 @@ class WebsiteController extends BaseController {
             $page->create();
 
             $this->notify( _('Your page has been successfully added!') );
+            $this->log( 'create-website-page', $this->user->contact_name . ' has created a website page on ' . $this->user->account->title, $page->id );
 
             return new RedirectResponse('/website/');
         }
@@ -362,6 +368,9 @@ class WebsiteController extends BaseController {
             $category->meta_description = $_POST['tMetaDescription'];
             $category->meta_keywords = $_POST['tMetaKeywords'];
             $category->top = $_POST['rPosition'];
+            if ( isset( $_POST['taHeaderScript'] ) ) {
+                $category->header_script = $_POST['taHeaderScript'];
+            }
             $category->save();
 
             // Clear CloudFlare Cache
@@ -375,6 +384,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify( _('Your category has been successfully saved!') );
+            $this->log( 'update-website-category', $this->user->contact_name . ' updated a website category on ' . $this->user->account->title, $category->id );
 
             return new RedirectResponse('/website/categories/');
         }
@@ -513,6 +523,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify( _('Your sale page has been successfully saved!') );
+            $this->log( 'update-sale-page', $this->user->contact_name . ' updated the sale page on ' . $this->user->account->title, $settings );
 
             // Refresh to get all the changes
             return new RedirectResponse('/website/sale/');
@@ -561,6 +572,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify( _('Your room planner page has been successfully saved!') );
+            $this->log( 'update-room-planner', $this->user->contact_name . ' updated the room planner on ' . $this->user->account->title, $settings );
 
             // Refresh to get all the changes
             return new RedirectResponse('/website/room-planner/');
@@ -599,6 +611,7 @@ class WebsiteController extends BaseController {
             }
 
             $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
+            $this->log( 'update-home-page-layout', $this->user->contact_name . ' updated home page layout on ' . $this->user->account->title, $layout );
         }
 
         $layout = $this->user->account->get_settings('layout');
@@ -673,6 +686,7 @@ class WebsiteController extends BaseController {
             }
 
             $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
+            $this->log( 'update-navigation', $this->user->contact_name . ' updated the navigation on ' . $this->user->account->title, $navigation );
 
             // Clear CloudFlare Cache
             $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -725,6 +739,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify('Your Footer Navigation settings have been saved!');
+            $this->log( 'update-footer-navigation', $this->user->contact_name . ' updated the footer navigation on ' . $this->user->account->title, $footer_navigation );
         }
 
         $page = new AccountPage();
@@ -911,6 +926,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify( _('Your settings have been successfully saved!') );
+            $this->log( 'update-website-settings', $this->user->contact_name . ' updated the website settings on ' . $this->user->account->title );
 
             // Refresh to get all the changes
             return new RedirectResponse('/website/settings/');
@@ -1079,6 +1095,7 @@ class WebsiteController extends BaseController {
         jQuery('.dt:first')->dataTable()->fnDraw();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
+        $this->log( 'delete-website-page', $this->user->contact_name . ' deleted a website page on ' . $this->user->account->title );
 
         return $response;
     }
@@ -1131,6 +1148,8 @@ class WebsiteController extends BaseController {
         $account_file->website_id = $this->user->account->id;
         $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
         $account_file->create();
+
+        $this->log( 'upload-media-manager-file', $this->user->contact_name . ' uploaded a file to the media manager on ' . $this->user->account->title, $file_name );
 
         $response->add_response( 'id', $account_file->website_file_id );
         $response->add_response( 'name', f::name( $account_file->file_path ) );
@@ -1232,6 +1251,7 @@ class WebsiteController extends BaseController {
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/' . $page->slug . '/' );
         }
 
+        $this->log( 'upload-image', $this->user->contact_name . ' uploaded an image to ' . $this->user->account->title, $image_url );
 
         $response->add_response( 'url', $image_url );
 
@@ -1294,6 +1314,8 @@ class WebsiteController extends BaseController {
         $attachment->key = 'sidebar-image';
         $attachment->value = $image_url;
         $attachment->create();
+
+        $this->log( 'upload-sidebar-image', $this->user->contact_name . ' uploaded a sidebar image to ' . $this->user->account->title, $image_url );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -1399,6 +1421,8 @@ class WebsiteController extends BaseController {
         $attachment->value = $image_url;
         $attachment->create();
 
+        $this->log( 'create-sidebar-image', $this->user->contact_name . ' created a sidebar image on ' . $this->user->account->title, $image_url );
+
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -1473,6 +1497,8 @@ class WebsiteController extends BaseController {
         $attachment->value = $video_url;
         $attachment->save();
 
+        $this->log( 'upload-video', $this->user->contact_name . ' uploaded a video to ' . $this->user->account->title, $video_url );
+
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -1546,6 +1572,8 @@ class WebsiteController extends BaseController {
         $attachment->key = 'banner';
         $attachment->value = $banner_url;
         $attachment->create();
+
+        $this->log( 'upload-banner', $this->user->contact_name . ' uploaded a banner to ' . $this->user->account->title, $banner_url );
 
          // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -1652,6 +1680,8 @@ class WebsiteController extends BaseController {
         $attachment->value = $banner_url;
         $attachment->create();
 
+        $this->log( 'create-banner', $this->user->contact_name . ' created a banner on ' . $this->user->account->title, $banner_url );
+
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -1710,6 +1740,8 @@ class WebsiteController extends BaseController {
         // Delete record
         $account_file->remove();
 
+        $this->log( 'delete-file', $this->user->contact_name . ' deleted a file on ' . $this->user->account->title, $account_file->id );
+
         return $response;
     }
 
@@ -1748,6 +1780,8 @@ class WebsiteController extends BaseController {
 
         $account_pagemeta = new AccountPagemeta();
         $account_pagemeta->add_bulk_by_page( $_POST['apid'], array( $key => $_POST['v'] ) );
+
+        $this->log( 'set-pagemeta', $this->user->contact_name . ' set pagemeta on ' . $this->user->account->title, $_POST );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -1789,6 +1823,7 @@ class WebsiteController extends BaseController {
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/' . $this->user->account->get_settings('page_sale-slug') . '/' );
         }
 
+        $this->log( 'remove-sales-items', $this->user->contact_name . ' remove sales items on ' . $this->user->account->title );
 
         // Let them know we did so successfully
         $response->check( false, _('All sale items were removed!') );
@@ -1841,6 +1876,8 @@ class WebsiteController extends BaseController {
         $attachment->meta = $meta;
         $attachment->save();
 
+        $this->log( 'update-attachment-extra', $this->user->contact_name . ' updated attachment extra on ' . $this->user->account->title, $attachment->id );
+
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -1848,6 +1885,16 @@ class WebsiteController extends BaseController {
             library('cloudflare-api');
             $cloudflare = new CloudFlareClientAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
+        }
+
+        // Update GeoMarketing Locations
+        if ( $this->user->account->geo_marketing ) {
+            $location = new WebsiteYextLocation();
+            $locations = $location->get_all( $this->user->account->id );
+            foreach ( $locations as $location ) {
+                $location->do_upload_photos( $location );
+            }
+
         }
 
         $response->notify( 'Sidebar information updated.' );
@@ -1883,6 +1930,18 @@ class WebsiteController extends BaseController {
             $cloudflare->purge($cloudflare_zone_id);
         }
 
+        // Update GeoMarketing Locations
+        if ( $this->user->account->geo_marketing ) {
+            $location = new WebsiteYextLocation();
+            $locations = $location->get_all( $this->user->account->id );
+            foreach ( $locations as $location ) {
+                $location->do_upload_photos( $location );
+            }
+
+        }
+
+        $this->log( 'update-attachment-status', $this->user->contact_name . ' updated attachment status on ' . $this->user->account->title, $attachment->id );
+
         $response->add_response( 'id', $attachment->id );
 
         return $response;
@@ -1916,6 +1975,8 @@ class WebsiteController extends BaseController {
             $cloudflare = new CloudFlareClientAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
+
+        $this->log( 'update-sidebar-email', $this->user->contact_name . ' updated sidebar email on ' . $this->user->account->title, $attachment->id );
 
         // Notification
         $response->notify( 'Sidebar email updated.' );
@@ -1961,6 +2022,7 @@ class WebsiteController extends BaseController {
             $cloudflare->purge($cloudflare_zone_id);
         }
 
+        $this->log( 'remove-attachment', $this->user->contact_name . ' removed an attachment on ' . $this->user->account->title, $attachment->id );
 
         return $response;
     }
@@ -1992,6 +2054,9 @@ class WebsiteController extends BaseController {
             $cloudflare = new CloudFlareClientAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
+
+        $this->log( 'update-attachment-sequence', $this->user->contact_name . ' updated attachment sequence on ' . $this->user->account->title );
+
 
         return $response;
     }
@@ -2191,9 +2256,13 @@ class WebsiteController extends BaseController {
         // Create or save
         if ( $location->id ) {
             $location->save();
+
+            $this->log( 'update-website-location', $this->user->contact_name . ' updated a website location on ' . $this->user->account->title, $location->id );
         } else {
             $location->website_id = $this->user->account->website_id;
             $location->create();
+
+            $this->log( 'create-website-location', $this->user->contact_name . ' created a website location on ' . $this->user->account->title, $location->id );
         }
 
         // Clear CloudFlare Cache
@@ -2261,6 +2330,8 @@ class WebsiteController extends BaseController {
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
+        $this->log( 'delete-website-location', $this->user->contact_name . ' deleted a website location on ' . $this->user->account->title, $location->id );
+
         return $response;
     }
 
@@ -2292,6 +2363,8 @@ class WebsiteController extends BaseController {
             $cloudflare = new CloudFlareClientAPI($this->user->account);
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
+
+        $this->log( 'update-website-location-sequence', $this->user->contact_name . ' updated website location sequence on ' . $this->user->account->title );
 
         return $response;
     }
@@ -2325,6 +2398,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify('Your Header settings have been saved!');
+            $this->log( 'header-settings', $this->user->contact_name . ' updated header settings on ' . $this->user->account->title );
         }
 
         $header = $this->user->account->get_settings('header');
@@ -2405,6 +2479,7 @@ class WebsiteController extends BaseController {
             }
 
             $this->notify( _('Your brand has been successfully saved!') );
+            $this->log( 'update-brand', $this->user->contact_name . ' updated a brand on ' . $this->user->account->title, $brand->id );
 
             return new RedirectResponse('/website/brands/');
         }
@@ -2486,6 +2561,7 @@ class WebsiteController extends BaseController {
             }
 
             $this->notify('Your HTML Header settings have been saved!');
+            $this->log( 'update-html-head', $this->user->contact_name . ' updated HTML head on ' . $this->user->account->title );
         }
 
         $html_header = $this->user->account->get_settings('html-header');
@@ -2519,6 +2595,7 @@ class WebsiteController extends BaseController {
             }
 
             $this->notify('Your 404 Page Text has been saved!');
+            $this->log( 'update-custom-404', $this->user->contact_name . ' updated the custom 404 page on ' . $this->user->account->title );
         }
 
         $account_file = new AccountFile();
@@ -2597,6 +2674,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify('Your Footer settings have been saved!');
+            $this->log( 'update-footer', $this->user->contact_name . ' updated footer settings on ' . $this->user->account->title );
         }
 
         $footer = $this->user->account->get_settings('footer');
@@ -2644,6 +2722,7 @@ class WebsiteController extends BaseController {
 
             // Notification
             $this->notify('Your Top Site Navigation settings have been saved!');
+            $this->log( 'update-top-site-navigation', $this->user->contact_name . ' updated top site navigation on ' . $this->user->account->title );
         }
 
         $page = new AccountPage();

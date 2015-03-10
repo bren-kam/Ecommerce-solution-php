@@ -69,7 +69,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="tPhone">Phone</label>
-                                <input type="text" id="tPhone" name="tPhone" class="form-control" placeholder="Enter phone" value="<?php echo $account->phone ?>" />
+                                <input type="text" id="tPhone" name="tPhone" class="form-control" placeholder="Enter phone" value="<?php echo $address['phone'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label for="tProducts">Products</label>
@@ -143,6 +143,7 @@
 
                     <?php nonce::field('edit') ?>
                 </form>
+                <?php echo $js_validation; ?>
             </div>
         </section>
     </div>

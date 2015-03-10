@@ -1648,6 +1648,7 @@ CREATE TABLE `ticket_comments` (
   `private` tinyint(1) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `jira_id` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`ticket_comment_id`),
   KEY `ticket_id` (`ticket_id`,`user_id`),
   KEY `fk_tc_idx` (`ticket_id`)
@@ -1692,6 +1693,8 @@ CREATE TABLE `tickets` (
   `browser_version` varchar(20) NOT NULL,
   `browser_platform` varchar(50) NOT NULL,
   `browser_user_agent` varchar(200) NOT NULL,
+  `jira_id` int(11) NULL DEFAULT NULL,
+  `jira_key` VARCHAR(255) NULL DEFAULT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ticket_id`),
@@ -1732,6 +1735,7 @@ CREATE TABLE `users` (
   `store_name` varchar(100) NOT NULL,
   `work_phone` varchar(20) NOT NULL,
   `cell_phone` varchar(20) NOT NULL,
+  `photo` varchar(255) NULL DEFAULT NULL,
   `billing_first_name` varchar(50) NOT NULL,
   `billing_last_name` varchar(50) NOT NULL,
   `billing_address1` varchar(150) NOT NULL,
@@ -1930,6 +1934,7 @@ CREATE TABLE `website_categories` (
   `image_url` varchar(200) NOT NULL,
   `top` tinyint(1) NOT NULL DEFAULT '1',
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `header_script` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`website_id`,`category_id`),
   KEY `fk_wca_idx` (`website_id`),
   KEY `fk_wca2_idx` (`category_id`)
@@ -2232,6 +2237,7 @@ CREATE TABLE `website_pages` (
   `updated_user_id` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `header_script` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`website_page_id`),
   UNIQUE KEY `website_id` (`website_id`,`slug`),
   KEY `fk_wp_idx` (`website_id`)

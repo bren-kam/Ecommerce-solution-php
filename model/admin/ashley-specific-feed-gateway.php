@@ -339,7 +339,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $ticket->priority = Ticket::PRIORITY_HIGH;
             $ticket->status = Ticket::STATUS_OPEN;
             $ticket->summary = 'Ashley Feed Removing Too Many Products';
-            $ticket->message = 'Trying to remove ' . $remove_product_count . ' products';
+            $ticket->message = 'Trying to remove ' . $remove_product_count . ' products. Click the following link to override:' . "\nhttp://admin.greysuitretail.com/accounts/run-ashley-feed/?aid={$account->id}&override=1";
             $ticket->create();
             return;
         }

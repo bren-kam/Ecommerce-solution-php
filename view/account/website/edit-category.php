@@ -68,6 +68,13 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <input type="text" class="form-control" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $category->meta_keywords ?>"/>
                     </div>
 
+                    <?php if ( $user->account->is_new_template() ): ?>
+                        <div class="form-group">
+                            <label for="taHeaderScript">Header Script:</label>
+                            <textarea class="form-control" name="taHeaderScript" id="taHeaderScript"><?php echo $category->header_script ?></textarea>
+                        </div>
+                    <?php endif; ?>
+
                     <p><strong>Text Placement:</strong></p>
                     <div class="radio">
                         <label>

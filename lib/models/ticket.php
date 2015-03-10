@@ -9,7 +9,7 @@ class Ticket extends ActiveRecordBase {
 
     // The columns we will have access to
     public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to
-        , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created;
+        , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created, $jira_id, $jira_key;
 
     // Fields from other tables
     public $role, $website_id, $domain, $email, $last_updated_at, $last_updated_by;
@@ -29,7 +29,7 @@ class Ticket extends ActiveRecordBase {
      * Get ticket
      */
     public function get( $ticket_id ) {
-		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = :ticket_id'
+		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key` FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = :ticket_id'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -74,9 +74,11 @@ class Ticket extends ActiveRecordBase {
                 , 'browser_user_agent' => strip_tags($this->browser_user_agent)
                 , 'priority' => $this->priority
                 , 'status' => $this->status
+                , 'jira_id' => $this->jira_id
+                , 'jira_key' => $this->jira_key
             )
             , array( 'ticket_id' => $this->id )
-            , 'iiissssssii'
+            , 'iiissssssiiis'
             , 'i'
         );
     }
@@ -103,6 +105,8 @@ class Ticket extends ActiveRecordBase {
                 , d.`title` AS website
                 , MAX(tc.`date_created`) AS last_updated_at
                 , tcu.`contact_name` AS last_updated_by
+                , a.`jira_id`
+                , a.`jira_key`
             FROM `tickets` AS a
             LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
             LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` )
@@ -157,6 +161,61 @@ class Ticket extends ActiveRecordBase {
             , ''
             , array()
         )->get_results( PDO::FETCH_CLASS, 'Ticket' );
+    }
+
+    /**
+     * Create Jira Issue
+     * @return bool
+     */
+    public function create_jira_issue() {
+        library('jira');
+        $jira = new Jira();
+
+        $ticket_description  = "*Priority*: {$priorities[$this->priority]}";
+        $ticket_description .= "\n*Control Account*: http://admin.greysuitretail.com/accounts/control/?aid={$this->website_id}";
+        $ticket_description .= "\n*Edit Account*: http://admin.greysuitretail.com/accounts/edit/?aid={$this->website_id}";
+        $ticket_description .= "\n\n--\n\n*Message*\n\n" . str_replace( '<br />', "\n", $this->message );
+
+        $ticket_upload = new TicketUpload();
+        $uploads = $ticket_upload->get_by_ticket( $this->id );
+        if ( $uploads ) {
+            $ticket_description .= "\n\n--\n\n*Attachments*\n\n";
+            foreach( $uploads as $upload ) {
+                $ticket_description .= "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload}\n";
+            }
+        }
+
+        $issue_response = $jira->create_issue([
+            'fields' => [
+                'project' => [ 'key' => 'TIC' ]  // Project Tickets (TIC)
+                , 'reporter' => [ 'name' => 'jack napier' ]  // Reporter
+                , 'issuetype' => [ 'id' => 1 ]  // Bug
+                , 'summary' => "#{$this->id}: {$this->summary}"
+                , 'description' => $ticket_description
+            ]
+        ]);
+
+        if ( $issue_response->id ) {
+            $this->jira_id = $issue_response->id;
+            $this->jira_key = $issue_response->key;
+            $this->save();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Update Jira Issue
+     * @return bool
+     */
+    public function update_jira_issue() {
+        library('jira');
+        $jira = new Jira();
+
+        $issue_response = $jira->update_issue_status( $this->jira_id, 33 );  // In Progress
+
+        return false;
     }
 
 }

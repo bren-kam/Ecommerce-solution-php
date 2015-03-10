@@ -762,6 +762,7 @@ class AnalyticsController extends BaseController {
             $ga->auth->setClientId( Config::key( 'ga-client-id-' . DOMAIN ) );
             $ga->auth->setClientSecret( Config::key( 'ga-client-secret-' . DOMAIN ) );
             $ga->auth->setRedirectUri( Config::key( 'ga-redirect-uri-' . DOMAIN ) );
+            $this->log( 'oauth2-google-analytics', $this->user->contact_name . ' tried to authenticate Google Analytics on ' . $this->user->account->title );
         } catch ( Exception $e ) { /* DO NOTHING */ }
 
         $login_url = $ga->auth->buildAuthUrl();
