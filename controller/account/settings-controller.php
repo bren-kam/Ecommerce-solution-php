@@ -105,7 +105,7 @@ class SettingsController extends BaseController {
             $new_settings['logo-title'] = $_POST['tLogoTitle'];
             $new_settings['logo-alt'] = $_POST['tLogoAlt'];
             $new_settings['logo-link'] = $_POST['tLogoLink'];
-            $new_settings['phone'] = $_POST['tWebsitePhone'];
+            $new_settings['phone'] = $_POST['tPhone'];
 
             $this->user->account->set_settings($new_settings);
 
