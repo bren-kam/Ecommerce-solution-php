@@ -105,11 +105,9 @@ class SettingsController extends BaseController {
             $new_settings['logo-title'] = $_POST['tLogoTitle'];
             $new_settings['logo-alt'] = $_POST['tLogoAlt'];
             $new_settings['logo-link'] = $_POST['tLogoLink'];
+            $new_settings['phone'] = $_POST['tWebsitePhone'];
 
-            $this->user->account->phone = $_POST['tPhone'];
             $this->user->account->set_settings($new_settings);
-            $this->user->account->user_id_updated = $this->user->id;
-            $this->user->account->save();
 
             // Clear CloudFlare Cache
             $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -125,7 +123,7 @@ class SettingsController extends BaseController {
             $this->log( 'logo-and-phone', $this->user->contact_name . ' has updated logo and phone settings on ' . $this->user->account->title, $_POST['products'] );
         }
 
-        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link', 'website-logo');
+        $settings = $this->user->account->get_settings('logo-title', 'logo-alt', 'logo-link', 'website-logo', 'phone');
 
         $this->resources->javascript( 'fileuploader', 'settings/logo-and-phone' );
 
