@@ -33,36 +33,65 @@ class PipeController extends BaseController {
         $subject = $email['Headers']['subject:'];
         $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
         $body = nl2br( substr( $body, 0, strpos( $body, '******************* Reply Above This Line *******************' ) ) );
+        $body = trim($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
+        $from = $email['ExtractedAddresses']['from:'][0]['address'];
+        $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
+        $to = $email['ExtractedAddresses']['to:'][0]['address'];
 
         // Get Ticket
         $ticket = new Ticket();
         $ticket->get( $ticket_id );
 
-        // Get User
-        $user = new User();
-        $user->get( $ticket->assigned_to_user_id );
+        // Get from User
+        $from_user = new User();
+        $from_user->get_by_email( $from, false );
 
-        // Create comment based on email
-        $ticket_comment = new TicketComment();
-        $ticket_comment->ticket_id = $ticket->id;
-        $ticket_comment->user_id = $ticket->user_id;
-        $ticket_comment->comment = $body;
-        $ticket_comment->create();
+        // Get from User
+        $to_user = new User();
+        $to_user->get_by_email( $to, false );
 
-        // Set email headers
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        // Create Use if does not exists
+        if ( !$from_user->id ) {
+            $from_user->email = $from;
+            $from_user->contact_name = $from_name;
+            $from_user->role = User::ROLE_AUTHORIZED_USER;
+            $from_user->status = User::STATUS_ACTIVE;
+            $from_user->create();
+        }
 
-        // Additional headers
-        $headers .= 'To: ' . $user->email . "\r\n";
-        $headers .= 'From: ' . $user->company . ' Support <noreply@' . $user->domain . '>' . "\r\n";
+        if ( $ticket->id ) {
+            // Create comment based on email
+            $ticket_comment = new TicketComment();
+            $ticket_comment->ticket_id = $ticket->id;
+            $ticket_comment->user_id = $from_user->user_id;
+            $ticket_comment->comment = $body;
+            $ticket_comment->create();
+        } else {
+            // We can't create a ticket if we can't assign to anybody
+            if ( !$to_user->id ) {
+                return;
+            }
 
-        // Let assigned user know
-        $ticket_url = url::add_query_arg( 'tid', $ticket->id, 'http://admin.' . $user->domain . '/tickets/ticket/' );
-        mail( $user->email, "New Response on Ticket #{$ticket_id}", "<p>A new response from the client has been received. See message below:</p><p><strong>Original Message:</strong><br />" . $ticket->message . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='{$ticket_url}'>{$ticket_url}</a></p>", $headers );
+            // Try to guess the Account
+            $account = new Account();
+            $accounts = $account->get_by_user( $to_user->id );
+            if ( $accounts ) {
+                $account = reset($accounts);
+            } else {
+                $accounts = $account->get_by_authorized_user( $to_user->id );
+                $account = reset($accounts);
+            }
 
-        return new HtmlResponse( '' );
+            // Create Ticket
+            $ticket = new Ticket();
+            $ticket->summary = $subject;
+            $ticket->message = $body;
+            $ticket->user_id = $from_user->id;
+            $ticket->assigned_to_user_id = $to_user->id;
+            $ticket->website_id = $account ? $account->id : null;
+            $ticket->create();
+        }
     }
 
     /**
