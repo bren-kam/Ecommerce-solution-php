@@ -484,7 +484,20 @@ class ProductsController extends BaseController {
         $category = new Category();
         $account_category = new AccountCategory();
 
-        $categories = $category->filter_by_ids( $category->get_by_parent(0), $account_category->get_all_ids( $this->user->account->id ) );
+//        $categories = $category->filter_by_ids( $category->get_by_parent(0), $account_category->get_all_ids( $this->user->account->id ) );
+
+        // Sort categories
+        $categories_array = $category->sort_by_hierarchy();
+        $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
+        $categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( !in_array( $category->id, $website_category_ids ) )
+                continue;
+
+            $categories[] = $category;
+        }
+
 
         if ( $this->verified() ) {
             $account_product = new AccountProduct();
