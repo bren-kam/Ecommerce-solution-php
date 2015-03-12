@@ -74,6 +74,8 @@ class SettingsController extends BaseController {
             'payment-gateway-status'
             , 'aim-login'
             , 'aim-transaction-key'
+            , 'stripe-publishable-key'
+            , 'stripe-secret-key'
             , 'paypal-express-username'
             , 'paypal-express-password'
             , 'paypal-express-signature'
@@ -103,6 +105,14 @@ class SettingsController extends BaseController {
         $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) )
             ->attribute( 'maxlength', 30 );
 
+        $form->add_field( 'row', '', _('Stripe') );
+
+        $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', security::decrypt( base64_decode( $settings['stripe-publishable-key'] ), PAYMENT_DECRYPTION_KEY ) )
+                    ->attribute( 'maxlength', 64 );
+
+        $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', security::decrypt( base64_decode( $settings['stripe-secret-key'] ), PAYMENT_DECRYPTION_KEY ) )
+                            ->attribute( 'maxlength', 64 );
+
         $form->add_field( 'blank', '' );
         $form->add_field( 'row', '', _('PayPal Express Checkout') );
 
@@ -128,6 +138,8 @@ class SettingsController extends BaseController {
                 'payment-gateway-status' => $_POST['sStatus']
                 , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
                 , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
+                , 'stripe-publishable-key' => base64_encode( security::encrypt( $_POST['tStripePublishableKey'], PAYMENT_DECRYPTION_KEY ) )
+                , 'stripe-secret-key' => base64_encode( security::encrypt( $_POST['tStripeSecretKey'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
