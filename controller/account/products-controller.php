@@ -504,6 +504,9 @@ class ProductsController extends BaseController {
             $category->get_all();
 
             foreach ( $_POST['auto-price'] as $brand_id => $auto_price_array ) {
+
+                ksort($auto_price_array);
+
                 foreach ( $auto_price_array as $category_id => $values ) {
                     $auto_price = new WebsiteAutoPrice();
                     $auto_price->get( $brand_id, $category_id, $this->user->account->id );
