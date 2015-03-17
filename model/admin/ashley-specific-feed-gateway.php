@@ -267,12 +267,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( !array_key_exists( $sku, $products ) )
                 $new_product_skus[] = $sku;
 
-            // Ashley Express detection
-            if ( $item->attributes()->itemIsAvailable == "true" ) {
-                $ashley_express_skus[$sku] = true;
-            } else {
-                $ashley_express_skus[$sku] = false;
-            }
+//            // Ashley Express detection
+//            if ( $item->attributes()->itemIsAvailable == "true" ) {
+//                $ashley_express_skus[$sku] = true;
+//            } else {
+//                $ashley_express_skus[$sku] = false;
+//            }
 
             // Setup packages
 			if ( stristr( $sku, '-' ) ) {
