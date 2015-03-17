@@ -232,4 +232,51 @@ class RMInnovationsFeedGateway extends ActiveRecordBase {
         unset($row);
     }
 
+    private function rmi_relate_rugs() {
+        $product = new Product();
+        $rugs = $product->get_results(
+            "select product_id, sku, name from products where user_id_created = 2894 and category_id = 338",
+            PDO::FETCH_ASSOC
+        );
+        $groups = ar::assign_key(
+            $product->get_results("SELECT * FROM product_groups", PDO::FETCH_ASSOC)
+            , 'name'
+            , true
+        );
+        $website_product_group = new WebsiteProductGroup();
+        $WEBSITE_ID = 1406;
+        $i=0; $total = count($rugs);
+
+        foreach ( $rugs as &$rug ) {
+            if ( strpos($rug['name'], ' - ') === FALSE ) {
+                continue;
+            }
+
+            $group_name = strtolower(substr(strrev(strstr(strrev($rug['name']), ' - ')), 0, -3));
+
+            if ( isset( $groups[$group_name] ) ) {
+                $group_id = $groups[$group_name];
+                $website_product_group->id = $website_product_group->website_product_group_id = $group_id;
+                $website_product_group->website_id = $WEBSITE_ID;
+                $website_product_group->name = $group_name;
+            } else {
+                $website_product_group->id = $website_product_group->website_product_group_id = null;
+                $website_product_group->website_id = $WEBSITE_ID;
+                $website_product_group->name = $group_name;
+                $website_product_group->create();
+                $group_id = $website_product_group->id;
+                $groups[$group_name] = $group_id;
+                echo "Created group {$group_name} {$group_id}\n";
+            }
+
+            $website_product_group->add_relations( [$rug['product_id']] );
+
+            unset ( $rug );
+
+            if ( $i++ % 1000 === 0)
+                echo "$i/$total...\n";
+        }
+    }
+
+
 }
