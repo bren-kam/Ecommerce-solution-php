@@ -15,17 +15,17 @@
     <div class="<?php echo ( $order->billing_phone ) ? "col-lg-3" : "col-lg-6" ?>">
         <section class="panel">
             <header class="panel-heading">
-                Order #<?php echo $order->id ?>
+                Order #<?php echo $order->id; ?>
             </header>
 
             <div class="panel-body">
                 <ul>
-                    <li><strong>Email:</strong> <?php echo $order->email ?></li>
+                    <li><strong>Email:</strong> <?php echo $order->email; ?></li>
                     <li><strong>Phone:</strong> <?php echo ( empty( $order->phone ) ) ? 'N/A' : $order->phone; ?></li>
+                    <li><strong>Shipping Method:</strong> <?php echo $order->shipping_method; ?></li>
 
-                    <li><strong>Shipping Method:</strong> <?php echo $order->shipping_method ?></li>
                     <?php if ( $order->website_ashley_express_shipping_method_id ): ?>
-                        <li><strong>Shipping Method (Express Delivery):</strong> <?php echo $order->ashley_express_shipping_method ?></li>
+                        <li><strong>Shipping Method (Express Delivery):</strong> <?php echo $order->ashley_express_shipping_method; ?></li>
                     <?php elseif ( $order->is_ashley_express() ): ?>
                         <li><strong>Express Delivery Order</strong></li>
                     <?php endif; ?>
