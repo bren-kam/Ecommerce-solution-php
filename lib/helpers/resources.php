@@ -176,7 +176,7 @@ class Resources {
      */
     public function get_javascript_file() {
         // Compression is on by default
-        $compression = true;
+        $compression = false; //true;
 
         $paths = array( VIEW_PATH . 'js/', LIB_PATH . 'js/' );
 

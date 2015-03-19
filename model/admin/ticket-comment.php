@@ -6,6 +6,9 @@ class TicketComment extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $ticket_comment_id, $ticket_id, $user_id, $comment, $private, $jira_id, $date_created;
 
+    // Columns from other tables
+    public $name, $email;
+
     // Hold the uploads
     public $uploads;
 
@@ -41,7 +44,7 @@ class TicketComment extends ActiveRecordBase {
 	 * @return TicketComment[]
 	 */
 	public function get_by_ticket( $ticket_id ) {
-		return $this->prepare( 'SELECT a.`ticket_comment_id`, a.`user_id`, a.`comment`, a.`private`, a.`date_created`, b.`contact_name` AS name, a.`jira_id`, a.`ticket_id` FROM `ticket_comments` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`ticket_id` = :ticket_id ORDER BY a.`date_created` DESC'
+		return $this->prepare( 'SELECT a.`ticket_comment_id`, a.`user_id`, a.`comment`, a.`private`, a.`date_created`, b.`contact_name` AS name, b.`email` AS email, a.`jira_id`, a.`ticket_id` FROM `ticket_comments` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`ticket_id` = :ticket_id ORDER BY a.`date_created` DESC'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketComment' );

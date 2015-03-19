@@ -1,0 +1,155 @@
+<?php
+/**
+ * @var User $user
+ */
+
+nonce::field( 'list_all', 'list-all-nonce' );
+nonce::field( 'get', 'get-nonce' );
+nonce::field( 'upload_to_comment', 'upload-to-comment-nonce' );
+nonce::field( 'update_assigned_to', 'update-assigned-to-nonce' );
+
+foreach ( $admin_users as $au ) {
+    $selected = ( $user->user_id == $au->user_id ) ? ' selected="selected"' : '';
+
+    $admin_user_options .= '<option value="' . $au->user_id . '"' . $selected . '>' . $au->contact_name . "</option>\n";
+
+    $admin_user_ids[] = $au->user_id;
+}
+
+?>
+
+<!--mail inbox start-->
+<div class="mail-box">
+    <aside class="sm-side">
+        <div class="user-head">
+            <form class="pull-left position" action="javascript:;">
+                <div class="input-append">
+                    <input type="text"  placeholder="Search..." class="sr-input" id="search">
+                </div>
+            </form>
+            <a class="btn pull-right" href="javascript:;" id="compose">
+                <i class="fa fa-plus"></i>
+            </a>
+        </div>
+        <div class="inbox-body">
+            <select id="filter-assigned-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
+                <?php echo $admin_user_options; ?>
+            </select>
+
+            <select id="filter-status" class="selectpicker" data-style="btn-primary">
+                <option value="-1">All Tickets</option>
+                <option value="0" selected="selected">Open</option>
+                <option value="2">In Progress</option>
+                <option value="1">Closed</option>
+            </select>
+        </div>
+        <ul class="inbox-nav inbox-divider" id="inbox-nav">
+            <li class="hidden inbox-nav-item" id="inbox-nav-template">
+                <a href="javascript:;" class="show-ticket">
+                    <div class="pull-left select-ticket col-md-1">
+                        <input type="checkbox" value="1" name="select-ticket" />
+                    </div>
+                    <div class="pull-left inbox-nav-item-details col-md-11">
+                        <ul>
+                            <li><span class="email-name">User Name</span> <span class="email-address">user@email.com</span></li>
+                            <li><span class="email-date"><i class="fa fa-circle text-urgent"></i> 2-18-15</span></li>
+                            <li><span class="email-subject">Subject Here!</span></li>
+                            <li><span class="email-preview">Some test here...</span></li>
+                        </ul>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <aside class="lg-side" id="ticket-container">
+        <div class="inbox-head">
+            <div class="pull-left ticket-status">
+            </div>
+
+            <div class="pull-left">
+                Assigned To:
+                <select id="assign-to" class="selectpicker" data-live-search="true">
+                    <?php echo $admin_user_options; ?>
+                </select>
+            </div>
+        </div>
+        <div class="inbox-body">
+            <div class="heading-inbox row">
+                <div class="col-md-12">
+                    <h4 class="ticket-summary"></h4>
+                </div>
+            </div>
+            <div class="sender-info">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>
+                            <strong class="ticket-user-name"></strong> <span class="ticket-user-email"></span>
+                        </p>
+                        <ul>
+                            <li>Updated: <strong class="ticket-updated"></strong><br></li>
+                            <li>Created: <strong class="ticket-created"></strong><br></li>
+                            <li>Account: <strong class="ticket-account"></strong> <a href="javascript:;" class="edit-account">Edit</a> | <a href="javascript:;" class="control-account">Control</a><br></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="ticket-message"></div>
+            <ul class="list-inline" id="ticket-attachments"></ul>
+            <div id="ticket-comments">
+                <div class="comment" id="ticket-comment-template">
+                    <p>
+                        <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
+                        <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
+                    </p>
+                    <p class="comment-message">
+                        Faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci.
+                    </p>
+                    <ul class="list-inline comment-attachments">
+                    </ul>
+                </div>
+            </div>
+            <div class="heading-inbox row">
+                <div class="col-md-12">
+                    <h4>Reply</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form metho="post" action="javascript:;" id="send-comment-form">
+                        <div class="form-group">
+                            <textarea class="form-control" id="reply" rte="1"><?php echo $user->email_signature ?></textarea>
+                        </div>
+                        <div class="row learfix">
+                            <div class="col-lg-4">
+                                <button type="button" id="upload" class="btn btn-default">Attach</button>
+
+                                <div class="progress progress-sm hidden" id="upload-loader">
+                                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Where the uploader lives -->
+                                <div id="upload-files"></div>
+
+                                <ul id="file-list" class="list-inline"></ul>
+                            </div>
+                            <div class="col-lg-8">
+                                <button type="submit" class="btn btn-primary pull-right">Send</button>
+                                <div class="checkbox pull-right">
+                                    <label>
+                                        <input type="checkbox" name="private" value="1">This is a Private Message - No email will be send &nbsp;
+                                    </label>
+                                </div>
+                                <input type="hidden" name="ticket-id" id="ticket-id" />
+                                <?php nonce::field('add_comment') ?>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+<!--mail inbox end-->

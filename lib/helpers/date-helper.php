@@ -15,9 +15,9 @@ class DateHelper {
             'm' => 'month',
             'w' => 'week',
             'd' => 'day',
-            'h' => 'hr',
-            'i' => 'm',
-            's' => 's',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
         );
         foreach ($string as $k => &$v) {
             if ($diff->$k) {
