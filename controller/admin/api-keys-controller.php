@@ -78,9 +78,9 @@ class ApiKeysController extends BaseController {
                 continue;
 
             $decrypted = security::decrypt( base64_decode( $encrypted ), ENCRYPTION_KEY );
-            $ashley_accounts[$encrypted] = array( 'id' => $encrypted, 'name' => $decrypted );
+            $ashley_accounts[$encrypted] = array( 'id' => $encrypted, 'name' => preg_replace( '/[^0-9]/', '', $decrypted ));
             if ( in_array( $encrypted, $api_key_ashley_accounts ) ) {
-                $selected_ashley_accounts[] = array( 'id' => $encrypted, 'name' => $decrypted );
+                $selected_ashley_accounts[] = array( 'id' => $encrypted, 'name' => preg_replace( '/[^0-9]/', '', $decrypted ) );
             }
         }
 
@@ -88,8 +88,7 @@ class ApiKeysController extends BaseController {
 
         // remove string keys to make it a json array
         foreach( $ashley_accounts as $k => $aa ) {
-            unset( $ashley_accounts[$k
-                ] );
+            unset( $ashley_accounts[$k] );
             $ashley_accounts[] = $aa;
         }
 
