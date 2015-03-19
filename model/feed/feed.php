@@ -41,11 +41,10 @@ class Feed extends ActiveRecordBase {
 		$ashley_accounts = $this->api_key ? $this->api_key->get_ashley_accounts() : array();
 		
 		$valid_ashley_id = false;
-		$encrypted_ashley_id =security::encrypt( 'CE_' . $ashley_id . '-', ENCRYPTION_KEY, true );
-		
+
 		if ( $ashley_accounts ) {
             foreach ( $ashley_accounts as &$aa ) {
-				if ( $encrypted_ashley_id == $aa )
+				if ( $ashley_id == $aa )
 					$valid_ashley_id = true;
 				
                 $aa = "'$aa'";
@@ -66,7 +65,7 @@ class Feed extends ActiveRecordBase {
 		
 		if ( $valid_ashley_id && !empty( $ashley_id ) ) {
 			$inner_join .= " INNER JOIN website_products wp ON wp.product_id = p.product_id INNER JOIN website_settings ws ON ws.website_id = wp.website_id AND ws.`key` = 'ashley-ftp-username'";
-			$where .= " AND ws.`value` = " . $this->quote( $encrypted_ashley_id ) . " AND p.`user_id_created` IN ( 353, 1477 ) ";
+			$where .= " AND ws.`value` = " . $this->quote( $ashley_id ) . " AND p.`user_id_created` IN ( 353, 1477 ) ";
 			//$inner_join .= " LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id`)";
 			//$where .= " AND wp.`website_id` = ( SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-username' AND `value` = " . $this->quote( $encrypted_ashley_id ) . ' ) AND p.`brand_id` IN(8, 170, 171, 588, 805)';
 		}		
