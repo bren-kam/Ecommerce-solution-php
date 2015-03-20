@@ -53,18 +53,18 @@ nonce::field( 'get_graph', '_get_graph' );
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <a href="javascript:;" data-report="page_views" data-title="Page Views"><img src="<?php echo $sparklines['page_views']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $total['page_views'] ); ?></span> Visits
+                        <a href="javascript:;" data-report="page_views" data-title="Visits"><img src="<?php echo $sparklines['visits']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['visits'] ); ?></span> Visits
                     </div>
                     <div class="col-lg-6">
-                        <a href="javascript:;" data-report="time_on_page" data-title="Time On Page"><img src="<?php echo $sparklines['time_on_page']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $total['time_on_page'], 2 ); ?>%</span> Bounce Rate
+                        <a href="javascript:;" data-report="time_on_page" data-title="Bounce Rate"><img src="<?php echo $sparklines['bounce_rate']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['bounce_rate'], 2 ); ?>%</span> Bounce Rate
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-6">
-                        <a href="javascript:;" data-report="bounce_rate" data-title="Bounce Rate"><img src="<?php echo $sparklines['bounce_rate']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $total['bounce_rate'] ); ?></span> Page Views
+                        <a href="javascript:;" data-report="bounce_rate" data-title="Page Views"><img src="<?php echo $sparklines['page_views']; ?>" /></a>
+                        <span class="analytics-count"><?php echo number_format( $total['Page Views'] ); ?></span> Page Views
                     </div>
                     <div class="col-lg-6">
                         <a href="javascript:;" data-report="exit_rate" data-title="Exit Rate"><img src="<?php echo $sparklines['exit_rate']; ?>" /></a>
