@@ -39,6 +39,12 @@ class PipeController extends BaseController {
         $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
         $to = $email['ExtractedAddresses']['to:'][0]['address'];
 
+        // Ignore email from support, reply, no-reply, etc.
+        $matches = [];
+        if ( preg_match('/(support|noreply|no-reply|jira)@/i', $from, $matches) ) {
+            return;
+        }
+
         // Get Ticket
         $ticket = new Ticket();
         $ticket->get( $ticket_id );

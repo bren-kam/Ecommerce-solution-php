@@ -21,7 +21,7 @@ class CustomerSupportController extends BaseController {
             ->javascript('customer-support/index')
             ->javascript_url( Config::resource('bootstrap-select-js') );
 
-        $admin_users = $this->user->get_admin_users( $comment_user_ids );
+        $admin_users = $this->user->get_admin_users();
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')
