@@ -20,6 +20,12 @@ var InboxNavigation = {
                 Ticket.show(ticketId);
             }
         });
+
+        $('#compose').click(function(){
+            NewTicketForm.reset();
+            NewTicketForm.container.removeClass('hidden').show();
+            Ticket.container.hide();
+        });
     }
 
     , getTickets: function() {
@@ -90,7 +96,9 @@ var Ticket = {
     }
 
     , show: function(ticketId) {
-        Ticket. container.css('opacity', '0.6');
+        Ticket.container.css('opacity', '0.6');
+        NewTicketForm.container.hide();
+        Ticket.container.removeClass('hidden').show();
         $.get(
             '/customer-support/get/'
             , {
@@ -256,7 +264,7 @@ var TicketCommentForm = {
 
         // Upload file trigger
         $('#upload').click( TicketCommentForm.selectFile );
-        $('body').on('click', '.delete-file', TicketCommentForm.deleteFile );
+        $('#ticket-container').on('click', '.delete-file', TicketCommentForm.deleteFile );
     }
 
     , add: function() {
@@ -305,7 +313,7 @@ var TicketCommentForm = {
         });
 
         $('#upload').hide();
-        $('#upload-loader').removeClas('hidden').show();
+        $('#upload-loader').removeClass('hidden').show();
     }
 
     , selectFile: function() {
@@ -354,8 +362,161 @@ var TicketCommentForm = {
         $(this).parents('li:first').remove();
     }
 
+};
+
+var NewTicketForm = {
+
+    container: null
+    , uploader: null
+
+    , init: function() {
+        // Add Comment
+        $('#new-ticket-form').submit( NewTicketForm.add );
+
+        // Comment Attachments Uploader
+        NewTicketForm.uploader = new qq.FileUploader({
+            action: '/customer-support/upload-to-ticket/'
+            , allowedExtensions: ['pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt']
+            , element: $('#new-ticket-upload-files')[0]
+            , sizeLimit: 10485760 // 10 mb's
+            , onSubmit: NewTicketForm.uploadSubmit
+            , onComplete: NewTicketForm.uploadComplete
+        });
+
+        // Upload file trigger
+        $('#new-ticket-upload').click( NewTicketForm.selectFile );
+        $('#create-ticket').on('click', '.delete-file', NewTicketForm.deleteFile );
+
+        // Autocomplete
+        NewTicketForm.setupAutocomplete();
+
+        NewTicketForm.container = $('#create-ticket');
+    }
+
+    , add: function() {
+        var form = $('#new-ticket-form');
+        $.post(
+            '/customer-support/create-ticket/'
+            , form.serialize()
+            , NewTicketForm.addComplete
+        )
+        return false;
+    }
+
+    , addComplete: function( response ) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            InboxNavigation.getTickets();  // update ticket list
+            if ( response.id ) {
+                Ticket.show( response.id );  // load ticket
+            }
+        }
+    }
+    , uploadSubmit: function() {
+        NewTicketForm.uploader.setParams({
+            _nonce : $( '#upload-to-ticket-nonce' ).val()
+            , tid : $( '#new-ticket-id').val()
+        });
+
+        $('#new-ticket-upload').hide();
+        $('#new-ticket-upload-loader').removeClass('hidden').show();
+    }
+
+    , selectFile: function() {
+        if ( $.support.cors ) {
+            $('#new-ticket-upload-files input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
+    }
+
+    , uploadComplete: function( id, filename, response) {
+        GSR.defaultAjaxResponse( response );
+        if ( response.success ) {
+            var fileItem = $('<li/>');
+
+            $('<a />')
+                .attr( 'href', response.url )
+                .attr( 'target', '_blank' )
+                .text( filename )
+                .appendTo( fileItem );
+
+            $('<a />')
+                .addClass( 'delete-file' )
+                .attr( 'href', 'javascript:;' )
+                .attr( 'title', 'Delete this file' )
+                .html('&nbsp;<i class="fa fa-trash-o"></i>')
+                .appendTo( fileItem );
+
+            $('<input />')
+                .attr( 'type', 'hidden' )
+                .attr( 'name', 'uploads[]' )
+                .val( response.id )
+                .appendTo( fileItem );
+
+            if ( response.ticket_id ) {
+                $('#new-ticket-id').val( response.ticket_id );
+            }
+
+            fileItem.appendTo( '#new-ticket-file-list' );
+        }
+
+        $('#new-ticket-upload').show();
+        $('#new-ticket-upload-loader').hide();
+    }
+
+    , deleteFile: function() {
+        if ( !confirm( 'Do you really want to remove this file from the comment?' ) )
+            return;
+
+        $(this).parents('li:first').remove();
+    }
+
+    , setupAutocomplete: function() {
+
+        var nonce = $('#get-emails-autocomplete').val();
+
+        var autocomplete = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value')
+            , queryTokenizer: Bloodhound.tokenizers.whitespace
+            , remote: {
+                url: '/customer-support/get-emails/?_nonce=' + nonce + '&term=%QUERY'
+                , filter: function( list ) {
+                    return list.objects
+                }
+            }
+        });
+
+        autocomplete.initialize();
+        $("#to")
+            .typeahead('destroy')
+            .typeahead(null, {
+                source: autocomplete.ttAdapter()
+                , displayKey: "email"
+                , templates: {
+                    empty: [
+                        '<div class="empty-message">',
+                        'Unable to find any User with that email',
+                        '</div>'
+                    ].join('\n'),
+                    suggestion: Handlebars.compile('<p><strong>{{contact_name}}</strong> &lt;{{email}}&gt;</p>')
+                }
+            })
+            .unbind('typeahead:selected')
+            .on('typeahead:selected', NewTicketForm.selectUser );
+    }
+
+    , reset: function() {
+        var form = $('#new-ticket-form');
+        form[0].reset();
+        form.find('input:hidden').val('');
+    }
+
+
 }
+
 
 jQuery(InboxNavigation.init);
 jQuery(Ticket.init);
 jQuery(TicketCommentForm.init);
+jQuery(NewTicketForm.init);
