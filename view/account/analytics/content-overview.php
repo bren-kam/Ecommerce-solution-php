@@ -58,7 +58,7 @@ nonce::field( 'get_graph', '_get_graph' );
                     </div>
                     <div class="col-lg-6">
                         <a href="javascript:;" data-report="page_views" data-title="Time on Page"><img src="<?php echo $sparklines['time_on_page']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $total['time_on_page'] ); ?></span> Time on Page
+                        <span class="analytics-count"><?php echo $total['time_on_page']; ?></span> Time on Page
                     </div>
                 </div>
                 <div class="row">
@@ -68,7 +68,7 @@ nonce::field( 'get_graph', '_get_graph' );
                     </div>
                     <div class="col-lg-6">
                         <a href="javascript:;" data-report="exit_rate" data-title="Exit Rate"><img src="<?php echo $sparklines['exit_rate']; ?>" /></a>
-                        <span class="analytics-count"><?php echo $total['exit_rate']; ?></span> Exit Rate
+                        <span class="analytics-count"><?php echo number_format( $total['exit_rate'], 2 ); ?></span> Exit Rate
                     </div>
                 </div>
 
