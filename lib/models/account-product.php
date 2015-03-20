@@ -1334,4 +1334,23 @@ class AccountProduct extends ActiveRecordBase {
         return 'http://' . str_replace( ' ', '', $industry ) . '.retailcatalog.us/products/' . $product_id . '/' . ($size ? ($size . '/') : '') .$image;
     }
 
+    /**
+     * Count Products By Brand Ids
+     *
+     * @param $website_id
+     * @param $brand_ids
+     * @return int
+     */
+    public function count_products_by_brand_ids($website_id, $brand_ids) {
+        if ( empty($brand_ids) )
+            return 0;
+
+        return $this->get_var(
+            "SELECT COUNT(*)
+             FROM website_products wp
+             INNER JOIN products p ON p.product_id = wp.product_id
+             WHERE wp.website_id = {$website_id} AND p.brand_id IN (". implode(',', $brand_ids) .")"
+        );
+    }
+
 }
