@@ -43,43 +43,45 @@ class fn extends Base_Class {
 	 * @param string $message the subject of the email
 	 * @param string $from (optional) the address that it's from. If left empty, uses defaults
 	 * @param string $reply_to (optional) the reply-to information. If left empty, uses $from
-	 * @param bool $text (optional) whether to send text email
+     * @param bool $text (optional) whether to send text email
+     * @param bool $use_html_template (optional) whether to wrap the email message with a default template
 	 * @return bool
 	 */
-	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true ) {
-		// Find out if they passes a string or array, if they passed an array parse it
-		if ( is_array( $to ) ) {
+	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true )
+    {
+        // Find out if they passes a string or array, if they passed an array parse it
+        if (is_array($to)) {
             $to_addresses = '';
 
-			foreach ( $to as $name => $email_address ) {
-				$to_addresses .= ",$name <$email_address>";
-			}
+            foreach ($to as $name => $email_address) {
+                $to_addresses .= ",$name <$email_address>";
+            }
 
-			$to_addresses = substr( $to_addresses, 1 );
-		} else {
-			$to_addresses = $to;
-		}
-        $to_addresses = html_entity_decode( $to_addresses );
+            $to_addresses = substr($to_addresses, 1);
+        } else {
+            $to_addresses = $to;
+        }
+        $to_addresses = html_entity_decode($to_addresses);
 
-		if ( empty( $from ) ) {
-			$from = ( defined( 'FROM_NAME' ) ) ? FROM_NAME . ' <' . FROM_EMAIL . '>' : FROM_EMAIL;
-		}
-        $from = html_entity_decode( $from );
+        if (empty($from)) {
+            $from = (defined('FROM_NAME')) ? FROM_NAME . ' <' . FROM_EMAIL . '>' : FROM_EMAIL;
+        }
+        $from = html_entity_decode($from);
 
-		if ( empty( $reply_to ) )
-			$reply_to = $from;
+        if (empty($reply_to))
+            $reply_to = $from;
 
-        $subject = html_entity_decode( $subject );
+        $subject = html_entity_decode($subject);
 
-		if ( $text ) {
+        if ( $text ) {
 			$headers = "From: $from\r\nReply-to: $reply_to\r\nX-Mailer: PHP/" . phpversion();
 		} else {
 			// To send HTML mail, the Content-type header must be set
 			$headers  = 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 			$headers .= "From: $from\r\n";
-
-			$message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+            if ( $use_html_template ) {
+                $message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -96,6 +98,7 @@ class fn extends Base_Class {
 				[message]
 				</body>
 				</html>' );
+            }
 		}
 
 		return mail( $to_addresses, $subject, $message, $headers);
