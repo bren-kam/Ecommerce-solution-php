@@ -41,8 +41,11 @@ class CustomerSupportController extends BaseController {
 
         // Search -- We will do this on top DataTables, but return an AjaxResponse
         $_GET['sSearch'] = $_GET['search'];  // DataTables needs this
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = '0';
+        $_GET['sSortDir_0'] = 'DESC';
         $dt = new DataTableResponse($this->user);
-        $dt->order_by('a.`summary`', 'name', 'd.`title`', 'a.`priority`', 'assigned_to', 'a.`date_created`', 'last_updated_at');
+        $dt->order_by('date_created');
         $dt->search(array('b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`'));
         $dt->add_where($where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )');
 
