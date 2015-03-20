@@ -386,14 +386,15 @@ var NewTicketForm = {
         NewTicketForm.container = $('#create-ticket');
     }
 
-    , add: function() {
+    , add: function(e) {
         var form = $('#new-ticket-form');
+        form.find('#message').val(CKEDITOR.instances.message.getData());
         $.post(
             '/customer-support/create-ticket/'
             , form.serialize()
             , NewTicketForm.addComplete
         )
-        return false;
+        e.preventDefault();
     }
 
     , addComplete: function( response ) {
