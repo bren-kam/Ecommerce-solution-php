@@ -14,6 +14,7 @@ var InboxNavigation = {
         $('#filter-status').change(InboxNavigation.getTickets);
         $('#filter-assigned-to').change(InboxNavigation.getTickets);
 
+        // Event when selecting a Ticket
         InboxNavigation.container.on('click', '.show-ticket', function() {
             var ticketId = $(this).parents('.inbox-nav-item:first').data('ticket-id');
             if ( ticketId ) {
@@ -66,14 +67,6 @@ var InboxNavigation = {
                 }
 
                 InboxNavigation.container.append(item);
-            }
-
-            // Load first message if no message is shown now
-            if ( !Ticket.container.data('ticket-id') ) {
-                var ticketId = InboxNavigation.container.find('.inbox-nav-item:first').data('ticket-id');
-                if ( ticketId ) {
-                    Ticket.show( ticketId );
-                }
             }
         }
     }
