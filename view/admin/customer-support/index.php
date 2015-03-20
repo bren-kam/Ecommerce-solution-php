@@ -168,7 +168,7 @@ foreach ( $admin_users as $au ) {
                     <input type="text" class="form-control input-lg" id="summary" name="summary" placeholder="Subject">
                 </div>
                 <div class="form-group">
-                    <textarea class="form-control" id="message" rte="1"><?php echo $user->email_signature ?></textarea>
+                    <textarea class="form-control" name="message" id="message" rte="1"><?php echo $user->email_signature ?></textarea>
                 </div>
 
                 <div class="row clearfix">

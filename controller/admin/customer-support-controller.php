@@ -496,7 +496,7 @@ class CustomerSupportController extends BaseController {
         $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
 
         fn::mail(
-            $ticket->email
+            $user->email
             , 'New Ticket #' . $ticket->id . ' - ' . $ticket->summary
             , "******************* Reply Above This Line *******************"
                 . "\n\n<br><br>{$ticket->message}"
