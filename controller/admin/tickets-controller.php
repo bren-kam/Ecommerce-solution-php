@@ -356,7 +356,7 @@ class TicketsController extends BaseController {
             $ticket->create();
 
             // Set the variable
-            jQuery('#hSupportTicketId')->val( $ticket->id );
+            $response->add_response('ticket_id', $ticket->id);
         } else {
             $ticket->get( $_GET['tid'] );
         }

@@ -131,6 +131,7 @@ class Config {
         , 'timepicker-js' => '//cdn.jsdelivr.net/jquery.timepicker/1.3.7/jquery.timepicker.js'
         , 'ckeditor-js' => '/ckeditor/ckeditor.js'
         , 'bootstrap-select-js' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.4/js/bootstrap-select.js'
+        , 'handlebars-js' => '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.0/handlebars.min.js'
     );
 
 	/**
