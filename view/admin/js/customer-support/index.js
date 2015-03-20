@@ -502,7 +502,7 @@ var NewTicketForm = {
     , reset: function() {
         var form = $('#new-ticket-form');
         form[0].reset();
-        form.find('input:hidden').val('');
+        form.find('#new-ticket-id').val('');
     }
 
 
