@@ -468,7 +468,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	 */
 	public function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
         // Make sure they entered in SKUs
-        if ( 0 == count( $product_skus ) || 0 == $industry_ids )
+        if ( 0 == count( $product_skus ) || 0 == count( $industry_ids ) || 0 == $industry_ids )
             return;
 
         // Make account id safe
