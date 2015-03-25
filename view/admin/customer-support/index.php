@@ -35,6 +35,8 @@ foreach ( $admin_users as $au ) {
         </div>
         <div class="inbox-body">
             <select id="filter-assigned-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
+                <option value="0">All Users</option>
+                <option value="-1">Peers</option>
                 <?php echo $admin_user_options; ?>
             </select>
 
@@ -56,7 +58,7 @@ foreach ( $admin_users as $au ) {
                             <li><span class="email-name">User Name</span> <span class="email-address">user@email.com</span></li>
                             <li><span class="email-date"><i class="fa fa-circle text-urgent"></i> 2-18-15</span></li>
                             <li><span class="email-subject">Subject Here!</span></li>
-                            <li><span class="email-preview">Some test here...</span></li>
+<!--                            <li><span class="email-preview">Some test here...</span></li>-->
                         </ul>
                     </div>
                 </a>
@@ -71,7 +73,7 @@ foreach ( $admin_users as $au ) {
 
             <div class="pull-left">
                 Assigned To:
-                <select id="assign-to" class="selectpicker" data-live-search="true">
+                <select id="assign-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
                     <?php echo $admin_user_options; ?>
                 </select>
             </div>

@@ -21,7 +21,17 @@
   color: #e4ba00;
   font-size: 13px;
 }
-.mail-box .sm-side .user-head .sr-input {
+.mail-box .sm-side .user-head {
+  background-color: #5CBDF0;
+}
+.mail-box .sm-side .user-head .position {
+  width: 70%;
+}
+.mail-box .sm-side .user-head .position .input-append {
+  width: 100%;
+}
+.mail-box .sm-side .user-head .position .input-append .sr-input {
+  width: 100%;
   height: 32px;
   border: none;
   box-shadow: none;
@@ -33,7 +43,7 @@
 .mail-box .sm-side .user-head a.btn {
   height: 32px;
   border: none;
-  background: #41cac0;
+  background: inherit;
   color: #fff;
   padding: 8px 14px;
   border-radius: 4px;
@@ -77,6 +87,8 @@
   background-color: #f3f3f3;
 }
 .mail-box .lg-side .inbox-head {
+  color: #333;
+  background: #F0F0F0;
   padding-top: 20px;
   font-size: 16px;
 }
@@ -121,12 +133,18 @@
 .mail-box .lg-side .bootstrap-select button:focus {
   background: none!important;
   border: none!important;
-  color: #fff!important;
+  color: #333!important;
   font-weight: bold!important;
   height: 23px!important;
   padding: 0!important;
   margin-top: 0!important;
   margin-bottom: 0!important;
+}
+.mail-box .lg-side .bootstrap-select button .caret,
+.mail-box .lg-side .bootstrap-select button:hover .caret,
+.mail-box .lg-side .bootstrap-select button:active .caret,
+.mail-box .lg-side .bootstrap-select button:focus .caret {
+  right: 0px!important;
 }
 .mail-box .lg-side .twitter-typeahead {
   width: 100%;
@@ -141,4 +159,7 @@
 }
 .mail-box #file-list li a {
   color: #b64c4c;
+}
+.mail-box .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+  width: auto;
 }

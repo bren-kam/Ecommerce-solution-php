@@ -62,7 +62,7 @@ var InboxNavigation = {
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-urgent"></i > ');
                 } else if ( ticket.priority == 1 ) {  // High Priority
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-high"></i> ');
-                } else if ( ticket.status == 0 ) {  // Open
+                } else if ( ticket.priority == 0 ) {  // Low Priority
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-open"></i> ');
                 }
 
@@ -124,8 +124,10 @@ var Ticket = {
             var priorityText = '';
             if (currentTicket.priority == 2) {
                 priorityText = 'Urgent';
-            } else if (currentTicket.priority == 1){
+            } else if (currentTicket.priority == 1) {
                 priorityText = 'High Priority'
+            } else if (currentTicket.priority == 0) {
+                priorityText = 'Low'
             }
 
             Ticket.container.data('ticket-id', currentTicket.id);

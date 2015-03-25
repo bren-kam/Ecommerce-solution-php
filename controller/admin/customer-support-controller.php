@@ -46,8 +46,7 @@ class CustomerSupportController extends BaseController {
         $_GET['sSortDir_0'] = 'DESC';
         $dt = new DataTableResponse($this->user);
         $dt->order_by('date_created');
-        $dt->search(array('b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`'));
-        $dt->add_where($where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )');
+        $dt->search(array('b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`', 'b.`email`' => true));
 
         // If they are below 8, that means they are a partner
         if (!$this->user->has_permission(User::ROLE_ADMIN))
@@ -56,12 +55,14 @@ class CustomerSupportController extends BaseController {
         $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
 
         // Grab only the right status
-        $dt->add_where(" AND a.`status` = $status");
+        if ( $status >= 0 ) {
+            $dt->add_where(" AND a.`status` = $status");
+        }
 
         // Grab only the right status
         if ('-1' == $_GET['assigned-to']) {
             $dt->add_where(' AND c.`role` <= ' . (int)$this->user->role);
-        } else {
+        } else if ($_GET['assigned-to'] > 0) {
             $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ? ' AND c.`user_id` = ' . (int)$_GET['assigned-to'] : ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' )';
             $dt->add_where($assigned_to);
         }
