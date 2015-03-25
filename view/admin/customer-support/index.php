@@ -7,6 +7,8 @@ nonce::field( 'list_all', 'list-all-nonce' );
 nonce::field( 'get', 'get-nonce' );
 nonce::field( 'upload_to_comment', 'upload-to-comment-nonce' );
 nonce::field( 'update_assigned_to', 'update-assigned-to-nonce' );
+nonce::field( 'upload_to_ticket', 'upload-to-ticket-nonce' );
+nonce::field( 'get_emails', 'get-emails-nonce' );
 
 foreach ( $admin_users as $au ) {
     $selected = ( $user->user_id == $au->user_id ) ? ' selected="selected"' : '';
@@ -33,6 +35,8 @@ foreach ( $admin_users as $au ) {
         </div>
         <div class="inbox-body">
             <select id="filter-assigned-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
+                <option value="0">All Users</option>
+                <option value="-1">Peers</option>
                 <?php echo $admin_user_options; ?>
             </select>
 
@@ -54,7 +58,7 @@ foreach ( $admin_users as $au ) {
                             <li><span class="email-name">User Name</span> <span class="email-address">user@email.com</span></li>
                             <li><span class="email-date"><i class="fa fa-circle text-urgent"></i> 2-18-15</span></li>
                             <li><span class="email-subject">Subject Here!</span></li>
-                            <li><span class="email-preview">Some test here...</span></li>
+<!--                            <li><span class="email-preview">Some test here...</span></li>-->
                         </ul>
                     </div>
                 </a>
@@ -62,14 +66,14 @@ foreach ( $admin_users as $au ) {
         </ul>
     </aside>
 
-    <aside class="lg-side" id="ticket-container">
+    <aside class="lg-side hidden" id="ticket-container">
         <div class="inbox-head">
             <div class="pull-left ticket-status">
             </div>
 
             <div class="pull-left">
                 Assigned To:
-                <select id="assign-to" class="selectpicker" data-live-search="true">
+                <select id="assign-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
                     <?php echo $admin_user_options; ?>
                 </select>
             </div>
@@ -120,7 +124,7 @@ foreach ( $admin_users as $au ) {
                         <div class="form-group">
                             <textarea class="form-control" id="reply" rte="1"><?php echo $user->email_signature ?></textarea>
                         </div>
-                        <div class="row learfix">
+                        <div class="row clearfix">
                             <div class="col-lg-4">
                                 <button type="button" id="upload" class="btn btn-default">Attach</button>
 
@@ -149,6 +153,49 @@ foreach ( $admin_users as $au ) {
                     </form>
                 </div>
             </div>
+        </div>
+    </aside>
+    <aside class="lg-side" id="create-ticket">
+        <div class="inbox-head">
+            <div class="pull-left ticket-status">
+                Send a new Message
+            </div>
+        </div>
+        <div class="inbox-body">
+            <form method="post" action="javascript:;" role="form" id="new-ticket-form">
+                <div class="form-group">
+                    <input type="text" class="form-control input-lg" name="to" id="to" placeholder="To Email Address">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control input-lg" id="summary" name="summary" placeholder="Subject">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" name="message" id="message" rte="1"><?php echo $user->email_signature ?></textarea>
+                </div>
+
+                <div class="row clearfix">
+                    <div class="col-lg-4">
+                        <button type="button" id="new-ticket-upload" class="btn btn-default">Attach</button>
+
+                        <div class="progress progress-sm hidden" id="new-ticket-upload-loader">
+                            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+
+                        <!-- Where the uploader lives -->
+                        <div id="new-ticket-upload-files"></div>
+
+                        <ul id="new-ticket-file-list" class="list-inline"></ul>
+                    </div>
+                    <div class="col-lg-8">
+                        <button type="submit" class="btn btn-primary pull-right">Send</button>
+                        <?php nonce::field('create_ticket') ?>
+                        <input type="hidden" id="new-ticket-id" name="ticket-id" value="" />
+                    </div>
+                </div>
+
+            </form>
         </div>
     </aside>
 </div>

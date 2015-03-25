@@ -19,9 +19,9 @@ class CustomerSupportController extends BaseController {
         $this->resources->css('customer-support/index')
             ->css_url( Config::resource('bootstrap-select-css') )
             ->javascript('customer-support/index')
-            ->javascript_url( Config::resource('bootstrap-select-js') );
+            ->javascript_url( Config::resource('bootstrap-select-js'), Config::resource('typeahead-js'), Config::resource('handlebars-js') );
 
-        $admin_users = $this->user->get_admin_users( $comment_user_ids );
+        $admin_users = $this->user->get_admin_users();
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')
@@ -41,10 +41,12 @@ class CustomerSupportController extends BaseController {
 
         // Search -- We will do this on top DataTables, but return an AjaxResponse
         $_GET['sSearch'] = $_GET['search'];  // DataTables needs this
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = '0';
+        $_GET['sSortDir_0'] = 'DESC';
         $dt = new DataTableResponse($this->user);
-        $dt->order_by('a.`summary`', 'name', 'd.`title`', 'a.`priority`', 'assigned_to', 'a.`date_created`', 'last_updated_at');
-        $dt->search(array('b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`'));
-        $dt->add_where($where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )');
+        $dt->order_by('date_created');
+        $dt->search(array('b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`', 'b.`email`' => true));
 
         // If they are below 8, that means they are a partner
         if (!$this->user->has_permission(User::ROLE_ADMIN))
@@ -53,12 +55,14 @@ class CustomerSupportController extends BaseController {
         $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
 
         // Grab only the right status
-        $dt->add_where(" AND a.`status` = $status");
+        if ( $status >= 0 ) {
+            $dt->add_where(" AND a.`status` = $status");
+        }
 
         // Grab only the right status
         if ('-1' == $_GET['assigned-to']) {
             $dt->add_where(' AND c.`role` <= ' . (int)$this->user->role);
-        } else {
+        } else if ($_GET['assigned-to'] > 0) {
             $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ? ' AND c.`user_id` = ' . (int)$_GET['assigned-to'] : ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' )';
             $dt->add_where($assigned_to);
         }
@@ -344,6 +348,173 @@ class CustomerSupportController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Upload an attachment to comment
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_to_ticket() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $ticket_upload = new TicketUpload();
+        $ticket = new Ticket();
+        $file = new File( 'retailcatalog.us' );
+        $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt'), 10485760 );
+
+        if ( !isset( $_GET['tid'] ) || empty( $_GET['tid'] ) ) {
+            $ticket->status = -1;
+            $ticket->create();
+
+            // Set the variable
+            $response->add_response('ticket_id', $ticket->id);
+        } else {
+            $ticket->get( $_GET['tid'] );
+        }
+
+        // Get variables
+        $directory = $this->user->id . '/' . $ticket->ticket_id . '/';
+        $file_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+
+        // Create upload
+        $ticket_upload->key = $directory . $file_name;
+        $ticket_upload->create();
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload attachment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $file_url = $file->upload_file( $result['file_path'], $ticket_upload->key, 'attachments/' );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
+        $response->add_response( 'url', $file_url );
+        $response->add_response( 'id', $ticket_upload->id );
+
+        return $response;
+    }
+
+
+    /**
+     * AutoComplete
+     *
+     * @return AjaxResponse
+     */
+    protected function get_emails() {
+        $ajax_response = new AjaxResponse( $this->verified() );
+
+        $user = new User();
+        $users = $user->list_all([" AND email LIKE '%{$_GET['term']}%' OR contact_name LIKE '%{$_GET['term']}%' ", '', '', 9999]);
+
+        $results = [];
+        foreach ( $users as $user ) {
+            $results[] = [
+                'id' => $users->id
+                , 'contact_name' => $user->contact_name
+                , 'email' => $user->email
+            ];
+        }
+
+        $ajax_response->add_response( 'objects', $results );
+        return $ajax_response;
+    }
+
+    /**
+     * Create ticket
+     *
+     * @return AjaxResponse
+     */
+    protected function create_ticket() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $ticket = new Ticket();
+
+        if ( isset( $_POST['ticket-id'] ) && !empty( $_POST['ticket-id'] ) ) {
+            $ticket->get( $_POST['ticket-id'] );
+        } else {
+            $ticket->status = 0;
+            $ticket->create();
+        }
+
+        $user = new User();
+        $user->get_by_email($_POST['to']);
+        if ( !$user->id ) {
+            $response->notify("Can't find a user using the address '{$_POST['to']}'");
+            return $response;
+        }
+
+        // Get browser information
+        $browser = fn::browser();
+
+        // Set ticket information
+        $ticket->user_id = $this->user->id;
+        $ticket->assigned_to_user_id = $this->user->id;  // Send a message, but assign ticket to self
+        $ticket->website_id = 0; // Admin side -- no website
+        $ticket->summary = $_POST['summary'];
+        $ticket->message = trim($_POST['message']);
+        $ticket->browser_name = $browser['name'];
+        $ticket->browser_version = $browser['version'];
+        $ticket->browser_platform = $browser['platform'];
+        $ticket->browser_user_agent = $browser['user_agent'];
+        $ticket->status = Ticket::STATUS_OPEN;
+        $ticket->priority = Ticket::PRIORITY_NORMAL;
+
+        // Update the ticket
+        $ticket->save();
+
+        // Add links if there are any
+        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) ) {
+            $ticket_upload = new TicketUpload();
+            $ticket_upload->add_relations( $ticket->id, $_POST['uploads'] );
+        }
+
+        // Add statistics
+        library('statistics-api');
+        $stat = new Stat_API( Config::key('rs-key') );
+
+        // Get the dates
+        $date = new DateTime();
+
+        // Add the value of a new ticket
+        $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
+
+        fn::mail(
+            $user->email
+            , 'New Ticket #' . $ticket->id . ' - ' . $ticket->summary
+            , "******************* Reply Above This Line *******************"
+                . "\n\n<br><br>{$ticket->message}"
+            , $this->user->company . ' <support@' . url::domain( $this->user->domain, false ) . '>'
+            , $this->user->contact_name . ' <' . $this->user->email . '>'
+            , false
+            , false
+        );
+
+        $response->notify( "Message sent to '{$_POST['to']}'" );
+        $response->add_response('id', $ticket->id);
+        return $response;
+    }
+
 
 
 }

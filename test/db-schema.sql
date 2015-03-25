@@ -1745,6 +1745,7 @@ CREATE TABLE `users` (
   `arb_subscription_id` varchar(13) NOT NULL,
   `role` tinyint(2) NOT NULL DEFAULT '5',
   `status` tinyint(2) NOT NULL DEFAULT '1',
+  `email_signature` TEXT NULL DEFAULT NULL,
   `last_login` datetime NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
