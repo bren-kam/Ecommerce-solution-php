@@ -169,7 +169,7 @@ class CloudFlareAPI {
      * @return bool
      */
     public function purge( $zone_id ) {
-        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id, array(
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id . '/purge_cache', array(
             'purge_everything' => true
         ) );
 
@@ -186,7 +186,7 @@ class CloudFlareAPI {
      * @return bool
      */
     public function purge_url( $zone_id, $url ) {
-        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id, array(
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id . '/purge_cache', array(
             'files' => $url
         ) );
 
