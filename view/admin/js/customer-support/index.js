@@ -390,7 +390,6 @@ var NewTicketForm = {
 
     , add: function(e) {
         var form = $('#new-ticket-form');
-        form.find('#message').val(CKEDITOR.instances.message.getData());
         $.post(
             '/customer-support/create-ticket/'
             , form.serialize()
@@ -495,7 +494,7 @@ var NewTicketForm = {
                         'Unable to find any User with that email',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<p><strong>{{contact_name}}</strong> &lt;{{email}}&gt;</p>')
+                    suggestion: Handlebars.compile('<p><strong>{{contact_name}}</strong> &lt;{{email}}&gt; - {{main_website}}</p>')
                 }
             })
             .unbind('typeahead:selected')

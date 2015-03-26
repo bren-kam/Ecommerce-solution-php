@@ -420,7 +420,7 @@ class CustomerSupportController extends BaseController {
         $ajax_response = new AjaxResponse( $this->verified() );
 
         $user = new User();
-        $users = $user->list_all([" AND email LIKE '%{$_GET['term']}%' OR contact_name LIKE '%{$_GET['term']}%' ", '', '', 9999]);
+        $users = $user->list_all([" AND (u.email LIKE '%{$_GET['term']}%' OR u.contact_name LIKE '%{$_GET['term']}%' OR w.title LIKE '%{$_GET['term']}%') ", '', '', 9999]);
 
         $results = [];
         foreach ( $users as $user ) {
@@ -428,6 +428,7 @@ class CustomerSupportController extends BaseController {
                 'id' => $users->id
                 , 'contact_name' => $user->contact_name
                 , 'email' => $user->email
+                , 'main_website' => $user->main_website
             ];
         }
 
@@ -460,8 +461,10 @@ class CustomerSupportController extends BaseController {
         $user = new User();
         $user->get_by_email($_POST['to']);
         if ( !$user->id ) {
-            $response->notify("Can't find a user using the address '{$_POST['to']}'");
-            return $response;
+            $user->email = $_POST['to'];
+            $user->status = User::STATUS_ACTIVE;
+            $user->role = User::ROLE_AUTHORIZED_USER;
+            $user->create();
         }
 
         // Get browser information
@@ -499,18 +502,7 @@ class CustomerSupportController extends BaseController {
         // Add the value of a new ticket
         $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
 
-        fn::mail(
-            $user->email
-            , 'New Ticket #' . $ticket->id . ' - ' . $ticket->summary
-            , "******************* Reply Above This Line *******************"
-                . "\n\n<br><br>{$ticket->message}"
-            , $this->user->company . ' <support@' . url::domain( $this->user->domain, false ) . '>'
-            , $this->user->contact_name . ' <' . $this->user->email . '>'
-            , false
-            , false
-        );
-
-        $response->notify( "Message sent to '{$_POST['to']}'" );
+        $response->notify( "Message Created" );
         $response->add_response('id', $ticket->id);
         return $response;
     }

@@ -98,6 +98,9 @@
 .mail-box .lg-side .inbox-head .pull-left {
   margin-right: 15px;
 }
+.mail-box .lg-side .ticket-message {
+  font-size: 13px;
+}
 .mail-box .lg-side #ticket-comments .comment {
   padding-left: 35px;
   padding-right: 35px;

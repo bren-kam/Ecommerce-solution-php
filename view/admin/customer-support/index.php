@@ -98,7 +98,7 @@ foreach ( $admin_users as $au ) {
                     </div>
                 </div>
             </div>
-            <div class="ticket-message"></div>
+            <blockquote class="ticket-message"></blockquote>
             <ul class="list-inline" id="ticket-attachments"></ul>
             <div id="ticket-comments">
                 <div class="comment" id="ticket-comment-template">
@@ -170,7 +170,7 @@ foreach ( $admin_users as $au ) {
                     <input type="text" class="form-control input-lg" id="summary" name="summary" placeholder="Subject">
                 </div>
                 <div class="form-group">
-                    <textarea class="form-control" name="message" id="message" rte="1"><?php echo $user->email_signature ?></textarea>
+                    <textarea class="form-control input-lg" name="message" id="message" placeholder="Ticket Description" rows="5"></textarea>
                 </div>
 
                 <div class="row clearfix">
@@ -189,7 +189,7 @@ foreach ( $admin_users as $au ) {
                         <ul id="new-ticket-file-list" class="list-inline"></ul>
                     </div>
                     <div class="col-lg-8">
-                        <button type="submit" class="btn btn-primary pull-right">Send</button>
+                        <button type="submit" class="btn btn-primary pull-right">Create</button>
                         <?php nonce::field('create_ticket') ?>
                         <input type="hidden" id="new-ticket-id" name="ticket-id" value="" />
                     </div>
