@@ -83,6 +83,9 @@
 .mail-box ul.inbox-nav > .inbox-nav-item a .email-address {
   color: #777;
 }
+.mail-box ul.inbox-nav > .inbox-nav-item a .email-status {
+  margin: 0;
+}
 .mail-box ul.inbox-nav > .inbox-nav-item:nth-child(even) {
   background-color: #f3f3f3;
 }

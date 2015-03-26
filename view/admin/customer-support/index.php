@@ -55,10 +55,14 @@ foreach ( $admin_users as $au ) {
                     </div>
                     <div class="pull-left inbox-nav-item-details col-md-11">
                         <ul>
-                            <li><span class="email-name">User Name</span> <span class="email-address">user@email.com</span></li>
-                            <li><span class="email-date"><i class="fa fa-circle text-urgent"></i> 2-18-15</span></li>
-                            <li><span class="email-subject">Subject Here!</span></li>
-<!--                            <li><span class="email-preview">Some test here...</span></li>-->
+                            <li>
+                                <span class="email-name">User Name</span> <span class="email-address">user@email.com</span>
+                                <span class="email-date pull-right"><i class="fa fa-circle text-urgent pull-right"></i> 2-18-15</span>
+                            </li>
+                            <li>
+                                <span class="email-subject">Subject Here!</span>
+                                <span class="email-status pull-right label label-default"></span>
+                            </li>
                         </ul>
                     </div>
                 </a>

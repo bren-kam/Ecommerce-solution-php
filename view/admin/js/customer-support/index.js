@@ -65,6 +65,13 @@ var InboxNavigation = {
                 } else if ( ticket.priority == 0 ) {  // Low Priority
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-open"></i> ');
                 }
+                if ( ticket.status == 0 ) { // Open
+                    item.find('.email-status').text('Open');
+                } else if ( ticket.status == 1 ) { // Closed
+                    item.find('.email-status').text('Closed');
+                } else if ( ticket.status == 2 ) { // In Progress
+                    item.find('.email-status').text('In Progress');
+                }
 
                 InboxNavigation.container.append(item);
             }
