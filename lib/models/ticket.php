@@ -5,6 +5,7 @@ class Ticket extends ActiveRecordBase {
     const PRIORITY_URGENT = 2;
     const STATUS_OPEN = 0;
     const STATUS_CLOSED = 1;
+    const STATUS_IN_PROGRESS = 2;
     const STATUS_UNCREATED = -1;
 
     // The columns we will have access to

@@ -7,6 +7,8 @@ nonce::field( 'list_all', 'list-all-nonce' );
 nonce::field( 'get', 'get-nonce' );
 nonce::field( 'upload_to_comment', 'upload-to-comment-nonce' );
 nonce::field( 'update_assigned_to', 'update-assigned-to-nonce' );
+nonce::field( 'update_status', 'update-status-nonce' );
+nonce::field( 'update_priority', 'update-priority-nonce' );
 nonce::field( 'upload_to_ticket', 'upload-to-ticket-nonce' );
 nonce::field( 'get_emails', 'get-emails-nonce' );
 
@@ -42,8 +44,8 @@ foreach ( $admin_users as $au ) {
 
             <select id="filter-status" class="selectpicker" data-style="btn-primary">
                 <option value="-1">All Tickets</option>
-                <option value="0" selected="selected">Open</option>
-                <option value="2">In Progress</option>
+                <option value="0">Open</option>
+                <option value="2" selected="selected">In Progress</option>
                 <option value="1">Closed</option>
             </select>
         </div>
@@ -72,13 +74,31 @@ foreach ( $admin_users as $au ) {
 
     <aside class="lg-side hidden" id="ticket-container">
         <div class="inbox-head">
-            <div class="pull-left ticket-status">
+            <div class="pull-left ticket-priority">
             </div>
 
-            <div class="pull-left">
+            <div class="pull-left assign-to-container">
                 Assigned To:
                 <select id="assign-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
                     <?php echo $admin_user_options; ?>
+                </select>
+            </div>
+
+            <div class="pull-left change-status-container">
+                Status:
+                <select id="change-status" class="selectpicker" data-style="btn-primary">
+                    <option value="0">Open</option>
+                    <option value="2">In Progress</option>
+                    <option value="1">Closed</option>
+                </select>
+            </div>
+
+            <div class="pull-left change-priority-container">
+                Priority:
+                <select id="change-priority" class="selectpicker" data-style="btn-primary">
+                    <option value="0">Low</option>
+                    <option value="1">High</option>
+                    <option value="2">Urgent Issue</option>
                 </select>
             </div>
         </div>
@@ -91,9 +111,9 @@ foreach ( $admin_users as $au ) {
             <div class="sender-info">
                 <div class="row">
                     <div class="col-md-12">
-                        <p>
-                            <strong class="ticket-user-name"></strong> <span class="ticket-user-email"></span>
-                        </p>
+                        <ul>
+                            <li>Primary Contact: <strong class="ticket-user-name"></strong> <span class="ticket-user-email"></span></li>
+                        </ul>
                         <ul>
                             <li>Updated: <strong class="ticket-updated"></strong><br></li>
                             <li>Created: <strong class="ticket-created"></strong><br></li>
@@ -106,10 +126,14 @@ foreach ( $admin_users as $au ) {
             <ul class="list-inline" id="ticket-attachments"></ul>
             <div id="ticket-comments">
                 <div class="comment" id="ticket-comment-template">
-                    <p>
-                        <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
-                        <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
-                    </p>
+                    <ul>
+                        <li>
+                            From: <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
+                            <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
+                        </li>
+                        <li>To: <span class="comment-to-address"></span></li>
+                    </ul>
+
                     <p class="comment-message">
                         Faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci.
                     </p>
@@ -126,7 +150,16 @@ foreach ( $admin_users as $au ) {
                 <div class="col-lg-12">
                     <form metho="post" action="javascript:;" id="send-comment-form">
                         <div class="form-group">
-                            <textarea class="form-control" id="reply" rte="1"><?php echo $user->email_signature ?></textarea>
+                            <input type="text" class="form-control" id="to-address" name="to-address" value="" placeholder="To/Primary Contact">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="cc-address" name="cc-address" value="" placeholder="CC">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="bcc-address" name="bcc-address" value="" placeholder="BCC">
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" name="comment" id="reply" rte="1"><?php echo $user->email_signature ?></textarea>
                         </div>
                         <div class="row clearfix">
                             <div class="col-lg-4">

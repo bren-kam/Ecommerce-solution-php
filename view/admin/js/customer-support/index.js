@@ -92,7 +92,11 @@ var Ticket = {
         Ticket.commentTemplate = Ticket.container.find('#ticket-comment-template').clone().removeClass('hidden').removeAttr('id');
 
         // $('#assign-to').change(Ticket.assignTo);
-        $(Ticket.container).on('click', '.selectpicker li a', Ticket.assignTo);
+        $(Ticket.container.find('.assign-to-container')).on('click', '.selectpicker li a', Ticket.assignTo);
+        $(Ticket.container.find('.change-status-container')).on('click', '.selectpicker li a', Ticket.changeStatus);
+        $(Ticket.container.find('.change-priority-container')).on('click', '.selectpicker li a', Ticket.changePriority);
+
+        $('#to-address').tooltip({'trigger':'focus', 'title': 'Changing this will update the Ticket Primary Contact'});
     }
 
     , show: function(ticketId) {
@@ -128,26 +132,20 @@ var Ticket = {
                 statusText = 'Closed';
             }
 
-            var priorityText = '';
-            if (currentTicket.priority == 2) {
-                priorityText = 'Urgent';
-            } else if (currentTicket.priority == 1) {
-                priorityText = 'High Priority'
-            } else if (currentTicket.priority == 0) {
-                priorityText = 'Low'
-            }
-
             Ticket.container.data('ticket-id', currentTicket.id);
             Ticket.container.find('#ticket-id').val(currentTicket.id);  // For Comment Form
-            Ticket.container.find('#assign-to').selectpicker('val', currentTicket.assigned_to_user_id);
-            Ticket.container.find('.ticket-status').text(statusText + (priorityText ? ' - ' + priorityText : ''));
             if ( currentTicket.priority == 2 ) {  // Urgent
-                Ticket.container.find('.ticket-status').prepend('<i class="fa fa-circle ticket-urgent"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-urgent" title="Urgent Issue"></i> ');
             } else if ( currentTicket.priority == 1 ) {  // High Priority
-                Ticket.container.find('.ticket-status').prepend('<i class="fa fa-circle ticket-high"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-high" title="High Priority"></i> ');
             } else if ( currentTicket.status == 0 ) {  // Open
-                Ticket.container.find('.ticket-status').prepend('<i class="fa fa-circle ticket-open"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-open" title="Low Priority"></i> ');
             }
+
+            Ticket.container.find('#assign-to').selectpicker('val', currentTicket.assigned_to_user_id);
+            Ticket.container.find('#change-status').selectpicker('val', currentTicket.status);
+            Ticket.container.find('#change-priority').selectpicker('val', currentTicket.priority);
+
 
             Ticket.container.find('.ticket-summary').text(currentTicket.summary);
             Ticket.container.find('.ticket-user-name').text(currentTicket.name);
@@ -167,6 +165,8 @@ var Ticket = {
             }
 
             Ticket.container.find('.ticket-message').html(currentTicket.message);
+
+            Ticket.container.find('#to-address').val(currentTicket.email);
 
             // Ticket Attachments --
             if ( currentTicket.uploads ) {
@@ -195,6 +195,17 @@ var Ticket = {
                     item.find('.comment-user-name').prepend('<i class="fa fa-lock" title="This is a Note/Private Comment!"></i> ');
                 }
                 item.find('.comment-user-email').text('<' + comment.email + '>');
+                var toAddress = '';
+                if ( comment.to_address ) {
+                    toAddress += comment.to_address;
+                }
+                if ( comment.cc_address ) {
+                    toAddress += '; cc: ' + comment.cc_address;
+                }
+                if ( comment.bcc_address ) {
+                    toAddress += '; bcc: ' + comment.bcc_address;
+                }
+                item.find('.comment-to-address').text(toAddress);
                 item.find('.comment-created-ago').text(comment.created_ago);
                 item.find('.comment-message').html(comment.comment);
 
@@ -220,7 +231,6 @@ var Ticket = {
     }
 
     , assignTo: function() {
-        // First Attempt: <select> value
         var userId = $('#assign-to').val();
 
         $.post(
@@ -238,6 +248,46 @@ var Ticket = {
             }
         );
 
+    }
+
+    , changeStatus: function() {
+        var status = $('#change-status').val();
+
+        $.post(
+            '/customer-support/update-status/'
+            , {
+                _nonce : $('#update-status-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , status : status
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                    Ticket.reload();
+                }
+            }
+        );
+    }
+
+    , changePriority: function() {
+        var priority = $('#change-priority').val();
+
+        $.post(
+            '/customer-support/update-priority/'
+            , {
+                _nonce : $('#update-priority-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , priority : priority
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                    Ticket.reload();
+                }
+            }
+        );
     }
 
 
@@ -270,7 +320,7 @@ var TicketCommentForm = {
     }
 
     , add: function() {
-        var form = $('#add-comment-form');
+        var form = $('#send-comment-form');
         $.post(
             '/customer-support/add-comment/'
             , form.serialize()

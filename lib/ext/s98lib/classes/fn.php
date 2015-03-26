@@ -47,7 +47,7 @@ class fn extends Base_Class {
      * @param bool $use_html_template (optional) whether to wrap the email message with a default template
 	 * @return bool
 	 */
-	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true )
+	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true, $cc = null, $bcc = null )
     {
         // Find out if they passes a string or array, if they passed an array parse it
         if (is_array($to)) {
@@ -73,13 +73,12 @@ class fn extends Base_Class {
 
         $subject = html_entity_decode($subject);
 
-        if ( $text ) {
-			$headers = "From: $from\r\nReply-to: $reply_to\r\nX-Mailer: PHP/" . phpversion();
-		} else {
-			// To send HTML mail, the Content-type header must be set
-			$headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers = '';
+
+        if ( !$text ) {
+			// Headers for HTML emails
+			$headers .= 'MIME-Version: 1.0' . "\r\n";
 			$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-			$headers .= "From: $from\r\n";
             if ( $use_html_template ) {
                 $message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
@@ -100,6 +99,22 @@ class fn extends Base_Class {
 				</html>' );
             }
 		}
+
+        $headers .= "From: $from\r\n";
+        $headers .= "Reply-to: $reply_to\r\n";
+
+        if ( $cc ) {
+            $headers .= "Cc: $cc\r\n";
+        }
+
+        if ( $bcc ) {
+            $headers .= "Bcc: $bcc\r\n";
+        }
+
+        // Headers for Text emails
+        if ( $text ) {
+            $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+        }
 
 		return mail( $to_addresses, $subject, $message, $headers);
 }

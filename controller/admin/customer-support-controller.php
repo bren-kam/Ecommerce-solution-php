@@ -235,19 +235,43 @@ class CustomerSupportController extends BaseController {
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
         $ticket_comment->user_id = $this->user->user_id;
+        $ticket_comment->to_address = $_POST['to-address'];
+        $ticket_comment->cc_address = $_POST['cc-address'];
+        $ticket_comment->bcc_address = $_POST['bcc-address'];
         $ticket_comment->comment = trim($_POST['comment']);
         $ticket_comment->private = (int) isset( $_POST['private'] );
 
         $ticket_comment->create();
+
+        // If they changed the To Address, we need to update Ticket Primary Contact
+        if ( $ticket_comment->to_address != $ticket->email ) {
+            $primary_contact = new User();
+            $primary_contact->get_by_email($ticket_comment->to_address);
+            if ( !$primary_contact->id ) {
+                $primary_contact->email = $ticket_comment->to_address;
+                $primary_contact->status = User::STATUS_ACTIVE;
+                $primary_contact->role = User::ROLE_AUTHORIZED_USER;
+                $primary_contact->company_id = $this->user->company_id;
+                $primary_contact->create();
+            }
+            $ticket->user_id = $primary_contact->id;
+            $ticket->save();
+        }
+
+        // Make ticket as In Progress
+        if ( $ticket->status == Ticket::STATUS_OPEN ) {
+            $ticket->status = Ticket::STATUS_IN_PROGRESS;
+            $ticket->save();
+        }
 
         // Handle attachments
         if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
             $ticket_upload->add_comment_relations( $ticket_comment->id, $_POST['uploads'] );
 
         // If it's not private, send an email to the client
-        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_OPEN == $ticket->status )
+        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
-                $ticket->email
+                $ticket_comment->to_address
                 , 'New Comment on Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
@@ -258,6 +282,8 @@ class CustomerSupportController extends BaseController {
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false
                 , false
+                , $ticket_comment->cc_address
+                , $ticket_comment->bcc_address
             );
 
         // Send the assigned user an email if they are not submitting the comment
@@ -348,6 +374,84 @@ class CustomerSupportController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Update ticket status
+     *
+     * @return AjaxResponse
+     */
+    protected function update_status() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['status'] ), _('Failed to update status') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change status
+        $ticket->status = $_POST['status'];
+
+        // Update ticket
+        $ticket->save();
+
+        // Mark statistic for updated tickets if it's a GSR user
+        if ( Ticket::STATUS_CLOSED == $ticket->status && in_array( $this->user->id, array( User::TECHNICAL, User::KERRY, User::RODRIGO, User::MANINDER, User::RAFFERTY ) ) ) {
+            // Load library
+            library('statistics-api');
+            $stat = new Stat_API( Config::key('rs-key') );
+
+            // Get the dates
+            $date = new DateTime();
+            $ticket_date = new DateTime( $ticket->date_created );
+
+            // Add the value of a completed ticket
+            $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
+
+            // Add the average ticket time
+            $hours = ( $date->getTimestamp() - $ticket_date->getTimestamp() ) / 3600;
+            $stat->add_graph_value( 23453, round( $hours, 1 ), $date->format('Y-m-d')  );
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * Update the priority of a ticket
+     *
+     * @return AjaxResponse
+     */
+    protected function update_priority() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['priority'] ), _('Failed to update priority') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change priority
+        $ticket->priority = $_POST['priority'];
+
+        // Update ticket
+        $ticket->save();
+
+        return $response;
+    }
+
 
     /**
      * Upload an attachment to comment
@@ -464,6 +568,7 @@ class CustomerSupportController extends BaseController {
             $user->email = $_POST['to'];
             $user->status = User::STATUS_ACTIVE;
             $user->role = User::ROLE_AUTHORIZED_USER;
+            $user->company_id = $this->user->company_id;
             $user->create();
         }
 
@@ -471,7 +576,7 @@ class CustomerSupportController extends BaseController {
         $browser = fn::browser();
 
         // Set ticket information
-        $ticket->user_id = $this->user->id;
+        $ticket->user_id = $user->id;
         $ticket->assigned_to_user_id = $this->user->id;  // Send a message, but assign ticket to self
         $ticket->website_id = 0; // Admin side -- no website
         $ticket->summary = $_POST['summary'];

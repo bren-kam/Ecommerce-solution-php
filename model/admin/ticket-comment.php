@@ -4,7 +4,7 @@ class TicketComment extends ActiveRecordBase {
     const VISIBILITY_PUBLIC = 0;
 
     // The columns we will have access to
-    public $id, $ticket_comment_id, $ticket_id, $user_id, $comment, $private, $jira_id, $date_created;
+    public $id, $ticket_comment_id, $ticket_id, $user_id, $to_address, $cc_address, $bcc_address, $comment, $private, $jira_id, $date_created;
 
     // Columns from other tables
     public $name, $email;
@@ -44,7 +44,7 @@ class TicketComment extends ActiveRecordBase {
 	 * @return TicketComment[]
 	 */
 	public function get_by_ticket( $ticket_id ) {
-		return $this->prepare( 'SELECT a.`ticket_comment_id`, a.`user_id`, a.`comment`, a.`private`, a.`date_created`, b.`contact_name` AS name, b.`email` AS email, a.`jira_id`, a.`ticket_id` FROM `ticket_comments` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`ticket_id` = :ticket_id ORDER BY a.`date_created` DESC'
+		return $this->prepare( 'SELECT a.`ticket_comment_id`, a.`user_id`, a.`comment`, a.`private`, a.`date_created`, b.`contact_name` AS name, b.`email` AS email, a.`jira_id`, a.`ticket_id`, a.`to_address`, a.`cc_address`, a.`bcc_address` FROM `ticket_comments` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`ticket_id` = :ticket_id ORDER BY a.`date_created` DESC'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketComment' );
@@ -62,6 +62,9 @@ class TicketComment extends ActiveRecordBase {
         $this->insert( array(
             'ticket_id' => $this->ticket_id
             , 'user_id' => $this->user_id
+            , 'to_address' => $this->to_address
+            , 'cc_address' => $this->cc_address
+            , 'bcc_address' => $this->bcc_address
             , 'comment' => strip_tags($this->comment, '<br><a>')
             , 'private' => $this->private
             , 'jira_id' => $this->jira_id

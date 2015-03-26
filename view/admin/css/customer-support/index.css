@@ -45,9 +45,10 @@
   border: none;
   background: inherit;
   color: #fff;
-  padding: 8px 14px;
+  padding: 4px 14px;
   border-radius: 4px;
   -webkit-border-radius: 4px;
+  font-size: 1.6em;
 }
 .mail-box ul.inbox-nav {
   height: 700px;
@@ -94,6 +95,8 @@
   background: #F0F0F0;
   padding-top: 20px;
   font-size: 16px;
+  border-top: 1px solid #ddd;
+  border-right: 1px solid #ddd;
 }
 .mail-box .lg-side .inbox-head i {
   margin-right: 5px;
