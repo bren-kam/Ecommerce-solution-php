@@ -230,7 +230,11 @@ class CustomerSupportController extends BaseController {
         $assigned_user->get( $ticket->assigned_to_user_id );
 
         // Set variables
-        $status = ( Ticket::STATUS_OPEN == $ticket->status ) ? ' (Open)' : ' (Closed)';
+        $status = '(Open)';
+        if ( Ticket::STATUS_IN_PROGRESS == $ticket->status )
+            $status = '(Open)';
+        if ( Ticket::STATUS_CLOSED == $ticket->status )
+            $status = '(Closed)';
 
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
@@ -285,7 +289,6 @@ class CustomerSupportController extends BaseController {
                 , $ticket_comment->cc_address
                 , $ticket_comment->bcc_address
             );
-
         // Send the assigned user an email if they are not submitting the comment
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
             fn::mail(
