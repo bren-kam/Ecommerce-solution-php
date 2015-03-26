@@ -65,7 +65,7 @@ class TicketComment extends ActiveRecordBase {
             , 'to_address' => $this->to_address
             , 'cc_address' => $this->cc_address
             , 'bcc_address' => $this->bcc_address
-            , 'comment' => strip_tags($this->comment, '<br><a>')
+            , 'comment' => $this->comment
             , 'private' => $this->private
             , 'jira_id' => $this->jira_id
             , 'date_created' => $this->date_created
