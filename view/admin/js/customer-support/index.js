@@ -95,6 +95,7 @@ var Ticket = {
         $(Ticket.container.find('.assign-to-container')).on('click', '.selectpicker li a', Ticket.assignTo);
         $(Ticket.container.find('.change-status-container')).on('click', '.selectpicker li a', Ticket.changeStatus);
         $(Ticket.container.find('.change-priority-container')).on('click', '.selectpicker li a', Ticket.changePriority);
+        $(Ticket.container.find('.attach-to-account-container')).on('click', '.selectpicker li a', Ticket.attachUserToAccount);
 
         $('#to-address').tooltip({'trigger':'focus', 'title': 'Changing this will update the Ticket Primary Contact'});
     }
@@ -145,6 +146,12 @@ var Ticket = {
             Ticket.container.find('#assign-to').selectpicker('val', currentTicket.assigned_to_user_id);
             Ticket.container.find('#change-status').selectpicker('val', currentTicket.status);
             Ticket.container.find('#change-priority').selectpicker('val', currentTicket.priority);
+            if ( currentTicket.user_has_account ) {
+                Ticket.container.find('.attach-to-account-container').hide();
+            } else {
+                Ticket.container.find('.attach-to-account-container').show();
+                Ticket.container.find('#attach-to-account').selectpicker('val', '');
+            }
 
 
             Ticket.container.find('.ticket-summary').text(currentTicket.summary);
@@ -279,6 +286,26 @@ var Ticket = {
                 _nonce : $('#update-priority-nonce').val()
                 , tid : Ticket.container.data('ticket-id')
                 , priority : priority
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                    Ticket.reload();
+                }
+            }
+        );
+    }
+
+    , attachUserToAccount: function() {
+        var account = $('#attach-to-account').val();
+
+        $.post(
+            '/customer-support/attach-user-to-account/'
+            , {
+                _nonce : $('#attach-user-to-account-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , account_id : account
             }
             , function( response ) {
                 GSR.defaultAjaxResponse( response );

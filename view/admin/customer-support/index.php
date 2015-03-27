@@ -10,6 +10,7 @@ nonce::field( 'update_assigned_to', 'update-assigned-to-nonce' );
 nonce::field( 'update_status', 'update-status-nonce' );
 nonce::field( 'update_priority', 'update-priority-nonce' );
 nonce::field( 'upload_to_ticket', 'upload-to-ticket-nonce' );
+nonce::field( 'attach_user_to_account', 'attach-user-to-account-nonce' );
 nonce::field( 'get_emails', 'get-emails-nonce' );
 
 foreach ( $admin_users as $au ) {
@@ -99,6 +100,16 @@ foreach ( $admin_users as $au ) {
                     <option value="0">Low</option>
                     <option value="1">High</option>
                     <option value="2">Urgent Issue</option>
+                </select>
+            </div>
+
+            <div class="pull-left attach-to-account-container">
+                Priority:
+                <select id="attach-to-account" class="selectpicker" data-style="btn-primary" data-live-search="true">
+                    <option value="" selected>Attach user to Account</option>
+                    <?php foreach ( $accounts as $account ): ?>
+                        <option value="<?php echo $account->website_id ?>"><?php echo $account->title ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
         </div>

@@ -22,11 +22,13 @@ class CustomerSupportController extends BaseController {
             ->javascript_url( Config::resource('bootstrap-select-js'), Config::resource('typeahead-js'), Config::resource('handlebars-js') );
 
         $admin_users = $this->user->get_admin_users();
+        $account = new Account();
+        $accounts = $account->list_all([' AND a.status = 1 ', '', '', 9999]);
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')
             ->add_title('Customer Support')
-            ->set( compact('admin_users') );
+            ->set( compact('admin_users', 'accounts') );
     }
 
     /**
@@ -108,6 +110,18 @@ class CustomerSupportController extends BaseController {
             $ticket->updated_ago = 'Never';
             if ( $ticket->last_updated_at ) {
                 $ticket->updated_ago = DateHelper::time_elapsed( $ticket->last_updated_at ) . ' by ' . $ticket->last_updated_by;
+            }
+
+            // Check if user is attached to an account
+            $user = new User();
+            $user->get($ticket->user_id);
+            if ( $user->id ) {
+                $account = new Account();
+                $accounts = $account->get_by_user($user->id);
+                if ( empty($accounts) ) {
+                    $accounts = $account->get_by_authorized_user($user->id);
+                }
+                $ticket->user_has_account = !empty($accounts);
             }
 
             // Ticket Attachments --
@@ -612,6 +626,45 @@ class CustomerSupportController extends BaseController {
 
         $response->notify( "Message Created" );
         $response->add_response('id', $ticket->id);
+        return $response;
+    }
+
+    public function attach_user_to_account() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['account_id'] ), _('Failed to update Account') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        $user = new User();
+        $user->get($ticket->user_id);
+
+        $account = new Account();
+        $account->get($_POST['account_id']);
+
+        $auth_user_website = new AuthUserWebsite();
+        $auth_user_website->add(
+            $user->contact_name
+            , $user->email
+            , $account->id
+            , 1
+            , 0
+            , 0
+            , 0
+            , 0
+            , 0
+            , User::ROLE_AUTHORIZED_USER
+        );
+
+        $response->notify("User {$user->email} attached to {$account->title}.");
         return $response;
     }
 
