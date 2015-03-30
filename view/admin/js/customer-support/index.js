@@ -273,7 +273,11 @@ var Ticket = {
                 GSR.defaultAjaxResponse( response );
                 if ( response.success ) {
                     InboxNavigation.getTickets();
-                    Ticket.reload();
+                    if ( status == 1 ) {  // closed
+                        $('#compose').click();
+                    } else {
+                        Ticket.reload();
+                    }
                 }
             }
         );

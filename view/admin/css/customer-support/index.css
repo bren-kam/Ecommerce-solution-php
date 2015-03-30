@@ -74,6 +74,9 @@
   /* Bootstrap Default */
   display: list-item;
 }
+.mail-box ul.inbox-nav > .inbox-nav-item a .inbox-nav-item-details ul li i {
+  padding-right: 0;
+}
 .mail-box ul.inbox-nav > .inbox-nav-item a .select-ticket {
   padding: 20px 15px 0 10px;
 }
@@ -94,7 +97,7 @@
   color: #333;
   background: #F0F0F0;
   padding-top: 20px;
-  font-size: 16px;
+  font-size: 13px;
   border-top: 1px solid #ddd;
   border-right: 1px solid #ddd;
 }
@@ -154,6 +157,9 @@
 .mail-box .lg-side .bootstrap-select button:active .caret,
 .mail-box .lg-side .bootstrap-select button:focus .caret {
   right: 0px!important;
+}
+.mail-box .lg-side .attach-to-account-container button {
+  font-weight: normal!important;
 }
 .mail-box .lg-side .twitter-typeahead {
   width: 100%;

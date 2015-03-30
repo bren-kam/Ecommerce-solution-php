@@ -103,7 +103,7 @@ foreach ( $admin_users as $au ) {
             <div class="pull-left attach-to-account-container">
                 Priority:
                 <select id="attach-to-account" class="selectpicker" data-style="btn-primary" data-live-search="true">
-                    <option value="" selected>Attach user to Account</option>
+                    <option value="" selected>Assign to Account</option>
                     <?php foreach ( $accounts as $account ): ?>
                         <option value="<?php echo $account->website_id ?>"><?php echo $account->title ?></option>
                     <?php endforeach; ?>
@@ -136,9 +136,10 @@ foreach ( $admin_users as $au ) {
                 <div class="comment" id="ticket-comment-template">
                     <ul>
                         <li>
-                            From: <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
+                            From: <strong class="comment-user-name">User Name</strong>
                             <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
                         </li>
+                        <li><span class="comment-user-email">&lt;user@email.com&gt;</span></li>
                         <li>To: <span class="comment-to-address"></span></li>
                     </ul>
 
