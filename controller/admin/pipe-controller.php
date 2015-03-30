@@ -77,6 +77,7 @@ class PipeController extends BaseController {
             $ticket_comment->ticket_id = $ticket->id;
             $ticket_comment->user_id = $from_user->user_id;
             $ticket_comment->comment = $body;
+            $ticket_comment->to_address = $to;
             $ticket_comment->create();
         } else {
             // We can't create a ticket if we can't assign to anybody
