@@ -29,7 +29,7 @@ foreach ( $admin_users as $au ) {
         <div class="user-head">
             <form class="pull-left position" action="javascript:;">
                 <div class="input-append">
-                    <input type="text"  placeholder="Email Address or User Name" class="sr-input" id="search">
+                    <input type="text"  placeholder="Search" class="sr-input" id="search">
                 </div>
             </form>
             <a class="btn pull-right" href="javascript:;" id="compose">
@@ -217,7 +217,7 @@ foreach ( $admin_users as $au ) {
         <div class="inbox-body">
             <form method="post" action="javascript:;" role="form" id="new-ticket-form">
                 <div class="form-group">
-                    <input type="text" class="form-control input-lg" name="to" id="to" placeholder="To Email Address">
+                    <input type="text" class="form-control input-lg" name="to" id="to" placeholder="Email Address or User Name">
                 </div>
                 <div class="form-group">
                     <input type="text" class="form-control input-lg" id="summary" name="summary" placeholder="Subject">
