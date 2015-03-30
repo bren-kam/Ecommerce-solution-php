@@ -301,7 +301,7 @@ class CustomerSupportController extends BaseController {
                     $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
                 }
             }
-            $thread .= "\n\n<br><br>On {$ticket->date_created} We Wrote:\n<br>{$ticket->message}";
+            $thread .= "\n\n<br><br>On {$ticket->date_created} We wrote:\n<br>{$ticket->message}";
         }
 
         // If it's not private, send an email to the client
