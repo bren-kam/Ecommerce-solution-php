@@ -53,10 +53,7 @@ foreach ( $admin_users as $au ) {
         <ul class="inbox-nav inbox-divider" id="inbox-nav">
             <li class="hidden inbox-nav-item" id="inbox-nav-template">
                 <a href="javascript:;" class="show-ticket">
-                    <div class="pull-left select-ticket col-md-1">
-                        <input type="checkbox" value="1" name="select-ticket" />
-                    </div>
-                    <div class="pull-left inbox-nav-item-details col-md-11">
+                    <div class="pull-left inbox-nav-item-details col-md-12">
                         <ul>
                             <li>
                                 <span class="email-name">User Name</span> <span class="email-address">user@email.com</span>
