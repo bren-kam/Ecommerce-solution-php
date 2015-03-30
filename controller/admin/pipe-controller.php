@@ -68,6 +68,7 @@ class PipeController extends BaseController {
             $from_user->contact_name = $from_name;
             $from_user->role = User::ROLE_AUTHORIZED_USER;
             $from_user->status = User::STATUS_ACTIVE;
+            $from_user->company_id = 1;
             $from_user->create();
         }
 
