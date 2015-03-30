@@ -101,7 +101,6 @@ foreach ( $admin_users as $au ) {
             </div>
 
             <div class="pull-left attach-to-account-container">
-                Priority:
                 <select id="attach-to-account" class="selectpicker" data-style="btn-primary" data-live-search="true">
                     <option value="" selected>Assign to Account</option>
                     <?php foreach ( $accounts as $account ): ?>
