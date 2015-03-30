@@ -29,7 +29,7 @@ foreach ( $admin_users as $au ) {
         <div class="user-head">
             <form class="pull-left position" action="javascript:;">
                 <div class="input-append">
-                    <input type="text"  placeholder="Search..." class="sr-input" id="search">
+                    <input type="text"  placeholder="Email Address or User Name" class="sr-input" id="search">
                 </div>
             </form>
             <a class="btn pull-right" href="javascript:;" id="compose">
@@ -45,8 +45,8 @@ foreach ( $admin_users as $au ) {
 
             <select id="filter-status" class="selectpicker" data-style="btn-primary">
                 <option value="-1">All Tickets</option>
-                <option value="0">Open</option>
-                <option value="2" selected="selected">In Progress</option>
+                <option value="0" selected="selected">Open</option>
+                <option value="2">In Progress</option>
                 <option value="1">Closed</option>
             </select>
         </div>
@@ -119,7 +119,8 @@ foreach ( $admin_users as $au ) {
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>Primary Contact: <strong class="ticket-user-name"></strong> <span class="ticket-user-email"></span></li>
+                            <li>User: <strong class="ticket-user-name"></strong></li>
+                            <li>Email: <span class="ticket-user-email"></span></li>
                         </ul>
                         <ul>
                             <li>Updated: <strong class="ticket-updated"></strong><br></li>
@@ -135,10 +136,9 @@ foreach ( $admin_users as $au ) {
                 <div class="comment" id="ticket-comment-template">
                     <ul>
                         <li>
-                            From: <strong class="comment-user-name">User Name</strong>
+                            From: <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
                             <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
                         </li>
-                        <li><span class="comment-user-email">&lt;user@email.com&gt;</span></li>
                         <li>To: <span class="comment-to-address"></span></li>
                     </ul>
 
@@ -151,7 +151,7 @@ foreach ( $admin_users as $au ) {
             </div>
             <div class="heading-inbox row">
                 <div class="col-md-12">
-                    <h4>Reply</h4>
+                    <h4>Send Message</h4>
                 </div>
             </div>
             <div class="row">

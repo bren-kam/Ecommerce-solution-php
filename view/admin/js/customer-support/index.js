@@ -176,9 +176,10 @@ var Ticket = {
             Ticket.container.find('#to-address').val(currentTicket.email);
 
             // Ticket Attachments --
-            if ( currentTicket.uploads ) {
-                for ( i in currentTicket.uploads ) {
-                    var upload = currentTicket.uploads[i];
+            $('#ticket-attachments').empty();
+            if ( response.uploads ) {
+                for ( i in response.uploads ) {
+                    var upload = response.uploads[i];
                     $('#ticket-attachments').append(
                         $('<li />').append(
                             $('<a />')
@@ -212,7 +213,13 @@ var Ticket = {
                 if ( comment.bcc_address ) {
                     toAddress += '; bcc: ' + comment.bcc_address;
                 }
-                item.find('.comment-to-address').text(toAddress);
+                if ( toAddress ) {
+                    item.find('.comment-to-address').text(toAddress);
+                    item.find('.comment-to-address').parents('li:first').show();
+                } else {
+                    item.find('.comment-to-address').parents('li:first').hide();
+                }
+
                 item.find('.comment-created-ago').text(comment.created_ago);
                 item.find('.comment-message').html(comment.comment);
 

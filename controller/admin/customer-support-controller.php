@@ -129,8 +129,8 @@ class CustomerSupportController extends BaseController {
             $uploads = [];
             foreach( $ticket_uploads as $ticket_upload ) {
                 $uploads[] = [
-                    'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $ticket_upload->key
-                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $ticket_upload->key ) ) )
+                    'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $ticket_upload
+                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $ticket_upload ) ) )
                 ];
             }
 
@@ -153,7 +153,7 @@ class CustomerSupportController extends BaseController {
             }
 
             $response->add_response('ticket', $ticket);
-            $response->add_response('uploads', $ticket_uploads);
+            $response->add_response('uploads', $uploads);
             $response->add_response('comments', $comments);
         }
 
@@ -218,15 +218,16 @@ class CustomerSupportController extends BaseController {
      *
      * @return AjaxResponse
      */
-    protected function add_comment() {
+    protected function add_comment()
+    {
         // Verify the nonce
-        $response = new AjaxResponse( $this->verified() );
+        $response = new AjaxResponse($this->verified());
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_POST['comment'] ) && isset( $_POST['ticket-id'] ), _('Failed to add comment') );
+        $response->check(isset($_POST['comment']) && isset($_POST['ticket-id']), _('Failed to add comment'));
 
         // If there is an error or now user id, return
-        if ( $response->has_error() )
+        if ($response->has_error())
             return $response;
 
         // Initialize objects
@@ -237,18 +238,11 @@ class CustomerSupportController extends BaseController {
         $ticket_upload = new TicketUpload();
 
         // Get ticket
-        $ticket->get( $_POST['ticket-id'] );
+        $ticket->get($_POST['ticket-id']);
 
         // Get users
-        $ticket_creator->get( $ticket->user_id );
-        $assigned_user->get( $ticket->assigned_to_user_id );
-
-        // Set variables
-        $status = '(Open)';
-        if ( Ticket::STATUS_IN_PROGRESS == $ticket->status )
-            $status = '(Open)';
-        if ( Ticket::STATUS_CLOSED == $ticket->status )
-            $status = '(Closed)';
+        $ticket_creator->get($ticket->user_id);
+        $assigned_user->get($ticket->assigned_to_user_id);
 
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
@@ -257,15 +251,15 @@ class CustomerSupportController extends BaseController {
         $ticket_comment->cc_address = $_POST['cc-address'];
         $ticket_comment->bcc_address = $_POST['bcc-address'];
         $ticket_comment->comment = trim($_POST['comment']);
-        $ticket_comment->private = (int) isset( $_POST['private'] );
+        $ticket_comment->private = (int)isset($_POST['private']);
 
         $ticket_comment->create();
 
         // If they changed the To Address, we need to update Ticket Primary Contact
-        if ( $ticket_comment->to_address != $ticket->email ) {
+        if ($ticket_comment->to_address != $ticket->email) {
             $primary_contact = new User();
             $primary_contact->get_by_email($ticket_comment->to_address);
-            if ( !$primary_contact->id ) {
+            if (!$primary_contact->id) {
                 $primary_contact->email = $ticket_comment->to_address;
                 $primary_contact->status = User::STATUS_ACTIVE;
                 $primary_contact->role = User::ROLE_AUTHORIZED_USER;
@@ -277,14 +271,21 @@ class CustomerSupportController extends BaseController {
         }
 
         // Make ticket as In Progress
-        if ( $ticket->status == Ticket::STATUS_OPEN ) {
+        if ($ticket->status == Ticket::STATUS_OPEN) {
             $ticket->status = Ticket::STATUS_IN_PROGRESS;
             $ticket->save();
         }
 
         // Handle attachments
-        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
-            $ticket_upload->add_comment_relations( $ticket_comment->id, $_POST['uploads'] );
+        if (isset($_POST['uploads']) && is_array($_POST['uploads']))
+            $ticket_upload->add_comment_relations($ticket_comment->id, $_POST['uploads']);
+
+        $status = '(Open)';
+        if (Ticket::STATUS_IN_PROGRESS == $ticket->status) {
+            $status = '(In Progress)';
+        } else if (Ticket::STATUS_CLOSED == $ticket->status) {
+            $status = '(Closed)';
+        }
 
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )

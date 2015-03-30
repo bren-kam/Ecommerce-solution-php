@@ -158,7 +158,8 @@
 .mail-box .lg-side .bootstrap-select button:focus .caret {
   right: 0px!important;
 }
-.mail-box .lg-side .attach-to-account-container button {
+.mail-box .lg-side .attach-to-account-container button,
+.mail-box .lg-side .attach-to-account-container button:hover {
   font-weight: normal!important;
 }
 .mail-box .lg-side .twitter-typeahead {
