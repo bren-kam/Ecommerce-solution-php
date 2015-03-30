@@ -138,25 +138,8 @@ foreach ( $admin_users as $au ) {
                     </div>
                 </div>
             </div>
-            <blockquote class="ticket-message"></blockquote>
+            <div class="ticket-message"></div>
             <ul class="list-inline" id="ticket-attachments"></ul>
-            <div id="ticket-comments">
-                <div class="comment" id="ticket-comment-template">
-                    <ul>
-                        <li>
-                            From: <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
-                            <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
-                        </li>
-                        <li>To: <span class="comment-to-address"></span></li>
-                    </ul>
-
-                    <p class="comment-message">
-                        Faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci.
-                    </p>
-                    <ul class="list-inline comment-attachments">
-                    </ul>
-                </div>
-            </div>
             <div class="heading-inbox row">
                 <div class="col-md-12">
                     <h4>Send Message</h4>
@@ -204,6 +187,24 @@ foreach ( $admin_users as $au ) {
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <div id="ticket-comments">
+                <div class="comment" id="ticket-comment-template">
+                    <ul>
+                        <li>
+                            From: <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
+                            <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
+                        </li>
+                        <li>To: <span class="comment-to-address"></span></li>
+                    </ul>
+
+                    <p class="comment-message">
+                        Faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci.
+                    </p>
+                    <ul class="list-inline comment-attachments">
+                    </ul>
                 </div>
             </div>
         </div>

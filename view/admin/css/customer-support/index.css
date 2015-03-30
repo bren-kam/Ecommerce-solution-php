@@ -109,6 +109,9 @@
 }
 .mail-box .lg-side .ticket-message {
   font-size: 13px;
+  background-color: #f3f3f3;
+  padding: 20px 35px;
+  margin: 0 -20px;
 }
 .mail-box .lg-side #ticket-comments .comment {
   padding-left: 35px;
