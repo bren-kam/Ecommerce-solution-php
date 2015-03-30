@@ -35,9 +35,10 @@ class PipeController extends BaseController {
         $reply_above_this_line = strpos( $body, '******************* Reply Above This Line *******************' );
         if ( $reply_above_this_line ) {
             $body = substr($body, 0, $reply_above_this_line);
+            $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
         }
-        $body = nl2br($body);
         $body = trim($body);
+        $body = nl2br($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
         $from = $email['ExtractedAddresses']['from:'][0]['address'];
         $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
