@@ -49,6 +49,14 @@ foreach ( $admin_users as $au ) {
                 <option value="2">In Progress</option>
                 <option value="1">Closed</option>
             </select>
+
+            <select id="filter-account" class="selectpicker" data-live-search="true" data-style="btn-primary">
+                <option value="0">Account</option>
+                <?php foreach ( $accounts as $account ): ?>
+                    <option value="<?php echo $account->website_id ?>"><?php echo $account->title ?></option>
+                <?php endforeach; ?>
+            </select>
+
         </div>
         <ul class="inbox-nav inbox-divider" id="inbox-nav">
             <li class="hidden inbox-nav-item" id="inbox-nav-template">

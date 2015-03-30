@@ -9,10 +9,11 @@ var InboxNavigation = {
         $('#inbox-nav-template').remove();
 
         $('#search').keyup( InboxNavigation.getTickets );
-        InboxNavigation.getTickets();
-
         $('#filter-status').change(InboxNavigation.getTickets);
         $('#filter-assigned-to').change(InboxNavigation.getTickets);
+        $('#filter-account').change(InboxNavigation.getTickets);
+
+        InboxNavigation.getTickets();
 
         // Event when selecting a Ticket
         InboxNavigation.container.on('click', '.show-ticket', function() {
@@ -38,6 +39,7 @@ var InboxNavigation = {
                 , search: $('#search').val()
                 , status: $('#filter-status').val()
                 , "assigned-to": $('#filter-assigned-to').val()
+                , account: $('#filter-account').val()
             }
             , InboxNavigation.loadTickets
         );

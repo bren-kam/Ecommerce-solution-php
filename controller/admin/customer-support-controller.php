@@ -69,6 +69,10 @@ class CustomerSupportController extends BaseController {
             $dt->add_where($assigned_to);
         }
 
+        if ( $_GET['account'] ) {
+            $dt->add_where(' AND d.`website_id` = ' . (int)$_GET['account']);
+        }
+
         /**
          * Create ticket class
          */
