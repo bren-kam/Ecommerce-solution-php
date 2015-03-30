@@ -291,6 +291,18 @@ class CustomerSupportController extends BaseController {
             $status = '(Closed)';
         }
 
+        $thread = '';
+        if ( $_POST['include-whole-thread'] ) {
+            $comments = $ticket->get_by_comments($ticket->id);
+            array_pop($comments);
+            $comments = array_reverse($comments);
+            foreach ( $comments as $c ) {
+                if ( $c->private == TicketComment::VISIBILITY_PUBLIC ) {
+                    $thread .= "\n\n<hr>{$c->comment}";
+                }
+            }
+        }
+
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
@@ -299,8 +311,9 @@ class CustomerSupportController extends BaseController {
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
-                    . "\n\n<br><br>**Support Issue**"
-                    . "\n<br>{$ticket->message}"
+                    . "\n\n<hr>**Support Issue**"
+                    . "{$thread}"
+                    . "\n\n<hr>{$ticket->message}"
                 , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false
@@ -316,8 +329,9 @@ class CustomerSupportController extends BaseController {
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
-                    . "\n\n<br><br>**Support Issue**"
-                    . "\n<br>{$ticket->message}"
+                    . "\n\n<hr>**Support Issue**"
+                    . "{$thread}"
+                    . "\n\n<hr>{$ticket->message}"
                 , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false

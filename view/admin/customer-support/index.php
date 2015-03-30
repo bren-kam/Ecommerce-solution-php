@@ -179,7 +179,10 @@ foreach ( $admin_users as $au ) {
                                 <button type="submit" class="btn btn-primary pull-right">Send</button>
                                 <div class="checkbox pull-right">
                                     <label>
-                                        <input type="checkbox" name="private" value="1">This is a Private Message - No email will be send &nbsp;
+                                        <input type="checkbox" name="include-whole-thread" value="1">Include whole message thread&nbsp;
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="private" value="1">This is a Private Message&nbsp;
                                     </label>
                                 </div>
                                 <input type="hidden" name="ticket-id" id="ticket-id" />
