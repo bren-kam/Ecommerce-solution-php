@@ -370,7 +370,7 @@ var TicketCommentForm = {
 
     , reset: function() {
         // Reset Comment Form
-        $('#send-comment-form').get(0).reset();
+        $('#cc-address, #bcc-address').val('');
         for (var i in CKEDITOR.instances) {
             CKEDITOR.instances[i].setData('');
         }
