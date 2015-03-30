@@ -234,6 +234,8 @@ var Ticket = {
                 Ticket.commentsContainer.append(item);
             }
 
+            TicketCommentForm.reset();
+
         }
     }
 
@@ -348,6 +350,9 @@ var TicketCommentForm = {
 
     , add: function() {
         var form = $('#send-comment-form');
+        for (var i in CKEDITOR.instances) {
+            CKEDITOR.instances[i].updateElement();
+        }
         $.post(
             '/customer-support/add-comment/'
             , form.serialize()
@@ -360,6 +365,14 @@ var TicketCommentForm = {
         GSR.defaultAjaxResponse( response );
         if ( response.success ) {
             Ticket.reload();
+        }
+    }
+
+    , reset: function() {
+        // Reset Comment Form
+        $('#send-comment-form').get(0).reset();
+        for (var i in CKEDITOR.instances) {
+            CKEDITOR.instances[i].setData('');
         }
     }
 

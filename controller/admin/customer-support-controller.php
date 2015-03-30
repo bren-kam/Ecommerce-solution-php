@@ -290,7 +290,7 @@ class CustomerSupportController extends BaseController {
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
                 $ticket_comment->to_address
-                , 'New Comment on Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
+                , 'Ticket #' . $ticket->id . ' ' . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
@@ -307,7 +307,7 @@ class CustomerSupportController extends BaseController {
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
             fn::mail(
                 $assigned_user->email
-                , 'New Comment on Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
+                , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
@@ -655,7 +655,7 @@ class CustomerSupportController extends BaseController {
             $user->contact_name
             , $user->email
             , $account->id
-            , 1
+            , 0
             , 0
             , 0
             , 0

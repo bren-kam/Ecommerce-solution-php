@@ -32,7 +32,11 @@ class PipeController extends BaseController {
         // Get data
         $subject = $email['Headers']['subject:'];
         $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
-        $body = nl2br( substr( $body, 0, strpos( $body, '******************* Reply Above This Line *******************' ) ) );
+        $reply_above_this_line = strpos( $body, '******************* Reply Above This Line *******************' );
+        if ( $reply_above_this_line ) {
+            $body = substr($body, 0, $reply_above_this_line);
+        }
+        $body = nl2br($body);
         $body = trim($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
         $from = $email['ExtractedAddresses']['from:'][0]['address'];
@@ -42,7 +46,7 @@ class PipeController extends BaseController {
         // Ignore email from support, reply, no-reply, etc.
         $matches = [];
         if ( preg_match('/(support|noreply|no-reply|jira)@/i', $from, $matches) ) {
-            return;
+            return new HtmlResponse("Ignoring email from '{$from}'");
         }
 
         // Get Ticket
@@ -76,7 +80,7 @@ class PipeController extends BaseController {
         } else {
             // We can't create a ticket if we can't assign to anybody
             if ( !$to_user->id ) {
-                return;
+                return new HtmlResponse("We can't create a ticket if we can't assign to anybody '{$to}'");
             }
 
             // Try to guess the Account
@@ -98,6 +102,8 @@ class PipeController extends BaseController {
             $ticket->website_id = $account ? $account->id : null;
             $ticket->create();
         }
+
+        return new HtmlResponse('');
     }
 
     /**
