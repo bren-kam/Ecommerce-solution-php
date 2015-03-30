@@ -293,7 +293,7 @@ class CustomerSupportController extends BaseController {
 
         $thread = '';
         if ( $_POST['include-whole-thread'] ) {
-            $comments = $ticket_comment->get_by_comments($ticket->id);
+            $comments = $ticket_comment->get_by_ticket($ticket->id);
             array_pop($comments);
             $comments = array_reverse($comments);
             foreach ( $comments as $c ) {
