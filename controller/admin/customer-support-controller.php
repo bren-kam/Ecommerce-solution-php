@@ -298,9 +298,10 @@ class CustomerSupportController extends BaseController {
             $comments = array_reverse($comments);
             foreach ( $comments as $c ) {
                 if ( $c->private == TicketComment::VISIBILITY_PUBLIC ) {
-                    $thread .= "\n\n<hr>{$c->comment}";
+                    $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
                 }
             }
+            $thread .= "\n\n<br><br>On {$ticket->date_created} We Wrote:\n<br>{$ticket->message}";
         }
 
         // If it's not private, send an email to the client
@@ -311,9 +312,7 @@ class CustomerSupportController extends BaseController {
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
-                    . "\n\n<hr>**Support Issue**"
                     . "{$thread}"
-                    . "\n\n<hr>{$ticket->message}"
                 , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false
@@ -329,9 +328,7 @@ class CustomerSupportController extends BaseController {
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
-                    . "\n\n<hr>**Support Issue**"
                     . "{$thread}"
-                    . "\n\n<hr>{$ticket->message}"
                 , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false
