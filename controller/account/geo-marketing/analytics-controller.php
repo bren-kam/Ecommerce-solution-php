@@ -77,7 +77,7 @@ class AnalyticsController extends BaseController {
             ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'geo-marketing/analytics/index' )
-            ->kb( 0 )
+            ->kb( 154 )
             ->add_title( _('Dashboard') )
             ->menu_item( 'geo-marketing/analytics' )
             ->set( compact( 'start_date', 'end_date', 'reports', 'locations', 'location_id', 'has_analytics_data' ) );
