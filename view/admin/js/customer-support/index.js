@@ -178,7 +178,7 @@ var Ticket = {
             Ticket.container.find('#to-address').val(currentTicket.email);
 
             // Ticket Attachments --
-            $('#ticket-attachments').empty();
+            $('#ticket-attachments').empty().hide();
             if ( response.uploads ) {
                 for ( i in response.uploads ) {
                     var upload = response.uploads[i];
@@ -190,6 +190,7 @@ var Ticket = {
                                 .text(upload.name)
                         )
                     );
+                    $('#ticket-attachments').show();
                 }
             }
 
