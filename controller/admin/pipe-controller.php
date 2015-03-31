@@ -49,6 +49,32 @@ class PipeController extends BaseController {
         $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
         $to = $email['ExtractedAddresses']['to:'][0]['address'];
 
+        // attachments
+        $attachments = [];
+        $upload_dir = tempnam( sys_get_temp_dir(), 'customer-support' );
+        unlink($upload_dir);
+        if ( !is_dir( $upload_dir ) ) {
+            mkdir($upload_dir, 0777, true);
+        }
+        foreach($email['Parts'] as $part) {
+            //check for attachments
+            if($part['FileDisposition'] == 'attachment'){
+                //format file name (change spaces to underscore then remove anything that isn't a letter, number or underscore)
+                $filename = preg_replace('/[^0-9,a-z,\.,_]*/i','',str_replace(' ','_', $part['FileName']));
+
+                //write the data to the file
+                $attachment_path = $upload_dir . '/' . $filename;
+                $fp = fopen( $attachment_path, 'w');
+                $written = fwrite($fp,$part['Body']);
+                fclose($fp);
+
+                $attachments[] = [
+                    'path' => $attachment_path,
+                    'name' => $filename
+                ];
+            }
+        }
+
         // Ignore email from support, reply, no-reply, etc.
         $matches = [];
         if ( preg_match('/(support|noreply|no-reply|jira)@/i', $from, $matches) ) {
@@ -115,6 +141,31 @@ class PipeController extends BaseController {
             $ticket->website_id = $account ? $account->id : null;
             $ticket->create();
         }
+
+        // link attachments to ticket or comment
+        $file = new File( 'retailcatalog.us' );
+
+        $ticket_upload_ids = [];
+        foreach( $attachments as $attachment ) {
+            $ticket_upload = new TicketUpload();
+            $directory = $ticket->ticket_id . '/';
+            $file_name = $attachment['name'];
+            $ticket_upload->key = $directory . $file_name;
+            $ticket_upload->create();
+
+            $ticket_upload_ids[] = $ticket_upload->id;
+            $file->upload_file( $attachment['path'], $ticket_upload->key, 'attachments/' );
+        }
+
+        if ( $ticket_upload_ids ) {
+            $ticket_upload = new TicketUpload();
+            if ( isset($ticket_comment) ) {
+                $ticket_upload->add_comment_relations($ticket_comment->id, $ticket_upload_ids);
+            } else {
+                $ticket_upload->add_relations($ticket->id, $ticket_upload_ids);
+            }
+        }
+        @rmdir($upload_dir);
 
         return new HtmlResponse('');
     }
