@@ -1883,7 +1883,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
 
@@ -1926,7 +1926,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
 
@@ -1972,7 +1972,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
 
@@ -2018,7 +2018,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
 
@@ -2051,7 +2051,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge($cloudflare_zone_id);
         }
 
@@ -2270,7 +2270,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
@@ -2326,7 +2326,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
@@ -2360,7 +2360,7 @@ class WebsiteController extends BaseController {
 
         if ( $cloudflare_zone_id ) {
             library('cloudflare-api');
-            $cloudflare = new CloudFlareClientAPI($this->user->account);
+            $cloudflare = new CloudFlareAPI($this->user->account);
             $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/contact-us/' );
         }
 
@@ -2474,7 +2474,7 @@ class WebsiteController extends BaseController {
 
             if ( $cloudflare_zone_id ) {
                 library('cloudflare-api');
-                $cloudflare = new CloudFlareClientAPI($this->user->account);
+                $cloudflare = new CloudFlareAPI($this->user->account);
                 $cloudflare->purge_url( $cloudflare_zone_id, 'http://' . $this->user->account->domain . '/brand/' . $brand->slug . '/' );
             }
 

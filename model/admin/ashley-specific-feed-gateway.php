@@ -131,8 +131,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 echo "Running: " . $account->title . "\n";
                 $this->run($account, $file);
                 // Clear CloudFlare Cache
-                $cloudflare = new CloudFlareClientAPI( $account );
-                $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
+                $cloudflare = new CloudFlareAPI( $account );
+                $cloudflare_zone_id = $account->get_settings('cloudflare-zone-id');
 
                 if ($cloudflare_zone_id) {
                     $cloudflare->purge($cloudflare_zone_id);
