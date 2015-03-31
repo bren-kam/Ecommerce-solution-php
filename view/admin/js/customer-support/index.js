@@ -203,6 +203,8 @@ var Ticket = {
                 item.find('.comment-user-name').text(comment.name);
                 if ( comment.private == 1 ) {
                     item.find('.comment-user-name').prepend('<i class="fa fa-lock" title="This is a Note/Private Comment!"></i> ');
+                } else {
+                    item.find('.comment-to-address').parents('li:first').hide();
                 }
                 item.find('.comment-user-email').text('<' + comment.email + '>');
                 var toAddress = '';
@@ -215,7 +217,7 @@ var Ticket = {
                 if ( comment.bcc_address ) {
                     toAddress += '; bcc: ' + comment.bcc_address;
                 }
-                if ( toAddress && currentTicket.private == 0 ) {
+                if ( toAddress ) {
                     item.find('.comment-to-address').text(toAddress);
                     item.find('.comment-to-address').parents('li:first').show();
                 } else {
