@@ -112,10 +112,8 @@ class PipeController extends BaseController {
             $ticket_comment->to_address = $to;
             $ticket_comment->create();
 
-            if ( $ticket->status == Ticket::STATUS_CLOSED ) {
-                $ticket->status = Ticket::STATUS_OPEN;
-                $ticket->save();
-            }
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->save();
         } else {
             // We can't create a ticket if we can't assign to anybody
             if ( !$to_user->id ) {

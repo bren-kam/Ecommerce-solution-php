@@ -334,7 +334,7 @@ class CustomerSupportController extends BaseController {
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
                 $ticket_comment->to_address
-                , 'Ticket #' . $ticket->id . ' ' . $status . ' - ' . $ticket->summary
+                , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
                 , "{$ticket_comment->comment}"
                     . "{$attachments}"
                     . "{$thread}"
@@ -349,7 +349,7 @@ class CustomerSupportController extends BaseController {
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
             fn::mail(
                 $assigned_user->email
-                , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
+                , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
                 , "{$ticket_comment->comment}"
                     . "{$attachments}"
                     . "{$thread}"
