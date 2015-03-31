@@ -22,11 +22,13 @@ class CustomerSupportController extends BaseController {
             ->javascript_url( Config::resource('bootstrap-select-js'), Config::resource('typeahead-js'), Config::resource('handlebars-js') );
 
         $admin_users = $this->user->get_admin_users();
+        $account = new Account();
+        $accounts = $account->list_all([' AND a.status = 1 ', '', '', 9999]);
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')
             ->add_title('Customer Support')
-            ->set( compact('admin_users') );
+            ->set( compact('admin_users', 'accounts') );
     }
 
     /**
@@ -65,6 +67,10 @@ class CustomerSupportController extends BaseController {
         } else if ($_GET['assigned-to'] > 0) {
             $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ? ' AND c.`user_id` = ' . (int)$_GET['assigned-to'] : ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' )';
             $dt->add_where($assigned_to);
+        }
+
+        if ( $_GET['account'] ) {
+            $dt->add_where(' AND d.`website_id` = ' . (int)$_GET['account']);
         }
 
         /**
@@ -110,13 +116,25 @@ class CustomerSupportController extends BaseController {
                 $ticket->updated_ago = DateHelper::time_elapsed( $ticket->last_updated_at ) . ' by ' . $ticket->last_updated_by;
             }
 
+            // Check if user is attached to an account
+            $user = new User();
+            $user->get($ticket->user_id);
+            if ( $user->id ) {
+                $account = new Account();
+                $accounts = $account->get_by_user($user->id);
+                if ( empty($accounts) ) {
+                    $accounts = $account->get_by_authorized_user($user->id);
+                }
+                $ticket->user_has_account = !empty($accounts);
+            }
+
             // Ticket Attachments --
             $ticket_uploads = $tu->get_by_ticket( $ticket->id );
             $uploads = [];
             foreach( $ticket_uploads as $ticket_upload ) {
                 $uploads[] = [
-                    'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $ticket_upload->key
-                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $ticket_upload->key ) ) )
+                    'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $ticket_upload
+                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $ticket_upload ) ) )
                 ];
             }
 
@@ -139,7 +157,7 @@ class CustomerSupportController extends BaseController {
             }
 
             $response->add_response('ticket', $ticket);
-            $response->add_response('uploads', $ticket_uploads);
+            $response->add_response('uploads', $uploads);
             $response->add_response('comments', $comments);
         }
 
@@ -204,15 +222,16 @@ class CustomerSupportController extends BaseController {
      *
      * @return AjaxResponse
      */
-    protected function add_comment() {
+    protected function add_comment()
+    {
         // Verify the nonce
-        $response = new AjaxResponse( $this->verified() );
+        $response = new AjaxResponse($this->verified());
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_POST['comment'] ) && isset( $_POST['ticket-id'] ), _('Failed to add comment') );
+        $response->check(isset($_POST['comment']) && isset($_POST['ticket-id']), _('Failed to add comment'));
 
         // If there is an error or now user id, return
-        if ( $response->has_error() )
+        if ($response->has_error())
             return $response;
 
         // Initialize objects
@@ -223,53 +242,93 @@ class CustomerSupportController extends BaseController {
         $ticket_upload = new TicketUpload();
 
         // Get ticket
-        $ticket->get( $_POST['ticket-id'] );
+        $ticket->get($_POST['ticket-id']);
 
         // Get users
-        $ticket_creator->get( $ticket->user_id );
-        $assigned_user->get( $ticket->assigned_to_user_id );
-
-        // Set variables
-        $status = ( Ticket::STATUS_OPEN == $ticket->status ) ? ' (Open)' : ' (Closed)';
+        $ticket_creator->get($ticket->user_id);
+        $assigned_user->get($ticket->assigned_to_user_id);
 
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
         $ticket_comment->user_id = $this->user->user_id;
+        $ticket_comment->to_address = $_POST['to-address'];
+        $ticket_comment->cc_address = $_POST['cc-address'];
+        $ticket_comment->bcc_address = $_POST['bcc-address'];
         $ticket_comment->comment = trim($_POST['comment']);
-        $ticket_comment->private = (int) isset( $_POST['private'] );
+        $ticket_comment->private = (int)isset($_POST['private']);
 
         $ticket_comment->create();
 
+        // If they changed the To Address, we need to update Ticket Primary Contact
+        if ($ticket_comment->to_address != $ticket->email) {
+            $primary_contact = new User();
+            $primary_contact->get_by_email($ticket_comment->to_address);
+            if (!$primary_contact->id) {
+                $primary_contact->email = $ticket_comment->to_address;
+                $primary_contact->status = User::STATUS_ACTIVE;
+                $primary_contact->role = User::ROLE_AUTHORIZED_USER;
+                $primary_contact->company_id = $this->user->company_id;
+                $primary_contact->create();
+            }
+            $ticket->user_id = $primary_contact->id;
+            $ticket->save();
+        }
+
+        // Make ticket as In Progress
+        if ($ticket->status == Ticket::STATUS_OPEN) {
+            $ticket->status = Ticket::STATUS_IN_PROGRESS;
+            $ticket->save();
+        }
+
         // Handle attachments
-        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
-            $ticket_upload->add_comment_relations( $ticket_comment->id, $_POST['uploads'] );
+        if (isset($_POST['uploads']) && is_array($_POST['uploads']))
+            $ticket_upload->add_comment_relations($ticket_comment->id, $_POST['uploads']);
+
+        $status = '(Open)';
+        if (Ticket::STATUS_IN_PROGRESS == $ticket->status) {
+            $status = '(In Progress)';
+        } else if (Ticket::STATUS_CLOSED == $ticket->status) {
+            $status = '(Closed)';
+        }
+
+        $thread = '';
+        if ( $_POST['include-whole-thread'] ) {
+            $comments = $ticket_comment->get_by_ticket($ticket->id);
+            array_pop($comments);
+            $comments = array_reverse($comments);
+            foreach ( $comments as $c ) {
+                if ( $c->private == TicketComment::VISIBILITY_PUBLIC ) {
+                    $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
+                }
+            }
+            $thread .= "\n\n<br><br>On {$ticket->date_created} We wrote:\n<br>{$ticket->message}";
+        }
 
         // If it's not private, send an email to the client
-        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_OPEN == $ticket->status )
+        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
-                $ticket->email
-                , 'New Comment on Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
+                $ticket_comment->to_address
+                , 'Ticket #' . $ticket->id . ' ' . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
-                    . "\n\n<br><br>**Support Issue**"
-                    . "\n<br>{$ticket->message}"
+                    . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false
                 , false
+                , $ticket_comment->cc_address
+                , $ticket_comment->bcc_address
             );
-
         // Send the assigned user an email if they are not submitting the comment
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
             fn::mail(
                 $assigned_user->email
-                , 'New Comment on Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
+                , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                     . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
                     . "\n\n<br><br>{$ticket_comment->comment}"
-                    . "\n\n<br><br>**Support Issue**"
-                    . "\n<br>{$ticket->message}"
+                    . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
                 , false
@@ -350,6 +409,84 @@ class CustomerSupportController extends BaseController {
     }
 
     /**
+     * Update ticket status
+     *
+     * @return AjaxResponse
+     */
+    protected function update_status() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['status'] ), _('Failed to update status') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change status
+        $ticket->status = $_POST['status'];
+
+        // Update ticket
+        $ticket->save();
+
+        // Mark statistic for updated tickets if it's a GSR user
+        if ( Ticket::STATUS_CLOSED == $ticket->status && in_array( $this->user->id, array( User::TECHNICAL, User::KERRY, User::RODRIGO, User::MANINDER, User::RAFFERTY ) ) ) {
+            // Load library
+            library('statistics-api');
+            $stat = new Stat_API( Config::key('rs-key') );
+
+            // Get the dates
+            $date = new DateTime();
+            $ticket_date = new DateTime( $ticket->date_created );
+
+            // Add the value of a completed ticket
+            $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
+
+            // Add the average ticket time
+            $hours = ( $date->getTimestamp() - $ticket_date->getTimestamp() ) / 3600;
+            $stat->add_graph_value( 23453, round( $hours, 1 ), $date->format('Y-m-d')  );
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * Update the priority of a ticket
+     *
+     * @return AjaxResponse
+     */
+    protected function update_priority() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['priority'] ), _('Failed to update priority') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change priority
+        $ticket->priority = $_POST['priority'];
+
+        // Update ticket
+        $ticket->save();
+
+        return $response;
+    }
+
+
+    /**
      * Upload an attachment to comment
      *
      * @return AjaxResponse
@@ -420,7 +557,7 @@ class CustomerSupportController extends BaseController {
         $ajax_response = new AjaxResponse( $this->verified() );
 
         $user = new User();
-        $users = $user->list_all([" AND email LIKE '%{$_GET['term']}%' OR contact_name LIKE '%{$_GET['term']}%' ", '', '', 9999]);
+        $users = $user->list_all([" AND (u.email LIKE '%{$_GET['term']}%' OR u.contact_name LIKE '%{$_GET['term']}%' OR w.title LIKE '%{$_GET['term']}%') ", '', '', 9999]);
 
         $results = [];
         foreach ( $users as $user ) {
@@ -428,6 +565,7 @@ class CustomerSupportController extends BaseController {
                 'id' => $users->id
                 , 'contact_name' => $user->contact_name
                 , 'email' => $user->email
+                , 'main_website' => $user->main_website
             ];
         }
 
@@ -460,15 +598,18 @@ class CustomerSupportController extends BaseController {
         $user = new User();
         $user->get_by_email($_POST['to']);
         if ( !$user->id ) {
-            $response->notify("Can't find a user using the address '{$_POST['to']}'");
-            return $response;
+            $user->email = $_POST['to'];
+            $user->status = User::STATUS_ACTIVE;
+            $user->role = User::ROLE_AUTHORIZED_USER;
+            $user->company_id = $this->user->company_id;
+            $user->create();
         }
 
         // Get browser information
         $browser = fn::browser();
 
         // Set ticket information
-        $ticket->user_id = $this->user->id;
+        $ticket->user_id = $user->id;
         $ticket->assigned_to_user_id = $this->user->id;  // Send a message, but assign ticket to self
         $ticket->website_id = 0; // Admin side -- no website
         $ticket->summary = $_POST['summary'];
@@ -499,19 +640,47 @@ class CustomerSupportController extends BaseController {
         // Add the value of a new ticket
         $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
 
-        fn::mail(
-            $user->email
-            , 'New Ticket #' . $ticket->id . ' - ' . $ticket->summary
-            , "******************* Reply Above This Line *******************"
-                . "\n\n<br><br>{$ticket->message}"
-            , $this->user->company . ' <support@' . url::domain( $this->user->domain, false ) . '>'
-            , $this->user->contact_name . ' <' . $this->user->email . '>'
-            , false
-            , false
+        $response->notify( "Message Created" );
+        $response->add_response('id', $ticket->id);
+        return $response;
+    }
+
+    public function attach_user_to_account() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['account_id'] ), _('Failed to update Account') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        $user = new User();
+        $user->get($ticket->user_id);
+
+        $account = new Account();
+        $account->get($_POST['account_id']);
+
+        $auth_user_website = new AuthUserWebsite();
+        $auth_user_website->add(
+            $user->contact_name
+            , $user->email
+            , $account->id
+            , 0
+            , 0
+            , 0
+            , 0
+            , 0
+            , 0
+            , User::ROLE_AUTHORIZED_USER
         );
 
-        $response->notify( "Message sent to '{$_POST['to']}'" );
-        $response->add_response('id', $ticket->id);
+        $response->notify("User {$user->email} attached to {$account->title}.");
         return $response;
     }
 

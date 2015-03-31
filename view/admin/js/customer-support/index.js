@@ -9,10 +9,11 @@ var InboxNavigation = {
         $('#inbox-nav-template').remove();
 
         $('#search').keyup( InboxNavigation.getTickets );
-        InboxNavigation.getTickets();
-
         $('#filter-status').change(InboxNavigation.getTickets);
         $('#filter-assigned-to').change(InboxNavigation.getTickets);
+        $('#filter-account').change(InboxNavigation.getTickets);
+
+        InboxNavigation.getTickets();
 
         // Event when selecting a Ticket
         InboxNavigation.container.on('click', '.show-ticket', function() {
@@ -38,6 +39,7 @@ var InboxNavigation = {
                 , search: $('#search').val()
                 , status: $('#filter-status').val()
                 , "assigned-to": $('#filter-assigned-to').val()
+                , account: $('#filter-account').val()
             }
             , InboxNavigation.loadTickets
         );
@@ -65,6 +67,13 @@ var InboxNavigation = {
                 } else if ( ticket.priority == 0 ) {  // Low Priority
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-open"></i> ');
                 }
+                if ( ticket.status == 0 ) { // Open
+                    item.find('.email-status').text('Open');
+                } else if ( ticket.status == 1 ) { // Closed
+                    item.find('.email-status').text('Closed');
+                } else if ( ticket.status == 2 ) { // In Progress
+                    item.find('.email-status').text('In Progress');
+                }
 
                 InboxNavigation.container.append(item);
             }
@@ -85,7 +94,12 @@ var Ticket = {
         Ticket.commentTemplate = Ticket.container.find('#ticket-comment-template').clone().removeClass('hidden').removeAttr('id');
 
         // $('#assign-to').change(Ticket.assignTo);
-        $(Ticket.container).on('click', '.selectpicker li a', Ticket.assignTo);
+        $(Ticket.container.find('.assign-to-container')).on('click', '.selectpicker li a', Ticket.assignTo);
+        $(Ticket.container.find('.change-status-container')).on('click', '.selectpicker li a', Ticket.changeStatus);
+        $(Ticket.container.find('.change-priority-container')).on('click', '.selectpicker li a', Ticket.changePriority);
+        $(Ticket.container.find('.attach-to-account-container')).on('click', '.selectpicker li a', Ticket.attachUserToAccount);
+
+        $('#to-address').tooltip({'trigger':'focus', 'title': 'Changing this will update the Ticket Primary Contact'});
     }
 
     , show: function(ticketId) {
@@ -121,26 +135,26 @@ var Ticket = {
                 statusText = 'Closed';
             }
 
-            var priorityText = '';
-            if (currentTicket.priority == 2) {
-                priorityText = 'Urgent';
-            } else if (currentTicket.priority == 1) {
-                priorityText = 'High Priority'
-            } else if (currentTicket.priority == 0) {
-                priorityText = 'Low'
-            }
-
             Ticket.container.data('ticket-id', currentTicket.id);
             Ticket.container.find('#ticket-id').val(currentTicket.id);  // For Comment Form
-            Ticket.container.find('#assign-to').selectpicker('val', currentTicket.assigned_to_user_id);
-            Ticket.container.find('.ticket-status').text(statusText + (priorityText ? ' - ' + priorityText : ''));
             if ( currentTicket.priority == 2 ) {  // Urgent
-                Ticket.container.find('.ticket-status').prepend('<i class="fa fa-circle ticket-urgent"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-urgent" title="Urgent Issue"></i> ');
             } else if ( currentTicket.priority == 1 ) {  // High Priority
-                Ticket.container.find('.ticket-status').prepend('<i class="fa fa-circle ticket-high"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-high" title="High Priority"></i> ');
             } else if ( currentTicket.status == 0 ) {  // Open
-                Ticket.container.find('.ticket-status').prepend('<i class="fa fa-circle ticket-open"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-open" title="Low Priority"></i> ');
             }
+
+            Ticket.container.find('#assign-to').selectpicker('val', currentTicket.assigned_to_user_id);
+            Ticket.container.find('#change-status').selectpicker('val', currentTicket.status);
+            Ticket.container.find('#change-priority').selectpicker('val', currentTicket.priority);
+            if ( currentTicket.user_has_account ) {
+                Ticket.container.find('.attach-to-account-container').hide();
+            } else {
+                Ticket.container.find('.attach-to-account-container').show();
+                Ticket.container.find('#attach-to-account').selectpicker('val', '');
+            }
+
 
             Ticket.container.find('.ticket-summary').text(currentTicket.summary);
             Ticket.container.find('.ticket-user-name').text(currentTicket.name);
@@ -161,10 +175,13 @@ var Ticket = {
 
             Ticket.container.find('.ticket-message').html(currentTicket.message);
 
+            Ticket.container.find('#to-address').val(currentTicket.email);
+
             // Ticket Attachments --
-            if ( currentTicket.uploads ) {
-                for ( i in currentTicket.uploads ) {
-                    var upload = currentTicket.uploads[i];
+            $('#ticket-attachments').empty();
+            if ( response.uploads ) {
+                for ( i in response.uploads ) {
+                    var upload = response.uploads[i];
                     $('#ticket-attachments').append(
                         $('<li />').append(
                             $('<a />')
@@ -188,6 +205,23 @@ var Ticket = {
                     item.find('.comment-user-name').prepend('<i class="fa fa-lock" title="This is a Note/Private Comment!"></i> ');
                 }
                 item.find('.comment-user-email').text('<' + comment.email + '>');
+                var toAddress = '';
+                if ( comment.to_address ) {
+                    toAddress += comment.to_address;
+                }
+                if ( comment.cc_address ) {
+                    toAddress += '; cc: ' + comment.cc_address;
+                }
+                if ( comment.bcc_address ) {
+                    toAddress += '; bcc: ' + comment.bcc_address;
+                }
+                if ( toAddress ) {
+                    item.find('.comment-to-address').text(toAddress);
+                    item.find('.comment-to-address').parents('li:first').show();
+                } else {
+                    item.find('.comment-to-address').parents('li:first').hide();
+                }
+
                 item.find('.comment-created-ago').text(comment.created_ago);
                 item.find('.comment-message').html(comment.comment);
 
@@ -209,11 +243,12 @@ var Ticket = {
                 Ticket.commentsContainer.append(item);
             }
 
+            TicketCommentForm.reset();
+
         }
     }
 
     , assignTo: function() {
-        // First Attempt: <select> value
         var userId = $('#assign-to').val();
 
         $.post(
@@ -231,6 +266,70 @@ var Ticket = {
             }
         );
 
+    }
+
+    , changeStatus: function() {
+        var status = $('#change-status').val();
+
+        $.post(
+            '/customer-support/update-status/'
+            , {
+                _nonce : $('#update-status-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , status : status
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                    if ( status == 1 ) {  // closed
+                        $('#compose').click();
+                    } else {
+                        Ticket.reload();
+                    }
+                }
+            }
+        );
+    }
+
+    , changePriority: function() {
+        var priority = $('#change-priority').val();
+
+        $.post(
+            '/customer-support/update-priority/'
+            , {
+                _nonce : $('#update-priority-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , priority : priority
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                    Ticket.reload();
+                }
+            }
+        );
+    }
+
+    , attachUserToAccount: function() {
+        var account = $('#attach-to-account').val();
+
+        $.post(
+            '/customer-support/attach-user-to-account/'
+            , {
+                _nonce : $('#attach-user-to-account-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , account_id : account
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                    Ticket.reload();
+                }
+            }
+        );
     }
 
 
@@ -263,7 +362,10 @@ var TicketCommentForm = {
     }
 
     , add: function() {
-        var form = $('#add-comment-form');
+        var form = $('#send-comment-form');
+        for (var i in CKEDITOR.instances) {
+            CKEDITOR.instances[i].updateElement();
+        }
         $.post(
             '/customer-support/add-comment/'
             , form.serialize()
@@ -276,6 +378,14 @@ var TicketCommentForm = {
         GSR.defaultAjaxResponse( response );
         if ( response.success ) {
             Ticket.reload();
+        }
+    }
+
+    , reset: function() {
+        // Reset Comment Form
+        $('#cc-address, #bcc-address').val('');
+        for (var i in CKEDITOR.instances) {
+            CKEDITOR.instances[i].setData('');
         }
     }
 
@@ -390,7 +500,6 @@ var NewTicketForm = {
 
     , add: function(e) {
         var form = $('#new-ticket-form');
-        form.find('#message').val(CKEDITOR.instances.message.getData());
         $.post(
             '/customer-support/create-ticket/'
             , form.serialize()
@@ -495,7 +604,7 @@ var NewTicketForm = {
                         'Unable to find any User with that email',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<p><strong>{{contact_name}}</strong> &lt;{{email}}&gt;</p>')
+                    suggestion: Handlebars.compile('<p><strong>{{contact_name}}</strong> &lt;{{email}}&gt; - {{main_website}}</p>')
                 }
             })
             .unbind('typeahead:selected')

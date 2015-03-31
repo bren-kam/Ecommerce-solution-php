@@ -47,9 +47,10 @@
       border: none;
       background: inherit;
       color: #fff;
-      padding: 8px 14px;
+      padding: 4px 14px;
       border-radius: 4px;
       -webkit-border-radius: 4px;
+      font-size: 1.6em;
     }
   }
 
@@ -73,6 +74,9 @@
               width: auto;
               line-height: 1.42857143; /* Bootstrap Default */
               display: list-item;
+              i {
+                padding-right: 0;
+              }
             }
           }
 
@@ -89,6 +93,9 @@
         .email-address {
           color: #777;
         }
+        .email-status {
+          margin: 0;
+        }
 
       }
 
@@ -103,13 +110,22 @@
       color: #333;
       background: #F0F0F0;
       padding-top: 20px;
-      font-size: 16px;
+      font-size: 13px;
+      border-top: 1px solid #ddd;
+      border-right: 1px solid #ddd;
       i {
         margin-right: 5px;
       }
       .pull-left {
         margin-right: 15px;
       }
+    }
+
+    .ticket-message {
+      font-size: 13px;
+      background-color: #f3f3f3;
+      padding: 20px 35px;
+      margin: 0 -20px;
     }
 
     #ticket-comments {
@@ -159,6 +175,12 @@
         .caret {
           right: 0px!important;
         }
+      }
+    }
+
+    .attach-to-account-container {
+      button, button:hover {
+        font-weight: normal!important;
       }
     }
 

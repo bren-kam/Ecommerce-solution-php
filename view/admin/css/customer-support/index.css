@@ -45,9 +45,10 @@
   border: none;
   background: inherit;
   color: #fff;
-  padding: 8px 14px;
+  padding: 4px 14px;
   border-radius: 4px;
   -webkit-border-radius: 4px;
+  font-size: 1.6em;
 }
 .mail-box ul.inbox-nav {
   height: 700px;
@@ -73,6 +74,9 @@
   /* Bootstrap Default */
   display: list-item;
 }
+.mail-box ul.inbox-nav > .inbox-nav-item a .inbox-nav-item-details ul li i {
+  padding-right: 0;
+}
 .mail-box ul.inbox-nav > .inbox-nav-item a .select-ticket {
   padding: 20px 15px 0 10px;
 }
@@ -83,6 +87,9 @@
 .mail-box ul.inbox-nav > .inbox-nav-item a .email-address {
   color: #777;
 }
+.mail-box ul.inbox-nav > .inbox-nav-item a .email-status {
+  margin: 0;
+}
 .mail-box ul.inbox-nav > .inbox-nav-item:nth-child(even) {
   background-color: #f3f3f3;
 }
@@ -90,13 +97,21 @@
   color: #333;
   background: #F0F0F0;
   padding-top: 20px;
-  font-size: 16px;
+  font-size: 13px;
+  border-top: 1px solid #ddd;
+  border-right: 1px solid #ddd;
 }
 .mail-box .lg-side .inbox-head i {
   margin-right: 5px;
 }
 .mail-box .lg-side .inbox-head .pull-left {
   margin-right: 15px;
+}
+.mail-box .lg-side .ticket-message {
+  font-size: 13px;
+  background-color: #f3f3f3;
+  padding: 20px 35px;
+  margin: 0 -20px;
 }
 .mail-box .lg-side #ticket-comments .comment {
   padding-left: 35px;
@@ -145,6 +160,10 @@
 .mail-box .lg-side .bootstrap-select button:active .caret,
 .mail-box .lg-side .bootstrap-select button:focus .caret {
   right: 0px!important;
+}
+.mail-box .lg-side .attach-to-account-container button,
+.mail-box .lg-side .attach-to-account-container button:hover {
+  font-weight: normal!important;
 }
 .mail-box .lg-side .twitter-typeahead {
   width: 100%;

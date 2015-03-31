@@ -32,8 +32,13 @@ class PipeController extends BaseController {
         // Get data
         $subject = $email['Headers']['subject:'];
         $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
-        $body = nl2br( substr( $body, 0, strpos( $body, '******************* Reply Above This Line *******************' ) ) );
+        $reply_above_this_line = strpos( $body, '******************* Reply Above This Line *******************' );
+        if ( $reply_above_this_line ) {
+            $body = substr($body, 0, $reply_above_this_line);
+            $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
+        }
         $body = trim($body);
+        $body = nl2br($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
         $from = $email['ExtractedAddresses']['from:'][0]['address'];
         $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
@@ -42,7 +47,7 @@ class PipeController extends BaseController {
         // Ignore email from support, reply, no-reply, etc.
         $matches = [];
         if ( preg_match('/(support|noreply|no-reply|jira)@/i', $from, $matches) ) {
-            return;
+            return new HtmlResponse("Ignoring email from '{$from}'");
         }
 
         // Get Ticket
@@ -63,6 +68,7 @@ class PipeController extends BaseController {
             $from_user->contact_name = $from_name;
             $from_user->role = User::ROLE_AUTHORIZED_USER;
             $from_user->status = User::STATUS_ACTIVE;
+            $from_user->company_id = 1;
             $from_user->create();
         }
 
@@ -72,11 +78,12 @@ class PipeController extends BaseController {
             $ticket_comment->ticket_id = $ticket->id;
             $ticket_comment->user_id = $from_user->user_id;
             $ticket_comment->comment = $body;
+            $ticket_comment->to_address = $to;
             $ticket_comment->create();
         } else {
             // We can't create a ticket if we can't assign to anybody
             if ( !$to_user->id ) {
-                return;
+                return new HtmlResponse("We can't create a ticket if we can't assign to anybody '{$to}'");
             }
 
             // Try to guess the Account
@@ -98,6 +105,8 @@ class PipeController extends BaseController {
             $ticket->website_id = $account ? $account->id : null;
             $ticket->create();
         }
+
+        return new HtmlResponse('');
     }
 
     /**

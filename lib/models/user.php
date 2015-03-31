@@ -35,7 +35,7 @@ class User extends ActiveRecordBase {
     public $phone;
 
     // These columns belong to another table but might be available from the user
-    public $company, $domain, $accounts;
+    public $company, $domain, $accounts, $main_website;
 
     /**
      * Holds the account if it has it
@@ -292,7 +292,7 @@ class User extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        return $this->prepare( "SELECT `user_id`, `email`, `contact_name`, `role` FROM `users` WHERE `status` <> " . self::STATUS_INACTIVE . " $where $order_by LIMIT $limit"
+        return $this->prepare( "SELECT u.`user_id`, u.`email`, u.`contact_name`, u.`role`, w.`title` as main_website FROM `users` u LEFT JOIN `websites` w ON u.`user_id` = w.`user_id` WHERE u.`status` <> " . self::STATUS_INACTIVE . " $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'User' );
