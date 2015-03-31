@@ -178,7 +178,7 @@ var Ticket = {
             Ticket.container.find('#to-address').val(currentTicket.email);
 
             // Ticket Attachments --
-            $('#ticket-attachments').empty();
+            $('#ticket-attachments').empty().hide();
             if ( response.uploads ) {
                 for ( i in response.uploads ) {
                     var upload = response.uploads[i];
@@ -190,6 +190,7 @@ var Ticket = {
                                 .text(upload.name)
                         )
                     );
+                    $('#ticket-attachments').show();
                 }
             }
 
@@ -203,6 +204,8 @@ var Ticket = {
                 item.find('.comment-user-name').text(comment.name);
                 if ( comment.private == 1 ) {
                     item.find('.comment-user-name').prepend('<i class="fa fa-lock" title="This is a Note/Private Comment!"></i> ');
+                } else {
+                    item.find('.comment-to-address').parents('li:first').hide();
                 }
                 item.find('.comment-user-email').text('<' + comment.email + '>');
                 var toAddress = '';
@@ -384,6 +387,7 @@ var TicketCommentForm = {
     , reset: function() {
         // Reset Comment Form
         $('#cc-address, #bcc-address').val('');
+        $('#file-list').empty();
         for (var i in CKEDITOR.instances) {
             CKEDITOR.instances[i].setData('');
         }
@@ -451,6 +455,18 @@ var TicketCommentForm = {
                 .attr( 'type', 'hidden' )
                 .attr( 'name', 'uploads[]' )
                 .val( response.id )
+                .appendTo( fileItem );
+
+            $('<input />')
+                .attr( 'type', 'hidden' )
+                .attr( 'name', 'upload-names['+ response.id +'][name]' )
+                .val( filename )
+                .appendTo( fileItem );
+
+            $('<input />')
+                .attr( 'type', 'hidden' )
+                .attr( 'name', 'upload-names['+ response.id +'][url]' )
+                .val( response.url )
                 .appendTo( fileItem );
 
             fileItem.appendTo( '#file-list' );

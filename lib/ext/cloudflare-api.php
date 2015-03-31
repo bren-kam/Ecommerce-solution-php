@@ -138,11 +138,16 @@ class CloudFlareAPI {
      *
      * @date 2/23/2015
      *
-     * @return bool
+     * @param int $per_page [optional]
+     * @param int $page [optional]
+     * @return array
      */
-    public function list_zones() {
-        $this->execute( self::HEADER_TYPE_GET, 'zones' );
-
+    public function list_zones( $per_page = 20, $page = 1 ) {
+        $this->execute( self::HEADER_TYPE_GET, 'zones', array(
+			'per_page' => $per_page
+			, 'page' => $page
+		));
+		
         return $this->response->result;
     }
 
@@ -169,7 +174,7 @@ class CloudFlareAPI {
      * @return bool
      */
     public function purge( $zone_id ) {
-        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id, array(
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id . '/purge_cache', array(
             'purge_everything' => true
         ) );
 
@@ -186,7 +191,7 @@ class CloudFlareAPI {
      * @return bool
      */
     public function purge_url( $zone_id, $url ) {
-        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id, array(
+        $this->execute( self::HEADER_TYPE_DELETE, 'zones/' . $zone_id . '/purge_cache', array(
             'files' => $url
         ) );
 
@@ -407,8 +412,13 @@ class CloudFlareAPI {
 		$this->request = json_encode( $params );
 		
 		$url = self::URL;
+		$url .= $method;
+		
+		if ( $type == self::HEADER_TYPE_GET && !empty( $params ) )
+			$url .= '?' . http_build_query( $params );
+			
         curl_setopt( $ch, CURLOPT_FORBID_REUSE, true );
-        curl_setopt( $ch, CURLOPT_URL, $url . $method );
+        curl_setopt( $ch, CURLOPT_URL, $url );
         curl_setopt( $ch, CURLOPT_POST, 1 );
         curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, $type );
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array(

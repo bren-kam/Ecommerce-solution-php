@@ -129,7 +129,7 @@ nonce::field('add_auto_price', '_add_auto_price');
                             <td>
                                 <select id="category-id" class="form-control">
                                     <?php foreach ( $categories as $category ): ?>
-                                        <option value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                        <option value="<?php echo $category->id; ?>"><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </td>

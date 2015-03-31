@@ -127,11 +127,11 @@
 .mail-box .lg-side #ticket-comments .comment .comment-attachments a {
   color: #b64c4c;
 }
-.mail-box .lg-side .ticket-message {
-  margin-bottom: 25px;
-}
 .mail-box .lg-side #ticket-attachments {
   margin-bottom: 25px;
+  padding: 20px 35px;
+  margin: 0 -20px;
+  background-color: #f3f3f3;
 }
 .mail-box .lg-side #ticket-attachments a {
   color: #b64c4c;

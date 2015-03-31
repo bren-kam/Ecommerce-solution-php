@@ -187,6 +187,10 @@ class FeedApiRequest {
         extract( $this->get_parameters( 'start_date', 'end_date', 'starting_point', 'limit', 'ashley_id' ) );
 
         $product = new Product();
+
+        if ( !empty( $ashley_id ) )
+            $ashley_id = security::encrypt( 'CE_' . $ashley_id . '-', ENCRYPTION_KEY, true );
+
     	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit, $ashley_id );
 
 		if ( is_array( $products ) )

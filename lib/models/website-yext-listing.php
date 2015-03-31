@@ -57,6 +57,8 @@ class WebsiteYextListing extends ActiveRecordBase {
 
         $rows = [];
         foreach ( $listings as $listing ) {
+            if ( $listing->siteId == 'GOOGLE' || $listing->siteId == 'FACEBOOK')
+                continue;
             $rows[] = "( $account_id, '{$listing->locationId}', " . $this->quote($listing->siteId) . ", '{$listing->status}', " . $this->quote($listing->url) . ", " . $this->quote($listing->screenshotUrl) . " )";
         }
 

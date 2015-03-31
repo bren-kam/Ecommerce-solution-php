@@ -23,7 +23,7 @@ class CustomerSupportController extends BaseController {
 
         $admin_users = $this->user->get_admin_users();
         $account = new Account();
-        $accounts = $account->list_all([' AND a.status = 1 ', '', '', 9999]);
+        $accounts = $account->list_all([' AND a.status = 1 ', '', ' ORDER BY a.title ', 9999]);
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')
@@ -110,7 +110,8 @@ class CustomerSupportController extends BaseController {
             // Ticket --
             $ticket->get($_GET['id']);
 
-            $ticket->created_ago = DateHelper::time_elapsed( $ticket->date_created );
+            $date_created = new DateTime($ticket->date_created);
+            $ticket->created_ago = $date_created->format("D n/j/Y g:i A");
             $ticket->updated_ago = 'Never';
             if ( $ticket->last_updated_at ) {
                 $ticket->updated_ago = DateHelper::time_elapsed( $ticket->last_updated_at ) . ' by ' . $ticket->last_updated_by;
@@ -144,7 +145,8 @@ class CustomerSupportController extends BaseController {
             $comment_uploads = $tu->get_by_comments($ticket->id);
 
             foreach ( $comment_array as $comment ) {
-                $comment->created_ago = DateHelper::time_elapsed( $comment->date_created );
+                $date_created = new DateTime($comment->date_created);
+                $comment->created_ago = $date_created->format("D n/j/Y g:i A");
                 $comment->uploads = [];
                 $comments[$comment->ticket_comment_id] = $comment;
             }
@@ -294,24 +296,47 @@ class CustomerSupportController extends BaseController {
         $thread = '';
         if ( $_POST['include-whole-thread'] ) {
             $comments = $ticket_comment->get_by_ticket($ticket->id);
-            array_pop($comments);
-            $comments = array_reverse($comments);
+            array_shift($comments);
             foreach ( $comments as $c ) {
                 if ( $c->private == TicketComment::VISIBILITY_PUBLIC ) {
-                    $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
+                    $date = new DateTime($c->date_created);
+                    $date_str = $date->format("D n/j/Y g:i A");
+                    $thread .= "\n\n<br><br>On {$date_str} {$c->name} wrote:\n<br>{$c->comment}";
+
+                    $uploads = $ticket_upload->get_by_comment($c->ticket_comment_id);
+                    foreach ( $uploads as $upload ) {
+                        $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}";
+                        $name = ucwords( str_replace( '-', ' ', f::name( $upload->key ) ) );
+                        $thread .= "\n<br><a href=\"{$link}\">{$name}</a>";
+                    }
                 }
             }
-            $thread .= "\n\n<br><br>On {$ticket->date_created} We wrote:\n<br>{$ticket->message}";
+            $date = new DateTime($ticket->date_created);
+            $date_str = $date->format("D n/j/Y g:i A");
+            $thread .= "\n\n<br><br>On {$date_str} {$ticket->name} wrote:\n<br>{$ticket->message}";
+
+            $uploads = $ticket_upload->get_by_ticket($ticket->id);
+            foreach ( $uploads as $upload ) {
+                $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload}";
+                $name = ucwords( str_replace( '-', ' ', f::name( $upload ) ) );
+                $thread .= "\n<br><a href=\"{$link}\">{$name}</a>";
+            }
+        }
+
+        $attachments = '';
+        if (isset( $_POST['upload-names'] )) {
+            foreach ( $_POST['upload-names'] as $un ) {
+                $attachments .= "\n<br><a href=\"{$un['url']}\">{$un['name']}</a>";
+            }
         }
 
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
                 $ticket_comment->to_address
-                , 'Ticket #' . $ticket->id . ' ' . $status . ' - ' . $ticket->summary
-                , "******************* Reply Above This Line *******************"
-                    . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
-                    . "\n\n<br><br>{$ticket_comment->comment}"
+                , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
+                , "{$ticket_comment->comment}"
+                    . "{$attachments}"
                     . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
@@ -324,10 +349,9 @@ class CustomerSupportController extends BaseController {
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
             fn::mail(
                 $assigned_user->email
-                , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
-                , "******************* Reply Above This Line *******************"
-                    . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
-                    . "\n\n<br><br>{$ticket_comment->comment}"
+                , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
+                , "{$ticket_comment->comment}"
+                    . "{$attachments}"
                     . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
@@ -596,8 +620,11 @@ class CustomerSupportController extends BaseController {
         }
 
         $user = new User();
-        $user->get_by_email($_POST['to']);
-        if ( !$user->id ) {
+        $user->get_by_email($_POST['to'], false);
+        if ( $user->id && $user->status == User::STATUS_INACTIVE ) {
+            $user->status = User::STATUS_ACTIVE;
+            $user->save();
+        } else if ( !$user->id ) {
             $user->email = $_POST['to'];
             $user->status = User::STATUS_ACTIVE;
             $user->role = User::ROLE_AUTHORIZED_USER;
@@ -678,7 +705,11 @@ class CustomerSupportController extends BaseController {
             , 0
             , 0
             , User::ROLE_AUTHORIZED_USER
+            , false
         );
+
+        $ticket->website_id = $_POST['account_id'];
+        $ticket->save();
 
         $response->notify("User {$user->email} attached to {$account->title}.");
         return $response;

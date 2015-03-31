@@ -66,6 +66,7 @@ $reach->get_info();
                         <div class="form-group">
                             <label for="assigned-to">Assigned To:</label>
                             <select id="assigned-to" class="form-control">
+                                <option value="0" <?php if( $reach->assigned_to_user_id == 0 ) echo 'selected' ?>>Unassigned</option>
                                 <?php foreach ( $assignable_users as $au ): ?>
                                     <option value="<?php echo $au->id ?>" <?php if( $reach->assigned_to_user_id == $au->id ) echo 'selected' ?>><?php echo $au->contact_name ?></option>
                                 <?php endforeach; ?>
