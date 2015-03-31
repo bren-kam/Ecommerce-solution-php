@@ -8,6 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var Brand[] $top_brands
+ * @var int $link_brands
  */
 nonce::field( 'autocomplete', '_autocomplete' );
 nonce::field( 'add_brand', '_add_brand' );
@@ -31,7 +32,7 @@ nonce::field( 'set_brand_link', '_set_brand_link' );
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="brand-link" value="1" <?php if ( $user->account->link_brands ) echo "checked"; ?>/>
+                            <input type="checkbox" id="brand-link" value="1" <?php if ( $link_brands ) echo "checked"; ?>/>
                             Link to Brand Websites
                         </label>
                     </div>
