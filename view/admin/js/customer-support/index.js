@@ -386,6 +386,7 @@ var TicketCommentForm = {
     , reset: function() {
         // Reset Comment Form
         $('#cc-address, #bcc-address').val('');
+        $('#file-list').empty();
         for (var i in CKEDITOR.instances) {
             CKEDITOR.instances[i].setData('');
         }

@@ -160,9 +160,9 @@ class SmController extends BaseController {
      * @return RedirectResponse
      */
     public function facebook_callback() {
-        library('facebook_v4/facebook');
-
         try {
+            library('facebook_v4/facebook');
+
             Facebook\FacebookSession::setDefaultApplication( Config::key( 'facebook-key' ) , Config::key( 'facebook-secret' ) );
             $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
 
@@ -177,6 +177,30 @@ class SmController extends BaseController {
 
             $token = $session->getToken();
             $me = $response->getGraphObject()->asArray();
+
+            $website_sm_account = new WebsiteSmAccount();
+            $website_sm_account->get_by_sm_reference_id( 'facebook', $me['id'], $_SESSION['sm-callback-website-id'] );
+            if ( !$website_sm_account->id ) {
+                $website_sm_account->website_id = $_SESSION['sm-callback-website-id'];
+                $website_sm_account->sm = 'facebook';
+                $website_sm_account->sm_reference_id = $me['id'];
+                $website_sm_account->title = $me['name'];
+                $website_sm_account->photo = '';
+                $website_sm_account->create();
+                $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+                $this->log( 'facebook-connected', $this->user->contact_name . ' connected to Facebook on ' . $this->user->account->title );
+            } else {
+                $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
+                $this->log( 'facebook-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
+            }
+            $website_sm_account->auth_information_array = [
+                'access-token' => $token
+                , 'me' => $me
+            ];
+            $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
+            $website_sm_account->save();
+
+            url::redirect( 'http://' . url::domain( $_SESSION['sm-callback-referer'] ) . '/sm/settings/?id=' . $website_sm_account->id );
         } catch(FacebookRequestException $ex) {
             $this->notify( 'There was an error connecting with Facebook: ' . $ex->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
@@ -184,30 +208,6 @@ class SmController extends BaseController {
             $this->notify( 'There was an error connecting with Facebook: ' . $ex->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
         }
-
-        $website_sm_account = new WebsiteSmAccount();
-        $website_sm_account->get_by_sm_reference_id( 'facebook', $me['id'], $_SESSION['sm-callback-website-id'] );
-        if ( !$website_sm_account->id ) {
-            $website_sm_account->website_id = $_SESSION['sm-callback-website-id'];
-            $website_sm_account->sm = 'facebook';
-            $website_sm_account->sm_reference_id = $me['id'];
-            $website_sm_account->title = $me['name'];
-            $website_sm_account->photo = '';
-            $website_sm_account->create();
-            $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
-            $this->log( 'facebook-connected', $this->user->contact_name . ' connected to Facebook on ' . $this->user->account->title );
-        } else {
-            $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
-            $this->log( 'facebook-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
-        }
-        $website_sm_account->auth_information_array = [
-            'access-token' => $token
-            , 'me' => $me
-        ];
-        $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
-        $website_sm_account->save();
-
-        url::redirect( 'http://' . url::domain( $_SESSION['sm-callback-referer'] ) . '/sm/settings/?id=' . $website_sm_account->id );
     }
 
     /**
@@ -233,10 +233,9 @@ class SmController extends BaseController {
      * @return RedirectResponse
      */
     public function twitter_callback() {
-        library('twitteroauth/autoload');
-
-
         try {
+            library('twitteroauth/autoload');
+
             $connection = new Abraham\TwitterOAuth\TwitterOAuth(
                 Config::key( 'twitter-key' )
                 , Config::key( 'twitter-secret' )
@@ -257,33 +256,33 @@ class SmController extends BaseController {
             if ( !$me->id ) {
                 throw new Exception('Could not get User Information');
             }
+
+            $website_sm_account = new WebsiteSmAccount();
+            $website_sm_account->get_by_sm_reference_id( 'twitter', $me->id, $_SESSION['sm-callback-website-id'] );
+            if ( !$website_sm_account->id ) {
+                $website_sm_account->website_id = $_SESSION['sm-callback-website-id'];
+                $website_sm_account->sm = 'twitter';
+                $website_sm_account->sm_reference_id = $me->id;
+                $website_sm_account->title = $me->name;
+                $website_sm_account->photo = '';
+                $website_sm_account->create();
+                $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
+                $this->log( 'twitter-connected', $this->user->contact_name . ' connected to Twitter on ' . $this->user->account->title );
+            } else {
+                $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
+                $this->log( 'twitter-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
+            }
+            $website_sm_account->auth_information_array = [
+                'access-token' => $token['oauth_token']
+                , 'access-token-secret' => $token['oauth_token_secret']
+            ];
+            $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
+            $website_sm_account->save();
+            url::redirect( $_SESSION['sm-callback-referer'] );
         } catch (Exception $e) {
             $this->notify( 'There was an error connecting with Twitter: ' . $e->getMessage(), false );
             url::redirect( $_SESSION['sm-callback-referer'] );
         }
-
-        $website_sm_account = new WebsiteSmAccount();
-        $website_sm_account->get_by_sm_reference_id( 'twitter', $me->id, $_SESSION['sm-callback-website-id'] );
-        if ( !$website_sm_account->id ) {
-            $website_sm_account->website_id = $_SESSION['sm-callback-website-id'];
-            $website_sm_account->sm = 'twitter';
-            $website_sm_account->sm_reference_id = $me->id;
-            $website_sm_account->title = $me->name;
-            $website_sm_account->photo = '';
-            $website_sm_account->create();
-            $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
-            $this->log( 'twitter-connected', $this->user->contact_name . ' connected to Twitter on ' . $this->user->account->title );
-        } else {
-            $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
-            $this->log( 'twitter-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
-        }
-        $website_sm_account->auth_information_array = [
-            'access-token' => $token['oauth_token']
-            , 'access-token-secret' => $token['oauth_token_secret']
-        ];
-        $website_sm_account->auth_information = json_encode( $website_sm_account->auth_information_array );
-        $website_sm_account->save();
-        url::redirect( $_SESSION['sm-callback-referer'] );
     }
 
 

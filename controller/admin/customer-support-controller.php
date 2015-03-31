@@ -324,7 +324,7 @@ class CustomerSupportController extends BaseController {
         }
 
         $attachments = '';
-        $uploads = $ticket_upload->get_by_comment($ticket_comment->ticket_comment_id);
+        $uploads = $ticket_upload->get_by_comment($ticket_comment->id);
         foreach ( $uploads as $upload ) {
             $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}";
             $name = ucwords( str_replace( '-', ' ', f::name( $upload->key ) ) );
