@@ -1177,10 +1177,10 @@ class AccountProduct extends ActiveRecordBase {
                 // Clear CloudFlare Cache
                 $account = new Account();
                 $account->get( $website_id );
-                $cloudflare_zone_id = $account->get_settings('cloudflare-domain');
+                $cloudflare_zone_id = $account->get_settings('cloudflare-zone-id');
 
                 if ( $cloudflare_zone_id ) {
-                    $cloudflare = new CloudFlareClientAPI( $account );
+                    $cloudflare = new CloudFlareAPI( $account );
                     $cloudflare->purge( $cloudflare_zone_id );
                 }
             }
