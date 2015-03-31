@@ -444,7 +444,9 @@
                         <li <?php if ( '/settings/authorized-users/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/authorized-users/">Authorized Users</a></li>
                         <li <?php if ( '/settings/logo-and-phone/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/logo-and-phone/">Logo &amp; Phone</a></li>
                     <?php endif; ?>
-                    <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
+                    <?php if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ): ?>
+                    <li <?php if ( '/settings/billing-information/' == $_SERVER['REQUEST_URI'] && $user->has_permission( User::ROLE_SUPER_ADMIN ) ) echo 'class="active"'?>><a href="/settings/billing-information/">Billing Information</a></li>
+                    <?php endif; ?>
                     <?php if ( $user->account && $user->account->get_settings( 'cloudflare-zone-id' ) ): ?>
                     <li <?php if ( '/settings/domain/' == $_SERVER['REQUEST_URI'] ) echo 'class="active"'?>><a href="/settings/domain/">Domain</a></li>
                     <?php endif; ?>
