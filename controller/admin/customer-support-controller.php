@@ -301,7 +301,7 @@ class CustomerSupportController extends BaseController {
                     $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
                 }
             }
-            $thread .= "\n\n<br><br>On {$ticket->date_created} We wrote:\n<br>{$ticket->message}";
+            $thread .= "\n\n<br><br>On {$ticket->date_created} {$ticket->name} wrote:\n<br>{$ticket->message}";
         }
 
         // If it's not private, send an email to the client
@@ -309,9 +309,7 @@ class CustomerSupportController extends BaseController {
             fn::mail(
                 $ticket_comment->to_address
                 , 'Ticket #' . $ticket->id . ' ' . $status . ' - ' . $ticket->summary
-                , "******************* Reply Above This Line *******************"
-                    . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
-                    . "\n\n<br><br>{$ticket_comment->comment}"
+                , "{$ticket_comment->comment}"
                     . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
@@ -325,9 +323,7 @@ class CustomerSupportController extends BaseController {
             fn::mail(
                 $assigned_user->email
                 , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
-                , "******************* Reply Above This Line *******************"
-                    . "\n\n<br><br>{$this->user->contact_name} has posted a new comment on Ticket #{$ticket->id}."
-                    . "\n\n<br><br>{$ticket_comment->comment}"
+                , "{$ticket_comment->comment}"
                     . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'

@@ -31,12 +31,17 @@ class PipeController extends BaseController {
 
         // Get data
         $subject = $email['Headers']['subject:'];
-        $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
-        $reply_above_this_line = strpos( $body, '******************* Reply Above This Line *******************' );
-        if ( $reply_above_this_line ) {
-            $body = substr($body, 0, $reply_above_this_line);
-            $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
+        if ( empty( $email['Body'] ) ) {
+            if ( empty( $email['Parts'][0]['Body'] ) ) {
+                $body = $email['Parts'][0]['Parts'][0]['Body'];
+            } else {
+                $body = $email['Parts'][0]['Body'];
+            }
+        } else {
+            $body = $email['Body'];
         }
+        $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
+        $body = preg_replace('/\n\nFrom: (.*?)$/si', '', $body);
         $body = trim($body);
         $body = nl2br($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
