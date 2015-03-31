@@ -82,6 +82,7 @@ class ListingsController extends BaseController {
         $dt->search( array( '`location_id`' => false, '`site_id`' => false, '`status`' => false, '`url`' => false ) );
 
         $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
+        $dt->add_where( " AND `site_id` NOT IN ('FACEBOOK', 'GOOGLE') " );
         $location_id = $_SESSION['listings']['location-id'];
         if ( $location_id ) {
             $dt->add_where( " AND `location_id` = " . $_SESSION['listings']['location-id'] );
