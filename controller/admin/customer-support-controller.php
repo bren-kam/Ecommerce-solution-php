@@ -23,7 +23,7 @@ class CustomerSupportController extends BaseController {
 
         $admin_users = $this->user->get_admin_users();
         $account = new Account();
-        $accounts = $account->list_all([' AND a.status = 1 ', '', '', 9999]);
+        $accounts = $account->list_all([' AND a.status = 1 ', '', ' ORDER BY a.title ', 9999]);
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')
@@ -110,7 +110,8 @@ class CustomerSupportController extends BaseController {
             // Ticket --
             $ticket->get($_GET['id']);
 
-            $ticket->created_ago = DateHelper::time_elapsed( $ticket->date_created );
+            $date_created = new DateTime($ticket->date_created);
+            $ticket->created_ago = $date_created->format("D n/j/Y g:i A");
             $ticket->updated_ago = 'Never';
             if ( $ticket->last_updated_at ) {
                 $ticket->updated_ago = DateHelper::time_elapsed( $ticket->last_updated_at ) . ' by ' . $ticket->last_updated_by;
@@ -144,7 +145,8 @@ class CustomerSupportController extends BaseController {
             $comment_uploads = $tu->get_by_comments($ticket->id);
 
             foreach ( $comment_array as $comment ) {
-                $comment->created_ago = DateHelper::time_elapsed( $comment->date_created );
+                $date_created = new DateTime($comment->date_created);
+                $comment->created_ago = $date_created->format("D n/j/Y g:i A");
                 $comment->uploads = [];
                 $comments[$comment->ticket_comment_id] = $comment;
             }
@@ -297,10 +299,28 @@ class CustomerSupportController extends BaseController {
             array_shift($comments);
             foreach ( $comments as $c ) {
                 if ( $c->private == TicketComment::VISIBILITY_PUBLIC ) {
-                    $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
+                    $date = new DateTime($c->date_created);
+                    $date_str = $date->format("D n/j/Y g:i A");
+                    $thread .= "\n\n<br><br>On {$date_str} {$c->name} wrote:\n<br>{$c->comment}";
+
+                    $uploads = $ticket_upload->get_by_comment($c->ticket_comment_id);
+                    foreach ( $uploads as $upload ) {
+                        $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}";
+                        $name = ucwords( str_replace( '-', ' ', f::name( $upload->key ) ) );
+                        $thread .= "\n<br><a href=\"{$link}\">{$name}</a>";
+                    }
                 }
             }
-            $thread .= "\n\n<br><br>On {$ticket->date_created} {$ticket->name} wrote:\n<br>{$ticket->message}";
+            $date = new DateTime($ticket->date_created);
+            $date_str = $date->format("D n/j/Y g:i A");
+            $thread .= "\n\n<br><br>On {$date_str} {$ticket->name} wrote:\n<br>{$ticket->message}";
+
+            $uploads = $ticket_upload->get_by_ticket($ticket->id);
+            foreach ( $uploads as $upload ) {
+                $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload}";
+                $name = ucwords( str_replace( '-', ' ', f::name( $upload ) ) );
+                $thread .= "\n<br><a href=\"{$link}\">{$name}</a>";
+            }
         }
 
         // If it's not private, send an email to the client
