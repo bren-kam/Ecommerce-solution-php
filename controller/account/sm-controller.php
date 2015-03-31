@@ -306,7 +306,7 @@ class SmController extends BaseController {
             $_SESSION['sm-callback-user-id'] = $_REQUEST['user-id'];
             // for notifications
             $this->user = new stdClass;
-            $this->user->id = $_REQUEST['user-id'];
+            $this->user->user_id = $this->user->id = $_REQUEST['user-id'];
 
             return true;
         }
@@ -321,7 +321,7 @@ class SmController extends BaseController {
             }
             // for notifications
             $this->user = new stdClass;
-            $this->user->id = $_SESSION['sm-callback-user-id'];
+            $this->user->user_id = $this->user->id = $_SESSION['sm-callback-user-id'];
 
             return true;
         }
