@@ -596,8 +596,11 @@ class CustomerSupportController extends BaseController {
         }
 
         $user = new User();
-        $user->get_by_email($_POST['to']);
-        if ( !$user->id ) {
+        $user->get_by_email($_POST['to'], false);
+        if ( $user->id && $user->status == User::STATUS_INACTIVE ) {
+            $user->status = User::STATUS_ACTIVE;
+            $user->save();
+        } else if ( !$user->id ) {
             $user->email = $_POST['to'];
             $user->status = User::STATUS_ACTIVE;
             $user->role = User::ROLE_AUTHORIZED_USER;
@@ -678,7 +681,11 @@ class CustomerSupportController extends BaseController {
             , 0
             , 0
             , User::ROLE_AUTHORIZED_USER
+            , false
         );
+
+        $ticket->website_id = $_POST['account_id'];
+        $ticket->save();
 
         $response->notify("User {$user->email} attached to {$account->title}.");
         return $response;

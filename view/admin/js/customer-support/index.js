@@ -215,7 +215,7 @@ var Ticket = {
                 if ( comment.bcc_address ) {
                     toAddress += '; bcc: ' + comment.bcc_address;
                 }
-                if ( toAddress ) {
+                if ( toAddress && currentTicket.private == 0 ) {
                     item.find('.comment-to-address').text(toAddress);
                     item.find('.comment-to-address').parents('li:first').show();
                 } else {
