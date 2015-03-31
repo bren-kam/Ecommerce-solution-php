@@ -456,6 +456,18 @@ var TicketCommentForm = {
                 .val( response.id )
                 .appendTo( fileItem );
 
+            $('<input />')
+                .attr( 'type', 'hidden' )
+                .attr( 'name', 'upload-names['+ response.id +'][name]' )
+                .val( filename )
+                .appendTo( fileItem );
+
+            $('<input />')
+                .attr( 'type', 'hidden' )
+                .attr( 'name', 'upload-names['+ response.id +'][url]' )
+                .val( response.url )
+                .appendTo( fileItem );
+
             fileItem.appendTo( '#file-list' );
         }
 

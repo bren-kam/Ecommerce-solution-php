@@ -324,11 +324,8 @@ class CustomerSupportController extends BaseController {
         }
 
         $attachments = '';
-        foreach ( $_POST['uploads'] as $pu ) {
-            $upload = $ticket_upload->get($pu);
-            $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}";
-            $name = ucwords( str_replace( '-', ' ', f::name( $upload->key ) ) );
-            $attachments .= "\n<br><a href=\"{$link}\">{$name}</a>";
+        foreach ( $_POST['upload-names'] as $un ) {
+            $attachments .= "\n<br><a href=\"{$un['url']}\">{$un['name']}</a>";
         }
 
         // If it's not private, send an email to the client
