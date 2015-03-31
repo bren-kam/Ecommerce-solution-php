@@ -153,7 +153,6 @@ class Account extends ActiveRecordBase {
             , 'products' => $this->products
             , 'pages' => $this->pages
             , 'product_catalog' => $this->product_catalog
-            , 'link_brands' => $this->link_brands
             , 'blog' => $this->blog
             , 'email_marketing' => $this->email_marketing
             , 'mobile_marketing' => $this->mobile_marketing
@@ -175,7 +174,7 @@ class Account extends ActiveRecordBase {
             , 'status' => $this->status
             , 'user_id_updated' => $this->user_id_updated
         ), array( 'website_id' => $this->id )
-        , 'iiiisssssiiiiiiiiiiiisissssiii', 'i' );
+        , 'iiiisssssiiiiiiiiiiisissssiii', 'i' );
     }
 
     /**

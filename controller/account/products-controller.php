@@ -742,7 +742,10 @@ class ProductsController extends BaseController {
             ->kb( 58 )
             ->add_title( _('Brands') )
             ->menu_item( 'products/brands' )
-            ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );
+            ->set( array(
+                'top_brands' => $website_top_brand->get_by_account( $this->user->account->id )
+                , 'link_brands' => $this->user->account->get_settings('link_brands')
+            ) );
     }
 
     /**
@@ -2008,9 +2011,7 @@ class ProductsController extends BaseController {
             return $response;
 
         // Set link brands
-        $this->user->account->link_brands = $_POST['checked'];
-        $this->user->account->user_id_updated = $this->user->id;
-        $this->user->account->save();
+        $this->user->account->set_settings( 'link_brands', $_POST['checked'] );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
