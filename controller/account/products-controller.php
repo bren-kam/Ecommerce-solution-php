@@ -2027,7 +2027,7 @@ class ProductsController extends BaseController {
             return $response;
 
         // Set link brands
-        $this->user->account->set_settings( 'link_brands', $_POST['checked'] );
+        $this->user->account->set_settings( array( 'link_brands' => $_POST['checked'] ) );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
