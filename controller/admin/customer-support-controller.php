@@ -323,12 +323,21 @@ class CustomerSupportController extends BaseController {
             }
         }
 
+        $attachments = '';
+        $uploads = $ticket_upload->get_by_comment($ticket_comment->ticket_comment_id);
+        foreach ( $uploads as $upload ) {
+            $link = "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}";
+            $name = ucwords( str_replace( '-', ' ', f::name( $upload->key ) ) );
+            $attachments .= "\n<br><a href=\"{$link}\">{$name}</a>";
+        }
+
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
             fn::mail(
                 $ticket_comment->to_address
                 , 'Ticket #' . $ticket->id . ' ' . $status . ' - ' . $ticket->summary
                 , "{$ticket_comment->comment}"
+                    . "{$attachments}"
                     . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
@@ -343,6 +352,7 @@ class CustomerSupportController extends BaseController {
                 $assigned_user->email
                 , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
                 , "{$ticket_comment->comment}"
+                    . "{$attachments}"
                     . "{$thread}"
                 , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
                 , $this->user->contact_name . ' <' . $this->user->email . '>'
