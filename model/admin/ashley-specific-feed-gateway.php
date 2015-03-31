@@ -1550,6 +1550,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 }
             }
 
+            $is_carton = strpos($product->name, '(Set of ');
+            if ( $is_carton !== false ) {
+                $multiplier = (int) substr($product->name, $is_carton + 8, 1);
+                $item['price'] *= $multiplier;
+            }
+
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
             $product->price = $this->identical( $item['price'], $product->price, 'price' );
