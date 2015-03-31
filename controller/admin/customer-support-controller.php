@@ -324,8 +324,10 @@ class CustomerSupportController extends BaseController {
         }
 
         $attachments = '';
-        foreach ( $_POST['upload-names'] as $un ) {
-            $attachments .= "\n<br><a href=\"{$un['url']}\">{$un['name']}</a>";
+        if (isset( $_POST['upload-names'] )) {
+            foreach ( $_POST['upload-names'] as $un ) {
+                $attachments .= "\n<br><a href=\"{$un['url']}\">{$un['name']}</a>";
+            }
         }
 
         // If it's not private, send an email to the client
