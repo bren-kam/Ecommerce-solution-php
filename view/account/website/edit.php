@@ -93,10 +93,10 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
                     </div>
 
                     <?php if ( $user->account->is_new_template() ): ?>
-                        <div class="form-group">
-                            <label for="taHeaderScript">Header Script:</label>
-                            <textarea class="form-control" name="taHeaderScript" id="taHeaderScript"><?php echo $page->header_script ?></textarea>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label for="taHeaderScript">Header Script:</label>-->
+<!--                            <textarea class="form-control" name="taHeaderScript" id="taHeaderScript">--><?php //echo $page->header_script ?><!--</textarea>-->
+<!--                        </div>-->
 
                         <div class="checkbox">
                             <label>

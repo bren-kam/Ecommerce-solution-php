@@ -5,7 +5,7 @@ var Layout = {
 
         $('#layout-list').sortable({
             items		: '.layout',
-            cancel		: 'input, button, a',
+            cancel		: 'input, button, a, .layout-actions',
             placeholder	: 'banner-placeholder',
             revert		: true,
             forcePlaceholderSize : true

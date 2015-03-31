@@ -39,8 +39,12 @@ class ProductBuilderController extends BaseController {
         //Check if connected to Ashley feed
         $ashley_feed_settings = $this->user->account->get_settings('ashley-ftp-username', 'ashley-ftp-password');
         $show_warning = false;
+
         if(!empty($ashley_feed_settings['ashley-ftp-username']) && !empty($ashley_feed_settings['ashley-ftp-password'])){
             $show_warning=true;
+        } else {
+            $account_product = new AccountProduct();
+            $show_warning = $account_product->count_products_by_brand_ids($this->user->account->id, [8, 170, 805, 717]) > 0;
         }
 
         // Determine if we're adding or editing the product
