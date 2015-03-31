@@ -294,8 +294,7 @@ class CustomerSupportController extends BaseController {
         $thread = '';
         if ( $_POST['include-whole-thread'] ) {
             $comments = $ticket_comment->get_by_ticket($ticket->id);
-            array_pop($comments);
-            $comments = array_reverse($comments);
+            array_shift($comments);
             foreach ( $comments as $c ) {
                 if ( $c->private == TicketComment::VISIBILITY_PUBLIC ) {
                     $thread .= "\n\n<br><br>On {$c->date_created} {$c->name} wrote:\n<br>{$c->comment}";
