@@ -292,10 +292,10 @@ class SmController extends BaseController {
      */
     protected function get_logged_in_user() {
         // connect_* are public, but need a referer and a website-id
-        $public_url = strpos( $_SERVER['REQUEST_URI'], '/sm/facebook-connect/' ) !== FALSE
-                   || strpos( $_SERVER['REQUEST_URI'], '/sm/twitter-connect/' ) !== FALSE;
+        $connect_url = strpos( $_SERVER['REQUEST_URI'], '/sm/facebook-connect/' ) !== FALSE
+                    || strpos( $_SERVER['REQUEST_URI'], '/sm/twitter-connect/' ) !== FALSE;
 
-        if ( $public_url ) {
+        if ( $connect_url ) {
 
             if ( !$_REQUEST['website-id'] || !$_SERVER['HTTP_REFERER'] ) {
                 return false;
@@ -303,9 +303,25 @@ class SmController extends BaseController {
 
             $_SESSION['sm-callback-website-id'] = $_REQUEST['website-id'];
             $_SESSION['sm-callback-referer'] = $_SERVER['HTTP_REFERER'];
+            $_SESSION['sm-callback-user-id'] = $_REQUEST['user-id'];
             // for notifications
             $this->user = new stdClass;
             $this->user->id = $_REQUEST['user-id'];
+
+            return true;
+        }
+
+        $callback_url = strpos( $_SERVER['REQUEST_URI'], '/sm/facebook-callback/' ) !== FALSE
+            || strpos( $_SERVER['REQUEST_URI'], '/sm/twitter-callback/' ) !== FALSE;
+
+        if ( $callback_url ) {
+
+            if ( !$_SESSION['sm-callback-website-id'] || !$_SESSION['sm-callback-referer'] || !$_SESSION['sm-callback-user-id'] ) {
+                return false;
+            }
+            // for notifications
+            $this->user = new stdClass;
+            $this->user->id = $_SESSION['sm-callback-user-id'];
 
             return true;
         }
