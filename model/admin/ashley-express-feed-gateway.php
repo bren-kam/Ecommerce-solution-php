@@ -236,11 +236,11 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         // Set Settings: Ashley Express Buyer ID from XML
         $ns = $this->xml->getDocNamespaces();
-        if ( isset( $this->xml->inquiry->potentialBuyer ) ) {
-            $account->set_settings( array(
-                'ashley-express-buyer-id' => (string)$this->xml->inquiry->potentialBuyer->children( $ns['fnParty'] )->attributes()->partyIdentifierCode
-            ) );
-        }
+//        if ( isset( $this->xml->inquiry->potentialBuyer ) ) {
+//            $account->set_settings( array(
+//                'ashley-express-buyer-id' => (string)$this->xml->inquiry->potentialBuyer->children( $ns['fnParty'] )->attributes()->partyIdentifierCode
+//            ) );
+//        }
 
         // Generate array of our items
         /**
