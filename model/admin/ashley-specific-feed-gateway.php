@@ -1578,6 +1578,9 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
+            $product->depth = $item['depth'];
+            $product->height = $item['height'];
+            $product->length = $item['length'];
 
             // Handle categories
             if ( $new_product || empty( $product->category_id ) ) {
@@ -1657,6 +1660,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $new_product['specs'][] = array( 'Depth', trim( $ic->itemDimensions->depth['value'] ) . ' Inches' ) ;
                 $new_product['specs'][] = array( 'Height', trim( $ic->itemDimensions->height['value'] ) . ' Inches' ) ;
                 $new_product['specs'][] = array( 'Length', trim( $ic->itemDimensions->length['value'] ) . ' Inches' ) ;
+
+                $new_product['depth'] = trim($ic->itemDimensions->depth['value']);
+                $new_product['height'] = trim($ic->itemDimensions->height['value']);
+                $new_product['length'] = trim($ic->itemDimensions->length['value']);
                 break;
             }
         }
