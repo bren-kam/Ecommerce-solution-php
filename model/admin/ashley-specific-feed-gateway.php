@@ -1484,6 +1484,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                     $groups[$item['group']] = array('name' => '', 'description' => '', 'features' => '');
             }
 
+            // Get Product Name
+
+            $group = $groups[$item['group']];
+            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
+
+            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
+            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
+
+            $name = format::convert_characters( $group_name . $item['description'] );
+
             /***** GET PRODUCT *****/
 
             // Get Product
@@ -1495,8 +1505,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( $last_update > $two_days_ago )
                 continue;
 
-            if ( 'deleted' == $product->publish_visibility )
-                continue;
+            // If the SKU is "Deleted" in our system
+            // We will skip ONLY if name matches
+            // (They reuse old skus on new products)
+            if ( 'deleted' == $product->publish_visibility ) {
+                if ( $product->name == $name ) {
+                    continue;
+                } else {
+                    $product = null;  // mark a new product
+                }
+            }
 
             // Now we have the product
             if ( !$product instanceof Product ) {
@@ -1516,16 +1534,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             }
 
             $product->get_specifications();
-
-            /***** PREPARE PRODUCT DATA *****/
-
-            $group = $groups[$item['group']];
-            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
-
-            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
-            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
-
-            $name = format::convert_characters( $group_name . $item['description'] );
 
             /***** ADD PRODUCT DATA *****/
 
@@ -1668,7 +1676,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 continue;
 
             $images = $tag->get_value_by_type( 'ashley_product_image', $product->id );
-            foreach ( $images as $image ) {
+            foreach ( $images as $image )   {
                 echo "#{$product->id} - {$image}\n";
 
                 /***** ADD PRODUCT IMAGES *****/
