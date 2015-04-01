@@ -1550,9 +1550,17 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 }
             }
 
+            // Carton (Set of X)
             $is_carton = strpos($product->name, '(Set of ');
             if ( $is_carton !== false ) {
                 $multiplier = (int) substr($product->name, $is_carton + 8, 1);
+                $item['price'] *= $multiplier;
+            }
+
+            // Carton (X/CN)
+            $is_carton = strpos($product->name, '/CN)');
+            if ( $is_carton !== false ) {
+                $multiplier = (int) substr($product->name, $is_carton - 1, 1);
                 $item['price'] *= $multiplier;
             }
 
