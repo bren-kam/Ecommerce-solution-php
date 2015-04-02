@@ -238,6 +238,20 @@
                 </li>
             <?php endif; ?>
 
+            <?php if ( $user->account->product_catalog ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('sales-desk') ) echo 'class="active"' ?>>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        <span>Sales Desk</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->in_menu_item('sales-desk/index') ) echo 'class="active"'?>><a href="/sales-desk/">Sales Desk</a></li>
+                        <li <?php if ( $template->in_menu_item('sales-desk/settings') ) echo 'class="active"'?>><a href="/sales-desk/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+
+
             <?php if ( $user->account->live ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('analytics') ) echo 'class="active"'?>>
