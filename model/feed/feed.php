@@ -46,7 +46,8 @@ class Feed extends ActiveRecordBase {
                 }
             }
 
-            $where .= " AND p.`brand_id` IN (" . implode( ',', $brands ) . ") ";
+            if ( $brands )
+                $where .= " AND p.`brand_id` IN (" . implode( ',', $brands ) . ") ";
 
             if ( $ashley_brands )
                 $where .= " AND ( p.`brand_id` IN (" . implode( ',', $ashley_brands ) . ") AND p.`user_id_created` IN ( 353, 1477 ) ) ";
