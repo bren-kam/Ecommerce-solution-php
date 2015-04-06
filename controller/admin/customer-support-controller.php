@@ -332,7 +332,7 @@ class CustomerSupportController extends BaseController {
 
         // Signature
         $os_domain_email = str_replace( strstr( $this->user->email, '@'), '@' . DOMAIN, $this->user->email );
-        $signature  = '<p style="font-size: 12px;">'. $this->user->contact_name .'<br>';
+        $signature  = '<br><p style="font-size: 12px;">'. $this->user->contact_name .'<br>';
         $signature .= '<span style="font-size: 10px;">';
         if ( $this->user->work_phone ) {
             $signature .= $this->user->work_phone .'<br>';
