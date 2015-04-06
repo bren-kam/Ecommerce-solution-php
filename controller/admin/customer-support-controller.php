@@ -332,10 +332,14 @@ class CustomerSupportController extends BaseController {
 
         // Signature
         $os_domain_email = str_replace( strstr( $this->user->email, '@'), '@' . DOMAIN, $this->user->email );
-        $signature  = '<p style="font-size: 14px;">'. $this->user->contact_name .'<br>';
-        $signature .= '<span style="font-size: 12px;">'. $this->user->work_phone .'<br>'. $os_domain_email .'</span>';
+        $signature  = '<p style="font-size: 12px;">'. $this->user->contact_name .'<br>';
+        $signature .= '<span style="font-size: 10px;">';
+        if ( $this->user->work_phone ) {
+            $signature .= $this->user->work_phone .'<br>';
+        }
+        $signature .= $os_domain_email .'</span>';
         $signature .= '</p>';
-        $signature .= '<p style="height:35px;"><img style="height:35px;" src="/images/logos/'.DOMAIN.'.png" /></p>';
+        $signature .= '<p style="height:35px;"><img style="height:35px;" src="http://admin.greysuitretail.com/images/logos/'.DOMAIN.'.png" /></p>';
 
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
