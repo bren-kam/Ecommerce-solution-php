@@ -31,38 +31,141 @@ class PipeController extends BaseController {
 
         // Get data
         $subject = $email['Headers']['subject:'];
-        $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
-        $body = nl2br( substr( $body, 0, strpos( $body, '******************* Reply Above This Line *******************' ) ) );
+        if ( empty( $email['Body'] ) ) {
+            if ( empty( $email['Parts'][0]['Body'] ) ) {
+                $body = $email['Parts'][0]['Parts'][0]['Body'];
+            } else {
+                $body = $email['Parts'][0]['Body'];
+            }
+        } else {
+            $body = $email['Body'];
+        }
+        $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
+        $body = preg_replace('/\n\nFrom: (.*?)$/si', '', $body);
+        $body = trim($body);
+        $body = nl2br($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
+        $from = $email['ExtractedAddresses']['from:'][0]['address'];
+        $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
+        $to = $email['ExtractedAddresses']['to:'][0]['address'];
+
+        // attachments
+        $attachments = [];
+        $upload_dir = tempnam( sys_get_temp_dir(), 'customer-support' );
+        unlink($upload_dir);
+        if ( !is_dir( $upload_dir ) ) {
+            mkdir($upload_dir, 0777, true);
+        }
+        foreach($email['Parts'] as $part) {
+            //check for attachments
+            if($part['FileDisposition'] == 'attachment'){
+                //format file name (change spaces to underscore then remove anything that isn't a letter, number or underscore)
+                $filename = preg_replace('/[^0-9,a-z,\.,_]*/i','',str_replace(' ','_', $part['FileName']));
+
+                //write the data to the file
+                $attachment_path = $upload_dir . '/' . $filename;
+                $fp = fopen( $attachment_path, 'w');
+                $written = fwrite($fp,$part['Body']);
+                fclose($fp);
+
+                $attachments[] = [
+                    'path' => $attachment_path,
+                    'name' => $filename
+                ];
+            }
+        }
+
+        // Ignore email from support, reply, no-reply, etc.
+        $matches = [];
+        if ( preg_match('/(support|noreply|no-reply|jira)@/i', $from, $matches) ) {
+            return new HtmlResponse("Ignoring email from '{$from}'");
+        }
 
         // Get Ticket
         $ticket = new Ticket();
         $ticket->get( $ticket_id );
 
-        // Get User
-        $user = new User();
-        $user->get( $ticket->assigned_to_user_id );
+        // Get from User
+        $from_user = new User();
+        $from_user->get_by_email( $from, false );
 
-        // Create comment based on email
-        $ticket_comment = new TicketComment();
-        $ticket_comment->ticket_id = $ticket->id;
-        $ticket_comment->user_id = $ticket->user_id;
-        $ticket_comment->comment = $body;
-        $ticket_comment->create();
+        // Get from User
+        $to_user = new User();
+        $to_user->get_by_email( $to, false );
 
-        // Set email headers
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        // Create Use if does not exists
+        if ( !$from_user->id ) {
+            $from_user->email = $from;
+            $from_user->contact_name = $from_name;
+            $from_user->role = User::ROLE_AUTHORIZED_USER;
+            $from_user->status = User::STATUS_ACTIVE;
+            $from_user->company_id = 1;
+            $from_user->create();
+        }
 
-        // Additional headers
-        $headers .= 'To: ' . $user->email . "\r\n";
-        $headers .= 'From: ' . $user->company . ' Support <noreply@' . $user->domain . '>' . "\r\n";
+        if ( $ticket->id ) {
+            // Create comment based on email
+            $ticket_comment = new TicketComment();
+            $ticket_comment->ticket_id = $ticket->id;
+            $ticket_comment->user_id = $from_user->user_id;
+            $ticket_comment->comment = $body;
+            $ticket_comment->to_address = $to;
+            $ticket_comment->create();
 
-        // Let assigned user know
-        $ticket_url = url::add_query_arg( 'tid', $ticket->id, 'http://admin.' . $user->domain . '/tickets/ticket/' );
-        mail( $user->email, "New Response on Ticket #{$ticket_id}", "<p>A new response from the client has been received. See message below:</p><p><strong>Original Message:</strong><br />" . $ticket->message . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='{$ticket_url}'>{$ticket_url}</a></p>", $headers );
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->save();
+        } else {
+            // We can't create a ticket if we can't assign to anybody
+            if ( !$to_user->id ) {
+                return new HtmlResponse("We can't create a ticket if we can't assign to anybody '{$to}'");
+            }
 
-        return new HtmlResponse( '' );
+            // Try to guess the Account
+            $account = new Account();
+            $accounts = $account->get_by_user( $to_user->id );
+            if ( $accounts ) {
+                $account = reset($accounts);
+            } else {
+                $accounts = $account->get_by_authorized_user( $to_user->id );
+                $account = reset($accounts);
+            }
+
+            // Create Ticket
+            $ticket = new Ticket();
+            $ticket->summary = $subject;
+            $ticket->message = $body;
+            $ticket->user_id = $from_user->id;
+            $ticket->assigned_to_user_id = $to_user->id;
+            $ticket->website_id = $account ? $account->id : null;
+            $ticket->create();
+        }
+
+        // link attachments to ticket or comment
+        $file = new File( 'retailcatalog.us' );
+
+        $ticket_upload_ids = [];
+        foreach( $attachments as $attachment ) {
+            $ticket_upload = new TicketUpload();
+            $directory = $ticket->ticket_id . '/';
+            $file_name = $attachment['name'];
+            $ticket_upload->key = $directory . $file_name;
+            $ticket_upload->create();
+
+            $ticket_upload_ids[] = $ticket_upload->id;
+            $file->upload_file( $attachment['path'], $ticket_upload->key, 'attachments/' );
+        }
+
+        if ( $ticket_upload_ids ) {
+            $ticket_upload = new TicketUpload();
+            if ( isset($ticket_comment) ) {
+                $ticket_upload->add_comment_relations($ticket_comment->id, $ticket_upload_ids);
+            } else {
+                $ticket_upload->add_relations($ticket->id, $ticket_upload_ids);
+            }
+        }
+        @rmdir($upload_dir);
+
+        return new HtmlResponse('');
     }
 
     /**

@@ -1,0 +1,213 @@
+.mail-box {
+  .sm-side .user-head, .lg-side .inbox-head {
+    padding: 15px 20px;
+    min-height: 62px;
+  }
+
+  .sm-side {
+    width: 33%;
+  }
+  .lg-side {
+    width: 66%;
+  }
+
+  .ticket-open {
+    color: #A9D86E;
+    font-size: 13px;
+  }
+  .ticket-urgent{
+    color: #FF6C60;
+    font-size: 13px;
+  }
+  .ticket-high{
+    color: #e4ba00;
+    font-size: 13px;
+  }
+
+  .sm-side .user-head {
+    background-color: #5CBDF0;
+    .position{
+      width: 70%;
+      .input-append {
+        width: 100%;
+        .sr-input {
+          width: 100%;
+          height: 32px;
+          border: none;
+          box-shadow: none;
+          padding: 0 10px;
+          float: left;
+          border-radius: 4px;
+          color: #8a8a8a;
+        }
+      }
+    }
+    a.btn {
+      height: 32px;
+      border: none;
+      background: inherit;
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 4px;
+      -webkit-border-radius: 4px;
+      font-size: 1.6em;
+    }
+  }
+
+  ul.inbox-nav {
+    height: 700px;
+    overflow-y: auto;
+    & > .inbox-nav-item {
+      display: inline-block;
+      background-color: #fff;
+      width: 100%;
+      line-height: 1.42857143; /* Bootstrap Default */
+
+      a {
+        padding: 10px;
+        line-height: 18px;
+
+        .inbox-nav-item-details {
+          ul {
+            overflow-x: hidden;
+            li {
+              width: auto;
+              line-height: 1.42857143; /* Bootstrap Default */
+              display: list-item;
+              i {
+                padding-right: 0;
+              }
+            }
+          }
+
+        }
+
+        .select-ticket {
+          padding: 20px 15px 0 10px;
+        }
+
+        .email-name {
+          font-weight: bold;
+          font-size: 1.1em;
+        }
+        .email-address {
+          color: #777;
+        }
+        .email-status {
+          margin: 0;
+        }
+
+      }
+
+      &:nth-child(even) {
+        background-color: #f3f3f3;
+      }
+    }
+  }
+
+  .lg-side {
+    .inbox-head {
+      color: #333;
+      background: #F0F0F0;
+      padding-top: 20px;
+      font-size: 13px;
+      border-top: 1px solid #ddd;
+      border-right: 1px solid #ddd;
+      i {
+        margin-right: 5px;
+      }
+      .pull-left {
+        margin-right: 15px;
+      }
+    }
+
+    .ticket-message {
+      font-size: 13px;
+      background-color: #f3f3f3;
+      padding: 20px 35px;
+      margin: 0 -20px;
+    }
+
+    #ticket-comments {
+      .comment {
+          padding-left: 35px;
+          padding-right: 35px;
+          padding-top: 20px;
+          padding-bottom: 20px;
+          margin-left: -20px;
+          margin-right: -20px;
+          &:nth-child(odd) {
+            background-color: #f3f3f3;
+          }
+          .comment-attachments {
+              a {
+                color: #b64c4c;
+              }
+          }
+      }
+    }
+
+    #ticket-attachments {
+      margin-bottom: 25px;
+      padding: 20px 35px;
+      margin: 0 -20px;
+      background-color: #f3f3f3;
+      a {
+        color: #b64c4c;
+      }
+    }
+
+    .bootstrap-select {
+      height: 25px;
+      margin-top: 0!important;
+      margin-bottom: 0!important;
+      margin-left: 15px!important;
+      button, button:hover, button:active, button:focus {
+        background: none!important;
+        border: none!important;
+        color: #333!important;
+        font-weight: bold!important;
+        height: 23px!important;
+        padding: 0!important;
+        margin-top: 0!important;
+        margin-bottom: 0!important;
+        .caret {
+          right: 0px!important;
+        }
+      }
+    }
+
+    .attach-to-account-container {
+      button, button:hover {
+        font-weight: normal!important;
+      }
+    }
+
+    .twitter-typeahead {
+      width: 100%;
+    }
+  }
+
+  #upload-files, #new-ticket-upload-files {
+    position: absolute;
+    left: -999px;
+  }
+
+  #file-list {
+    margin-top: 15px;
+    li {
+      a {
+        color: #b64c4c;
+      }
+    }
+  }
+
+  .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    width: auto;
+  }
+
+}
+
+
+
+

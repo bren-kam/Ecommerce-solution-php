@@ -179,8 +179,8 @@ class SmController extends BaseController {
             $me = $response->getGraphObject()->asArray();
 
             $website_sm_account = new WebsiteSmAccount();
-            $website_sm_account->get_by_sm_reference_id( 'facebook', $me['id'], $_SESSION['sm-callback-website-id'] );
-            if ( !$website_sm_account->id ) {
+//            $website_sm_account->get_by_sm_reference_id( 'facebook', $me['id'], $_SESSION['sm-callback-website-id'] );
+//            if ( !$website_sm_account->id ) {
                 $website_sm_account->website_id = $_SESSION['sm-callback-website-id'];
                 $website_sm_account->sm = 'facebook';
                 $website_sm_account->sm_reference_id = $me['id'];
@@ -189,10 +189,10 @@ class SmController extends BaseController {
                 $website_sm_account->create();
                 $this->notify("Connected {$website_sm_account->sm} account {$website_sm_account->title}");
                 $this->log( 'facebook-connected', $this->user->contact_name . ' connected to Facebook on ' . $this->user->account->title );
-            } else {
-                $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
-                $this->log( 'facebook-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
-            }
+//            } else {
+//                $this->notify("Reconnecting {$website_sm_account->sm} existing account {$website_sm_account->title}");
+//                $this->log( 'facebook-reconnected', $this->user->contact_name . ' reconnected to Facebook on ' . $this->user->account->title );
+//            }
             $website_sm_account->auth_information_array = [
                 'access-token' => $token
                 , 'me' => $me
