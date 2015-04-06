@@ -58,7 +58,7 @@ class PipeController extends BaseController {
         }
         foreach($email['Parts'] as $part) {
             //check for attachments
-            if($part['FileDisposition'] == 'attachment'){
+            if(isset($part['FileDisposition']) && $part['FileDisposition'] == 'attachment'){
                 //format file name (change spaces to underscore then remove anything that isn't a letter, number or underscore)
                 $filename = preg_replace('/[^0-9,a-z,\.,_]*/i','',str_replace(' ','_', $part['FileName']));
 
