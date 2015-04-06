@@ -181,8 +181,19 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
         // Can't do anything without a file
-        if ( empty( $file ) )
+        if ( empty( $file ) ) {
+            // We want to skip this account
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = User::KERRY;
+            $ticket->website_id = $account->id;
+            $ticket->priority = Ticket::PRIORITY_HIGH;
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->summary = 'Ashley Feed w/ no file';
+            $ticket->message = 'This account needs to be investigated';
+            $ticket->create();
             return;
+        }
 
         // Delete all the other files
         if ( !empty( $delete_files ) )
@@ -212,7 +223,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         $packages = $this->get_ashley_packages();
         $skus = $remove_products = $new_product_skus = $all_skus = $new_products = $ashley_express_skus = array();
 
-        // Check #1 - Stop mass deletion
+        // Ashley Feed with no Products
         if ( 0 == count( $this->xml->items->item ) ) {
             // We want to skip this account
             $ticket = new Ticket();
@@ -266,13 +277,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Add to Account any products they don't have
             if ( !array_key_exists( $sku, $products ) )
                 $new_product_skus[] = $sku;
-
-//            // Ashley Express detection
-//            if ( $item->attributes()->itemIsAvailable == "true" ) {
-//                $ashley_express_skus[$sku] = true;
-//            } else {
-//                $ashley_express_skus[$sku] = false;
-//            }
 
             // Setup packages
 			if ( stristr( $sku, '-' ) ) {
@@ -351,12 +355,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Add new products to System
             $this->add_products( $new_products, $groups );
         }
-
-        // set/unset Ashley Express flag
-        // Update 2014-07-30 this was changed to flag manually, NOT via xml
-        // if ( !empty( $ashley_express_skus ) ) {
-        //     $this->set_bulk_ashley_express( $ashley_express_skus );
-        // }
 
 		// Add new products to Account
         $industries = $account->get_industries();
