@@ -1,5 +1,6 @@
 <?php
 class Feed extends ActiveRecordBase {
+    protected $ashley_brand_ids = array(8,170,171,805);
 
     /**
      * @var APIKey $api_key
@@ -34,8 +35,22 @@ class Feed extends ActiveRecordBase {
             $where .= " AND a.`timestamp` < '" . $this->quote( $end_date ) . "'";
 
         $brands = $this->api_key ? $this->api_key->get_brand_ids() : array();
+
         if ( $brands ) {
-            $where .= " AND p.`brand_id` IN (" . implode( ',', $brands ) . ") ";
+            $ashley_brands = array();
+
+            foreach ( $brands as $index => $brand ) {
+                if ( in_array( $brand, $this->ashley_brand_ids ) ) {
+                    $ashley_brands[] = $brand;
+                    unset( $brands[$index] );
+                }
+            }
+
+            if ( $brands )
+                $where .= " AND p.`brand_id` IN (" . implode( ',', $brands ) . ") ";
+
+            if ( $ashley_brands )
+                $where .= " AND ( p.`brand_id` IN (" . implode( ',', $ashley_brands ) . ") AND p.`user_id_created` IN ( 353, 1477 ) ) ";
         }
         
 		$ashley_accounts = $this->api_key ? $this->api_key->get_ashley_accounts() : array();
