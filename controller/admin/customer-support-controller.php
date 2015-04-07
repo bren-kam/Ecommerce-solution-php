@@ -48,7 +48,7 @@ class CustomerSupportController extends BaseController {
         $_GET['sSortDir_0'] = 'DESC';
         $dt = new DataTableResponse($this->user);
         $dt->order_by('date_created');
-        $dt->search(array('b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`', 'b.`email`' => true));
+        $dt->search(array('a.`ticket_id`' => true, 'b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`', 'b.`email`' => true));
 
         // If they are below 8, that means they are a partner
         if (!$this->user->has_permission(User::ROLE_ADMIN))
@@ -331,7 +331,10 @@ class CustomerSupportController extends BaseController {
         }
 
         // Signature
-        $os_domain_email = str_replace( strstr( $this->user->email, '@'), '@' . DOMAIN, $this->user->email );
+        $ticket_user = new User();
+        $ticket_user->get($ticket->user_id);
+
+        $os_domain_email = str_replace( strstr( $this->user->email, '@'), '@' . $ticket_user->domain, $this->user->email );
         $signature  = '<br><p style="font-size: 12px;">'. $this->user->contact_name .'<br>';
         $signature .= '<span style="font-size: 10px;">';
         if ( $this->user->work_phone ) {
@@ -339,7 +342,7 @@ class CustomerSupportController extends BaseController {
         }
         $signature .= $os_domain_email .'</span>';
         $signature .= '</p>';
-        $signature .= '<p style="height:35px;"><img style="height:35px;" src="http://admin.greysuitretail.com/images/logos/'.DOMAIN.'.png" /></p>';
+        $signature .= '<p style="height:35px;"><img style="height:35px;" src="http://admin.greysuitretail.com/images/logos/'.$ticket_user->domain.'.png" /></p>';
 
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
