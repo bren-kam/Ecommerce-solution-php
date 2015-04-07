@@ -206,7 +206,6 @@ var Ticket = {
                 item.find('.comment-user-name').text(comment.name);
                 if ( comment.private == 1 ) {
                     item.find('.comment-user-name').prepend('<i class="fa fa-lock" title="This is a Note/Private Comment!"></i> ');
-                } else {
                     item.find('.comment-to-address').parents('li:first').hide();
                 }
                 item.find('.comment-user-email').text('<' + comment.email + '>');

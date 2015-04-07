@@ -216,7 +216,7 @@ foreach ( $admin_users as $au ) {
     <aside class="lg-side" id="create-ticket">
         <div class="inbox-head">
             <div class="pull-left ticket-status">
-                Send a new Message
+                Create a New Ticket
             </div>
         </div>
         <div class="inbox-body">

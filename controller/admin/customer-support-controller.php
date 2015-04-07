@@ -353,8 +353,8 @@ class CustomerSupportController extends BaseController {
                     . "{$attachments}"
                     . "{$signature}"
                     . "{$thread}"
-                , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
-                , $this->user->contact_name . ' <' . $this->user->email . '>'
+                , $this->user->contact_name . ' <' . $os_domain_email . '>'
+                , $this->user->contact_name . ' <' . $os_domain_email . '>'
                 , false
                 , false
                 , $ticket_comment->cc_address
@@ -369,8 +369,8 @@ class CustomerSupportController extends BaseController {
                     . "{$attachments}"
                     . "{$signature}"
                     . "{$thread}"
-                , $ticket_creator->company . ' <support@' . url::domain($ticket_creator->domain, false) . '>'
-                , $this->user->contact_name . ' <' . $this->user->email . '>'
+                , $this->user->contact_name . ' <' . $os_domain_email . '>'
+                , $this->user->contact_name . ' <' . $os_domain_email . '>'
                 , false
                 , false
             );
