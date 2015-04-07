@@ -127,7 +127,7 @@ foreach ( $admin_users as $au ) {
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>User: <strong class="ticket-user-name"></strong> | <a class="ticket-user-edit" href="javascript:;">Edit</a></li>
+                            <li>User: <strong class="ticket-user-name"></strong> | <a class="ticket-user-edit" href="javascript:;" target="_blank">Edit</a></li>
                             <li>Email: <span class="ticket-user-email"></span></li>
                         </ul>
                         <ul>
