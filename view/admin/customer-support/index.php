@@ -127,10 +127,11 @@ foreach ( $admin_users as $au ) {
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>User: <strong class="ticket-user-name"></strong></li>
+                            <li>User: <strong class="ticket-user-name"></strong> | <a class="ticket-user-edit" href="javascript:;">Edit</a></li>
                             <li>Email: <span class="ticket-user-email"></span></li>
                         </ul>
                         <ul>
+                            <li>Ticket #: <strong class="ticket-id"></strong><br></li>
                             <li>Updated: <strong class="ticket-updated"></strong><br></li>
                             <li>Created: <strong class="ticket-created"></strong><br></li>
                             <li>Account: <strong class="ticket-account"></strong> <a href="javascript:;" class="edit-account">Edit</a> | <a href="javascript:;" class="control-account">Control</a><br></li>

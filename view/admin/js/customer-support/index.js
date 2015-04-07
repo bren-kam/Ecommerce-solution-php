@@ -162,6 +162,8 @@ var Ticket = {
                 Ticket.container.find('.ticket-user-name').append(' - ' + currentTicket.website);
             }
             Ticket.container.find('.ticket-user-email').text('<' + currentTicket.email + '>');
+            Ticket.container.find('.ticket-user-edit').attr('href', '/users/add-edit/?uid=' + currentTicket.user_id);
+            Ticket.container.find('.ticket-id').text(currentTicket.id);
             Ticket.container.find('.ticket-updated').text(currentTicket.updated_ago);
             Ticket.container.find('.ticket-created').text(currentTicket.created_ago);
             Ticket.container.find('.ticket-account').text(currentTicket.website);
