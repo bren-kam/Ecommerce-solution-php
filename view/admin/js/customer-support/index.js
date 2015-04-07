@@ -220,7 +220,6 @@ var Ticket = {
                 }
                 if ( toAddress ) {
                     item.find('.comment-to-address').text(toAddress);
-                    item.find('.comment-to-address').parents('li:first').show();
                 } else {
                     item.find('.comment-to-address').parents('li:first').hide();
                 }
