@@ -32,6 +32,8 @@ var InboxNavigation = {
             var height = $('.lg-side:visible .inbox-head').height() + $('.lg-side:visible .inbox-body').height();
             $('.inbox-nav').height(height > 700 ? height : 700);
         });
+
+        setInterval(InboxNavigation.getTickets, 30000);
     }
 
     , getTickets: function() {
