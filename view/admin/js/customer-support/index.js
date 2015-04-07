@@ -27,6 +27,10 @@ var InboxNavigation = {
             NewTicketForm.reset();
             NewTicketForm.container.removeClass('hidden').show();
             Ticket.container.hide();
+
+            // Adapt Ticket list height
+            var height = $('.lg-side:visible .inbox-head').height() + $('.lg-side:visible .inbox-body').height();
+            $('.inbox-nav').height(height > 700 ? height : 700);
         });
     }
 
@@ -248,6 +252,9 @@ var Ticket = {
 
             TicketCommentForm.reset();
 
+            // Adapt Ticket list height
+            var height = $('.lg-side:visible .inbox-head').height() + $('.lg-side:visible .inbox-body').height();
+            $('.inbox-nav').height(height > 700 ? height : 700);
         }
     }
 
