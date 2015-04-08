@@ -216,7 +216,6 @@
                                 <li <?php if ( $template->in_menu_item('products/products/export') ) echo 'class="active"' ?>><a href="/products/export/">Export</a></li>
                             </ul>
                         </li>
-                        <li <?php if ( $template->in_menu_item('products/reaches') ) echo 'class="active"' ?>><a href="/products/reaches/">Reaches</a></li>
                         <li class="submenu">
                             <a href="/products/reaches" <?php if ( $template->in_menu_item('products/product-builder') ) echo 'class="active"' ?>>Product Builder</a>
                             <ul class="sub">
