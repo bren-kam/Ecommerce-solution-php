@@ -50,6 +50,12 @@
   -webkit-border-radius: 4px;
   font-size: 1.6em;
 }
+.mail-box .sm-side .inbox-body .btn-primary {
+  color: #fff;
+}
+.mail-box .sm-side .inbox-body .btn-primary span {
+  color: #fff;
+}
 .mail-box ul.inbox-nav {
   height: 700px;
   overflow-y: auto;

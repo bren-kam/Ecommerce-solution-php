@@ -24,33 +24,44 @@
     font-size: 13px;
   }
 
-  .sm-side .user-head {
-    background-color: #5CBDF0;
-    .position{
-      width: 70%;
-      .input-append {
-        width: 100%;
-        .sr-input {
+  .sm-side {
+    .user-head {
+      background-color: #5CBDF0;
+      .position {
+        width: 70%;
+        .input-append {
           width: 100%;
-          height: 32px;
-          border: none;
-          box-shadow: none;
-          padding: 0 10px;
-          float: left;
-          border-radius: 4px;
-          color: #8a8a8a;
+          .sr-input {
+            width: 100%;
+            height: 32px;
+            border: none;
+            box-shadow: none;
+            padding: 0 10px;
+            float: left;
+            border-radius: 4px;
+            color: #8a8a8a;
+          }
         }
       }
+      a.btn {
+        height: 32px;
+        border: none;
+        background: inherit;
+        color: #fff;
+        padding: 4px 14px;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        font-size: 1.6em;
+      }
     }
-    a.btn {
-      height: 32px;
-      border: none;
-      background: inherit;
-      color: #fff;
-      padding: 4px 14px;
-      border-radius: 4px;
-      -webkit-border-radius: 4px;
-      font-size: 1.6em;
+
+    .inbox-body {
+      .btn-primary {
+        color: #fff;
+        span {
+          color: #fff;
+        }
+      }
     }
   }
 
