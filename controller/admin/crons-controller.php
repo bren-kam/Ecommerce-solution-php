@@ -568,6 +568,42 @@ class CronsController extends BaseController {
 
     }
 
+    public function addImageDimensions() {
+        ini_set( 'memory_limit', '512M' );
+        $product = new Product();
+        $images = $product->get_results("SELECT i.name industry, pi.product_id, pi.product_image_id, pi.image
+                                FROM products p
+                                INNER JOIN industries i ON p.industry_id = i.industry_id
+                                INNER JOIN product_images pi ON p.product_id = pi.product_id
+                                WHERE pi.width IS NULL or pi.height IS NULL AND p.publish_visibility = 'public'"
+            , PDO::FETCH_ASSOC);
+
+        $i = 0;
+        $total = count($images);
+        foreach ( $images as &$image ) {
+            try {
+                if ( strpos($image['image'], 'http') === 0 )
+                   $url = $image['image'];
+                else
+                    $url = "http://{$image['industry']}.retailcatalog.us/products/{$image['product_id']}/large/{$image['image']}";
+                $size = getimagesize($url);
+                if ( isset($size[0]) && isset($size[1]) && is_numeric($size[0]) && is_numeric($size[1]) ) {
+                    $sql = "UPDATE product_images SET width = {$size[0]}, height = {$size[1]} WHERE product_image_id = {$image['product_image_id']} LIMIT 1";
+                    echo "{$sql}\n";
+                    $product->query($sql);
+                } else {
+                    throw new Exception("No dimensions for $url");
+                }
+            } catch( Exception $e ) {
+                echo "Failed {$image['product_image_id']} " . $e->getMessage() . "\n";
+            }
+            if ( $i++ % 1000 === 0 ) {
+                echo "$i/$total...\n";
+            }
+        }
+        echo "Finished\n";
+    }
+
     /**
      * Login
      *
