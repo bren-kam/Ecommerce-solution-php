@@ -345,7 +345,7 @@ class CustomerSupportController extends BaseController {
         $signature .= '<p style="height:35px;"><img style="height:35px;" src="http://admin.greysuitretail.com/images/logos/'.$ticket_user->domain.'.png" /></p>';
 
         // If it's not private, send an email to the client
-        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && Ticket::STATUS_CLOSED != $ticket->status )
+        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private )
             fn::mail(
                 $ticket_comment->to_address
                 , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
@@ -360,6 +360,7 @@ class CustomerSupportController extends BaseController {
                 , $ticket_comment->cc_address
                 , $ticket_comment->bcc_address
             );
+
         // Send the assigned user an email if they are not submitting the comment
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
             fn::mail(
