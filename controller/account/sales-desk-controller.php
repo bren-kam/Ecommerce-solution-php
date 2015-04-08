@@ -58,8 +58,8 @@ class SalesDeskController extends BaseController {
 
         foreach ( $assignable_users_array as $u ) {
             if ( $u->role != User::ROLE_MARKETING_SPECIALIST &&
-                strpos($u->email, '@ashleyfurniture') !== FALSE &&
-                strpos($u->email, '@sales.ashleyfurniture') !== FALSE )
+                strpos($u->email, '@ashleyfurniture') === FALSE &&
+                strpos($u->email, '@sales.ashleyfurniture') === FALSE )
                 $assignable_users[$u->id] = $u;
         }
 
