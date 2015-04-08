@@ -640,6 +640,7 @@ var NewTicketForm = {
         var form = $('#new-ticket-form');
         form[0].reset();
         form.find('#new-ticket-id').val('');
+        $('#new-ticket-file-list').empty();
     }
 
 
