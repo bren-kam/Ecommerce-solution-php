@@ -152,12 +152,16 @@ foreach ( $admin_users as $au ) {
                         <div class="form-group">
                             <input type="text" class="form-control" id="to-address" name="to-address" value="" placeholder="To/Primary Contact">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group hidden">
                             <input type="text" class="form-control" id="cc-address" name="cc-address" value="" placeholder="CC">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group hidden">
                             <input type="text" class="form-control" id="bcc-address" name="bcc-address" value="" placeholder="BCC">
                         </div>
+                        <p>
+                            <a id="show-cc" href="javascript:;">Add CC</a>
+                            | <a id="show-bcc" href="javascript:;">Add BCC</a>
+                        </p>
                         <div class="form-group">
                             <textarea class="form-control" name="comment" id="reply" rte="1"><?php echo $user->email_signature ?></textarea>
                         </div>

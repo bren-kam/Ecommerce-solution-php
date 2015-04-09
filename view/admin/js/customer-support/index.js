@@ -371,6 +371,20 @@ var TicketCommentForm = {
         // Upload file trigger
         $('#upload').click( TicketCommentForm.selectFile );
         $('#ticket-container').on('click', '.delete-file', TicketCommentForm.deleteFile );
+
+        $('#cc-address').parent('.hidden:first').removeClass('hidden').hide();
+        $('#show-cc').click(function(){
+            $('#cc-address').parent().show();
+            $('#cc-address').focus();
+            $(this).hide();
+        });
+        $('#bcc-address').parent('.hidden:first').removeClass('hidden').hide();
+        $('#show-bcc').click(function(){
+            $('#bcc-address').parent().show();
+            $('#bcc-address').focus();
+            $(this).hide();
+        });
+
     }
 
     , add: function() {
@@ -400,6 +414,10 @@ var TicketCommentForm = {
         for (var i in CKEDITOR.instances) {
             CKEDITOR.instances[i].setData('');
         }
+        $('#cc-address').parent().hide();
+        $('#show-cc').show();
+        $('#bcc-address').parent().hide();
+        $('#show-bcc').show();
     }
 
     , delete: function () {
