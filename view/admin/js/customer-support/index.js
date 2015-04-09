@@ -73,12 +73,24 @@ var InboxNavigation = {
                 } else if ( ticket.priority == 0 ) {  // Low Priority
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-open"></i> ');
                 }
-                if ( ticket.status == 0 ) { // Open
-                    item.find('.email-status').text('Open');
-                } else if ( ticket.status == 1 ) { // Closed
-                    item.find('.email-status').text('Closed');
-                } else if ( ticket.status == 2 ) { // In Progress
-                    item.find('.email-status').text('In Progress');
+
+                if ( !ticket.user_id_created || ticket.assigned_to_user_id == ticket.user_id_created ) {
+                    if ( ticket.status == 0 ) { // Open
+                        item.find('.email-status').text('Open');
+                    } else if ( ticket.status == 1 ) { // Closed
+                        item.find('.email-status').text('Closed');
+                    } else if ( ticket.status == 2 ) { // In Progress
+                        item.find('.email-status').text('In Progress');
+                    }
+                } else {
+                    if ( ticket.status == 0 ) { // Open
+                        item.find('.email-status').text('Awaiting Response');
+                    } else if ( ticket.status == 1 ) { // Closed
+                        item.find('.email-status').text('Closed');
+                    } else if ( ticket.status == 2 ) { // In Progress
+                        item.find('.email-status').text('Awaiting Response');
+                    }
+
                 }
 
                 InboxNavigation.container.append(item);
@@ -93,6 +105,7 @@ var Ticket = {
     container: null
     , commentsContainer: null
     , commentTemplate: null
+    , currentTicket: null
 
     , init: function() {
         Ticket.container = $('#ticket-container');
@@ -106,6 +119,10 @@ var Ticket = {
         $(Ticket.container.find('.attach-to-account-container')).on('click', '.selectpicker li a', Ticket.attachUserToAccount);
 
         $('#to-address').tooltip({'trigger':'focus', 'title': 'Changing this will update the Ticket Primary Contact'});
+
+        Ticket.container.find('#ticket-comments').on('click', '.comment-assign-to', Ticket.assignTo);
+
+        Ticket.container.find('#ticket-summary').blur(Ticket.updateSummary);
     }
 
     , show: function(ticketId) {
@@ -134,6 +151,7 @@ var Ticket = {
 
         if (response.success) {
             var currentTicket = response.ticket;
+            Ticket.currentTicket = currentTicket;
 
             // Ticket --
             var statusText = 'Open';
@@ -162,7 +180,7 @@ var Ticket = {
             }
 
 
-            Ticket.container.find('.ticket-summary').text(currentTicket.summary);
+            Ticket.container.find('#ticket-summary').val(currentTicket.summary);
             Ticket.container.find('.ticket-user-name').text(currentTicket.name);
             if ( currentTicket.website ) {
                 Ticket.container.find('.ticket-user-name').append(' - ' + currentTicket.website);
@@ -173,6 +191,7 @@ var Ticket = {
             Ticket.container.find('.ticket-updated').text(currentTicket.updated_ago);
             Ticket.container.find('.ticket-created').text(currentTicket.created_ago);
             Ticket.container.find('.ticket-account').text(currentTicket.website);
+            Ticket.container.find('.ticket-account-domain').attr('href', currentTicket.domain);
             if ( currentTicket.website ) {
                 Ticket.container.find('.edit-account').attr('href', '/accounts/edit/?aid=' + currentTicket.website_id);
                 Ticket.container.find('.control-account').attr('href', '/accounts/control/?aid=' + currentTicket.website_id);
@@ -233,6 +252,7 @@ var Ticket = {
 
                 item.find('.comment-created-ago').text(comment.created_ago);
                 item.find('.comment-message').html(comment.comment);
+                item.find('.comment-assign-to').data('assign-to', comment.user_id);
 
                 // Comment Attachments --
                 if ( comment.uploads ) {
@@ -261,7 +281,17 @@ var Ticket = {
     }
 
     , assignTo: function() {
-        var userId = $('#assign-to').val();
+        var $this = $(this);
+        var userId = $this.data('assign-to');
+
+        if ( userId ) {
+            // assignTo comes from a data, lets see if it's an assignable user
+            if ( $('#assign-to [value='+userId+']').size() > 0 ) {
+                $('#assign-to').selectpicker('val', userId);
+            }
+        } else {
+            userId = $('#assign-to').val();
+        }
 
         $.post(
             '/customer-support/update-assigned-to/'
@@ -344,6 +374,24 @@ var Ticket = {
         );
     }
 
+    , updateSummary: function() {
+        var summary = $('#ticket-summary').val();
+
+        $.post(
+            '/customer-support/update-summary/'
+            , {
+                _nonce : $('#update-summary-nonce').val()
+                , tid : Ticket.container.data('ticket-id')
+                , "summary" : summary
+            }
+            , function( response ) {
+                GSR.defaultAjaxResponse( response );
+                if ( response.success ) {
+                    InboxNavigation.getTickets();
+                }
+            }
+        );
+    }
 
 };
 
@@ -557,6 +605,7 @@ var NewTicketForm = {
             InboxNavigation.getTickets();  // update ticket list
             if ( response.id ) {
                 Ticket.show( response.id );  // load ticket
+                InboxNavigation.getTickets();  // Update list
             }
         }
     }

@@ -57,7 +57,11 @@ class CustomerSupportController extends BaseController {
         $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
 
         // Grab only the right status
-        if ( $status >= 0 ) {
+        if ( $status == -2) {
+            $dt->add_where(" AND a.`user_id_created` != a.`assigned_to_user_id`");
+        } else if ( $status == -1) {
+            $dt->add_where(" AND a.`status` IN (0, 2) ");  // show open and in progress
+        } else if ( $status >= 0 ) {
             $dt->add_where(" AND a.`status` = $status");
         }
 
@@ -65,7 +69,9 @@ class CustomerSupportController extends BaseController {
         if ('-1' == $_GET['assigned-to']) {
             $dt->add_where(' AND c.`role` <= ' . (int)$this->user->role);
         } else if ($_GET['assigned-to'] > 0) {
-            $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ? ' AND c.`user_id` = ' . (int)$_GET['assigned-to'] : ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' )';
+            $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ?
+                ' AND ( c.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR a.`user_id_created` = ' . (int)$_GET['assigned-to'] . ')' :
+                ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR a.`user_id_created` = ' . (int)$_GET['assigned-to'] . ')';
             $dt->add_where($assigned_to);
         }
 
@@ -91,6 +97,8 @@ class CustomerSupportController extends BaseController {
                 , 'priority' => $ticket->priority
                 , 'status' => $ticket->status
                 , 'date_created' => strtoupper($date->format('d-M'))
+                , 'user_id_created' => $ticket->user_id_created
+                , 'assigned_to_user_id' => $ticket->assigned_to_user_id
             ];
         }
 
@@ -534,6 +542,34 @@ class CustomerSupportController extends BaseController {
         return $response;
     }
 
+    /**
+     * Update Summary
+     *
+     * @return AjaxResponse
+     */
+    protected function update_summary() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['summary'] ), _('Failed to update summary') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change priority
+        $ticket->summary = $_POST['summary'];
+
+        // Update ticket
+        $ticket->save();
+
+        return $response;
+    }
 
     /**
      * Upload an attachment to comment
@@ -662,7 +698,8 @@ class CustomerSupportController extends BaseController {
 
         // Set ticket information
         $ticket->user_id = $user->id;
-        $ticket->assigned_to_user_id = $this->user->id;  // Send a message, but assign ticket to self
+        $ticket->assigned_to_user_id = $this->user->id;
+        $ticket->user_id_created = $this->user->id;
         $ticket->website_id = 0; // Admin side -- no website
         $ticket->summary = $_POST['summary'];
         $ticket->message = trim($_POST['message']);

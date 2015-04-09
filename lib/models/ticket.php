@@ -9,7 +9,7 @@ class Ticket extends ActiveRecordBase {
     const STATUS_UNCREATED = -1;
 
     // The columns we will have access to
-    public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to
+    public $id, $ticket_id, $user_id, $assigned_to_user_id, $user_id_created, $summary, $message, $name, $website, $assigned_to
         , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created, $jira_id, $jira_key;
 
     // Fields from other tables
@@ -30,7 +30,7 @@ class Ticket extends ActiveRecordBase {
      * Get ticket
      */
     public function get( $ticket_id ) {
-		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key`, MAX(tc.`date_created`) AS last_updated_at, tcu.`contact_name` AS last_updated_by
+		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`user_id_created`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key`, MAX(tc.`date_created`) AS last_updated_at, tcu.`contact_name` AS last_updated_by
                   FROM `tickets` AS a
                   LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
                   LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` )
@@ -56,6 +56,7 @@ class Ticket extends ActiveRecordBase {
         $this->insert( array(
             'user_id' => $this->user_id
             , 'assigned_to_user_id' => $this->assigned_to_user_id
+            , 'user_id_created' => $this->user_id_created
             , 'website_id' => $this->website_id
             , 'summary' => strip_tags($this->summary)
             , 'message' => $this->message
@@ -76,6 +77,7 @@ class Ticket extends ActiveRecordBase {
                 'user_id' => $this->user_id
                 , 'assigned_to_user_id' => $this->assigned_to_user_id
                 , 'website_id' => $this->website_id
+                , 'user_id_created' => $this->user_id_created
                 , 'summary' => strip_tags($this->summary)
                 , 'message' => $this->message
                 , 'browser_name' => strip_tags($this->browser_name)
@@ -106,6 +108,8 @@ class Ticket extends ActiveRecordBase {
         return $this->prepare(
             "SELECT a.`ticket_id`
                 , IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to
+                , a.`user_id_created`
+                , a.`assigned_to_user_id`
                 , a.`summary`
                 , a.`status`
                 , a.`priority`
