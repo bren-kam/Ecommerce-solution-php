@@ -1690,6 +1690,7 @@ CREATE TABLE `tickets` (
   `ticket_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `assigned_to_user_id` int(11) NOT NULL,
+  `user_id_created` int(11) NOT NULL,
   `website_id` int(11) NOT NULL,
   `summary` varchar(140) NOT NULL,
   `message` text NOT NULL,
