@@ -344,8 +344,15 @@ class CustomerSupportController extends BaseController {
         $signature .= '</p>';
         $signature .= '<p style="height:35px;"><img style="height:35px;" src="http://admin.greysuitretail.com/images/logos/'.$ticket_user->domain.'.png" /></p>';
 
+        // Send emails only for public comments
+        $send_email = $ticket_comment->private == TicketComment::VISIBILITY_PUBLIC;
+        // GSR System email addresses should not get any email
+        $send_email = $send_email && strpos($ticket_comment->to_address, '@imagineretailer') === FALSE;
+        $send_email = $send_email && strpos($ticket_comment->to_address, '@greysuitretail') === FALSE;
+        $send_email = $send_email && strpos($ticket_comment->to_address, '@blinkyblinky') === FALSE;
+
         // If it's not private, send an email to the client
-        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private )
+        if ( $send_email ) {
             fn::mail(
                 $ticket_comment->to_address
                 , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
@@ -361,20 +368,21 @@ class CustomerSupportController extends BaseController {
                 , $ticket_comment->bcc_address
             );
 
-        // Send the assigned user an email if they are not submitting the comment
-        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
-            fn::mail(
-                $assigned_user->email
-                , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
-                , "{$ticket_comment->comment}"
-                    . "{$attachments}"
-                    . "{$signature}"
-                    . "{$thread}"
-                , $this->user->contact_name . ' <' . $os_domain_email . '>'
-                , $this->user->contact_name . ' <' . $os_domain_email . '>'
-                , false
-                , false
-            );
+            // Send the assigned user an email if they are not submitting the comment
+            if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
+                fn::mail(
+                    $assigned_user->email
+                    , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
+                    , "{$ticket_comment->comment}"
+                        . "{$attachments}"
+                        . "{$signature}"
+                        . "{$thread}"
+                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
+                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
+                    , false
+                    , false
+                );
+            }
         }
 
         if ( $ticket->jira_id ) {
