@@ -1484,6 +1484,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                     $groups[$item['group']] = array('name' => '', 'description' => '', 'features' => '');
             }
 
+            // Get Product Name
+
+            $group = $groups[$item['group']];
+            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
+
+            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
+            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
+
+            $name = format::convert_characters( $group_name . $item['description'] );
+
             /***** GET PRODUCT *****/
 
             // Get Product
@@ -1495,8 +1505,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             if ( $last_update > $two_days_ago )
                 continue;
 
-            if ( 'deleted' == $product->publish_visibility )
-                continue;
+            // If the SKU is "Deleted" in our system
+            // We will skip ONLY if name matches
+            // (They reuse old skus on new products)
+            if ( 'deleted' == $product->publish_visibility ) {
+                if ( $product->name == $name ) {
+                    continue;
+                } else {
+                    $product = null;  // mark a new product
+                }
+            }
 
             // Now we have the product
             if ( !$product instanceof Product ) {
@@ -1516,16 +1534,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             }
 
             $product->get_specifications();
-
-            /***** PREPARE PRODUCT DATA *****/
-
-            $group = $groups[$item['group']];
-            $group_name = $group['name'] ? ( $group['name'] . ' - ' ) : '';
-
-            $group_description = $group['description'] ? ('<p>' . $group['description'] . '</p>') : '';
-            $group_features = $group['features'] ? ('<p>' . $group['features'] . '</p>') : '';
-
-            $name = format::convert_characters( $group_name . $item['description'] );
 
             /***** ADD PRODUCT DATA *****/
 
@@ -1550,12 +1558,29 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 }
             }
 
+            // Carton (Set of X)
+//            $is_carton = strpos($product->name, '(Set of ');
+//            if ( $is_carton !== false ) {
+//                $multiplier = (int) substr($product->name, $is_carton + 8, 1);
+//                $item['price'] *= $multiplier;
+//            }
+//
+//            // Carton (X/CN)
+//            $is_carton = strpos($product->name, '/CN)');
+//            if ( $is_carton !== false ) {
+//                $multiplier = (int) substr($product->name, $is_carton - 1, 1);
+//                $item['price'] *= $multiplier;
+//            }
+
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
             $product->price = $this->identical( $item['price'], $product->price, 'price' );
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
+            $product->depth = $item['depth'];
+            $product->height = $item['height'];
+            $product->length = $item['length'];
 
             // Handle categories
             if ( $new_product || empty( $product->category_id ) ) {
@@ -1635,6 +1660,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $new_product['specs'][] = array( 'Depth', trim( $ic->itemDimensions->depth['value'] ) . ' Inches' ) ;
                 $new_product['specs'][] = array( 'Height', trim( $ic->itemDimensions->height['value'] ) . ' Inches' ) ;
                 $new_product['specs'][] = array( 'Length', trim( $ic->itemDimensions->length['value'] ) . ' Inches' ) ;
+
+                $new_product['depth'] = trim($ic->itemDimensions->depth['value']);
+                $new_product['height'] = trim($ic->itemDimensions->height['value']);
+                $new_product['length'] = trim($ic->itemDimensions->length['value']);
                 break;
             }
         }
@@ -1654,7 +1683,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 continue;
 
             $images = $tag->get_value_by_type( 'ashley_product_image', $product->id );
-            foreach ( $images as $image ) {
+            foreach ( $images as $image )   {
                 echo "#{$product->id} - {$image}\n";
 
                 /***** ADD PRODUCT IMAGES *****/

@@ -26,7 +26,7 @@ class User extends ActiveRecordBase {
     const STATUS_INACTIVE = 0;
 
     // The columns we will have access to
-    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $role, $date_created;
+    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $role, $email_signature, $date_created;
 
     // Columns available in getting a complete user
     public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip, $photo;
@@ -35,7 +35,7 @@ class User extends ActiveRecordBase {
     public $phone;
 
     // These columns belong to another table but might be available from the user
-    public $company, $domain, $accounts;
+    public $company, $domain, $accounts, $main_website;
 
     /**
      * Holds the account if it has it
@@ -72,6 +72,7 @@ class User extends ActiveRecordBase {
             , 'photo' => $this->photo
             , 'status' => $this->status
             , 'role' => $this->role
+            , 'email_signature' => strip_tags($this->email_signature)
             , 'billing_first_name' => strip_tags($this->billing_first_name)
             , 'billing_last_name' => strip_tags($this->billing_last_name)
             , 'billing_address1' => strip_tags($this->billing_address1)
@@ -98,6 +99,7 @@ class User extends ActiveRecordBase {
             , 'photo' => $this->photo
             , 'status' => $this->status
             , 'role' => $this->role
+            , 'email_signature' => strip_tags($this->email_signature)
             , 'billing_first_name' => strip_tags($this->billing_first_name)
             , 'billing_last_name' => strip_tags($this->billing_last_name)
             , 'billing_address1' => strip_tags($this->billing_address1)
@@ -154,7 +156,7 @@ class User extends ActiveRecordBase {
 	 */
 	public function get( $user_id ) {
         // Prepare the statement
-        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
+        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain`, u.`email_signature` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -187,7 +189,7 @@ class User extends ActiveRecordBase {
         $status_where = ( $status ) ? ' AND u.`status` = ' . self::STATUS_ACTIVE : '';
 
         $this->prepare(
-            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
+            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain`, u.`email_signature` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
             , 's'
             , array( ':email' => $email )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -290,7 +292,7 @@ class User extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        return $this->prepare( "SELECT `user_id`, `email`, `contact_name`, `role` FROM `users` WHERE `status` <> " . self::STATUS_INACTIVE . " $where $order_by LIMIT $limit"
+        return $this->prepare( "SELECT u.`user_id`, u.`email`, u.`contact_name`, u.`role`, w.`title` as main_website FROM `users` u LEFT JOIN `websites` w ON u.`user_id` = w.`user_id` WHERE u.`status` <> " . self::STATUS_INACTIVE . " $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'User' );

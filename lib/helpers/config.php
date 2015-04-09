@@ -119,6 +119,7 @@ class Config {
         , 'jquery-ui' => '//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
         , 'videojs-css' => '//vjs.zencdn.net/4.6/video-js.css'
         , 'timepicker-css' => '//cdn.jsdelivr.net/jquery.timepicker/1.3.7/jquery.timepicker.css'
+        , 'bootstrap-select-css' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.4/css/bootstrap-select.css'
 
         /* JS */
         , 'ace-js' => '//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js'
@@ -129,6 +130,8 @@ class Config {
         , 'videojs-js' => '//vjs.zencdn.net/4.6/video.js'
         , 'timepicker-js' => '//cdn.jsdelivr.net/jquery.timepicker/1.3.7/jquery.timepicker.js'
         , 'ckeditor-js' => '/ckeditor/ckeditor.js'
+        , 'bootstrap-select-js' => '//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.4/js/bootstrap-select.js'
+        , 'handlebars-js' => '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.0/handlebars.min.js'
     );
 
 	/**

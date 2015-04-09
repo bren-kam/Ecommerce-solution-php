@@ -74,7 +74,7 @@ class AuthUserWebsite extends ActiveRecordBase {
      * @param int $role (optional|1)
      * @throws ModelException
      */
-    public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = User::ROLE_AUTHORIZED_USER ) {
+    public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = User::ROLE_AUTHORIZED_USER, $send_email = true ) {
         // Setup variables
         $user = new User();
         $user->get_by_email( $email, false );
@@ -144,6 +144,9 @@ class AuthUserWebsite extends ActiveRecordBase {
         $this->email_marketing = $email_marketing;
         $this->shopping_cart = $shopping_cart;
         $this->create();
+
+        if ( !$send_email )
+            return;
 
         // Send email if it's not in the blocked list
         if ( in_array( $email, $this->blocked_emails ) )
