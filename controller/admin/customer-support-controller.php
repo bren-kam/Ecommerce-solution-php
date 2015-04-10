@@ -54,22 +54,27 @@ class CustomerSupportController extends BaseController {
         if (!$this->user->has_permission(User::ROLE_ADMIN))
             $dt->add_where(' AND ( c.`company_id` = ' . (int)$this->user->company_id . ' OR a.`user_id` = ' . (int)$this->user->id . ' )');
 
-        $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
-
-        // Grab only the right status
-        if ( $status == -2 && $_GET['assigned-to'] > 0) {
-            $dt->add_where(" AND ({$_GET['assigned-to']} != a.`assigned_to_user_id`) AND a.`status` IN (0, 2) ");
-        } else if ( $status == -1) {
-            $dt->add_where(" AND a.`status` IN (0, 2) ");  // show open and in progress
-        } else if ( $status >= 0 ) {
-            $dt->add_where(" AND a.`status` = $status");
-        }
-
-        // Grab only the right status
+        // Grab only the right user
         if ('-1' == $_GET['assigned-to']) {
             $dt->add_where(' AND c.`role` <= ' . (int)$this->user->role);
         } else if ($_GET['assigned-to'] > 0) {
-            $dt->add_where(" AND ( {$_GET['assigned-to']} IN (a.`user_id_created`, b.`user_id`, c.`user_id`, d.`os_user_id`) ) ");
+            if ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) ) {
+                $dt->add_where(" AND ( {$_GET['assigned-to']} IN (a.`user_id_created`, a.`assigned_to_user_id`, a.`user_id`) ) ");
+            } else {
+                $dt->add_where(" AND ( {$_GET['assigned-to']} IN (a.`user_id_created`, a.`assigned_to_user_id`, a.`user_id`, d.`os_user_id`) ) ");
+            }
+        }
+
+        $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
+        $status_condition_with_user = $_GET['assigned-to'] > 0;
+        // Grab status
+        if ( $status == -2 ) {
+            $dt->add_where(" AND a.`status` IN (0, 2) " . ($status_condition_with_user ? "AND ({$_GET['assigned-to']} != a.`assigned_to_user_id`) " : ""));
+        } else if ( $status == -1 ) {
+            // show open and in progress
+            $dt->add_where(" AND a.`status` IN (0, 2) " . ($status_condition_with_user ? "AND ({$_GET['assigned-to']} = a.`assigned_to_user_id`) " : ""));
+        } else if ( $status >= 0 ) {
+            $dt->add_where(" AND a.`status` = $status " . ($status_condition_with_user ? "AND ({$_GET['assigned-to']} = a.`assigned_to_user_id`) " : ""));
         }
 
         if ( $_GET['account'] ) {
