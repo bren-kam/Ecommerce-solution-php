@@ -47,7 +47,7 @@ class CustomerSupportController extends BaseController {
         $_GET['iSortCol_0'] = '0';
         $_GET['sSortDir_0'] = 'DESC';
         $dt = new DataTableResponse($this->user);
-        $dt->order_by('date_created');
+        $dt->order_by('last_updated_at');
         $dt->search(array('a.`ticket_id`' => true, 'b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`', 'b.`email`' => true));
 
         // If they are below 8, that means they are a partner
@@ -57,8 +57,8 @@ class CustomerSupportController extends BaseController {
         $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
 
         // Grab only the right status
-        if ( $status == -2) {
-            $dt->add_where(" AND a.`user_id_created` != a.`assigned_to_user_id`");
+        if ( $status == -2 && $_GET['assigned-to'] > 0) {
+            $dt->add_where(" AND ({$_GET['assigned-to']} != a.`assigned_to_user_id`) AND a.`status` IN (0, 2) ");
         } else if ( $status == -1) {
             $dt->add_where(" AND a.`status` IN (0, 2) ");  // show open and in progress
         } else if ( $status >= 0 ) {
@@ -69,10 +69,7 @@ class CustomerSupportController extends BaseController {
         if ('-1' == $_GET['assigned-to']) {
             $dt->add_where(' AND c.`role` <= ' . (int)$this->user->role);
         } else if ($_GET['assigned-to'] > 0) {
-            $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ?
-                ' AND ( c.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR a.`user_id_created` = ' . (int)$_GET['assigned-to'] . ')' :
-                ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR a.`user_id_created` = ' . (int)$_GET['assigned-to'] . ')';
-            $dt->add_where($assigned_to);
+            $dt->add_where(" AND ( {$_GET['assigned-to']} IN (a.`user_id_created`, b.`user_id`, c.`user_id`, d.`os_user_id`) ) ");
         }
 
         if ( $_GET['account'] ) {

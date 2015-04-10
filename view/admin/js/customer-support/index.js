@@ -55,6 +55,7 @@ var InboxNavigation = {
         GSR.defaultAjaxResponse( response );
         InboxNavigation.container.css('opacity', '1');
         if (response.success) {
+            var currentUserId = $('#filter-assigned-to').val();
             InboxNavigation.container.empty();
             for (i in response.tickets) {
                 var ticket = response.tickets[i];
@@ -74,7 +75,7 @@ var InboxNavigation = {
                     item.find('.email-date').append(' <i class="fa fa-circle ticket-open"></i> ');
                 }
 
-                if ( !ticket.user_id_created || ticket.assigned_to_user_id == ticket.user_id_created ) {
+                if ( ticket.assigned_to_user_id == currentUserId) {
                     if ( ticket.status == 0 ) { // Open
                         item.find('.email-status').text('Open');
                     } else if ( ticket.status == 1 ) { // Closed
@@ -190,14 +191,18 @@ var Ticket = {
             Ticket.container.find('.ticket-id').text(currentTicket.id);
             Ticket.container.find('.ticket-updated').text(currentTicket.updated_ago);
             Ticket.container.find('.ticket-created').text(currentTicket.created_ago);
+            Ticket.container.find('.ticket-creator').text(currentTicket.creator_name);
             Ticket.container.find('.ticket-account').text(currentTicket.website);
-            Ticket.container.find('.ticket-account-domain').attr('href', currentTicket.domain);
+            Ticket.container.find('.ticket-account-domain').attr('href', "//" + currentTicket.domain);
             if ( currentTicket.website ) {
                 Ticket.container.find('.edit-account').attr('href', '/accounts/edit/?aid=' + currentTicket.website_id);
                 Ticket.container.find('.control-account').attr('href', '/accounts/control/?aid=' + currentTicket.website_id);
                 Ticket.container.find('.edit-account').parents('li').show();
+                Ticket.container.find('.ticket-online-specialist').text(currentTicket.os_user_name);
+                Ticket.container.find('.ticket-online-specialist').parents('li').show();
             } else {
                 Ticket.container.find('.edit-account').parents('li').hide();
+                Ticket.container.find('.ticket-online-specialist').parents('li').hide();
             }
 
             Ticket.container.find('.ticket-message').html(currentTicket.message);

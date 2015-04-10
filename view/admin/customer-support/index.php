@@ -136,7 +136,9 @@ foreach ( $admin_users as $au ) {
                             <li>Ticket #: <strong class="ticket-id"></strong><br></li>
                             <li>Updated: <strong class="ticket-updated"></strong><br></li>
                             <li>Created: <strong class="ticket-created"></strong><br></li>
+                            <li>Created By: <strong class="ticket-creator"></strong><br></li>
                             <li>Account: <a href="javascript:;" class="ticket-account-domain" target="_blank"><strong class="ticket-account"></strong></a> - <a href="javascript:;" class="edit-account" target="_blank">Edit</a> | <a href="javascript:;" class="control-account" target="_blank">Control</a><br></li>
+                            <li>Online Specialist: <strong class="ticket-online-specialist"></strong><br></li>
                         </ul>
                     </div>
                 </div>
