@@ -79,7 +79,7 @@ class Feed extends ActiveRecordBase {
             $limit = 10000000;
 
 
-        if ( !empty( $ashley_id ) && ( $valid_ashley_id && empty( $ashley_accounts ) ) ) {
+        if ( !empty( $ashley_id ) && empty( $ashley_accounts ) ) {
             $inner_join .= " INNER JOIN website_products wp ON wp.product_id = p.product_id INNER JOIN website_settings ws ON ws.website_id = wp.website_id AND ws.`key` = 'ashley-ftp-username'";
             $where .= " AND ws.`value` = " . $this->quote( $ashley_id ) . " AND p.`user_id_created` IN ( 353, 1477 ) ";
             //$inner_join .= " LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id`)";
