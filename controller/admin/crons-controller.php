@@ -586,14 +586,12 @@ class CronsController extends BaseController {
                    $url = $image['image'];
                 else
                     $url = "http://{$image['industry']}.retailcatalog.us/products/{$image['product_id']}/large/{$image['image']}";
-                $size = getimagesize($url);
-                if ( isset($size[0]) && isset($size[1]) && is_numeric($size[0]) && is_numeric($size[1]) ) {
-                    $sql = "UPDATE product_images SET width = {$size[0]}, height = {$size[1]} WHERE product_image_id = {$image['product_image_id']} LIMIT 1";
-                    echo "{$sql}\n";
-                    $product->query($sql);
-                } else {
-                    throw new Exception("No dimensions for $url");
-                }
+
+                list( $width, $height ) = getimagesize($url);
+                $sql = "UPDATE product_images SET width = " .  (int) $width . ", height = " . (int) $height . " WHERE product_image_id = {$image['product_image_id']}";
+                //echo "{$sql}\n";
+                $product->query($sql);
+
             } catch( Exception $e ) {
                 echo "Failed {$image['product_image_id']} " . $e->getMessage() . "\n";
             }
