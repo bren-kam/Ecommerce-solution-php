@@ -575,7 +575,7 @@ class CronsController extends BaseController {
                                 FROM products p
                                 INNER JOIN industries i ON p.industry_id = i.industry_id
                                 INNER JOIN product_images pi ON p.product_id = pi.product_id
-                                WHERE pi.width IS NULL or pi.height IS NULL AND p.publish_visibility = 'public'"
+                                WHERE pi.width IS NULL AND p.publish_visibility = 'public'"
             , PDO::FETCH_ASSOC);
 
         $i = 0;
