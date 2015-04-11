@@ -99,6 +99,14 @@
 .mail-box ul.inbox-nav > .inbox-nav-item:nth-child(even) {
   background-color: #f3f3f3;
 }
+.mail-box .lg-side #ticket-summary-container {
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+.mail-box .lg-side #ticket-summary-container input {
+  width: 60%;
+}
 .mail-box .lg-side .inbox-head {
   color: #333;
   background: #F0F0F0;

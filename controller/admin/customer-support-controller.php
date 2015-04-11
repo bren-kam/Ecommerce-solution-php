@@ -47,26 +47,34 @@ class CustomerSupportController extends BaseController {
         $_GET['iSortCol_0'] = '0';
         $_GET['sSortDir_0'] = 'DESC';
         $dt = new DataTableResponse($this->user);
-        $dt->order_by('date_created');
+        $dt->order_by('last_updated_at');
         $dt->search(array('a.`ticket_id`' => true, 'b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true, 'a.`message`', 'b.`email`' => true));
 
         // If they are below 8, that means they are a partner
         if (!$this->user->has_permission(User::ROLE_ADMIN))
             $dt->add_where(' AND ( c.`company_id` = ' . (int)$this->user->company_id . ' OR a.`user_id` = ' . (int)$this->user->id . ' )');
 
-        $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
-
-        // Grab only the right status
-        if ( $status >= 0 ) {
-            $dt->add_where(" AND a.`status` = $status");
-        }
-
-        // Grab only the right status
+        // Grab only the right user
         if ('-1' == $_GET['assigned-to']) {
             $dt->add_where(' AND c.`role` <= ' . (int)$this->user->role);
         } else if ($_GET['assigned-to'] > 0) {
-            $assigned_to = ($this->user->has_permission(User::ROLE_SUPER_ADMIN)) ? ' AND c.`user_id` = ' . (int)$_GET['assigned-to'] : ' AND ( b.`user_id` = ' . (int)$_GET['assigned-to'] . ' OR c.`user_id` = ' . (int)$_GET['assigned-to'] . ' )';
-            $dt->add_where($assigned_to);
+            if ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) ) {
+                $dt->add_where(" AND ( {$_GET['assigned-to']} IN (a.`user_id_created`, a.`assigned_to_user_id`, a.`user_id`) ) ");
+            } else {
+                $dt->add_where(" AND ( {$_GET['assigned-to']} IN (a.`user_id_created`, a.`assigned_to_user_id`, a.`user_id`, d.`os_user_id`) ) ");
+            }
+        }
+
+        $status = (isset($_GET['status'])) ? (int)$_GET['status'] : 0;
+        $status_condition_with_user = $_GET['assigned-to'] > 0;
+        // Grab status
+        if ( $status == -2 ) {
+            $dt->add_where(" AND a.`status` IN (0, 2) " . ($status_condition_with_user ? "AND ({$_GET['assigned-to']} != a.`assigned_to_user_id`) " : ""));
+        } else if ( $status == -1 ) {
+            // show open and in progress
+            $dt->add_where(" AND a.`status` IN (0, 2) " . ($status_condition_with_user ? "AND ({$_GET['assigned-to']} = a.`assigned_to_user_id`) " : ""));
+        } else if ( $status >= 0 ) {
+            $dt->add_where(" AND a.`status` = $status " . ($status_condition_with_user ? "AND ({$_GET['assigned-to']} = a.`assigned_to_user_id`) " : ""));
         }
 
         if ( $_GET['account'] ) {
@@ -91,6 +99,8 @@ class CustomerSupportController extends BaseController {
                 , 'priority' => $ticket->priority
                 , 'status' => $ticket->status
                 , 'date_created' => strtoupper($date->format('d-M'))
+                , 'user_id_created' => $ticket->user_id_created
+                , 'assigned_to_user_id' => $ticket->assigned_to_user_id
             ];
         }
 
@@ -344,8 +354,15 @@ class CustomerSupportController extends BaseController {
         $signature .= '</p>';
         $signature .= '<p style="height:35px;"><img style="height:35px;" src="http://admin.greysuitretail.com/images/logos/'.$ticket_user->domain.'.png" /></p>';
 
+        // Send emails only for public comments
+        $send_email = $ticket_comment->private == TicketComment::VISIBILITY_PUBLIC;
+        // GSR System email addresses should not get any email
+        $send_email = $send_email && strpos($ticket_comment->to_address, '@imagineretailer') === FALSE;
+        $send_email = $send_email && strpos($ticket_comment->to_address, '@greysuitretail') === FALSE;
+        $send_email = $send_email && strpos($ticket_comment->to_address, '@blinkyblinky') === FALSE;
+
         // If it's not private, send an email to the client
-        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private )
+        if ( $send_email ) {
             fn::mail(
                 $ticket_comment->to_address
                 , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
@@ -361,20 +378,21 @@ class CustomerSupportController extends BaseController {
                 , $ticket_comment->bcc_address
             );
 
-        // Send the assigned user an email if they are not submitting the comment
-        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
-            fn::mail(
-                $assigned_user->email
-                , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
-                , "{$ticket_comment->comment}"
-                    . "{$attachments}"
-                    . "{$signature}"
-                    . "{$thread}"
-                , $this->user->contact_name . ' <' . $os_domain_email . '>'
-                , $this->user->contact_name . ' <' . $os_domain_email . '>'
-                , false
-                , false
-            );
+            // Send the assigned user an email if they are not submitting the comment
+            if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
+                fn::mail(
+                    $assigned_user->email
+                    , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
+                    , "{$ticket_comment->comment}"
+                        . "{$attachments}"
+                        . "{$signature}"
+                        . "{$thread}"
+                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
+                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
+                    , false
+                    , false
+                );
+            }
         }
 
         if ( $ticket->jira_id ) {
@@ -526,6 +544,34 @@ class CustomerSupportController extends BaseController {
         return $response;
     }
 
+    /**
+     * Update Summary
+     *
+     * @return AjaxResponse
+     */
+    protected function update_summary() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['summary'] ), _('Failed to update summary') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change priority
+        $ticket->summary = $_POST['summary'];
+
+        // Update ticket
+        $ticket->save();
+
+        return $response;
+    }
 
     /**
      * Upload an attachment to comment
@@ -654,7 +700,8 @@ class CustomerSupportController extends BaseController {
 
         // Set ticket information
         $ticket->user_id = $user->id;
-        $ticket->assigned_to_user_id = $this->user->id;  // Send a message, but assign ticket to self
+        $ticket->assigned_to_user_id = $this->user->id;
+        $ticket->user_id_created = $this->user->id;
         $ticket->website_id = 0; // Admin side -- no website
         $ticket->summary = $_POST['summary'];
         $ticket->message = trim($_POST['message']);
