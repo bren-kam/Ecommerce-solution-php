@@ -45,6 +45,7 @@ class PipeController extends BaseController {
             $body = $email['Body'];
         }
         $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
+        $body = preg_replace('/\n> On(.*?)wrote:(.*?)$/si', '', $body);
         $body = preg_replace('/\n\nFrom: (.*?)$/si', '', $body);
         $body = trim($body);
         $body = nl2br($body);
