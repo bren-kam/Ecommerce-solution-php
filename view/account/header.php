@@ -111,9 +111,9 @@
                                     <a href="http://<?php echo $user->account->domain ?>" target="_blank"><i class="fa fa-link" style="font-size:14px;"></i> <?php echo $user->account->title ?></a>
                                 </li>
                             <?php endif; ?>
-                            <?php foreach( array_slice($user->accounts, 3) as $another_account ): ?>
+                            <?php foreach( array_slice($user->accounts, 0, 3) as $another_account ): ?>
                                 <li>
-                                    <a href="/home/change-account/?aid=<?php echo $another_account->id; ?>" title="<?php echo _('Change Account'); ?>"><i class="fa fa-circle"></i> <strong><?php echo $another_account->title; ?></strong> - <?php echo $another_account->domain; ?></a>
+                                    <a href="/home/change-account/?aid=<?php echo $another_account->id; ?>" title="<?php echo _('Change Account'); ?>"><i class="fa fa-circle"></i> <strong><?php echo $another_account->title; ?></strong></a>
                                 </li>
                             <?php endforeach; ?>
                             <?php if ( count($user->accounts) > 3 ): ?>
