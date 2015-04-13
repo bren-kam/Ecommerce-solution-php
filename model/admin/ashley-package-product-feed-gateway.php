@@ -503,6 +503,21 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             if ( !empty( $style_description ) )
                 $product_specs[] = array( 'Style Description', $style_description );
 
+            foreach ( $sku_pieces as $sp ) {
+                echo  "\nPiece: $sp - ";
+                if ( isset( $this->ashley_products[$series . $sp] ) ) {
+                    $piece = $this->ashley_products[$series . $sp];
+                    $product_specs[] = [ "{$piece['name']} Depth", $piece['spec_depth'] ];
+                    $product_specs[] = [ "{$piece['name']} Length", $piece['spec_length'] ];
+                    $product_specs[] = [ "{$piece['name']} Height", $piece['spec_height'] ];
+                } elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
+                    $piece = $this->ashley_products[$series . '-' . $sp];
+                    $product_specs[] = [ "{$piece['name']} Depth", $piece['spec_depth'] ];
+                    $product_specs[] = [ "{$piece['name']} Length", $piece['spec_length'] ];
+                    $product_specs[] = [ "{$piece['name']} Height", $piece['spec_height'] ];
+                }
+            }
+
             // Get Category ID
             if ( isset( $this->category_by_template_description[(string)$template->Descr] ) ) {
                 $category_id = $this->category_by_template_description[(string)$template->Descr];
@@ -693,7 +708,16 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * @return array
      */
     protected function get_ashley_products_by_sku() {
-        return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price`, `weight` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
+        return ar::assign_key( $this->get_results( "
+            SELECT p.`sku`, p.`name`, p.`price`, p.`weight`, ps1.`value` as spec_depth, ps2.`value` as spec_length, ps3.`value` as spec_height
+            FROM `products` p
+            LEFT JOIN `product_specification` ps1 ON ps1.product_id = p.product_id AND ps1.`key` = 'Depth'
+            LEFT JOIN `product_specification` ps2 ON ps2.product_id = p.product_id AND ps2.`key` = 'Length'
+            LEFT JOIN `product_specification` ps3 ON ps3.product_id = p.product_id AND ps3.`key` = 'Height'
+            WHERE `user_id_created` = 353
+            AND `publish_visibility` = 'public'"
+            , PDO::FETCH_ASSOC )
+        , 'sku', true );
     }
 
     protected function get_discontinued_prodcts_by_sku() {
