@@ -303,24 +303,37 @@ class ReportsController extends BaseController {
 
         // Form HTML
         $html = '';
+        $csv = [[
+            'account',
+            'company',
+            'products',
+            'date',
+            'edit_account'
+        ]];
 
         foreach ( $accounts as $account ) {
-            $html .= '<tr>';
+            if ( $_POST['download'] ) {
+                $date = new DateTime( $account->date_created );
+                $csv[] = [
+                    $account->title,
+                    $account->company,
+                    $account->products,
+                    $date->format('F j, Y'),
+                    "http//admin.greysuitretail.com/accounts/edit/?aid={$account->id}"
+                ];
+            } else {
+                $html .= '<tr>';
+                $html.= '<td><a href="/accounts/edit/?aid=' . $account->id . '" title="' . _('Edit Account') . '" target="_blank">' . $account->title . '</a></td>';
+                $html.= '<td>' . $account->company . '</td>';
+                $html.= '<td>' . $account->products . '</td>';
+                $date = new DateTime( $account->date_created );
+                $html.= '<td>' . $date->format('F j, Y') . '</td>';
+                $html .= '</tr>';
+            }
+        }
 
-            // Title
-            $html.= '<td><a href="/accounts/edit/?aid=' . $account->id . '" title="' . _('Edit Account') . '" target="_blank">' . $account->title . '</a></td>';
-
-            // Company
-            $html.= '<td>' . $account->company . '</td>';
-
-            // Products
-            $html.= '<td>' . $account->products . '</td>';
-
-            // Date Signed Up
-            $date = new DateTime( $account->date_created );
-            $html.= '<td>' . $date->format('F j, Y') . '</td>';
-
-            $html .= '</tr>';
+        if ( $_POST['download'] ) {
+            return new CsvResponse($csv, 'report-' . date('YmdHis') . '.csv');
         }
 
         return new HtmlResponse( $html );
