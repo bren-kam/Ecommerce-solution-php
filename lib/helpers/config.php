@@ -60,6 +60,8 @@ class Config {
 
         // Encryption-Decryption
         , 'crypto-key'           => 'e4r+wYPQC4bQKikzN4ExKw=='
+
+        , 'stripe-secret'       => 'sk_test_IPB2In890BQD893dJe46yoRh'
 	);
 
     /**
