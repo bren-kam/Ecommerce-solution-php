@@ -1,5 +1,5 @@
 <?php
-class ReachesController extends BaseController {
+class SalesDeskController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
@@ -7,8 +7,8 @@ class ReachesController extends BaseController {
         parent::__construct( );
 
         // Tell what is the base for all login
-        $this->view_base = 'products/reaches/';
-        $this->section = 'Reaches';
+        $this->view_base = 'sales-desk/';
+        $this->section = 'Sales Desk';
     }
 
     /**
@@ -17,12 +17,12 @@ class ReachesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $this->resources->css( 'products/reaches/index' )
-            ->javascript( 'products/reaches/index' );
+        $this->resources->css( 'sales-desk/index' )
+            ->javascript( 'sales-desk/index' );
 
         return $this->get_template_response( 'index' )
             ->kb( 54 )
-            ->menu_item( 'products/reaches' );
+            ->menu_item( 'sales-desk/index' );
     }
 
     /**
@@ -33,7 +33,7 @@ class ReachesController extends BaseController {
     protected function reach() {
         // Make sure they can be here
         if ( !isset( $_GET['wrid'] ) )
-            return new RedirectResponse('/products/reaches/');
+            return new RedirectResponse('/sales-desk/');
 
         // Get reach
         $reach = new WebsiteReach();
@@ -57,18 +57,20 @@ class ReachesController extends BaseController {
         $assignable_users = array();
 
         foreach ( $assignable_users_array as $u ) {
-            if ( $u->role != User::ROLE_MARKETING_SPECIALIST )
+            if ( $u->role != User::ROLE_MARKETING_SPECIALIST &&
+                strpos($u->email, '@ashleyfurniture') === FALSE &&
+                strpos($u->email, '@sales.ashleyfurniture') === FALSE )
                 $assignable_users[$u->id] = $u;
         }
 
         $this->resources
-            ->css( 'products/reaches/reach' )
-            ->javascript( 'jquery.autoresize', 'products/reaches/reach' );
+            ->css( 'sales-desk/reach' )
+            ->javascript( 'jquery.autoresize', 'sales-desk/reach' );
 
         return $this->get_template_response( 'reach' )
             ->kb( 55 )
             ->add_title( _('Reach') )
-            ->menu_item( 'products/reaches' )
+            ->menu_item( 'sales-desk/index' )
             ->set( compact( 'reach', 'comments', 'assignable_users' ) );
     }
 
@@ -113,7 +115,7 @@ class ReachesController extends BaseController {
             $name = ( empty( $reach->name ) ) ? 'Anonymous' : $reach->name;
 
             $data[] = array(
-                '<a href="' . url::add_query_arg( 'wrid', $reach->id, '/products/reaches/reach/' ) . '">' . $name . '</a>'
+                '<a href="' . url::add_query_arg( 'wrid', $reach->id, '/sales-desk/reach/' ) . '">' . $name . '</a>'
                 , $reach->email
                 , $reach->assigned_to
                 , ( $reach->waiting ) ? 'Requires Response' : 'Waiting'
@@ -189,7 +191,7 @@ class ReachesController extends BaseController {
             fn::mail(
                 $assigned_user->email
                 , 'New Comment on ' . $reach->get_friendly_type() . ' #' . $reach->id
-                , $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/products/reaches/reach/?wrid=" . $reach->id
+            , $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/sales-desk/reach/?wrid=" . $reach->id
                 , '"' . $this->user->account->title . '" <reaches@blinkyblinky>'
             );
         }
@@ -277,7 +279,7 @@ class ReachesController extends BaseController {
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
         $message .= 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ". To view it, follow the link below:\n\n";
-        $message .= url::add_query_arg( 'wrid', $reach->id, 'http://account.' . url::domain( $assigned_user->domain, false ) . '/productes/reaches/reach/' ) . "\n\n";
+        $message .= url::add_query_arg( 'wrid', $reach->id, 'http://account.' . url::domain( $assigned_user->domain, false ) . '/sales-desk/reach/' ) . "\n\n";
         $message .= 'Priority: ' . $priorities[$reach->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
@@ -347,5 +349,68 @@ class ReachesController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function settings() {
+        // Instantiate classes
+        $form = new BootstrapForm( 'fSettings' );
+
+        // Get settings
+        $settings_array = array(
+            'request-a-quote-email'
+            , 'request-a-quote-button'
+        );
+
+        $settings = $this->user->account->get_settings( $settings_array );
+
+        // Create form
+        $form->add_field( 'text', _('Request-a-Quote Email'), 'request-a-quote-email', $settings['request-a-quote-email'] )
+            ->attribute( 'maxlength', '150' )
+            ->add_validation( 'req', 'email', _('The "Request-a-Quote Email" field must contain a valid email') );
+
+        if ( $this->user->account->is_new_template() ) {
+            $form->add_field( 'text', _('Request-a-Quote Button Text'), 'request-a-quote-button', empty($settings['request-a-quote-button']) ? 'Request a Quote' : $settings['request-a-quote-button'] )
+                ->attribute( 'maxlength', '150' );
+        } else {
+            $settings['request-a-quote-button'] = 'Request a Quote';
+        }
+
+        if ( $form->posted() ) {
+            $new_settings = array();
+
+            foreach ( $settings_array as $k ) {
+                $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            $this->user->account->set_settings( $new_settings );
+
+            // Clear Cloudflare Cache
+            $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
+
+            if ( $cloudflare_zone_id ) {
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $this->user->account );
+                $cloudflare->purge( $cloudflare_zone_id );
+            }
+
+            // Notification
+            $this->notify( _('Your settings have been successfully saved!') );
+            $this->log( 'product-settings', $this->user->contact_name . ' has changed product settings on ' . $this->user->account->title, $_POST );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/sales-desk/settings/');
+        }
+
+        return $this->get_template_response( 'settings' )
+            ->kb( 61 )
+            ->add_title( _('Settings') )
+            ->menu_item( 'sales-desk/settings' )
+            ->set( array( 'form' => $form->generate_form() ) );
+    }
+
 }
 

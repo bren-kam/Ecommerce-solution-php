@@ -127,6 +127,11 @@ class SettingsController extends BaseController {
 
         $form->add_field( 'checkbox', _('Bill Me Later'), 'cbBillMeLater', $settings['bill-me-later'] );
 
+        $form->add_field( 'anchor', _('Test PayPal Credentials') )
+            ->attribute( 'id', 'test-paypal' )
+            ->attribute( 'ajax', '1' )
+            ->attribute( 'href', '/shopping-cart/settings/test-paypal/?_nonce=' . nonce::create('test_paypal') );
+
         $form->add_field( 'blank', '' );
         $form->add_field( 'row', '', _('Crest Financial') );
 
@@ -209,6 +214,48 @@ class SettingsController extends BaseController {
             ->kb( 133 )
             ->menu_item( 'shopping-cart/settings/taxes' )
             ->set( compact( 'taxes', 'states' ) );
+    }
+
+    /**
+     * Test PayPal
+     * @return AjaxResponse
+     */
+    public function test_paypal() {
+        $response = new AjaxResponse( $this->verified() );
+
+        $settings = $this->user->account->get_settings(
+            'payment-gateway-status'
+            , 'paypal-express-username'
+            , 'paypal-express-password'
+            , 'paypal-express-signature'
+        );
+
+        $paypal_user = security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY );
+        $paypal_password = security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY );
+        $paypal_signature = security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY );
+
+        $url = $settings['payment-gateway-status'] ? "https://api-3t.paypal.com/nvp" : "https://api-3t.sandbox.paypal.com/nvp";
+
+        $response_str = curl::post(
+            $url,
+            [
+                "USER" => $paypal_user,
+                "PWD" => $paypal_password,
+                "SIGNATURE" => $paypal_signature,
+                "VERSION" => "104",
+                "METHOD" => "GetPalDetails"
+            ]
+        );
+        $paypal_response = [];
+        parse_str($response_str, $paypal_response);
+
+        if ( $paypal_response['ACK'] == 'Success' ) {
+            $response->notify("PayPal Credentials Successful. Your PAL ID is: {$paypal_response['PAL']}");
+        } else {
+            $response->notify("PayPal Credentials Failed: {$paypal_response['L_LONGMESSAGE0']}", false);
+        }
+
+        return $response;
     }
 }
 

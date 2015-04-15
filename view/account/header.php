@@ -102,21 +102,36 @@
                             <span class="visible-xs glyphicon glyphicon-user"></span>
                         </a>
                         <ul class="dropdown-menu extended logout">
-                            <div class="log-arrow-up"></div>
+
+                            <li class="dropdown-item-title">
+                                <a href="javascript:;"><i class="fa fa-check"></i> <?php echo $user->contact_name ?></a>
+                            </li>
                             <?php if ( $user->account->pages == 1 ): /* ONLY WITH USERS WITH A WEBSITE */ ?>
-                                <li class="big">
-                                    <a href="http://<?php echo $user->account->domain ?>" target="_blank">Visit <?php echo $user->account->domain ?> <i class="fa fa-link" style="font-size:14px;"></i></a>
+                                <li>
+                                    <a href="http://<?php echo $user->account->domain ?>" target="_blank"><i class="fa fa-link" style="font-size:14px;"></i> <?php echo $user->account->title ?></a>
                                 </li>
+                            <?php endif; ?>
+                            <?php foreach( array_slice($user->accounts, 0, 3) as $another_account ): ?>
+                                <li>
+                                    <a href="/home/change-account/?aid=<?php echo $another_account->id; ?>" title="<?php echo _('Change Account'); ?>"><i class="fa fa-circle"></i> <strong><?php echo $another_account->title; ?></strong></a>
+                                </li>
+                            <?php endforeach; ?>
+                            <?php if ( count($user->accounts) > 3 ): ?>
+                                <li>
+                                    <a href="/home/select-account/" target="_blank"><i class="fa fa-plus" style="font-size:14px;"></i> More Accounts...</a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if ( $user->account->pages == 1 ): /* ONLY WITH USERS WITH A WEBSITE */ ?>
                                 <li><a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a></li>
-                                <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Authorized <br> Users</a></li>
-                                <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp;<br> Phone</a></li>
+                                <li><a href="/settings/authorized-users/"><i class="fa fa-users"></i> Authorized Users</a></li>
+                                <li><a href="/settings/logo-and-phone/"><i class="fa fa-phone"></i> Logo &amp; Phone</a></li>
                             <?php else: ?>
-                                <li class="big">
+                                <li>
                                     <a href="/settings/"><i class="fa fa-suitcase"></i> Settings</a>
                                 </li>
                             <?php endif; ?>
                             <?php if ( $online_specialist->id ): ?>
-                                <li class="big">
+                                <li>
                                     <?php
                                         echo '<a href="mailto:' . $online_specialist->email . '"><i class="fa fa-life-ring"></i> Online Specialist: ' . $online_specialist->contact_name . '</a>';
                                         echo '<a href="mailto:' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '">' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '</a>';
@@ -124,7 +139,7 @@
                                     ?>
                                 </li>
                             <?php endif; ?>
-                            <li class="big"><a href="/logout/"><i class="fa fa-key"></i> Log Out</a></li>
+                            <li><a href="/logout/"><i class="fa fa-key"></i> Log Out</a></li>
                         </ul>
                     </li>
                     <!-- user login dropdown end -->
@@ -216,7 +231,6 @@
                                 <li <?php if ( $template->in_menu_item('products/products/export') ) echo 'class="active"' ?>><a href="/products/export/">Export</a></li>
                             </ul>
                         </li>
-                        <li <?php if ( $template->in_menu_item('products/reaches') ) echo 'class="active"' ?>><a href="/products/reaches/">Reaches</a></li>
                         <li class="submenu">
                             <a href="/products/reaches" <?php if ( $template->in_menu_item('products/product-builder') ) echo 'class="active"' ?>>Product Builder</a>
                             <ul class="sub">
@@ -237,6 +251,20 @@
                     </ul>
                 </li>
             <?php endif; ?>
+
+            <?php if ( $user->account->product_catalog ): ?>
+                <li class="sub-menu">
+                    <a href="javascript:;" <?php if ( $template->in_menu_item('sales-desk') ) echo 'class="active"' ?>>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        <span>Sales Desk</span>
+                    </a>
+                    <ul class="sub">
+                        <li <?php if ( $template->in_menu_item('sales-desk/index') ) echo 'class="active"'?>><a href="/sales-desk/">Sales Desk</a></li>
+                        <li <?php if ( $template->in_menu_item('sales-desk/settings') ) echo 'class="active"'?>><a href="/sales-desk/settings/">Settings</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+
 
             <?php if ( $user->account->live ): ?>
                 <li class="sub-menu">
