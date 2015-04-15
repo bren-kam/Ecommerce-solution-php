@@ -408,6 +408,8 @@ class ApiRequest {
                     return;
                 }
 
+                $this->log('method', '"' . $this->method . '": created WHM account', true);
+
                 // Save Credentials to Password Manager
                 $account_password = new AccountPassword();
                 $account_password->title = "cPanel/FTP";
@@ -441,12 +443,10 @@ class ApiRequest {
                 $install_service->install_website($account, $user_id);
 
                 // Setup DNS
-                library('r53');
-
-                $r53 = new Route53(Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key'));
-
-                // Add to domain.blinkyblinky.me
-                $r53->changeResourceRecordSets('hostedzone/Z20FV3IPLIV928', array($r53->prepareChange('CREATE', $domain . '.', 'A', '14400', $server->ip)));
+                library('cloudflare-api');
+                $cloudflare = new CloudFlareAPI( $account );
+                $cloudflare_zone_id = '19e346aa817a700d07d00708c3d8cde5'; // Blinkyblinky.me
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $domain . '.', $server->ip, '14400', url::domain($domain, false));
             }
 
             // Everything was successful

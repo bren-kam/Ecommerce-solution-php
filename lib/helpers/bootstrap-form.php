@@ -677,6 +677,30 @@ class BootstrapForm_Title extends BootstrapForm_Field {
 }
 
 /**
+ * Anchor Row
+ */
+class BootstrapForm_Anchor extends BootstrapForm_Field {
+    /**
+     * Constructor -- Create a Anchor row
+     *
+     * @param string $name
+     */
+    public function __construct( $name ) {
+        parent::__construct( $name );
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<p><a ' . $this->format_attributes() . '>' . $this->nice_name . '</a></p>';
+    }
+}
+
+/**
  * Blank Row
  */
 class BootstrapForm_Blank extends BootstrapForm_Field {

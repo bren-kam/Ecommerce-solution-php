@@ -22,6 +22,10 @@ class PipeController extends BaseController {
 
         $email_content = file_get_contents( 'php://stdin' );
 
+        // Temporary Logging stuff
+        @file_put_contents('/tmp/ticket_email_pipe.log', "\n". date("Y-m-d H:i:s") . "-----------------------------\n", FILE_APPEND);
+        @file_put_contents('/tmp/ticket_email_pipe.log', json_encode($email_content), FILE_APPEND);
+
         // Create mime
         $mime = new mime_parser_class();
         $mime->ignore_syntax_errors = 1;
@@ -41,13 +45,38 @@ class PipeController extends BaseController {
             $body = $email['Body'];
         }
         $body = preg_replace('/\nOn(.*?)wrote:(.*?)$/si', '', $body);
+        $body = preg_replace('/\n> On(.*?)wrote:(.*?)$/si', '', $body);
         $body = preg_replace('/\n\nFrom: (.*?)$/si', '', $body);
         $body = trim($body);
         $body = nl2br($body);
         $ticket_id = (int) preg_replace( '/.*Ticket #([0-9]+).*/', '$1', $subject );
         $from = $email['ExtractedAddresses']['from:'][0]['address'];
         $from_name = isset($email['ExtractedAddresses']['from:'][0]['name']) ? $email['ExtractedAddresses']['from:'][0]['name'] : '';
-        $to = $email['ExtractedAddresses']['to:'][0]['address'];
+
+        // Guess the receivers
+        $to_list = [
+            $email['ExtractedAddresses']['to:'][0]['address']
+        ];
+        $valid_received_domains = [
+            '@blinkyblinky.me',
+            '@imagineretailer.com',
+            '@greysuitretail.com'
+        ];
+        if ( isset($email['Headers']['received:']) ) {
+            foreach ( $email['Headers']['received:'] as $received ) {
+                $matches = [];
+                preg_match('/for (.*);/i', $received, $matches);
+                if ( isset($matches[1]) ) {
+                    $received_by = $matches[1];
+                    $received_by = str_replace(['<', '>', ' '], '', $received_by);
+                    foreach( $valid_received_domains as $domain ) {
+                        if ( strpos($received_by, $domain) !== false ) {
+                            $to_list[] = $received_by;
+                        }
+                    }
+                }
+            }
+        }
 
         // attachments
         $attachments = [];
@@ -91,7 +120,14 @@ class PipeController extends BaseController {
 
         // Get from User
         $to_user = new User();
-        $to_user->get_by_email( $to, false );
+        $to = null;
+        foreach ( $to_list as $to_address ) {
+            $to_user->get_by_email( $to_address, false );
+            if ( $to_user->id ) {
+                $to = $to_address;
+                break;
+            }
+        }
 
         // Create Use if does not exists
         if ( !$from_user->id ) {
