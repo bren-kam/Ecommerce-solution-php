@@ -145,7 +145,20 @@ class Feed extends ActiveRecordBase {
             $where .= " AND ws.`value` IN (" . implode( ',', $ashley_accounts ) . ") AND p.`user_id_created` IN ( 353, 1477 ) ";
         }
 
-        return $this->get_results( "SELECT c.`category_id`, c.`parent_category_id`, c.`name`, c.`slug`, c.`sequence`, c.`date_updated` FROM `categories` c $inner_join WHERE 1 $where GROUP BY c.category_id", PDO::FETCH_ASSOC );
+		$categories = $this->get_results( "SELECT c.`category_id`, c.`parent_category_id` FROM `categories` c $inner_join WHERE 1 $where GROUP BY c.category_id", PDO::FETCH_CLASS, 'Category' );
+		
+		if ( !$categories )
+			return array();
+		
+		$category_ids = array();
+		
+		foreach ( $categories as $category ) {
+			$category_ids[] = $category->id;
+			
+			$category_ids = array_merge( $category_ids, $category->get_all_parent_category_ids( $category->id ) );
+		}
+		
+        return $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug`, `sequence`, `date_updated` FROM `categories` WHERE `category_id` IN(" . implode( ',', $category_ids ) . ')', PDO::FETCH_ASSOC );
     }
 
     /**
