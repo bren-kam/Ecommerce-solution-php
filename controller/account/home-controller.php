@@ -17,6 +17,29 @@ class HomeController extends BaseController {
      */
     protected function index() {
 
+        $show_new_features = true;
+
+        $new_features_article = new KnowledgeBaseArticle();
+        $new_features_article->get(243);
+        $new_features_updated = new DateTime($new_features_article->date_updated);
+
+        if ( !$new_features_article->id ) {
+            $show_new_features = false;
+        }
+
+        $d30_days_ago = new DateTime();
+        $d30_days_ago->sub(new DateInterval('P30D'));
+        if ( $new_features_updated < $d30_days_ago ) {
+            $show_new_features = false;
+        }
+
+        if ( $this->user->new_features_dismissed_at ) {
+            $new_features_dismissed_at = new DateTime($this->user->new_features_dismissed_at);
+            if ( $new_features_dismissed_at > $new_features_updated ) {
+                $show_new_features = false;
+            }
+        }
+
         $website_order = new WebsiteOrder();
         $website_order_item = new WebsiteOrderItem();
 
@@ -110,7 +133,18 @@ class HomeController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->select('dashboard')
-            ->set( compact('website_orders', 'website_reaches', 'visitors', 'signups', 'date_start_visitors', 'date_end_visitors', 'date_start_signups', 'date_end_signups', 'kbh_home_articles') );
+            ->set( compact(
+                'website_orders'
+                , 'website_reaches'
+                , 'visitors'
+                , 'signups'
+                , 'date_start_visitors'
+                , 'date_end_visitors'
+                , 'date_start_signups'
+                , 'date_end_signups'
+                , 'kbh_home_articles'
+                , 'show_new_features'
+            ) );
     }
 
     /**
@@ -144,6 +178,14 @@ class HomeController extends BaseController {
 
         // Either redirect to home or logout if he's trying to control someone else's site
         return new RedirectResponse( '/' );
+    }
+
+    /**
+     * Dismiss New Features
+     */
+    protected function dismiss_new_features() {
+        $this->user->new_features_dismissed_at = (new DateTime())->format('Y-m-d H:i:s');
+        $this->user->save();
     }
 }
 
