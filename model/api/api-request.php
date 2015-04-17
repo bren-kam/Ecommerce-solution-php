@@ -383,10 +383,6 @@ class ApiRequest {
             $account_category->hide( $account->id, $blocked_category_ids );
             $account_category->reorganize_categories( $account->id, $category );
 
-            // Update index for products
-            $index = new IndexProducts();
-            $index->index_website( $account->id );
-
             // Create WHM account and setup Password
             if ('1' == $account->pages) {
                 library('whm-api');

@@ -191,10 +191,6 @@ class ProductBuilderController extends BaseController {
                 }
             }
 
-            // Update index for this Product/Website
-            $index = new IndexProducts();
-            $index->index_product( $product->id, $this->user->account->id );
-
             // Now go back to products list with a notification
             $this->notify( _('Your product was successfully created or updated!') );
 
@@ -343,10 +339,6 @@ class ProductBuilderController extends BaseController {
 
             // Reassign different product to categories linked for image
             $account_category->reassign_image( $this->user->account->id, $product->id );
-
-            // Update index for this product/website
-            $index = new IndexProducts();
-            $index->index_product( $product->id, $this->user->account->id );
 
             $this->log( 'delete-custom-product', $this->user->contact_name . ' deleted a custom product on on ' . $this->user->account->title, $product->id );
         }
