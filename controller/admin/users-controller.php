@@ -144,8 +144,8 @@ class UsersController extends BaseController {
             ->attribute( 'maxlength', 10 )
             ->add_validation( 'zip', _('The "Zip" field must contain a valid zip code'));
 
-        $ft->add_field( 'textarea', _('Email Signature'), 'taEmailSignature', $user->email_signature )
-            ->attribute( 'maxlength', 500 );
+//        $ft->add_field( 'textarea', _('Email Signature'), 'taEmailSignature', $user->email_signature )
+//            ->attribute( 'maxlength', 500 );
 
         // Make sure it's posted and verified
         if ( $ft->posted() ) {
@@ -182,7 +182,7 @@ class UsersController extends BaseController {
             $user->billing_city = $_POST['tCity'];
             $user->billing_state = $_POST['sState'];
             $user->billing_zip = $_POST['tZip'];
-            $user->email_signature = $_POST['taEmailSignature'];
+//            $user->email_signature = $_POST['taEmailSignature'];
 
             // Update or create the user
             if ( $user_id ) {

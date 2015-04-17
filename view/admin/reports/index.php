@@ -20,7 +20,7 @@ nonce::field( 'autocomplete', '_autocomplete' );
 
             <div class="panel-body">
 
-                <form id="report-form" class="form-inline" role="form">
+                <form id="report-form" class="form-inline" role="form" action="/reports/search/" method="post">
                     <fieldset>
                         <div class="form-group">
                             <select class="form-control" id="services">
@@ -48,10 +48,14 @@ nonce::field( 'autocomplete', '_autocomplete' );
                         <div class="form-group">
                             <button type="submit" id="search" class="btn btn-primary">Run Report</button>
                         </div>
+                        <div class="form-group">
+                            <button type="button" id="download" class="btn btn-default">Download Report</button>
+                        </div>
                     </fieldset>
                     <ul class="list-inline" id="criteria-list">
                         <li>Current Criteria:</li>
                     </ul>
+                    <input type="hidden" name="download" value="0" />
                     <?php nonce::field( 'search' ); ?>
                 </form>
             </div>

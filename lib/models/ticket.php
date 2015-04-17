@@ -9,11 +9,11 @@ class Ticket extends ActiveRecordBase {
     const STATUS_UNCREATED = -1;
 
     // The columns we will have access to
-    public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to
+    public $id, $ticket_id, $user_id, $assigned_to_user_id, $user_id_created, $summary, $message, $name, $website, $assigned_to
         , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created, $jira_id, $jira_key;
 
     // Fields from other tables
-    public $role, $website_id, $domain, $email, $last_updated_at, $last_updated_by;
+    public $role, $website_id, $domain, $email, $last_updated_at, $last_updated_by, $os_user_id, $os_user_name;
 
     /**
      * Setup the account initial data
@@ -30,11 +30,12 @@ class Ticket extends ActiveRecordBase {
      * Get ticket
      */
     public function get( $ticket_id ) {
-		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key`, MAX(tc.`date_created`) AS last_updated_at, tcu.`contact_name` AS last_updated_by
+		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`user_id_created`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key`, MAX(tc.`date_created`) AS last_updated_at, tcu.`contact_name` AS last_updated_by, c.os_user_id, os_user.contact_name as os_user_name
                   FROM `tickets` AS a
                   LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
-                  LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` )
                   LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` )
+                  LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` )
+                  LEFT JOIN `users` AS os_user ON ( c.`os_user_id` = os_user.`user_id` )
                   LEFT JOIN ( SELECT `ticket_id`, MAX(`ticket_comment_id`) AS `ticket_comment_id` FROM `ticket_comments` GROUP BY `ticket_id` ) AS `last_tc` ON ( a.`ticket_id` = last_tc.`ticket_id` )
                   LEFT JOIN `ticket_comments` AS tc ON ( last_tc.`ticket_comment_id` = tc.`ticket_comment_id` )
                   LEFT JOIN `users` AS tcu ON ( tc.`user_id` = tcu.`user_id` )
@@ -56,6 +57,7 @@ class Ticket extends ActiveRecordBase {
         $this->insert( array(
             'user_id' => $this->user_id
             , 'assigned_to_user_id' => $this->assigned_to_user_id
+            , 'user_id_created' => $this->user_id_created
             , 'website_id' => $this->website_id
             , 'summary' => strip_tags($this->summary)
             , 'message' => $this->message
@@ -76,6 +78,7 @@ class Ticket extends ActiveRecordBase {
                 'user_id' => $this->user_id
                 , 'assigned_to_user_id' => $this->assigned_to_user_id
                 , 'website_id' => $this->website_id
+                , 'user_id_created' => $this->user_id_created
                 , 'summary' => strip_tags($this->summary)
                 , 'message' => $this->message
                 , 'browser_name' => strip_tags($this->browser_name)
@@ -106,6 +109,8 @@ class Ticket extends ActiveRecordBase {
         return $this->prepare(
             "SELECT a.`ticket_id`
                 , IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to
+                , a.`user_id_created`
+                , a.`assigned_to_user_id`
                 , a.`summary`
                 , a.`status`
                 , a.`priority`
@@ -113,14 +118,16 @@ class Ticket extends ActiveRecordBase {
                 , b.`contact_name` AS name
                 , b.`email`
                 , d.`title` AS website
-                , MAX(tc.`date_created`) AS last_updated_at
+                , COALESCE(MAX(tc.`date_created`), a.date_created) AS last_updated_at
                 , tcu.`contact_name` AS last_updated_by
                 , a.`jira_id`
                 , a.`jira_key`
                 , a.`message`
+                , users_created.contact_name as creator_name
             FROM `tickets` AS a
             LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
             LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` )
+            LEFT JOIN `users` AS users_created ON ( a.`user_id_created` = users_created.`user_id` )
             LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` )
             LEFT JOIN ( SELECT `ticket_id`, MAX(`ticket_comment_id`) AS `ticket_comment_id` FROM `ticket_comments` GROUP BY `ticket_id` ) AS `last_tc` ON ( a.`ticket_id` = last_tc.`ticket_id` )
             LEFT JOIN `ticket_comments` AS tc ON ( last_tc.`ticket_comment_id` = tc.`ticket_comment_id` )

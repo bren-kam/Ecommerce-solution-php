@@ -11,6 +11,8 @@ var Reports = {
         $('#type').change( Reports.setupAutocomplete );
 
         $('#report-form').submit( Reports.run );
+
+        $('#download').click( Reports.download );
     }
 
     , addService: function() {
@@ -101,7 +103,6 @@ var Reports = {
     }
 
     , run: function(e) {
-        console.log('here');
         e.preventDefault();
 
         $('#report-form').find(':submit').text('Running...');
@@ -116,6 +117,13 @@ var Reports = {
     , runComplete: function( response ) {
         $('#report-form').find(':submit').text('Run Report');
         $('#report').html( response );
+    }
+
+    , download: function(e) {
+        $('[name=download]').val(1);
+        $('#report-form').unbind('submit').submit();
+        $('[name=download]').val(0);
+        $('#report-form').submit( Reports.run );
     }
 
 }

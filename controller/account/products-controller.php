@@ -655,9 +655,7 @@ class ProductsController extends BaseController {
 
         // Get settings
         $settings_array = array(
-            'request-a-quote-email'
-            , 'request-a-quote-button'
-            , 'category-show-price-note'
+            'category-show-price-note'
             , 'hide-skus'
             , 'hide-request-quote'
             , 'hide-customer-ratings'
@@ -682,18 +680,6 @@ class ProductsController extends BaseController {
             , 'disable-map-pricing'     => _('Disable Map Pricing')
             , 'hide-new-product-logo'   => _('Hide New Product Logo')
         );
-
-        // Create form
-        $form->add_field( 'text', _('Request-a-Quote Email'), 'request-a-quote-email', $settings['request-a-quote-email'] )
-            ->attribute( 'maxlength', '150' )
-            ->add_validation( 'req', 'email', _('The "Request-a-Quote Email" field must contain a valid email') );
-
-        if ( $this->user->account->is_new_template() ) {
-            $form->add_field( 'text', _('Request-a-Quote Button Text'), 'request-a-quote-button', empty($settings['request-a-quote-button']) ? 'Request a Quote' : $settings['request-a-quote-button'] )
-                    ->attribute( 'maxlength', '150' );
-        } else {
-            $settings['request-a-quote-button'] = 'Request a Quote';
-        }
 
         foreach( $checkboxes as $setting => $nice_name ) {
             $form->add_field( 'checkbox', $nice_name, $setting, $settings[$setting] );
