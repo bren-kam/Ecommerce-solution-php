@@ -276,10 +276,6 @@ class WebsiteController extends BaseController {
      * @return CustomResponse|RedirectResponse
      */
     protected function add() {
-        // Make sure they have the right permissions
-        if ( !$this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
-            return new RedirectResponse('/website/');
-
         $form = new BootstrapForm( 'fAddPage' );
         $form->submit( _('Add') );
 
