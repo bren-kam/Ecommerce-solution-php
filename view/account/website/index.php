@@ -3,7 +3,9 @@
         <section class="panel">
             <header class="panel-heading">
                 Website Pages
-                <a href="/website/add/" class="btn btn-primary btn-sm pull-right" data-modal><i class="fa fa-plus"></i> <span class="hidden-xs">New Page</span></a>
+                <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ): ?>
+                    <a href="/website/add/" class="btn btn-primary btn-sm pull-right" data-modal><i class="fa fa-plus"></i> <span class="hidden-xs">New Page</span></a>
+                <?php endif; ?>
             </header>
 
             <div class="panel-body">

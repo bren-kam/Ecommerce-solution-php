@@ -12,6 +12,7 @@ nonce::field( 'update_priority', 'update-priority-nonce' );
 nonce::field( 'upload_to_ticket', 'upload-to-ticket-nonce' );
 nonce::field( 'attach_user_to_account', 'attach-user-to-account-nonce' );
 nonce::field( 'get_emails', 'get-emails-nonce' );
+nonce::field( 'update_summary', 'update-summary-nonce' );
 
 foreach ( $admin_users as $au ) {
     $selected = ( $user->user_id == $au->user_id ) ? ' selected="selected"' : '';
@@ -44,9 +45,10 @@ foreach ( $admin_users as $au ) {
             </select>
 
             <select id="filter-status" class="selectpicker" data-style="btn-primary">
-                <option value="-1">All Tickets</option>
-                <option value="0" selected="selected">Open</option>
+                <option value="-1" selected="selected">All Tickets</option>
+                <option value="0">Open</option>
                 <option value="2">In Progress</option>
+                <option value="-2">Awaiting Response</option>
                 <option value="1">Closed</option>
             </select>
 
@@ -64,11 +66,11 @@ foreach ( $admin_users as $au ) {
                     <div class="pull-left inbox-nav-item-details col-md-12">
                         <ul>
                             <li>
-                                <span class="email-name">User Name</span> <span class="email-address">user@email.com</span>
-                                <span class="email-date pull-right"><i class="fa fa-circle text-urgent pull-right"></i> 2-18-15</span>
+                                <span class="email-name"></span> <span class="email-address"></span>
+                                <span class="email-date pull-right"><i class="fa fa-circle text-urgent pull-right"></i></span>
                             </li>
                             <li>
-                                <span class="email-subject">Subject Here!</span>
+                                <span class="email-subject"></span>
                                 <span class="email-status pull-right label label-default"></span>
                             </li>
                         </ul>
@@ -119,21 +121,24 @@ foreach ( $admin_users as $au ) {
         </div>
         <div class="inbox-body">
             <div class="heading-inbox row">
-                <div class="col-md-12">
-                    <h4 class="ticket-summary"></h4>
+                <div class="col-md-12" id="ticket-summary-container">
+                    <input class="form-control input-lg" id="ticket-summary" />
                 </div>
             </div>
             <div class="sender-info">
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>User: <strong class="ticket-user-name"></strong></li>
+                            <li>User: <strong class="ticket-user-name"></strong> | <a class="ticket-user-edit" href="javascript:;" target="_blank">Edit</a></li>
                             <li>Email: <span class="ticket-user-email"></span></li>
                         </ul>
                         <ul>
+                            <li>Ticket #: <strong class="ticket-id"></strong><br></li>
                             <li>Updated: <strong class="ticket-updated"></strong><br></li>
                             <li>Created: <strong class="ticket-created"></strong><br></li>
-                            <li>Account: <strong class="ticket-account"></strong> <a href="javascript:;" class="edit-account">Edit</a> | <a href="javascript:;" class="control-account">Control</a><br></li>
+                            <li>Created By: <strong class="ticket-creator"></strong><br></li>
+                            <li>Account: <a href="javascript:;" class="ticket-account-domain" target="_blank"><strong class="ticket-account"></strong></a> - <a href="javascript:;" class="edit-account" target="_blank">Edit</a> | <a href="javascript:;" class="control-account" target="_blank">Control</a><br></li>
+                            <li>Online Specialist: <strong class="ticket-online-specialist"></strong><br></li>
                         </ul>
                     </div>
                 </div>
@@ -151,12 +156,16 @@ foreach ( $admin_users as $au ) {
                         <div class="form-group">
                             <input type="text" class="form-control" id="to-address" name="to-address" value="" placeholder="To/Primary Contact">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group hidden">
                             <input type="text" class="form-control" id="cc-address" name="cc-address" value="" placeholder="CC">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group hidden">
                             <input type="text" class="form-control" id="bcc-address" name="bcc-address" value="" placeholder="BCC">
                         </div>
+                        <p>
+                            <a id="show-cc" href="javascript:;">Add CC</a>
+                            | <a id="show-bcc" href="javascript:;">Add BCC</a>
+                        </p>
                         <div class="form-group">
                             <textarea class="form-control" name="comment" id="reply" rte="1"><?php echo $user->email_signature ?></textarea>
                         </div>
@@ -197,15 +206,13 @@ foreach ( $admin_users as $au ) {
                 <div class="comment" id="ticket-comment-template">
                     <ul>
                         <li>
-                            From: <strong class="comment-user-name">User Name</strong> <span class="comment-user-email">&lt;user@email.com&gt;</span>
-                            <span class="pull-right comment-created-ago">March 9th, 2015 at 12:13:14</span>
+                            From: <a href="javascript:;" class="comment-assign-to"><strong class="comment-user-name"></strong></a> <span class="comment-user-email"></span>
+                            <span class="pull-right comment-created-ago"></span>
                         </li>
                         <li>To: <span class="comment-to-address"></span></li>
                     </ul>
 
-                    <p class="comment-message">
-                        Faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci. Donec ultrices faucibus rutrum. Phasellus sodales vulputate urna, vel accumsan augue egestas ac. Donec vitae leo at sem lobortis porttitor eu consequat risus. Mauris sed congue orci.
-                    </p>
+                    <p class="comment-message"></p>
                     <ul class="list-inline comment-attachments">
                     </ul>
                 </div>
@@ -215,7 +222,7 @@ foreach ( $admin_users as $au ) {
     <aside class="lg-side" id="create-ticket">
         <div class="inbox-head">
             <div class="pull-left ticket-status">
-                Send a new Message
+                Create a New Ticket
             </div>
         </div>
         <div class="inbox-body">

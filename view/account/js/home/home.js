@@ -2,6 +2,11 @@ var Analytics = {
 
     init: function () {
 
+        $('#dismiss-new-features').click(function() {
+            $('#new-features').fadeOut();
+            $.get('/home/dismiss-new-features/');
+        });
+
         Analytics.loadVisitorsGraph();
         Analytics.loadSignupsGraph();
 
