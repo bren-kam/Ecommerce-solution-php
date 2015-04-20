@@ -108,29 +108,11 @@ class SettingsController extends BaseController {
 
         $form->add_field( 'row', '', _('Stripe') );
 
-        if ( $settings['stripe-account'] ) {
-            $stripe_account = json_decode($settings['stripe-account'], true);
+        $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', security::decrypt( base64_decode( $settings['stripe-publishable-key'] ), PAYMENT_DECRYPTION_KEY ) )
+            ->attribute( 'maxlength', 64 );
 
-            $form->add_field( 'text', _('Stripe ID'), 'tStripeId', $stripe_account['id'] )
-                ->attribute('disabled', 'disabled');
-
-            $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', $stripe_account['keys']['publishable'] )
-                ->attribute('disabled', 'disabled');
-
-            $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', $stripe_account['keys']['secret'] )
-                ->attribute('disabled', 'disabled');
-        } else {
-            $form->add_field('anchor', 'Connect to Stripe')
-                ->attribute('href', '/shopping-cart/settings/add-stripe-account/')
-                ->attribute('class', 'btn btn-primary btn-lg');
-        }
-
-        $gateway_options = [];
-        $form->add_field( 'select', 'Process Payments With', 'sSelectedGateway', $settings['selected-gateway'] )
-            ->options([
-                'aim' => 'AIM',
-                'stripe' => 'Stripe'
-            ]);
+        $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', security::decrypt( base64_decode( $settings['stripe-secret-key'] ), PAYMENT_DECRYPTION_KEY ) )
+            ->attribute( 'maxlength', 64 );
 
         $form->add_field( 'blank', '' );
         $form->add_field( 'row', '', _('PayPal Express Checkout') );
