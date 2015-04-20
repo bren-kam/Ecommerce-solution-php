@@ -178,7 +178,7 @@
             </li>
 
             <li>
-                <a href="/tickets/" <?php if ( $template->v('tickets') ) echo 'class="active"'?>>
+                <a href="/customer-support/" <?php if ( $template->v('tickets') ) echo 'class="active"'?>>
                     <i class="fa fa-ticket"></i>
                     <span>Tickets</span>
                 </a>

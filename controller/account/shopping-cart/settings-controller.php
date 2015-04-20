@@ -149,6 +149,7 @@ class SettingsController extends BaseController {
         $form->add_field( 'anchor', _('Test PayPal Credentials') )
             ->attribute( 'id', 'test-paypal' )
             ->attribute( 'ajax', '1' )
+            ->attribute( 'class', 'btn btn-primary' )
             ->attribute( 'href', '/shopping-cart/settings/test-paypal/?_nonce=' . nonce::create('test_paypal') );
 
         $form->add_field( 'blank', '' );

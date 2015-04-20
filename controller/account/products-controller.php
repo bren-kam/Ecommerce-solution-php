@@ -92,10 +92,6 @@ class ProductsController extends BaseController {
             $account_product->add_bulk_by_ids( $this->user->account->id, $_POST['products'] );
             $account_category->reorganize_categories( $this->user->account->id, $category );
 
-            // Update index for all Websites having this products
-            $index = new IndexProducts();
-            $index->index_product_bulk( $_POST['products'], $this->user->account->id );
-
             // Clear CloudFlare Cache
             $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -265,10 +261,6 @@ class ProductsController extends BaseController {
                 $account_category = new AccountCategory();
                 $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-                // Update index for all Websites having this products
-                $index = new IndexProducts();
-                $index->index_product_by_sku( $skus, $this->user->account->id );
-
                 // Clear CloudFlare Cache
                 $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -312,10 +304,6 @@ class ProductsController extends BaseController {
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
 
             $account_product->block_by_sku( $this->user->account->id, $this->user->account->get_industries(), $skus );
-
-            // Update index for all Websites having this products
-            $index = new IndexProducts();
-            $index->index_product_by_sku( $skus, $this->user->account->id );
 
             // Reassign different product to categories linked for image
             foreach($skus as $sku){
@@ -375,10 +363,6 @@ class ProductsController extends BaseController {
             // Remove any of them
             $account_category->remove_categories( $this->user->account->id, $_POST['sCategoryIDs'] );
             $account_category->reorganize_categories( $this->user->account->id, $category );
-
-            // Update index for all Websites having this products
-            $index = new IndexProducts();
-            $index->index_website( $this->user->account->id );
 
             $this->notify( _('Hidden categories have been successfully updated!') );
             $this->log( 'hide-categories', $this->user->contact_name . ' hid categories on ' . $this->user->account->title, $_POST['sCategoryIDs'] );
@@ -537,10 +521,6 @@ class ProductsController extends BaseController {
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
-            // Update index for all Websites having this products
-            $index = new IndexProducts();
-            $index->index_website( $this->user->account->id );
-
             // Clear Cloudflare Cache
             $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -591,10 +571,6 @@ class ProductsController extends BaseController {
             $account_product = new AccountProduct();
             $account_product->unblock( $this->user->account->id, $_POST['unblock-products'] );
 
-            // Update index for all Websites having this products
-            $index = new IndexProducts();
-            $index->index_product_bulk( $_POST['unblock-products'], $this->user->account->id );
-
             // Clear Cloudflare Cache
             $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -622,10 +598,6 @@ class ProductsController extends BaseController {
             $account_category = new AccountCategory();
             $account_category->unhide( $this->user->account->id, $_POST['unhide-categories'] );
             $account_category->reorganize_categories( $this->user->account->id, new Category() );
-
-            // Update index for all Websites having this products
-            $index = new IndexProducts();
-            $index->index_website( $this->user->account->id );
 
             // Clear Cloudflare Cache
             $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -988,10 +960,6 @@ class ProductsController extends BaseController {
         $account_product->remove_discontinued( $this->user->account->id );
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-        // Update index for all Websites having this products
-        $index = new IndexProducts();
-        $index->index_website( $this->user->account->id );
-
         // Clear Cloudflare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -1142,10 +1110,6 @@ class ProductsController extends BaseController {
         $account_product->active = 0;
         $account_product->save();
 
-        // Update index for all Websites having this products
-        $index = new IndexProducts();
-        $index->index_product( $_GET['pid'], $this->user->account->id );
-
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
@@ -1196,10 +1160,6 @@ class ProductsController extends BaseController {
 
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
-
-        // Update index for all Websites having this products
-        $index = new IndexProducts();
-        $index->index_product( $_GET['pid'], $this->user->account->id );
 
         // Reassign different product to categories linked for image
         $account_category->reassign_image( $this->user->account->id, $product->product_id );
@@ -1502,10 +1462,6 @@ class ProductsController extends BaseController {
             if ( !empty( $product_option_list_item_values ) )
                 $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
-
-        // Update index for all Websites having this products
-        $index = new IndexProducts();
-        $index->index_product( $account_product->product_id, $this->user->account->id );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -1820,10 +1776,6 @@ class ProductsController extends BaseController {
                 $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
         }
 
-        // Update index for all Websites having this products
-        $index = new IndexProducts();
-        $index->index_product_bulk( array_keys($_POST['v']), $this->user->account->id );
-
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
 
@@ -1871,9 +1823,6 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->update_sequence( $this->user->account->id, $sequence );
-
-        $index = new IndexProducts();
-        $index->index_product_bulk( $sequence, $this->user->account->id );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -2524,10 +2473,6 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->reset_price_by_account( $this->user->account->id );
-
-        // Update index for all Websites having this products
-        $index = new IndexProducts();
-        $index->index_website( $this->user->account->id );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
