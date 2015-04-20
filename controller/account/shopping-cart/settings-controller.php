@@ -111,18 +111,18 @@ class SettingsController extends BaseController {
         if ( $settings['stripe-account'] ) {
             $stripe_account = json_decode($settings['stripe-account'], true);
 
-            $form->add_field( 'text', _('Stripe ID'), 'tStripeId', $stripe_account['id'] )
+            $form->add_field( 'text', _('Stripe ID'), 'tStripeId', $stripe_account['stripe_user_id'] )
                 ->attribute('disabled', 'disabled');
 
-            $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', $stripe_account['keys']['publishable'] )
+            $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', $stripe_account['stripe_publishable_key'] )
                 ->attribute('disabled', 'disabled');
 
-            $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', $stripe_account['keys']['secret'] )
+            $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', $stripe_account['access_token'] )
                 ->attribute('disabled', 'disabled');
         } else {
             $form->add_field('anchor', 'Connect to Stripe')
-                ->attribute('href', '/shopping-cart/settings/add-stripe-account/')
-                ->attribute('class', 'btn btn-primary btn-lg');
+                ->attribute('href', "http://account.dev.greysuitretail.com/shopping-cart/settings/stripe-connect/?website-id={$this->user->account->id}&user-id={$this->user->id}")
+                ->attribute('class', 'btn btn-primary');
         }
 
         $gateway_options = [];
@@ -276,32 +276,90 @@ class SettingsController extends BaseController {
     }
 
     /**
-     * Add Stripe Account
+     * Stripe Connect
+     */
+    public function stripe_connect() {
+        $stripe_client_id = Config::key('stripe-client-id');
+        $url = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id={$stripe_client_id}&scope=read_write";
+        url::redirect($url);
+    }
+
+    /**
+     * Stripe Callback
      * @return RedirectResponse
      */
-    public function add_stripe_account() {
-        try {
-            library('stripe-php/init');
-            \Stripe\Stripe::setApiKey(Config::key('stripe-secret'));
-            $stripe_account = \Stripe\Account::create([
-                'managed' => false,
-                'country' => 'US',
-                'email' => $this->user->email
-            ]);
+    public function stripe_callback() {
+        $url = "https://connect.stripe.com/oauth/token";
+        $auth_code = $_GET['code'];
+        $stripe_client_id = Config::key('stripe-client-id');
+        $stripe_secret_key = Config::key('stripe-secret-key');
+        $data = [
+            'grant_type' => 'authorization_code',
+            'client_id' => $stripe_client_id,
+            'client_secret' => $stripe_secret_key,
+            'code' => $auth_code
+        ];
+        $response_str = curl::post($url, $data);
+        $response = json_decode($response_str, true);
 
-            $account_json = $stripe_account->__toJSON();
-
-            $this->user->account->set_settings([
-                'stripe-account' => $account_json
-            ]);
-
-            $this->notify("Your Stripe Account has been created, you should get an email with instructions at {$this->user->email}.");
-        } catch( Exception $e ) {
-            $this->notify($e->getMessage(), false);
+        if ( $response['token_type'] != 'bearer' ) {
+            $this->notify('There was an error connecting with Stripe, please try again.', false);
+            url::redirect( $_SESSION['callback-referer'] );
         }
 
-        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
+        $this->user->account->id = $_SESSION['callback-website-id'];
+        $this->user->account->set_settings([
+            'stripe-account' => $response_str
+        ]);
+
+        url::redirect( $_SESSION['callback-referer'] );
     }
+
+    /**
+     * Get Logged In User
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        // connect_* are public, but need a referer and a website-id
+        $connect_url = strpos( $_SERVER['REQUEST_URI'], '/shopping-cart/settings/stripe-connect/' ) !== FALSE;
+
+        if ( $connect_url ) {
+
+            if ( !$_REQUEST['website-id'] || !$_SERVER['HTTP_REFERER'] ) {
+                return false;
+            }
+
+            $_SESSION['callback-website-id'] = $_REQUEST['website-id'];
+            $_SESSION['callback-referer'] = $_SERVER['HTTP_REFERER'];
+            $_SESSION['callback-user-id'] = $_REQUEST['user-id'];
+            // for notifications
+            $this->user = new stdClass;
+            $this->user->user_id = $this->user->id = $_REQUEST['user-id'];
+            $this->user->account = new Account();
+            $this->user->account->get($_REQUEST['website-id']);
+
+            return true;
+        }
+
+        $callback_url = strpos( $_SERVER['REQUEST_URI'], '/shopping-cart/settings/stripe-callback/' ) !== FALSE;
+
+        if ( $callback_url ) {
+            if ( !$_SESSION['callback-website-id'] || !$_SESSION['callback-referer'] || !$_SESSION['callback-user-id'] ) {
+                return false;
+            }
+            // for notifications
+            $this->user = new stdClass;
+            $this->user->user_id = $this->user->id = $_SESSION['callback-user-id'];
+            $this->user->account = new Account();
+            $this->user->account->get($_REQUEST['website-id']);
+
+            return true;
+        }
+
+        return parent::get_logged_in_user();
+
+    }
+
 
 }
 
