@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: test
 -- ------------------------------------------------------
--- Server version	5.6.19-0ubuntu0.14.04.1
+-- Server version	5.6.19-0ubuntu0.14.04.1-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -86,7 +86,7 @@ CREATE TABLE `api_ext_log` (
   `date_updated` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `INDEX` (`api`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -134,7 +134,7 @@ CREATE TABLE `api_keys` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`api_key_id`),
   KEY `company_id` (`company_id`,`brand_id`,`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,7 +154,7 @@ CREATE TABLE `api_log` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`api_log_id`),
   KEY `company_id` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23433 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23445 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +203,7 @@ CREATE TABLE `attribute_items` (
   PRIMARY KEY (`attribute_item_id`),
   KEY `attribute_id` (`attribute_id`),
   FULLTEXT KEY `attribute_item_name` (`attribute_item_name`)
-) ENGINE=MyISAM AUTO_INCREMENT=2452 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=2651 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -233,7 +233,7 @@ CREATE TABLE `attributes` (
   `title` varchar(100) NOT NULL,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`attribute_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,12 +253,12 @@ CREATE TABLE `auth_user_websites` (
   `blog` tinyint(1) NOT NULL DEFAULT '0',
   `email_marketing` tinyint(1) NOT NULL DEFAULT '0',
   `shopping_cart` tinyint(1) NOT NULL DEFAULT '0',
-  `geo_marketing` tinyint(1) NOT NULL DEFAULT '0',
+  `geo_marketing` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`auth_user_website_id`),
   KEY `user_id` (`user_id`,`website_id`),
   KEY `fk_auw_idx` (`website_id`),
   KEY `fk_auw2_idx` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5018 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5128 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -277,7 +277,7 @@ CREATE TABLE `brands` (
   PRIMARY KEY (`brand_id`),
   KEY `name_2` (`name`),
   FULLTEXT KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=1029 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=148 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -297,7 +297,7 @@ CREATE TABLE `categories` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`category_id`),
   KEY `slug` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=171 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=235 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -317,7 +317,7 @@ CREATE TABLE `checklist_items` (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`checklist_item_id`),
   KEY `fk_ci_idx` (`checklist_section_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `checklist_sections` (
   `sequence` int(11) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`checklist_section_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -351,7 +351,7 @@ CREATE TABLE `checklist_website_item_notes` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`checklist_website_item_note_id`),
   KEY `checklist_item_id` (`checklist_website_item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -371,7 +371,7 @@ CREATE TABLE `checklist_website_items` (
   KEY `checklist_id` (`checklist_id`,`checklist_item_id`),
   KEY `fk_cwi_idx` (`checklist_id`),
   KEY `fk_cwi2_idx` (`checklist_item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=55289 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=55349 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -390,7 +390,7 @@ CREATE TABLE `checklists` (
   `date_finished` datetime DEFAULT NULL,
   PRIMARY KEY (`checklist_id`),
   KEY `fk_c_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1381 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1441 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -411,7 +411,7 @@ CREATE TABLE `companies` (
   `less` text,
   `css` text,
   PRIMARY KEY (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=192 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -429,7 +429,7 @@ CREATE TABLE `company_packages` (
   PRIMARY KEY (`company_package_id`),
   KEY `company_id` (`company_id`,`website_id`),
   KEY `fk_cp_idx` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -664,7 +664,7 @@ CREATE TABLE `email_autoresponders` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`email_autoresponder_id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1129 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1267 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -701,7 +701,7 @@ CREATE TABLE `email_lists` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`email_list_id`),
   KEY `fk_el_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5770 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6000 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -761,7 +761,7 @@ CREATE TABLE `email_messages` (
   PRIMARY KEY (`email_message_id`),
   KEY `website_id` (`website_id`),
   KEY `ac_index` (`ac_message_id`,`ac_campaign_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2460 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2556 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -810,7 +810,7 @@ CREATE TABLE `email_templates` (
   `type` varchar(30) NOT NULL,
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`email_template_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3182 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3276 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -834,7 +834,71 @@ CREATE TABLE `emails` (
   PRIMARY KEY (`email_id`),
   KEY `email` (`email`),
   KEY `fk_e_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `index_products`
+--
+
+DROP TABLE IF EXISTS `index_products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `index_products` (
+  `product_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `brand_id` int(11) DEFAULT NULL,
+  `industry_id` int(11) NOT NULL DEFAULT '1',
+  `website_id` int(11) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `slug` varchar(200) NOT NULL,
+  `description` text NOT NULL,
+  `sku` varchar(100) NOT NULL,
+  `price` float NOT NULL,
+  `price_min` float NOT NULL,
+  `weight` float NOT NULL,
+  `volume` float NOT NULL,
+  `product_specifications` text NOT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `alternate_price` float NOT NULL,
+  `sale_price` float NOT NULL,
+  `wholesale_price` float NOT NULL,
+  `inventory` int(11) NOT NULL,
+  `additional_shipping_amount` float NOT NULL,
+  `protection_amount` float NOT NULL,
+  `additional_shipping_type` varchar(20) NOT NULL,
+  `alternate_price_name` varchar(30) NOT NULL DEFAULT 'List Price',
+  `meta_title` varchar(200) NOT NULL,
+  `meta_description` varchar(250) NOT NULL,
+  `meta_keywords` varchar(200) NOT NULL,
+  `protection_type` varchar(20) NOT NULL,
+  `price_note` varchar(100) NOT NULL,
+  `product_note` text NOT NULL,
+  `ships_in` varchar(60) NOT NULL,
+  `store_sku` varchar(30) NOT NULL,
+  `warranty_length` varchar(60) NOT NULL,
+  `alternate_price_strikethrough` tinyint(1) NOT NULL,
+  `display_inventory` tinyint(1) NOT NULL,
+  `on_sale` tinyint(1) NOT NULL,
+  `sequence` int(11) NOT NULL DEFAULT '100000',
+  `manual_price` int(1) NOT NULL DEFAULT '0',
+  `setup_fee` float DEFAULT NULL,
+  `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `brand` varchar(200) NOT NULL,
+  `category` varchar(200) NOT NULL,
+  `industry` varchar(200) NOT NULL,
+  `tags` varchar(200) DEFAULT NULL,
+  `is_ashley_express` tinyint(1) NOT NULL DEFAULT '0',
+  `image` varchar(200) DEFAULT NULL,
+  `attribute_items` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`product_id`,`website_id`),
+  KEY `slug` (`slug`),
+  KEY `sku` (`sku`,`name`),
+  KEY `brand_id` (`brand_id`,`industry_id`,`website_id`,`category_id`),
+  KEY `local_products_category_id` (`category_id`),
+  KEY `website_id` (`website_id`),
+  FULLTEXT KEY `name` (`name`,`description`,`sku`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -848,7 +912,7 @@ CREATE TABLE `industries` (
   `industry_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`industry_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -873,7 +937,7 @@ CREATE TABLE `kb_article` (
   KEY `user_id` (`kb_page_id`,`kb_category_id`,`user_id`),
   KEY `fk_kba_idx` (`kb_category_id`),
   KEY `fk_kba2_idx` (`kb_page_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=314 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -923,7 +987,7 @@ CREATE TABLE `kb_category` (
   `section` enum('account','admin') DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=317 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=509 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -939,7 +1003,7 @@ CREATE TABLE `kb_page` (
   `name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `kb_category_id` (`kb_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=300 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1129,7 +1193,7 @@ CREATE TABLE `notification` (
   `success` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1148,7 +1212,7 @@ CREATE TABLE `order_items` (
   `monthly` float NOT NULL,
   PRIMARY KEY (`order_item_id`),
   KEY `order_id` (`order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2546 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2558 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1168,7 +1232,7 @@ CREATE TABLE `orders` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`order_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1289 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1301 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1197,7 +1261,7 @@ CREATE TABLE `product_groups` (
   `product_group_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
   PRIMARY KEY (`product_group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1214,7 +1278,7 @@ CREATE TABLE `product_images` (
   `sequence` int(11) NOT NULL,
   PRIMARY KEY (`product_image_id`),
   KEY `product_id` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4064176 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1231,7 +1295,7 @@ CREATE TABLE `product_option_list_items` (
   `sequence` int(11) NOT NULL,
   PRIMARY KEY (`product_option_list_item_id`),
   KEY `product_option_id` (`product_option_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=153 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1262,7 +1326,7 @@ CREATE TABLE `product_options` (
   `option_title` varchar(100) NOT NULL,
   `option_name` varchar(250) NOT NULL,
   PRIMARY KEY (`product_option_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=938 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1125 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1310,16 +1374,18 @@ CREATE TABLE `products` (
   `user_id_modified` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `depth` float NOT NULL,
-  `height` float NOT NULL,
-  `length` float NOT NULL,
+  `depth` float DEFAULT NULL,
+  `height` float DEFAULT NULL,
+  `length` float DEFAULT NULL,
   PRIMARY KEY (`product_id`),
   KEY `slug` (`slug`),
   KEY `sku` (`sku`,`name`),
   KEY `publish_visibility` (`publish_visibility`),
   KEY `brand_id` (`brand_id`,`industry_id`,`website_id`,`category_id`),
+  KEY `products_user_id_created` (`user_id_created`),
+  KEY `products_user_id_modified` (`user_id_modified`),
   FULLTEXT KEY `name` (`name`,`description`,`sku`)
-) ENGINE=MyISAM AUTO_INCREMENT=202248 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=312 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1338,7 +1404,7 @@ CREATE TABLE `ratings` (
   `date_created` datetime DEFAULT NULL,
   PRIMARY KEY (`rating_id`),
   UNIQUE KEY `UNIQUE` (`product_id`,`ip_address`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1353,7 +1419,7 @@ CREATE TABLE `server` (
   `name` varchar(100) NOT NULL,
   `ip` varchar(15) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1452,7 +1518,7 @@ CREATE TABLE `sm_facebook_page` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1541,7 +1607,7 @@ CREATE TABLE `sm_posting_posts` (
   PRIMARY KEY (`sm_posting_post_id`),
   KEY `date_posted` (`date_posted`),
   KEY `fk_smpp_idx` (`sm_facebook_page_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18229 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18325 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1633,7 +1699,7 @@ CREATE TABLE `tags` (
   KEY `value` (`value`),
   KEY `object_id` (`object_id`),
   FULLTEXT KEY `value_2` (`value`)
-) ENGINE=MyISAM AUTO_INCREMENT=13201 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=13237 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1647,18 +1713,18 @@ CREATE TABLE `ticket_comments` (
   `ticket_comment_id` int(11) NOT NULL AUTO_INCREMENT,
   `ticket_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `to_address` varchar(255) null default null,
-  `cc_address` varchar(255) null default null,
-  `bcc_address` varchar(255) null default null,
+  `to_address` varchar(255) DEFAULT NULL,
+  `cc_address` varchar(255) DEFAULT NULL,
+  `bcc_address` varchar(255) DEFAULT NULL,
   `comment` text NOT NULL,
   `private` tinyint(1) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `jira_id` int(11) NULL DEFAULT NULL,
+  `jira_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`ticket_comment_id`),
   KEY `ticket_id` (`ticket_id`,`user_id`),
   KEY `fk_tc_idx` (`ticket_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1676,7 +1742,7 @@ CREATE TABLE `ticket_uploads` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`ticket_upload_id`),
   KEY `ticket_id` (`ticket_id`,`ticket_comment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1690,7 +1756,6 @@ CREATE TABLE `tickets` (
   `ticket_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `assigned_to_user_id` int(11) NOT NULL,
-  `user_id_created` int(11) NOT NULL,
   `website_id` int(11) NOT NULL,
   `summary` varchar(140) NOT NULL,
   `message` text NOT NULL,
@@ -1700,13 +1765,14 @@ CREATE TABLE `tickets` (
   `browser_version` varchar(20) NOT NULL,
   `browser_platform` varchar(50) NOT NULL,
   `browser_user_agent` varchar(200) NOT NULL,
-  `jira_id` int(11) NULL DEFAULT NULL,
-  `jira_key` VARCHAR(255) NULL DEFAULT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `jira_id` int(11) DEFAULT NULL,
+  `jira_key` varchar(255) DEFAULT NULL,
+  `user_id_created` int(11) DEFAULT NULL,
   PRIMARY KEY (`ticket_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1723,7 +1789,7 @@ CREATE TABLE `tokens` (
   `token_type` varchar(30) NOT NULL,
   `date_valid` datetime NOT NULL,
   PRIMARY KEY (`token_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3300 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3348 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1742,7 +1808,7 @@ CREATE TABLE `users` (
   `store_name` varchar(100) NOT NULL,
   `work_phone` varchar(20) NOT NULL,
   `cell_phone` varchar(20) NOT NULL,
-  `photo` varchar(255) NULL DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
   `billing_first_name` varchar(50) NOT NULL,
   `billing_last_name` varchar(50) NOT NULL,
   `billing_address1` varchar(150) NOT NULL,
@@ -1752,14 +1818,16 @@ CREATE TABLE `users` (
   `arb_subscription_id` varchar(13) NOT NULL,
   `role` tinyint(2) NOT NULL DEFAULT '5',
   `status` tinyint(2) NOT NULL DEFAULT '1',
-  `email_signature` TEXT NULL DEFAULT NULL,
+  `email_signature` text,
+  `job_title` varchar(255) DEFAULT NULL,
   `last_login` datetime NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `new_features_dismissed_at` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`),
   KEY `fk_u_idx` (`company_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1780,7 +1848,7 @@ CREATE TABLE `website_attachments` (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`website_attachment_id`,`website_page_id`,`key`),
   KEY `fk_wa_idx` (`website_page_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28919 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1893,7 +1961,7 @@ CREATE TABLE `website_cart_items` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_cart_item_id`),
   KEY `cart_id` (`website_cart_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=312 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1919,7 +1987,7 @@ CREATE TABLE `website_carts` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_cart_id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1942,7 +2010,7 @@ CREATE TABLE `website_categories` (
   `image_url` varchar(200) NOT NULL,
   `top` tinyint(1) NOT NULL DEFAULT '1',
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `header_script` TEXT NULL DEFAULT NULL,
+  `header_script` text,
   PRIMARY KEY (`website_id`,`category_id`),
   KEY `fk_wca_idx` (`website_id`),
   KEY `fk_wca2_idx` (`category_id`)
@@ -2003,7 +2071,7 @@ CREATE TABLE `website_coupons` (
   PRIMARY KEY (`website_coupon_id`),
   KEY `code` (`code`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2020,7 +2088,7 @@ CREATE TABLE `website_files` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_file_id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2067,7 +2135,7 @@ CREATE TABLE `website_location` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `INDEX` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=149 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2087,7 +2155,7 @@ CREATE TABLE `website_notes` (
   PRIMARY KEY (`website_note_id`),
   KEY `website_id` (`website_id`,`user_id`),
   KEY `fk_wn_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10512 DEFAULT CHARSET=utf8 COMMENT='Website notes';
+) ENGINE=InnoDB AUTO_INCREMENT=10572 DEFAULT CHARSET=utf8 COMMENT='Website notes';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2137,7 +2205,7 @@ CREATE TABLE `website_order_items` (
   PRIMARY KEY (`website_order_item_id`),
   KEY `website_order_id` (`website_order_id`,`sku`),
   KEY `fk_woi_idx` (`website_order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3919 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4091 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2154,7 +2222,6 @@ CREATE TABLE `website_orders` (
   `website_cart_id` int(11) NOT NULL,
   `website_shipping_method_id` int(11) NOT NULL,
   `website_ashley_express_shipping_method_id` int(11) DEFAULT NULL,
-  `authorize_only` INT(1) NOT NULL DEFAULT 0,
   `website_coupon_id` int(11) NOT NULL,
   `shipping_price` float NOT NULL,
   `tax_price` float NOT NULL,
@@ -2186,7 +2253,7 @@ CREATE TABLE `website_orders` (
   PRIMARY KEY (`website_order_id`),
   KEY `website_user_id` (`website_user_id`),
   KEY `fk_wo_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2652 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2220,7 +2287,7 @@ CREATE TABLE `website_pagemeta` (
   PRIMARY KEY (`website_pagemeta_id`),
   UNIQUE KEY `website_page_id` (`website_page_id`,`key`),
   KEY `fk_pm_idx` (`website_page_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2245,11 +2312,11 @@ CREATE TABLE `website_pages` (
   `updated_user_id` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `header_script` TEXT NULL DEFAULT NULL,
+  `header_script` text,
   PRIMARY KEY (`website_page_id`),
   UNIQUE KEY `website_id` (`website_id`,`slug`),
   KEY `fk_wp_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=183 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2294,7 +2361,7 @@ CREATE TABLE `website_product_groups` (
   `name` varchar(150) NOT NULL,
   PRIMARY KEY (`website_product_group_id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1221385 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1221484 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2354,7 +2421,7 @@ CREATE TABLE `website_product_view` (
   PRIMARY KEY (`website_product_view_id`),
   KEY `website_id` (`website_id`),
   KEY `product_id` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2415,6 +2482,7 @@ CREATE TABLE `website_products` (
   `manual_price` int(1) NOT NULL DEFAULT '0',
   `setup_fee` float DEFAULT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_id`,`product_id`),
   KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -2439,7 +2507,7 @@ CREATE TABLE `website_reach_comments` (
   PRIMARY KEY (`website_reach_comment_id`),
   KEY `website_reach_id` (`website_reach_id`,`website_user_id`,`user_id`),
   KEY `fk_website_reach_comments_idx` (`website_reach_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2477,7 +2545,7 @@ CREATE TABLE `website_reaches` (
   `priority` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`website_reach_id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=110366 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2515,7 +2583,7 @@ CREATE TABLE `website_shipping_methods` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_shipping_method_id`),
   KEY `website_id` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=963 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2588,7 +2656,7 @@ CREATE TABLE `website_users` (
   PRIMARY KEY (`website_user_id`),
   KEY `email` (`email`),
   KEY `fk_website_users_idx` (`website_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76329 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2605,7 +2673,7 @@ CREATE TABLE `website_wishlist` (
   `product_options` varchar(255) NOT NULL,
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_wishlist_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2639,7 +2707,6 @@ CREATE TABLE `websites` (
   `email_marketing` tinyint(1) NOT NULL,
   `mobile_marketing` tinyint(1) NOT NULL,
   `shopping_cart` tinyint(1) NOT NULL,
-  `geo_marketing` tinyint(1) NOT NULL DEFAULT '0',
   `seo` tinyint(4) NOT NULL,
   `room_planner` tinyint(1) NOT NULL,
   `craigslist` tinyint(1) NOT NULL,
@@ -2660,10 +2727,11 @@ CREATE TABLE `websites` (
   `status` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `geo_marketing` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`website_id`),
   KEY `user_id` (`user_id`,`os_user_id`),
   KEY `status` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=1677 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -2675,4 +2743,4 @@ CREATE TABLE `websites` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-11-06 15:25:32
+-- Dump completed on 2015-04-20 16:48:13
