@@ -131,11 +131,11 @@
                                 </li>
                             <?php endif; ?>
                             <?php if ( $online_specialist->id ): ?>
-                                <li>
+                                <li class="multi-anchor">
                                     <?php
                                         echo '<a href="mailto:' . $online_specialist->email . '"><i class="fa fa-life-ring"></i> Online Specialist: ' . $online_specialist->contact_name . '</a>';
                                         echo '<a href="mailto:' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '">' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '</a>';
-                                        if ( $online_specialist->work_phone ) echo ' | <a href="tel:' . $online_specialist->work_phone . '">' . $online_specialist->work_phone . '</a>';
+                                        if ( $online_specialist->work_phone ) echo '<a href="tel:' . $online_specialist->work_phone . '">' . $online_specialist->work_phone . '</a>';
                                     ?>
                                 </li>
                             <?php endif; ?>
