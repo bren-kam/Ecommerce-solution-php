@@ -183,7 +183,7 @@ var Ticket = {
 
             Ticket.container.find('#ticket-summary').val(currentTicket.summary);
             Ticket.container.find('.ticket-user-name').text(currentTicket.name);
-            if ( currentTicket.website ) {
+            if ( currentTicket.website && currentTicket.user_role < 7 ) {
                 Ticket.container.find('.ticket-user-name').append(' - ' + currentTicket.website);
             }
             Ticket.container.find('.ticket-user-email').text('<' + currentTicket.email + '>');
