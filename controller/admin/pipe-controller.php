@@ -305,6 +305,9 @@ class PipeController extends BaseController {
         $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
         $body = nl2br( substr( $body, 0, strpos( $body, '******************* Reply Above This Line *******************' ) ) );
         $reach_id = (int) preg_replace( '/.*Reach #([0-9]+).*/', '$1', $subject );
+        if ( !$reach_id ) {
+            $reach_id = (int) preg_replace( '/.*Quote #([0-9]+).*/', '$1', $subject );
+        }
 
         // Get Reach
         $reach = new WebsiteReach();
