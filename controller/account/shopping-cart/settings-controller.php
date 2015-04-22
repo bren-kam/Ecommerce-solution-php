@@ -83,81 +83,11 @@ class SettingsController extends BaseController {
             , 'crest-financial-dealer-id'
         );
 
-        // Create Form
-        $form = new BootstrapForm( 'fPaymentSettings' );
-
-
-        $form->add_field( 'row', '', _('All Payment Methods') );
-
-        $form->add_field( 'select', _('Status'), 'sStatus', $settings['payment-gateway-status'] )
-            ->options( array(
-                0 => _('Testing')
-                , 1 => _("Live")
-            )
-        );
-
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('Authorize.net AIM') );
-
-        $aim_login = security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY );
-        $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', $aim_login )
-            ->attribute( 'maxlength', 30 );
-
-        $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 30 );
-
-        $form->add_field( 'row', '', _('Stripe') );
-
         if ( $settings['stripe-account'] ) {
             $stripe_account = json_decode($settings['stripe-account'], true);
-
-            $form->add_field( 'text', _('Stripe ID'), 'tStripeId', $stripe_account['id'] )
-                ->attribute('disabled', 'disabled');
-
-            $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', $stripe_account['keys']['publishable'] )
-                ->attribute('disabled', 'disabled');
-
-            $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', $stripe_account['keys']['secret'] )
-                ->attribute('disabled', 'disabled');
-        } else {
-            $form->add_field('anchor', 'Connect to Stripe')
-                ->attribute('href', '/shopping-cart/settings/add-stripe-account/')
-                ->attribute('class', 'btn btn-primary btn-lg');
         }
 
-        $gateway_options = [];
-        $form->add_field( 'select', 'Process Payments With', 'sSelectedGateway', $settings['selected-gateway'] )
-            ->options([
-                'aim' => 'AIM',
-                'stripe' => 'Stripe'
-            ]);
-
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('PayPal Express Checkout') );
-
-        $form->add_field( 'text', _('Username'), 'tPaypalExpressUsername', security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 100 );
-
-        $form->add_field( 'text', _('Password'), 'tPaypalExpressPassword', security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 100 );
-
-        $form->add_field( 'text', _('API Signature'), 'tPaypalExpressSignature', security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 100 );
-
-        $form->add_field( 'checkbox', _('Bill Me Later'), 'cbBillMeLater', $settings['bill-me-later'] );
-
-        $form->add_field( 'anchor', _('Test PayPal Credentials') )
-            ->attribute( 'id', 'test-paypal' )
-            ->attribute( 'ajax', '1' )
-            ->attribute( 'href', '/shopping-cart/settings/test-paypal/?_nonce=' . nonce::create('test_paypal') );
-
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('Crest Financial') );
-
-        $form->add_field( 'text', _('Dealer ID'), 'tCrestFinancialDealerId', security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 10 );
-
-        if ( $form->posted() ) {
+        if ( $this->verified() ) {
             $this->user->account->set_settings( array(
                 'payment-gateway-status' => $_POST['sStatus']
                 , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
@@ -176,11 +106,9 @@ class SettingsController extends BaseController {
             return new RedirectResponse( '/shopping-cart/settings/payment-settings/' );
         }
 
-        $form = $form->generate_form();
-
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
-            ->set( compact( 'form' ) )
+            ->set( compact( 'settings', 'stripe_account' ) )
             ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
     }
@@ -276,32 +204,116 @@ class SettingsController extends BaseController {
     }
 
     /**
-     * Add Stripe Account
-     * @return RedirectResponse
+     * Stripe Create Account
      */
-    public function add_stripe_account() {
+    public function stripe_create_account() {
+        library('stripe-php/init');
+        \Stripe\Stripe::setApiKey( Config::key('stripe-secret-key') );
         try {
-            library('stripe-php/init');
-            \Stripe\Stripe::setApiKey(Config::key('stripe-secret'));
             $stripe_account = \Stripe\Account::create([
                 'managed' => false,
                 'country' => 'US',
                 'email' => $this->user->email
             ]);
-
-            $account_json = $stripe_account->__toJSON();
-
-            $this->user->account->set_settings([
-                'stripe-account' => $account_json
-            ]);
-
-            $this->notify("Your Stripe Account has been created, you should get an email with instructions at {$this->user->email}.");
-        } catch( Exception $e ) {
-            $this->notify($e->getMessage(), false);
+            $stripe_settings = [
+                'email' => $this->user->email,
+                'stripe_publishable_key' => $stripe_account['keys']['publishable'],
+                'access_token' => $stripe_account['keys']['secret'],
+                'stripe_user_id' => $stripe_account['id']
+            ];
+            $this->user->account->set_settings( [ 'stripe-account' => json_encode($stripe_settings) ] );
+            $this->notify('Stripe Account Created');
+            } catch (Exception $e) {
+            $this->notify('There was an error creating your stripe account, please try again later. ' . $e->getMessage(), false);
         }
-
         return new RedirectResponse('/shopping-cart/settings/payment-settings/');
     }
+
+    /**
+     * Stripe Connect
+     */
+    public function stripe_connect() {
+        $stripe_client_id = Config::key('stripe-client-id');
+        $url = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id={$stripe_client_id}&scope=read_write&stripe_landing=login";
+        url::redirect($url);
+    }
+
+    /**
+     * Stripe Callback
+     * @return RedirectResponse
+     */
+    public function stripe_callback() {
+        $url = "https://connect.stripe.com/oauth/token";
+        $auth_code = $_GET['code'];
+        $stripe_client_id = Config::key('stripe-client-id');
+        $stripe_secret_key = Config::key('stripe-secret-key');
+        $data = [
+            'grant_type' => 'authorization_code',
+            'client_id' => $stripe_client_id,
+            'client_secret' => $stripe_secret_key,
+            'code' => $auth_code
+        ];
+        $response_str = curl::post($url, $data);
+        $response = json_decode($response_str, true);
+
+        if ( $response['token_type'] != 'bearer' ) {
+            $this->notify('There was an error connecting with Stripe, please try again.', false);
+            url::redirect( $_SESSION['callback-referer'] );
+        }
+
+        $this->user->account->id = $_SESSION['callback-website-id'];
+        $this->user->account->set_settings([
+            'stripe-account' => $response_str
+        ]);
+
+        url::redirect( $_SESSION['callback-referer'] );
+    }
+
+    /**
+     * Get Logged In User
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        // connect_* are public, but need a referer and a website-id
+        $connect_url = strpos( $_SERVER['REQUEST_URI'], '/shopping-cart/settings/stripe-connect/' ) !== FALSE;
+
+        if ( $connect_url ) {
+
+            if ( !$_REQUEST['website-id'] || !$_SERVER['HTTP_REFERER'] ) {
+                return false;
+            }
+
+            $_SESSION['callback-website-id'] = $_REQUEST['website-id'];
+            $_SESSION['callback-referer'] = $_SERVER['HTTP_REFERER'];
+            $_SESSION['callback-user-id'] = $_REQUEST['user-id'];
+            // for notifications
+            $this->user = new stdClass;
+            $this->user->user_id = $this->user->id = $_REQUEST['user-id'];
+            $this->user->account = new Account();
+            $this->user->account->get($_REQUEST['website-id']);
+
+            return true;
+        }
+
+        $callback_url = strpos( $_SERVER['REQUEST_URI'], '/shopping-cart/settings/stripe-callback/' ) !== FALSE;
+
+        if ( $callback_url ) {
+            if ( !$_SESSION['callback-website-id'] || !$_SESSION['callback-referer'] || !$_SESSION['callback-user-id'] ) {
+                return false;
+            }
+            // for notifications
+            $this->user = new stdClass;
+            $this->user->user_id = $this->user->id = $_SESSION['callback-user-id'];
+            $this->user->account = new Account();
+            $this->user->account->get($_REQUEST['website-id']);
+
+            return true;
+        }
+
+        return parent::get_logged_in_user();
+
+    }
+
 
 }
 

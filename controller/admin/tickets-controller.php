@@ -687,7 +687,11 @@ class TicketsController extends BaseController {
         $status = ( isset( $_SESSION['tickets']['status'] ) ) ? (int) $_SESSION['tickets']['status'] : 0;
 
         // Grab only the right status
-        $dt->add_where( " AND a.`status` = $status" );
+        if ( $status == Ticket::STATUS_OPEN ) {
+            $dt->add_where( " AND a.`status` IN (". Ticket::STATUS_OPEN .", ". Ticket::STATUS_IN_PROGRESS .")" );
+        } else {
+            $dt->add_where( " AND a.`status` = $status" );
+        }
 
         // Grab only the right status
         if ( isset( $_SESSION['tickets']['assigned-to'] ) && !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] ) {

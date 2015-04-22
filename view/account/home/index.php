@@ -136,7 +136,7 @@
                                 </tbody>
                             </table>
 
-                            <p><a href="/product/reaches/" class="btn btn-primary">See All</a></p>
+                            <p><a href="/sales-desk/" class="btn btn-primary">See All</a></p>
                         </div>
                     <?php else: ?>
                         <div class="col-lg-6">
