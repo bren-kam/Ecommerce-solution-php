@@ -695,6 +695,16 @@ class CustomerSupportController extends BaseController {
             $user->create();
         }
 
+        // Try to guess the Account
+        $account = new Account();
+        $accounts = $account->get_by_user( $user->id );
+        if ( $accounts ) {
+            $account = reset($accounts);
+        } else {
+            $accounts = $account->get_by_authorized_user( $user->id );
+            $account = reset($accounts);
+        }
+
         // Get browser information
         $browser = fn::browser();
 
@@ -702,7 +712,7 @@ class CustomerSupportController extends BaseController {
         $ticket->user_id = $user->id;
         $ticket->assigned_to_user_id = $this->user->id;
         $ticket->user_id_created = $this->user->id;
-        $ticket->website_id = 0; // Admin side -- no website
+        $ticket->website_id = $account->website_id; // Admin side -- no website
         $ticket->summary = $_POST['summary'];
         $ticket->message = trim($_POST['message']);
         $ticket->browser_name = $browser['name'];

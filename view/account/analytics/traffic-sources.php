@@ -64,7 +64,7 @@ nonce::field( 'get_graph', '_get_graph' );
                 <div class="row">
                     <div class="col-lg-6">
                         <a href="javascript:;" data-report="time_on_site" data-title="Time on Site"><img src="<?php echo $sparklines['time_on_site']; ?>" /></a>
-                        <span class="analytics-count"><?php echo number_format( $total['time_on_site'] ); ?></span> Time on Site
+                        <span class="analytics-count"><?php echo $total['time_on_site']; ?></span> Time on Site
                     </div>
                     <div class="col-lg-6">
                         <a href="javascript:;" data-report="new_visits" data-title="Direct Traffic"><img src="<?php echo $sparklines['new_visits']; ?>" /></a>

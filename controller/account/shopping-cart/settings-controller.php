@@ -74,8 +74,8 @@ class SettingsController extends BaseController {
             'payment-gateway-status'
             , 'aim-login'
             , 'aim-transaction-key'
-            , 'stripe-publishable-key'
-            , 'stripe-secret-key'
+            , 'stripe-account'
+            , 'selected-gateway'
             , 'paypal-express-username'
             , 'paypal-express-password'
             , 'paypal-express-signature'
@@ -99,7 +99,8 @@ class SettingsController extends BaseController {
         $form->add_field( 'blank', '' );
         $form->add_field( 'row', '', _('Authorize.net AIM') );
 
-        $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) )
+        $aim_login = security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY );
+        $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', $aim_login )
             ->attribute( 'maxlength', 30 );
 
         $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) )
@@ -108,10 +109,10 @@ class SettingsController extends BaseController {
         $form->add_field( 'row', '', _('Stripe') );
 
         $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', security::decrypt( base64_decode( $settings['stripe-publishable-key'] ), PAYMENT_DECRYPTION_KEY ) )
-                    ->attribute( 'maxlength', 64 );
+            ->attribute( 'maxlength', 64 );
 
         $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', security::decrypt( base64_decode( $settings['stripe-secret-key'] ), PAYMENT_DECRYPTION_KEY ) )
-                            ->attribute( 'maxlength', 64 );
+            ->attribute( 'maxlength', 64 );
 
         $form->add_field( 'blank', '' );
         $form->add_field( 'row', '', _('PayPal Express Checkout') );
@@ -130,6 +131,7 @@ class SettingsController extends BaseController {
         $form->add_field( 'anchor', _('Test PayPal Credentials') )
             ->attribute( 'id', 'test-paypal' )
             ->attribute( 'ajax', '1' )
+            ->attribute( 'class', 'btn btn-primary' )
             ->attribute( 'href', '/shopping-cart/settings/test-paypal/?_nonce=' . nonce::create('test_paypal') );
 
         $form->add_field( 'blank', '' );
@@ -143,13 +145,12 @@ class SettingsController extends BaseController {
                 'payment-gateway-status' => $_POST['sStatus']
                 , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
                 , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
-                , 'stripe-publishable-key' => base64_encode( security::encrypt( $_POST['tStripePublishableKey'], PAYMENT_DECRYPTION_KEY ) )
-                , 'stripe-secret-key' => base64_encode( security::encrypt( $_POST['tStripeSecretKey'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
                 , 'bill-me-later' => $_POST['cbBillMeLater']
                 , 'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
+                , 'selected-gateway' => $_POST['sSelectedGateway']
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
@@ -233,7 +234,6 @@ class SettingsController extends BaseController {
         $paypal_user = security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY );
         $paypal_password = security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY );
         $paypal_signature = security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY );
-
         $url = $settings['payment-gateway-status'] ? "https://api-3t.paypal.com/nvp" : "https://api-3t.sandbox.paypal.com/nvp";
 
         $response_str = curl::post(
@@ -257,6 +257,35 @@ class SettingsController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Add Stripe Account
+     * @return RedirectResponse
+     */
+    public function add_stripe_account() {
+        try {
+            library('stripe-php/init');
+            \Stripe\Stripe::setApiKey(Config::key('stripe-secret'));
+            $stripe_account = \Stripe\Account::create([
+                'managed' => false,
+                'country' => 'US',
+                'email' => $this->user->email
+            ]);
+
+            $account_json = $stripe_account->__toJSON();
+
+            $this->user->account->set_settings([
+                'stripe-account' => $account_json
+            ]);
+
+            $this->notify("Your Stripe Account has been created, you should get an email with instructions at {$this->user->email}.");
+        } catch( Exception $e ) {
+            $this->notify($e->getMessage(), false);
+        }
+
+        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
+    }
+
 }
 
 
