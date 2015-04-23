@@ -65,7 +65,7 @@
                                     Fill out your bank account details to collect the money from your sales.
                                     <a target="_blank" href="https://dashboard.stripe.com/account/activate?client_id=<?php echo Config::key('stripe-client-id') ?>&user_id=<?php echo $stripe_account['stripe_user_id'] ?>">Start now.</a>
                                     |
-                                    <a href="/shopping-cart/settings/stripe-unlink/?_nonce=<?php echo nonce::create("stripe_unlink") ?>" confirm="Are you sure you want to Unlink your shop from Stripe?">Unlink your Stripe Account</a>
+                                    <a href="/shopping-cart/settings/stripe-unlink/?_nonce=<?php echo nonce::create("stripe_unlink") ?>" confirm="Are you sure you want to Unlink your shop from Stripe?" class="btn btn-default btn-sm">Unlink your Stripe Account</a>
                                 </p>
                             <?php endif; ?>
 
