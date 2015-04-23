@@ -207,24 +207,27 @@ class SettingsController extends BaseController {
      * Stripe Create Account
      */
     public function stripe_create_account() {
-        library('stripe-php/init');
-        \Stripe\Stripe::setApiKey( Config::key('stripe-secret-key') );
-        try {
-            $stripe_account = \Stripe\Account::create([
-                'managed' => false,
-                'country' => 'US',
-                'email' => $this->user->email
-            ]);
-            $stripe_settings = [
-                'email' => $this->user->email,
-                'stripe_publishable_key' => $stripe_account['keys']['publishable'],
-                'access_token' => $stripe_account['keys']['secret'],
-                'stripe_user_id' => $stripe_account['id']
-            ];
-            $this->user->account->set_settings( [ 'stripe-account' => json_encode($stripe_settings) ] );
-            $this->notify('Stripe Account Created');
+        if ( $this->verified() ) {
+            library('stripe-php/init');
+            \Stripe\Stripe::setApiKey( Config::key('stripe-secret-key') );
+            $email = $_POST['email'];
+            try {
+                $stripe_account = \Stripe\Account::create([
+                    'managed' => false,
+                    'country' => 'US',
+                    'email' => $email
+                ]);
+                $stripe_settings = [
+                    'email' => $email,
+                    'stripe_publishable_key' => $stripe_account['keys']['publishable'],
+                    'access_token' => $stripe_account['keys']['secret'],
+                    'stripe_user_id' => $stripe_account['id']
+                ];
+                $this->user->account->set_settings( [ 'stripe-account' => json_encode($stripe_settings) ] );
+                $this->notify('Congratulations! Your store is connected with Stripe and you are now accepting Payments from customers! <br><br> Stripe needs you to provide some additional information in order to deposit money into your bank account. Please check your email for details on completing this final step.');
             } catch (Exception $e) {
-            $this->notify('There was an error creating your stripe account, please try again later. ' . $e->getMessage(), false);
+                $this->notify('There was an error creating your stripe account, please try again later. ' . $e->getMessage(), false);
+            }
         }
         return new RedirectResponse('/shopping-cart/settings/payment-settings/');
     }
@@ -236,6 +239,13 @@ class SettingsController extends BaseController {
         $stripe_client_id = Config::key('stripe-client-id');
         $url = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id={$stripe_client_id}&scope=read_write&stripe_landing=login";
         url::redirect($url);
+    }
+
+    public function stripe_unlink() {
+        if ($this->verified()) {
+            $this->user->account->set_settings(['stripe-account' => null]);
+        }
+        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
     }
 
     /**
