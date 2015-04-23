@@ -60,8 +60,8 @@
 
                             <?php if ( !isset($stripe_account) ): ?>
                                 <p>
-                                    <a class="btn btn-primary" href="http://account.dev.greysuitretail.com/shopping-cart/settings/stripe-create-account/?_nonce=<?php echo nonce::create('stripe-create_account') ?>">Create Stripe Account</a>
-                                    <a class="btn btn-primary" href="http://account.dev.greysuitretail.com/shopping-cart/settings/stripe-connect/?website-id=1352&user-id=2696">I already have a Stripe Account</a>
+                                    <a class="btn btn-primary" href="http://account.development.greysuitretail.com/shopping-cart/settings/stripe-create-account/?_nonce=<?php echo nonce::create('stripe-create_account') ?>">Create Stripe Account</a>
+                                    <a class="btn btn-primary" href="http://account.development.greysuitretail.com/shopping-cart/settings/stripe-connect/?website-id=1352&user-id=2696">I already have a Stripe Account</a>
                                 </p>
                             <?php endif; ?>
 
