@@ -36,6 +36,9 @@ foreach ( $admin_users as $au ) {
             <a class="btn pull-right" href="javascript:;" id="compose">
                 <i class="fa fa-plus"></i>
             </a>
+            <a class="btn pull-right" href="javascript:;" id="refresh">
+                <i class="fa fa-refresh"></i>
+            </a>
         </div>
         <div class="inbox-body">
             <select id="filter-assigned-to" class="selectpicker" data-live-search="true" data-style="btn-primary">
@@ -106,7 +109,7 @@ foreach ( $admin_users as $au ) {
                 <select id="change-priority" class="selectpicker" data-style="btn-primary">
                     <option value="0">Low</option>
                     <option value="1">High</option>
-                    <option value="2">Urgent Issue</option>
+                    <option value="2">Urgent</option>
                 </select>
             </div>
 
@@ -129,7 +132,7 @@ foreach ( $admin_users as $au ) {
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>User: <strong class="ticket-user-name"></strong> | <a class="ticket-user-edit" href="javascript:;" target="_blank">Edit</a></li>
+                            <li>User: <a href="javascript:;" class="assign-to-user"><strong class="ticket-user-name"></strong></a> | <a class="ticket-user-edit" href="javascript:;" target="_blank">Edit</a></li>
                             <li>Email: <span class="ticket-user-email"></span></li>
                         </ul>
                         <ul>
