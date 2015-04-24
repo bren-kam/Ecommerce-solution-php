@@ -279,6 +279,7 @@
                         <li <?php if ( $template->in_menu_item('analytics/traffic-sources') ) echo 'class="active"'?>><a href="/analytics/traffic-sources/">Sources</a></li>
                         <li <?php if ( $template->in_menu_item('analytics/keywords') ) echo 'class="active"'?>><a href="/analytics/keywords/">Keywords</a></li>
                         <li <?php if ( $template->in_menu_item('analytics/email-marketing') ) echo 'class="active"'?>><a href="/analytics/email-marketing/">Email Marketing</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/settings') ) echo 'class="active"'?>><a href="/analytics/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
