@@ -169,7 +169,7 @@ var Ticket = {
                 Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-urgent" title="Urgent"></i> ');
             } else if ( currentTicket.priority == 1 ) {  // High Priority
                 Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-high" title="High Priority"></i> ');
-            } else if ( currentTicket.status == 0 ) {  // Open
+            } else if ( currentTicket.priority == 0 ) {  // Open
                 Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-open" title="Low Priority"></i> ');
             }
 
