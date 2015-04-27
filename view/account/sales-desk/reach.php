@@ -162,7 +162,7 @@ $reach->get_info();
                                         <?php endif; ?>
 
                                         <a href="javascript:;" data-assign-to="<?php echo $comment->user_id ?>" title="Assign Reach to this user">
-                                            <?php echo $comment->contact_name ?>
+                                            <?php echo $comment->contact_name ? $comment->contact_name : $comment->website_user_name ?>
                                         </a>
 
                                         at <?php echo $date->format( 'F j, Y g:ia' ); ?>

@@ -29,7 +29,7 @@ class User extends ActiveRecordBase {
     public $id, $user_id, $company_id, $email, $contact_name, $store_name, $role, $email_signature, $date_created;
 
     // Columns available in getting a complete user
-    public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip, $photo;
+    public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip, $photo, $new_features_dismissed_at;
 
     // Artificial column
     public $phone;
@@ -106,6 +106,7 @@ class User extends ActiveRecordBase {
             , 'billing_city' => strip_tags($this->billing_city)
             , 'billing_state' => strip_tags($this->billing_state)
             , 'billing_zip' => strip_tags($this->billing_zip)
+            , 'new_features_dismissed_at' => $this->new_features_dismissed_at
         ), array(
             'user_id' => $this->id
         ), 'issssssiissssss', 'i' );
@@ -156,7 +157,7 @@ class User extends ActiveRecordBase {
 	 */
 	public function get( $user_id ) {
         // Prepare the statement
-        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain`, u.`email_signature` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
+        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain`, u.`email_signature`, u.`new_features_dismissed_at` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -189,7 +190,7 @@ class User extends ActiveRecordBase {
         $status_where = ( $status ) ? ' AND u.`status` = ' . self::STATUS_ACTIVE : '';
 
         $this->prepare(
-            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain`, u.`email_signature` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
+            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`photo`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain`, u.`email_signature`, u.`new_features_dismissed_at` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
             , 's'
             , array( ':email' => $email )
         )->get_row( PDO::FETCH_INTO, $this );

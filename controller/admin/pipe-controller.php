@@ -62,7 +62,7 @@ class PipeController extends BaseController {
             '@imagineretailer.com',
             '@greysuitretail.com'
         ];
-        if ( isset($email['Headers']['received:']) ) {
+        if ( isset($email['Headers']['received:']) && is_array($email['Headers']['received:']) ) {
             foreach ( $email['Headers']['received:'] as $received ) {
                 $matches = [];
                 preg_match('/for (.*);/i', $received, $matches);

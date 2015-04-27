@@ -13,7 +13,7 @@ class Ticket extends ActiveRecordBase {
         , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created, $jira_id, $jira_key;
 
     // Fields from other tables
-    public $role, $website_id, $domain, $email, $last_updated_at, $last_updated_by, $os_user_id, $os_user_name;
+    public $role, $website_id, $domain, $email, $last_updated_at, $last_updated_by, $os_user_id, $os_user_name, $creator_name, $user_role;
 
     /**
      * Setup the account initial data
@@ -30,7 +30,7 @@ class Ticket extends ActiveRecordBase {
      * Get ticket
      */
     public function get( $ticket_id ) {
-		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`user_id_created`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key`, MAX(tc.`date_created`) AS last_updated_at, tcu.`contact_name` AS last_updated_by, c.os_user_id, os_user.contact_name as os_user_name
+		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`user_id_created`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, b.`contact_name` AS name, b.`role` AS user_role, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, a.`jira_id`, a.`jira_key`, MAX(tc.`date_created`) AS last_updated_at, tcu.`contact_name` AS last_updated_by, c.os_user_id, os_user.contact_name as os_user_name, users_created.contact_name as creator_name
                   FROM `tickets` AS a
                   LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` )
                   LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` )
@@ -39,6 +39,7 @@ class Ticket extends ActiveRecordBase {
                   LEFT JOIN ( SELECT `ticket_id`, MAX(`ticket_comment_id`) AS `ticket_comment_id` FROM `ticket_comments` GROUP BY `ticket_id` ) AS `last_tc` ON ( a.`ticket_id` = last_tc.`ticket_id` )
                   LEFT JOIN `ticket_comments` AS tc ON ( last_tc.`ticket_comment_id` = tc.`ticket_comment_id` )
                   LEFT JOIN `users` AS tcu ON ( tc.`user_id` = tcu.`user_id` )
+                  LEFT JOIN `users` AS users_created ON ( a.`user_id_created` = users_created.`user_id` )
                   WHERE a.`ticket_id` = :ticket_id
                   GROUP BY a.ticket_id'
             , 'i'

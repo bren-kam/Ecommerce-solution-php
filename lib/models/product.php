@@ -191,12 +191,14 @@ class Product extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values .= "( $product_id, ?, $sequence )";
+            list( $width, $height ) = getimagesize( $images[$sequence] );
+            $values .= "( $product_id, ?, $sequence, $width, $height )";
+
         }
 
         // Insert the values
         $this->prepare(
-            "INSERT INTO `product_images` ( `product_id`, `image`, `sequence` ) VALUES $values"
+            "INSERT INTO `product_images` ( `product_id`, `image`, `sequence`, `width`, `height` ) VALUES $values"
             , str_repeat( 's', $image_count )
             , $images
         )->query();

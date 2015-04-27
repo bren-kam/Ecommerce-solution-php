@@ -239,6 +239,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 
 
+        $is_ashley_express = $account->get_settings('ashley-express');
+
         /**
          * @var SimpleXMLElement $item
          */
@@ -258,9 +260,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 }
             }
 
+            // For Ashley Express websites:
             // Skip Ashley Carton/Case products
             // Came from an Ashley Express spreadsheet given by Ashley
-            if ( in_array( $sku, $this->ashley_express_carton ) )
+            if ( $is_ashley_express && in_array( $sku, $this->ashley_express_carton ) )
                 continue;
 
             $all_skus[] = $sku;
