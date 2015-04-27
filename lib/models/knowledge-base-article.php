@@ -4,7 +4,7 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
     const STATUS_PUBLISHED = 1;
 
     // The columns we will have access to
-    public $id, $kb_category_id, $kb_page_id, $user_id, $title, $slug, $content, $status, $date_created;
+    public $id, $kb_category_id, $kb_page_id, $user_id, $title, $slug, $content, $status, $date_created, $date_updated;
 
     // Artificial columns/columns from other tables
     public $section, $category, $page, $helpful, $unhelpful, $rating, $views;
@@ -23,7 +23,7 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
      */
     public function get( $id ) {
         $this->prepare(
-            'SELECT `id`, `kb_category_id`, `kb_page_id`, `user_id`, `title`, `slug`, `content`, `status` FROM `kb_article` WHERE `id` = :id AND `status` <> :status'
+            'SELECT `id`, `kb_category_id`, `kb_page_id`, `user_id`, `title`, `slug`, `content`, `status`, `date_updated` FROM `kb_article` WHERE `id` = :id AND `status` <> :status'
             , 'ii'
             , array( ':id' => $id, ':status' => self::STATUS_DELETED )
         )->get_row( PDO::FETCH_INTO, $this );

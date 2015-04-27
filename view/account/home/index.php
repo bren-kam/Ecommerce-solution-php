@@ -16,6 +16,20 @@
  */
 ?>
 
+<?php if ( $show_new_features ): ?>
+    <div class="row-fluid">
+        <div class="col-lg-12">
+            <div id="new-features">
+                <a href="/kb/article/?aid=243">
+                    <span><i class="fa fa-info-circle"></i></span>
+                    OUR LATEST UPDATES AND FEATURES. We are constantly adding more features and functionality into your Website and dashboard to help you improve your online business and productivity. Click here to see what’s new.
+                </a>
+                <a href="javascript:;" id="dismiss-new-features"><i class="fa fa-times"></i></a>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 <div class="row-fluid">
     <div class="col-lg-12">
         <section class="panel">

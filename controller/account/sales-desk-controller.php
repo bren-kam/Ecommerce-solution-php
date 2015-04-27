@@ -191,8 +191,8 @@ class SalesDeskController extends BaseController {
             fn::mail(
                 $assigned_user->email
                 , 'New Comment on ' . $reach->get_friendly_type() . ' #' . $reach->id
-            , $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/sales-desk/reach/?wrid=" . $reach->id
-                , '"' . $this->user->account->title . '" <reaches@blinkyblinky>'
+                , $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/sales-desk/reach/?wrid=" . $reach->id
+                , '"' . $this->user->account->title . '" <reaches@blinkyblinky.me>'
             );
         }
 
