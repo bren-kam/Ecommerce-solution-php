@@ -33,6 +33,8 @@ var InboxNavigation = {
             $('.inbox-nav').height(height > 700 ? height : 700);
         });
 
+        $('#refresh').click(InboxNavigation.getTickets);
+
         setInterval(InboxNavigation.getTickets, 30000);
     }
 
@@ -115,6 +117,7 @@ var Ticket = {
 
         // $('#assign-to').change(Ticket.assignTo);
         $(Ticket.container.find('.assign-to-container')).on('click', '.selectpicker li a', Ticket.assignTo);
+        $(Ticket.container.find('.assign-to-user')).on('click', Ticket.assignTo);
         $(Ticket.container.find('.change-status-container')).on('click', '.selectpicker li a', Ticket.changeStatus);
         $(Ticket.container.find('.change-priority-container')).on('click', '.selectpicker li a', Ticket.changePriority);
         $(Ticket.container.find('.attach-to-account-container')).on('click', '.selectpicker li a', Ticket.attachUserToAccount);
@@ -163,10 +166,10 @@ var Ticket = {
             Ticket.container.data('ticket-id', currentTicket.id);
             Ticket.container.find('#ticket-id').val(currentTicket.id);  // For Comment Form
             if ( currentTicket.priority == 2 ) {  // Urgent
-                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-urgent" title="Urgent Issue"></i> ');
+                Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-urgent" title="Urgent"></i> ');
             } else if ( currentTicket.priority == 1 ) {  // High Priority
                 Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-high" title="High Priority"></i> ');
-            } else if ( currentTicket.status == 0 ) {  // Open
+            } else if ( currentTicket.priority == 0 ) {  // Open
                 Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-open" title="Low Priority"></i> ');
             }
 
@@ -183,8 +186,12 @@ var Ticket = {
 
             Ticket.container.find('#ticket-summary').val(currentTicket.summary);
             Ticket.container.find('.ticket-user-name').text(currentTicket.name);
-            if ( currentTicket.website ) {
+            if ( currentTicket.website && currentTicket.user_role < 7 ) {
+                Ticket.container.find('.assign-to-user').data('assign-to', null).css('color', '#333');
                 Ticket.container.find('.ticket-user-name').append(' - ' + currentTicket.website);
+            } else {
+                Ticket.container.find('.assign-to-user').data('assign-to', null).removeAttr('style');
+                Ticket.container.find('.assign-to-user').data('assign-to', currentTicket.user_id);
             }
             Ticket.container.find('.ticket-user-email').text('<' + currentTicket.email + '>');
             Ticket.container.find('.ticket-user-edit').attr('href', '/users/add-edit/?uid=' + currentTicket.user_id);

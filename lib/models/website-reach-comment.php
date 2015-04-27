@@ -5,7 +5,7 @@ class WebsiteReachComment extends ActiveRecordBase {
         , $date_created;
 
     // Artificial Fields
-    public $contact_name;
+    public $contact_name, $website_user_name;
 
     /**
      * Setup the account initial data
@@ -60,7 +60,13 @@ class WebsiteReachComment extends ActiveRecordBase {
      */
     public function get_by_reach( $website_reach_id, $account_id ) {
         return $this->prepare(
-            "SELECT wrc.`website_reach_comment_id`, wrc.`website_user_id`, wrc.`user_id`, wrc.`comment`, wrc.`private`, wrc.`date_created`, u.`contact_name` FROM `website_reach_comments` AS wrc LEFT JOIN `users` AS u ON ( u.`user_id` = wrc.`user_id` ) LEFT JOIN `website_reaches` AS wr ON ( wr.`website_reach_id` = wrc.`website_reach_id` ) WHERE wrc.`website_reach_id` = :website_reach_id AND wr.`website_id` = :account_id ORDER BY wrc.`date_created` DESC"
+            "SELECT wrc.`website_reach_comment_id`, wrc.`website_user_id`, wrc.`user_id`, wrc.`comment`, wrc.`private`, wrc.`date_created`, u.`contact_name`, wu.`billing_name` as website_user_name
+              FROM `website_reach_comments` AS wrc
+              LEFT JOIN `users` AS u ON ( u.`user_id` = wrc.`user_id` )
+              LEFT JOIN `website_reaches` AS wr ON ( wr.`website_reach_id` = wrc.`website_reach_id` )
+              LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wrc.`website_user_id` )
+              WHERE wrc.`website_reach_id` = :website_reach_id AND wr.`website_id` = :account_id
+              ORDER BY wrc.`date_created` DESC"
             , 'ii'
             , array( ':website_reach_id' => $website_reach_id, ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'WebsiteReachComment' );

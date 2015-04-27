@@ -131,11 +131,11 @@
                                 </li>
                             <?php endif; ?>
                             <?php if ( $online_specialist->id ): ?>
-                                <li>
+                                <li class="multi-anchor">
                                     <?php
                                         echo '<a href="mailto:' . $online_specialist->email . '"><i class="fa fa-life-ring"></i> Online Specialist: ' . $online_specialist->contact_name . '</a>';
                                         echo '<a href="mailto:' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '">' . str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email ) . '</a>';
-                                        if ( $online_specialist->work_phone ) echo ' | <a href="tel:' . $online_specialist->work_phone . '">' . $online_specialist->work_phone . '</a>';
+                                        if ( $online_specialist->work_phone ) echo '<a href="tel:' . $online_specialist->work_phone . '">' . $online_specialist->work_phone . '</a>';
                                     ?>
                                 </li>
                             <?php endif; ?>
@@ -279,12 +279,13 @@
                         <li <?php if ( $template->in_menu_item('analytics/traffic-sources') ) echo 'class="active"'?>><a href="/analytics/traffic-sources/">Sources</a></li>
                         <li <?php if ( $template->in_menu_item('analytics/keywords') ) echo 'class="active"'?>><a href="/analytics/keywords/">Keywords</a></li>
                         <li <?php if ( $template->in_menu_item('analytics/email-marketing') ) echo 'class="active"'?>><a href="/analytics/email-marketing/">Email Marketing</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/settings') ) echo 'class="active"'?>><a href="/analytics/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
 
             <?php if ( $user->account->blog == 1 ): ?>
-                <form action="http://<?php echo $user->account->domain; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm" class="hidden">
+                <form action="http://<?php echo $user->account->domain; ?>/blog/log-me-in/" target="_blank" method="post" id="fBlogForm" class="hidden">
                     <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
                     <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
                 </form>
@@ -396,6 +397,12 @@
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/add') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/add-edit/">Add</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/apply-to-brand') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/apply-to-brand/">Apply to Brand</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/products') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
