@@ -107,6 +107,7 @@ class TicketsController extends BaseController {
         $ticket->browser_user_agent = $browser['user_agent'];
         $ticket->status = 0;
         $ticket->priority = $priority;
+        $ticket->user_id_created = $this->user->id;
 
         // Update the ticket
         $ticket->save();
