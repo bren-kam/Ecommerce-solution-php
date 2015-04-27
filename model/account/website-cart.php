@@ -93,7 +93,7 @@ class WebsiteCart extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT wc.`website_cart_id`, wc.`website_id`, wc.`name`, wc.`total_price`, wo.`website_order_id`, wc.`date_created`, GROUP_CONCAT(p.`name`) products
+            "SELECT wc.`website_cart_id`, wc.`website_id`, wc.`name`, wc.`total_price`, wo.`website_order_id`, wc.`date_created`, GROUP_CONCAT(p.`name`) products, wc.timestamp
               FROM `website_carts` wc
               LEFT JOIN `website_orders` wo ON ( wo.website_cart_id = wc.website_cart_id )
               LEFT JOIN `website_cart_items` wci ON ( wc.website_cart_id = wci.website_cart_id )
