@@ -279,7 +279,7 @@ class CustomerSupportController extends BaseController {
                 $primary_contact->email = $ticket_comment->to_address;
                 $primary_contact->status = User::STATUS_ACTIVE;
                 $primary_contact->role = User::ROLE_AUTHORIZED_USER;
-                $primary_contact->company_id = $this->user->company_id;
+                $primary_contact->company_id = COMPANY_ID;
                 $primary_contact->create();
             }
             $ticket->user_id = $primary_contact->id;
@@ -691,7 +691,7 @@ class CustomerSupportController extends BaseController {
             $user->email = $_POST['to'];
             $user->status = User::STATUS_ACTIVE;
             $user->role = User::ROLE_AUTHORIZED_USER;
-            $user->company_id = $this->user->company_id;
+            $user->company_id = COMPANY_ID;
             $user->create();
         }
 
