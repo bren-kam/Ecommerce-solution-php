@@ -52,6 +52,8 @@ class RemarketingController extends BaseController {
         $data = false;
 
         $abandoned_limit_minutes = $this->user->account->get_settings('remarketing-idle-seconds');
+        if ( empty( $abandoned_limit_minutes ) )
+            $abandoned_limit_minutes = 30;
         $abandoned_limit = new DateTime();
         $abandoned_limit->sub(new DateInterval("P{$abandoned_limit_minutes}M"));
 
