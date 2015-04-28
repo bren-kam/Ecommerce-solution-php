@@ -3,12 +3,23 @@
         <section class="panel">
             <header class="panel-heading">
                 Remarketing - Carts
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="/shopping-cart/orders/download/">Download as CSV</a>
-                </div>
             </header>
 
             <div class="panel-body">
+
+                <?php if ( $overview['total_count'] ): ?>
+                    <h4>Last Month Overview</h4>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: <?php echo $overview['converted_count'] / $overview['total_count'] * 100 ?>%">
+                            <?php echo $overview['converted_count'] ?> out of <?php echo $overview['total_count'] ?> Carts Converted
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" style="width: <?php echo $overview['converted_amount'] / $overview['total_amount'] * 100 ?>%">
+                            $<?php echo number_format($overview['converted_amount'], 2) ?> out of $<?php echo number_format($overview['total_amount'], 2) ?> in carts converted
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <div class="adv-table">
                     <table class="display table table-bordered table-striped" ajax="/shopping-cart/remarketing/list-carts/" perPage="30,50,100">

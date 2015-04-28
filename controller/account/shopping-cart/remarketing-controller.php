@@ -23,9 +23,14 @@ class RemarketingController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+
+        $website_cart = new WebsiteCart();
+        $overview = $website_cart->get_remarketing_report( $this->user->account->id );
+
         return $this->get_template_response( 'index' )
             ->kb( 120 )
-            ->menu_item( 'shopping-cart/remarketing/list' );
+            ->menu_item( 'shopping-cart/remarketing/list' )
+            ->set( compact('overview') );
     }
 
     /**
