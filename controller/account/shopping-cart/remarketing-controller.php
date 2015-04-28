@@ -41,7 +41,7 @@ class RemarketingController extends BaseController {
 
         // Set Order by
         $dt->order_by( 'wc.`timestamp`' );
-        $dt->add_where( ' AND wc.`website_id` = ' . (int) $this->user->account->id );
+        $dt->add_where( ' AND wc.`email` IS NOT NULL AND wc.`website_id` = ' . (int) $this->user->account->id );
         $dt->search( array( 'wc.`website_cart_id`' => false ) );
 
         // Get items
