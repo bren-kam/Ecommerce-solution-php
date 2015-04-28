@@ -402,6 +402,7 @@
                         <li class="submenu">
                             <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
                             <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/">List</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
                             </ul>
                         </li>
