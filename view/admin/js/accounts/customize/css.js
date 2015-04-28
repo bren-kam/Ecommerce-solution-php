@@ -21,7 +21,7 @@ var CSS = {
         e.preventDefault();
         $.post(
             $(this).attr('href')
-            , { _nonce : $('#_nonce').val(), less: CSS._editor.getValue() }
+            , { _nonce : $('#_nonce').val(), less: CSS._editor.getValue().replace( "\\f", "\\\\f" ) }
             , GSR.defaultAjaxResponse
         );
     }
