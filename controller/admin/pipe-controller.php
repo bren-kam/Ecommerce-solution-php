@@ -158,11 +158,11 @@ class PipeController extends BaseController {
 
             // Try to guess the Account
             $account = new Account();
-            $accounts = $account->get_by_user( $to_user->id );
+            $accounts = $account->get_by_user( $from_user->id );
             if ( $accounts ) {
                 $account = reset($accounts);
             } else {
-                $accounts = $account->get_by_authorized_user( $to_user->id );
+                $accounts = $account->get_by_authorized_user( $from_user->id );
                 $account = reset($accounts);
             }
 
