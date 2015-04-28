@@ -1,3 +1,6 @@
+<?php
+nonce::field('upload_coupon', '_upload_coupon');
+?>
 <div class="row-fluid">
     <div class="col-lg-12">
         <section class="panel">
