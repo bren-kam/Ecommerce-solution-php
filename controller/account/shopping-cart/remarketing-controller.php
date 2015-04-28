@@ -133,6 +133,8 @@ class RemarketingController extends BaseController {
             ->add_validation('req', 'Required');
 
         $form->add_field('text', 'Title', 'title', $settings['remarketing-title']);
+
+        $settings['remarketing-intro-text'] = html_entity_decode($settings['remarketing-intro-text']);
         $form->add_field('textarea', 'Intro Text', 'intro-text', $settings['remarketing-intro-text'])
             ->attribute('rte', 1);
 
@@ -149,9 +151,17 @@ class RemarketingController extends BaseController {
             ->attribute('data-delete-url', $delete_url);
 
         if ( $form->posted() ) {
+
+            // Make URLs work on SSL and non-SSL
+            $intro = preg_replace( '/src="http(s?):\/\//i', '/src="//', $_POST['intro-text'] );
+            // Make S3 Images work on SSL and non-SSL
+            $intro = preg_replace( '/src="http:\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', 'src="//s3.amazonaws.com/$1.retailcatalog.us/$2"', $intro );
+            // Encode Entities
+            $intro = htmlentities( $intro );
+
             $this->user->account->set_settings([
                 'remarketing-title' => $_POST['title']
-                , 'remarketing-intro-text' => $_POST['intro-text']
+                , 'remarketing-intro-text' => $intro
                 , 'remarketing-idle-seconds' => $_POST['idle-seconds']
             ]);
 
