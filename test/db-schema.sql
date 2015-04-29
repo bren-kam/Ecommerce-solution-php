@@ -13,7 +13,6 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `action_log`
@@ -154,8 +153,7 @@ CREATE TABLE `api_keys` (
   `date_created` datetime NOT NULL,
   `api_keyscol` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`api_key_id`),
-  KEY `company_id` (`company_id`,`user_id`,`brand_id`),
-  CONSTRAINT `fk_ak` FOREIGN KEY (`company_id`) REFERENCES `companies` (`company_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `company_id` (`company_id`,`user_id`,`brand_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -191,8 +189,7 @@ CREATE TABLE `api_settings` (
   `key` varchar(200) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`api_key_id`,`key`),
-  KEY `fk_as_idx` (`api_key_id`),
-  CONSTRAINT `fk_as` FOREIGN KEY (`api_key_id`) REFERENCES `api_keys` (`api_key_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_as_idx` (`api_key_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -240,9 +237,7 @@ CREATE TABLE `attribute_relations` (
   `attribute_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   KEY `category_id` (`category_id`),
-  KEY `fk_ar_idx` (`attribute_id`),
-  CONSTRAINT `fk_ar` FOREIGN KEY (`attribute_id`) REFERENCES `attributes` (`attribute_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ar2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_ar_idx` (`attribute_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -282,9 +277,7 @@ CREATE TABLE `auth_user_websites` (
   PRIMARY KEY (`auth_user_website_id`),
   KEY `user_id` (`user_id`,`website_id`),
   KEY `fk_auw_idx` (`website_id`),
-  KEY `fk_auw2_idx` (`user_id`),
-  CONSTRAINT `fk_auw` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_auw2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_auw2_idx` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5317 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -343,8 +336,7 @@ CREATE TABLE `checklist_items` (
   `sequence` int(11) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`checklist_item_id`),
-  KEY `fk_ci_idx` (`checklist_section_id`),
-  CONSTRAINT `fk_ci` FOREIGN KEY (`checklist_section_id`) REFERENCES `checklist_sections` (`checklist_section_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_ci_idx` (`checklist_section_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -378,8 +370,7 @@ CREATE TABLE `checklist_website_item_notes` (
   `user_id` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`checklist_website_item_note_id`),
-  KEY `checklist_item_id` (`checklist_website_item_id`),
-  CONSTRAINT `fk_cwin` FOREIGN KEY (`checklist_website_item_id`) REFERENCES `checklist_website_items` (`checklist_website_item_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `checklist_item_id` (`checklist_website_item_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7494 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -399,9 +390,7 @@ CREATE TABLE `checklist_website_items` (
   PRIMARY KEY (`checklist_website_item_id`),
   KEY `checklist_id` (`checklist_id`,`checklist_item_id`),
   KEY `fk_cwi_idx` (`checklist_id`),
-  KEY `fk_cwi2_idx` (`checklist_item_id`),
-  CONSTRAINT `fk_cwi` FOREIGN KEY (`checklist_id`) REFERENCES `checklists` (`checklist_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_cwi2` FOREIGN KEY (`checklist_item_id`) REFERENCES `checklist_items` (`checklist_item_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_cwi2_idx` (`checklist_item_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=76758 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -420,8 +409,7 @@ CREATE TABLE `checklists` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_finished` datetime DEFAULT NULL,
   PRIMARY KEY (`checklist_id`),
-  KEY `fk_c_idx` (`website_id`),
-  CONSTRAINT `fk_c` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_c_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1669 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -460,8 +448,7 @@ CREATE TABLE `company_packages` (
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`company_package_id`),
   KEY `company_id` (`company_id`,`website_id`),
-  KEY `fk_cp_idx` (`company_id`),
-  CONSTRAINT `fk_cp` FOREIGN KEY (`company_id`) REFERENCES `companies` (`company_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_cp_idx` (`company_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -673,9 +660,7 @@ CREATE TABLE `email_associations` (
   `email_list_id` int(11) NOT NULL,
   PRIMARY KEY (`email_id`,`email_list_id`),
   KEY `fk_eas_idx` (`email_id`),
-  KEY `fk_eas2_idx` (`email_list_id`),
-  CONSTRAINT `fk_eas` FOREIGN KEY (`email_id`) REFERENCES `emails` (`email_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_eas2` FOREIGN KEY (`email_list_id`) REFERENCES `email_lists` (`email_list_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_eas2_idx` (`email_list_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -698,8 +683,7 @@ CREATE TABLE `email_autoresponders` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`email_autoresponder_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_ea` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1252 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -715,8 +699,7 @@ CREATE TABLE `email_import_emails` (
   `email` varchar(200) NOT NULL,
   `name` varchar(100) NOT NULL,
   `date_created` datetime NOT NULL,
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_eie` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -737,8 +720,7 @@ CREATE TABLE `email_lists` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`email_list_id`),
-  KEY `fk_el_idx` (`website_id`),
-  CONSTRAINT `fk_el` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_el_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6880 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -754,9 +736,7 @@ CREATE TABLE `email_message_associations` (
   `email_list_id` int(11) NOT NULL,
   KEY `email_message_id` (`email_message_id`,`email_list_id`),
   KEY `fk_ema_idx` (`email_message_id`),
-  KEY `fk_ema2_idx` (`email_list_id`),
-  CONSTRAINT `fk_ema` FOREIGN KEY (`email_message_id`) REFERENCES `email_messages` (`email_message_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ema2` FOREIGN KEY (`email_list_id`) REFERENCES `email_lists` (`email_list_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_ema2_idx` (`email_list_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -772,8 +752,7 @@ CREATE TABLE `email_message_meta` (
   `type` varchar(50) NOT NULL,
   `value` text NOT NULL,
   KEY `email_message_id` (`email_message_id`,`type`),
-  KEY `fk_emm_idx` (`email_message_id`),
-  CONSTRAINT `fk_emm` FOREIGN KEY (`email_message_id`) REFERENCES `email_messages` (`email_message_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_emm_idx` (`email_message_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -801,8 +780,7 @@ CREATE TABLE `email_messages` (
   `from` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`email_message_id`),
   KEY `website_id` (`website_id`),
-  KEY `ac_index` (`ac_message_id`,`ac_campaign_id`),
-  CONSTRAINT `fk_em` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `ac_index` (`ac_message_id`,`ac_campaign_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3136 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -817,9 +795,7 @@ CREATE TABLE `email_template_associations` (
   `email_template_id` int(11) NOT NULL,
   `website_id` int(11) NOT NULL,
   KEY `email_template_id` (`email_template_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_eta` FOREIGN KEY (`email_template_id`) REFERENCES `email_templates` (`email_template_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_eta2` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -834,8 +810,7 @@ CREATE TABLE `email_template_options` (
   `email_template_id` int(11) NOT NULL,
   `key` varchar(50) NOT NULL,
   `value` text NOT NULL,
-  KEY `email_template_id` (`email_template_id`),
-  CONSTRAINT `fk_eto` FOREIGN KEY (`email_template_id`) REFERENCES `email_templates` (`email_template_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `email_template_id` (`email_template_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -878,8 +853,7 @@ CREATE TABLE `emails` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`email_id`),
   KEY `email` (`email`),
-  KEY `fk_e_idx` (`website_id`),
-  CONSTRAINT `fk_e` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_e_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=406921 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -982,9 +956,7 @@ CREATE TABLE `kb_article` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`kb_page_id`,`kb_category_id`,`user_id`),
   KEY `fk_kba_idx` (`kb_category_id`),
-  KEY `fk_kba2_idx` (`kb_page_id`),
-  FULLTEXT KEY `FULLTEXT` (`title`,`content`),
-  CONSTRAINT `fk_kba` FOREIGN KEY (`kb_category_id`) REFERENCES `kb_category` (`id`) ON UPDATE NO ACTION
+  KEY `fk_kba2_idx` (`kb_page_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1002,8 +974,7 @@ CREATE TABLE `kb_article_rating` (
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `UNIQUE` (`kb_article_id`,`user_id`),
   KEY `kb_article_id` (`kb_article_id`,`timestamp`,`rating`,`user_id`),
-  KEY `fk_kbar_idx` (`kb_article_id`),
-  CONSTRAINT `fk_kbar` FOREIGN KEY (`kb_article_id`) REFERENCES `kb_article` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_kbar_idx` (`kb_article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1019,8 +990,7 @@ CREATE TABLE `kb_article_view` (
   `user_id` int(11) NOT NULL,
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `kb_article_id` (`user_id`,`kb_article_id`,`timestamp`),
-  KEY `fk_kbav_idx` (`kb_article_id`),
-  CONSTRAINT `fk_kbav` FOREIGN KEY (`kb_article_id`) REFERENCES `kb_article` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_kbav_idx` (`kb_article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1054,8 +1024,7 @@ CREATE TABLE `kb_page` (
   `name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `kb_category_id` (`kb_category_id`),
-  FULLTEXT KEY `FULLTEXT` (`name`),
-  CONSTRAINT `fk_category_id` FOREIGN KEY (`kb_category_id`) REFERENCES `kb_category` (`id`) ON UPDATE NO ACTION
+  FULLTEXT KEY `FULLTEXT` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=156 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1072,9 +1041,7 @@ CREATE TABLE `mobile_associations` (
   `trumpia_contact_id` int(11) NOT NULL,
   PRIMARY KEY (`mobile_subscriber_id`,`mobile_list_id`,`trumpia_contact_id`),
   KEY `fk_ma_idx` (`mobile_subscriber_id`),
-  KEY `fk_ma2_idx` (`mobile_list_id`),
-  CONSTRAINT `fk_ma` FOREIGN KEY (`mobile_subscriber_id`) REFERENCES `mobile_subscribers` (`mobile_subscriber_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ma2` FOREIGN KEY (`mobile_list_id`) REFERENCES `mobile_lists` (`mobile_list_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_ma2_idx` (`mobile_list_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1090,9 +1057,7 @@ CREATE TABLE `mobile_keyword_lists` (
   `mobile_list_id` int(11) NOT NULL,
   PRIMARY KEY (`mobile_keyword_id`,`mobile_list_id`),
   KEY `fk_mkl_idx` (`mobile_keyword_id`),
-  KEY `fk_mkl2_idx` (`mobile_list_id`),
-  CONSTRAINT `fk_mkl` FOREIGN KEY (`mobile_keyword_id`) REFERENCES `mobile_keywords` (`mobile_keyword_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_mkl2` FOREIGN KEY (`mobile_list_id`) REFERENCES `mobile_lists` (`mobile_list_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_mkl2_idx` (`mobile_list_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1111,8 +1076,7 @@ CREATE TABLE `mobile_keywords` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mobile_keyword_id`),
-  KEY `am_keyword_campaign_id` (`website_id`),
-  CONSTRAINT `fk_mk` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `am_keyword_campaign_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1132,8 +1096,7 @@ CREATE TABLE `mobile_lists` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mobile_list_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_ml` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1149,9 +1112,7 @@ CREATE TABLE `mobile_message_associations` (
   `mobile_list_id` int(11) NOT NULL,
   PRIMARY KEY (`mobile_message_id`,`mobile_list_id`),
   KEY `fk_mma_idx` (`mobile_message_id`),
-  KEY `fk_mma2_idx` (`mobile_list_id`),
-  CONSTRAINT `fk_mma` FOREIGN KEY (`mobile_message_id`) REFERENCES `mobile_messages` (`mobile_message_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_mma2` FOREIGN KEY (`mobile_list_id`) REFERENCES `mobile_lists` (`mobile_list_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_mma2_idx` (`mobile_list_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1172,8 +1133,7 @@ CREATE TABLE `mobile_messages` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mobile_message_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_mm` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1198,8 +1158,7 @@ CREATE TABLE `mobile_pages` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mobile_page_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_mp` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1238,8 +1197,7 @@ CREATE TABLE `mobile_subscribers` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`mobile_subscriber_id`),
   UNIQUE KEY `website_id` (`website_id`,`phone`),
-  KEY `fk_ms_idx` (`website_id`),
-  CONSTRAINT `fk_ms` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_ms_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=587 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1275,8 +1233,7 @@ CREATE TABLE `order_items` (
   `amount` float NOT NULL,
   `monthly` float NOT NULL,
   PRIMARY KEY (`order_item_id`),
-  KEY `order_id` (`order_id`),
-  CONSTRAINT `fk_oi` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `order_id` (`order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3004 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1311,8 +1268,7 @@ CREATE TABLE `product_group_relations` (
   `product_group_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   KEY `product_id` (`product_id`),
-  KEY `product_group_id` (`product_group_id`),
-  CONSTRAINT `fk_pgr` FOREIGN KEY (`product_group_id`) REFERENCES `product_groups` (`product_group_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `product_group_id` (`product_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1398,8 +1354,7 @@ CREATE TABLE `product_option_list_items` (
   `value` varchar(100) NOT NULL,
   `sequence` int(11) NOT NULL,
   PRIMARY KEY (`product_option_list_item_id`),
-  KEY `product_option_id` (`product_option_id`),
-  CONSTRAINT `fk_poli` FOREIGN KEY (`product_option_id`) REFERENCES `product_options` (`product_option_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `product_option_id` (`product_option_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=935 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1414,8 +1369,7 @@ CREATE TABLE `product_option_relations` (
   `product_option_id` int(11) NOT NULL,
   `brand_id` int(11) NOT NULL,
   KEY `product_option_id` (`product_option_id`,`brand_id`),
-  KEY `fk_por_idx` (`product_option_id`),
-  CONSTRAINT `fk_por` FOREIGN KEY (`product_option_id`) REFERENCES `product_options` (`product_option_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_por_idx` (`product_option_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1678,8 +1632,7 @@ CREATE TABLE `sm_about_us` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smau_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smau` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smau_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1699,8 +1652,7 @@ CREATE TABLE `sm_contact_us` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smcu_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smcu` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smcu_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1720,8 +1672,7 @@ CREATE TABLE `sm_current_ad` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smca_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smca` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smca_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1741,8 +1692,7 @@ CREATE TABLE `sm_email_sign_up` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smesu_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smesu` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smesu_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1761,8 +1711,7 @@ CREATE TABLE `sm_facebook_page` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_smfp` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=409 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1781,8 +1730,7 @@ CREATE TABLE `sm_facebook_site` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smfs_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smfs` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smfs_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1808,8 +1756,7 @@ CREATE TABLE `sm_fan_offer` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smfo_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smfo` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smfo_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1829,8 +1776,7 @@ CREATE TABLE `sm_posting` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `key` (`fb_page_id`,`key`),
-  KEY `fk_smpo_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smpo` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smpo_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1854,8 +1800,7 @@ CREATE TABLE `sm_posting_posts` (
   `date_updated` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`sm_posting_post_id`),
   KEY `date_posted` (`date_posted`),
-  KEY `fk_smpp_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smpp` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smpp_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18135 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1874,8 +1819,7 @@ CREATE TABLE `sm_products` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smp_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smpr` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smp_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1902,8 +1846,7 @@ CREATE TABLE `sm_share_and_save` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_smsas_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_smsas` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_smsas_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1930,8 +1873,7 @@ CREATE TABLE `sm_sweepstakes` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `fb_page_id` (`fb_page_id`),
-  KEY `fk_sms_idx` (`sm_facebook_page_id`),
-  CONSTRAINT `fk_sms` FOREIGN KEY (`sm_facebook_page_id`) REFERENCES `sm_facebook_page` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_sms_idx` (`sm_facebook_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1975,8 +1917,7 @@ CREATE TABLE `ticket_comments` (
   `jira_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`ticket_comment_id`),
   KEY `ticket_id` (`ticket_id`,`user_id`),
-  KEY `fk_tc_idx` (`ticket_id`),
-  CONSTRAINT `fk_tc` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`ticket_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_tc_idx` (`ticket_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=56867 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2095,8 +2036,7 @@ CREATE TABLE `users` (
   `new_features_dismissed_at` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`),
-  KEY `fk_u_idx` (`company_id`),
-  CONSTRAINT `fk_u` FOREIGN KEY (`company_id`) REFERENCES `companies` (`company_id`) ON UPDATE NO ACTION
+  KEY `fk_u_idx` (`company_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3002 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2117,8 +2057,7 @@ CREATE TABLE `website_attachments` (
   `sequence` int(2) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`website_attachment_id`,`website_page_id`,`key`),
-  KEY `fk_wa_idx` (`website_page_id`),
-  CONSTRAINT `fk_wa` FOREIGN KEY (`website_page_id`) REFERENCES `website_pages` (`website_page_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wa_idx` (`website_page_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=41755 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2154,9 +2093,7 @@ CREATE TABLE `website_blocked_category` (
   `category_id` int(11) NOT NULL,
   PRIMARY KEY (`website_id`,`category_id`),
   KEY `fk_wbc_idx` (`website_id`),
-  KEY `fk_wbc2_idx` (`category_id`),
-  CONSTRAINT `fk_wbc` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wbc2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wbc2_idx` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2212,8 +2149,7 @@ CREATE TABLE `website_cart_item_options` (
   `product_option_id` int(11) NOT NULL,
   `product_option_list_item_id` int(11) NOT NULL,
   KEY `website_cart_item_id` (`website_cart_item_id`,`product_option_id`),
-  KEY `fk_wcio_idx` (`website_cart_item_id`),
-  CONSTRAINT `fk_wcio` FOREIGN KEY (`website_cart_item_id`) REFERENCES `website_cart_items` (`website_cart_item_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wcio_idx` (`website_cart_item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2235,8 +2171,7 @@ CREATE TABLE `website_cart_items` (
   `date_created` datetime NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_cart_item_id`),
-  KEY `cart_id` (`website_cart_id`),
-  CONSTRAINT `fk_wci` FOREIGN KEY (`website_cart_id`) REFERENCES `website_carts` (`website_cart_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `cart_id` (`website_cart_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=173470 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2262,8 +2197,7 @@ CREATE TABLE `website_carts` (
   `date_created` datetime NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_cart_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_wcar` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=89489 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2290,9 +2224,7 @@ CREATE TABLE `website_categories` (
   `header_script` text,
   PRIMARY KEY (`website_id`,`category_id`),
   KEY `fk_wca_idx` (`website_id`),
-  KEY `fk_wca2_idx` (`category_id`),
-  CONSTRAINT `fk_wca` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wca2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON UPDATE NO ACTION
+  KEY `fk_wca2_idx` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2307,8 +2239,7 @@ CREATE TABLE `website_coupon_relations` (
   `website_coupon_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   PRIMARY KEY (`website_coupon_id`,`product_id`),
-  KEY `fk_wcr_idx` (`website_coupon_id`),
-  CONSTRAINT `fk_wcr` FOREIGN KEY (`website_coupon_id`) REFERENCES `website_coupons` (`website_coupon_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wcr_idx` (`website_coupon_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2323,9 +2254,7 @@ CREATE TABLE `website_coupon_shipping_methods` (
   `website_coupon_id` int(11) NOT NULL,
   `website_shipping_method_id` int(11) NOT NULL,
   KEY `fk_wcsm_idx` (`website_coupon_id`),
-  KEY `fk_wcsm2_idx` (`website_shipping_method_id`),
-  CONSTRAINT `fk_wcsm` FOREIGN KEY (`website_coupon_id`) REFERENCES `website_coupons` (`website_coupon_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wcsm2` FOREIGN KEY (`website_shipping_method_id`) REFERENCES `website_shipping_methods` (`website_shipping_method_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wcsm2_idx` (`website_shipping_method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2352,8 +2281,7 @@ CREATE TABLE `website_coupons` (
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_coupon_id`),
   KEY `code` (`code`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_wc` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=345 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2370,8 +2298,7 @@ CREATE TABLE `website_files` (
   `file_path` varchar(200) NOT NULL,
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_file_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_wf` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=31420 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2387,9 +2314,7 @@ CREATE TABLE `website_industries` (
   `industry_id` int(11) NOT NULL,
   PRIMARY KEY (`website_id`,`industry_id`),
   KEY `fk_wi_idx` (`website_id`),
-  KEY `fk_wi2_idx` (`industry_id`),
-  CONSTRAINT `fk_wi` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wi2` FOREIGN KEY (`industry_id`) REFERENCES `industries` (`industry_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wi2_idx` (`industry_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2420,8 +2345,7 @@ CREATE TABLE `website_location` (
   `timestamp` timestamp NULL DEFAULT NULL,
   `store_image` varchar(500) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `INDEX` (`website_id`),
-  CONSTRAINT `fk_wl` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `INDEX` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1446 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2441,8 +2365,7 @@ CREATE TABLE `website_notes` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_note_id`),
   KEY `website_id` (`website_id`,`user_id`),
-  KEY `fk_wn_idx` (`website_id`),
-  CONSTRAINT `fk_wn` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wn_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18057 DEFAULT CHARSET=utf8 COMMENT='Website notes';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2462,8 +2385,7 @@ CREATE TABLE `website_order_item_options` (
   `option_name` varchar(250) NOT NULL,
   `list_item_value` varchar(100) NOT NULL,
   KEY `website_order_item_id` (`website_order_item_id`,`product_option_id`),
-  KEY `fk_woio_idx` (`website_order_item_id`),
-  CONSTRAINT `fk_woio` FOREIGN KEY (`website_order_item_id`) REFERENCES `website_order_items` (`website_order_item_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_woio_idx` (`website_order_item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2493,8 +2415,7 @@ CREATE TABLE `website_order_items` (
   `status` tinyint(1) NOT NULL,
   PRIMARY KEY (`website_order_item_id`),
   KEY `website_order_id` (`website_order_id`,`sku`),
-  KEY `fk_woi_idx` (`website_order_id`),
-  CONSTRAINT `fk_woi` FOREIGN KEY (`website_order_id`) REFERENCES `website_orders` (`website_order_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_woi_idx` (`website_order_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7527 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2543,8 +2464,7 @@ CREATE TABLE `website_orders` (
   `shipping_track_number` text,
   PRIMARY KEY (`website_order_id`),
   KEY `website_user_id` (`website_user_id`),
-  KEY `fk_wo_idx` (`website_id`),
-  CONSTRAINT `fk_wo` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wo_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5141 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2560,8 +2480,7 @@ CREATE TABLE `website_page_product` (
   `product_id` int(11) NOT NULL,
   `sequence` int(11) DEFAULT NULL,
   PRIMARY KEY (`website_page_id`,`product_id`),
-  KEY `fk_wpp_idx` (`website_page_id`),
-  CONSTRAINT `fk_wpp` FOREIGN KEY (`website_page_id`) REFERENCES `website_pages` (`website_page_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wpp_idx` (`website_page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2579,8 +2498,7 @@ CREATE TABLE `website_pagemeta` (
   `value` text,
   PRIMARY KEY (`website_pagemeta_id`),
   UNIQUE KEY `website_page_id` (`website_page_id`,`key`),
-  KEY `fk_pm_idx` (`website_page_id`),
-  CONSTRAINT `fk_pm` FOREIGN KEY (`website_page_id`) REFERENCES `website_pages` (`website_page_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_pm_idx` (`website_page_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19892 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2609,8 +2527,7 @@ CREATE TABLE `website_pages` (
   `header_script` text,
   PRIMARY KEY (`website_page_id`),
   UNIQUE KEY `website_id` (`website_id`,`slug`),
-  KEY `fk_wp_idx` (`website_id`),
-  CONSTRAINT `fk_wp` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wp_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14167 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2633,8 +2550,7 @@ CREATE TABLE `website_passwords` (
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_password_id`),
-  KEY `website_id_index` (`website_id`),
-  CONSTRAINT `fk_wpw` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id_index` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='Website Passwords';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2677,8 +2593,7 @@ CREATE TABLE `website_product_group_relations` (
   `product_id` int(11) NOT NULL,
   PRIMARY KEY (`website_product_group_id`,`product_id`),
   KEY `fk_wpgr_idx` (`website_product_group_id`),
-  KEY `FH_DanB_1` (`product_id`,`website_product_group_id`),
-  CONSTRAINT `fk_wpgr` FOREIGN KEY (`website_product_group_id`) REFERENCES `website_product_groups` (`website_product_group_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `FH_DanB_1` (`product_id`,`website_product_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2694,8 +2609,7 @@ CREATE TABLE `website_product_groups` (
   `website_id` int(11) NOT NULL,
   `name` varchar(150) NOT NULL,
   PRIMARY KEY (`website_product_group_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_wpg` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6065491 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2718,10 +2632,7 @@ CREATE TABLE `website_product_option_list_items` (
   KEY `website_id` (`website_id`,`product_id`,`product_option_id`,`product_option_list_item_id`),
   KEY `fk_website_product_option_list_items_idx` (`website_id`),
   KEY `fk_wpoli_idx` (`product_option_id`),
-  KEY `fk_wpoli2_idx` (`product_option_list_item_id`),
-  CONSTRAINT `fk_website_product_option_list_items` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wpoli` FOREIGN KEY (`product_option_id`) REFERENCES `product_options` (`product_option_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wpoli2` FOREIGN KEY (`product_option_list_item_id`) REFERENCES `product_option_list_items` (`product_option_list_item_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wpoli2_idx` (`product_option_list_item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2740,9 +2651,7 @@ CREATE TABLE `website_product_options` (
   `required` tinyint(1) NOT NULL,
   PRIMARY KEY (`website_id`,`product_id`,`product_option_id`),
   KEY `fk_website_product_options_idx` (`website_id`),
-  KEY `fk_wpo_idx` (`product_option_id`),
-  CONSTRAINT `fk_website_product_options` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_wpo` FOREIGN KEY (`product_option_id`) REFERENCES `product_options` (`product_option_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_wpo_idx` (`product_option_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2821,8 +2730,7 @@ CREATE TABLE `website_products` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_id`,`product_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_website_products` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2844,8 +2752,7 @@ CREATE TABLE `website_reach_comments` (
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_reach_comment_id`),
   KEY `website_reach_id` (`website_reach_id`,`website_user_id`,`user_id`),
-  KEY `fk_website_reach_comments_idx` (`website_reach_id`),
-  CONSTRAINT `fk_website_reach_comments` FOREIGN KEY (`website_reach_id`) REFERENCES `website_reaches` (`website_reach_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_website_reach_comments_idx` (`website_reach_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5635 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2860,8 +2767,7 @@ CREATE TABLE `website_reach_meta` (
   `website_reach_id` int(11) NOT NULL,
   `key` varchar(50) NOT NULL,
   `value` text NOT NULL,
-  KEY `website_reach_id` (`website_reach_id`),
-  CONSTRAINT `fk_website_reach_meta` FOREIGN KEY (`website_reach_id`) REFERENCES `website_reaches` (`website_reach_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_reach_id` (`website_reach_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2884,8 +2790,7 @@ CREATE TABLE `website_reaches` (
   `date_created` datetime NOT NULL,
   `priority` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`website_reach_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_website_reaches` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=199974 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2901,8 +2806,7 @@ CREATE TABLE `website_settings` (
   `key` varchar(50) NOT NULL,
   `value` mediumtext NOT NULL,
   PRIMARY KEY (`website_id`,`key`),
-  KEY `fk_website_settings_idx` (`website_id`),
-  CONSTRAINT `fk_website_settings` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_website_settings_idx` (`website_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2924,8 +2828,7 @@ CREATE TABLE `website_shipping_methods` (
   `extra` text NOT NULL,
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`website_shipping_method_id`),
-  KEY `website_id` (`website_id`),
-  CONSTRAINT `fk_website_shipping_methods` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1293 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2946,8 +2849,7 @@ CREATE TABLE `website_sm_account` (
   `auth_information` text,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_sm_account_id`),
-  KEY `website_sm_account_website_id` (`website_id`),
-  CONSTRAINT `website_sm_account_website_id` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `website_sm_account_website_id` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3004,8 +2906,7 @@ CREATE TABLE `website_top_brands` (
   `brand_id` int(11) NOT NULL,
   `sequence` int(11) NOT NULL,
   PRIMARY KEY (`website_id`,`brand_id`),
-  KEY `fk_website_top_brands_idx` (`website_id`),
-  CONSTRAINT `fk_website_top_brands` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_website_top_brands_idx` (`website_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3044,8 +2945,7 @@ CREATE TABLE `website_users` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_user_id`),
   KEY `email` (`email`),
-  KEY `fk_website_users_idx` (`website_id`),
-  CONSTRAINT `fk_website_users` FOREIGN KEY (`website_id`) REFERENCES `websites` (`website_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `fk_website_users_idx` (`website_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=139128 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3244,6 +3144,5 @@ CREATE TABLE `websites` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2015-04-20 16:56:22
