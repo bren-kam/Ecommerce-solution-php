@@ -1212,6 +1212,8 @@ CREATE TABLE `product_images` (
   `product_id` int(11) NOT NULL,
   `image` varchar(200) NOT NULL,
   `sequence` int(11) NOT NULL,
+  `width` int(11) NOT NULL,
+  `height` int(11) NOT NULL,
   PRIMARY KEY (`product_image_id`),
   KEY `product_id` (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4064176 DEFAULT CHARSET=utf8;
