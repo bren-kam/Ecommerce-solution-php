@@ -100,7 +100,10 @@ class AccountProductOption extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values .= "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', ' . (float) $product_option['price'] . ', ' . (int) $product_option['required'] . ' )';
+            $product_option['price'] = str_replace([' ', '$', ','], '', $product_option['price']);
+            $product_option['price'] = preg_replace('/([a-z]|[A-Z])*/', '', $product_option['price']);
+
+            $values .= "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', \'' . $product_option['price'] . '\', ' . (int) $product_option['required'] . ' )';
         }
 
         $this->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $values" );
@@ -125,7 +128,10 @@ class AccountProductOption extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values .= "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', ' . (float) $product_option_list_item['price'] . ', ' . (float) $product_option_list_item['alt_price'] . ', ' . $product_option_list_item['alt_price2'] . ' )';
+            $product_option_list_item['price'] = str_replace([' ', '$', ','], '', $product_option_list_item['price']);
+            $product_option_list_item['price'] = preg_replace('/([a-z]|[A-Z])*/', '', $product_option_list_item['price']);
+
+            $values .= "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', \'' . $product_option_list_item['price'] . '\', ' . (float) $product_option_list_item['alt_price'] . ', ' . $product_option_list_item['alt_price2'] . ' )';
         }
 
         $this->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price`, `alt_price`, `alt_price2` ) VALUES $values" );
