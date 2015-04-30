@@ -127,7 +127,7 @@ $nonce = nonce::create('payment_settings');
                             <h4>All Payment Methods</h4>
 
                             <div class="form-group">
-                                <label for="sStatus">Status:</label>
+                                <label for="sStatus">Shopping Cart:</label>
                                 <select class="form-control" id="sStatus" name="sStatus">
                                     <option value="0" <?php if ( !$settings['payment-gateway-status'] ) echo 'selected'?>>Testing</option>
                                     <option value="1" <?php if ( $settings['payment-gateway-status'] ) echo 'selected'?>>Live</option>
