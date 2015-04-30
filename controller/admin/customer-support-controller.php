@@ -378,21 +378,21 @@ class CustomerSupportController extends BaseController {
                 , $ticket_comment->bcc_address
             );
 
-            // Send the assigned user an email if they are not submitting the comment
-            if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
-                fn::mail(
-                    $assigned_user->email
-                    , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
-                    , "{$ticket_comment->comment}"
-                        . "{$attachments}"
-                        . "{$signature}"
-                        . "{$thread}"
-                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
-                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
-                    , false
-                    , false
-                );
-            }
+//            // Send the assigned user an email if they are not submitting the comment
+//            if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
+//                fn::mail(
+//                    $assigned_user->email
+//                    , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
+//                    , "{$ticket_comment->comment}"
+//                        . "{$attachments}"
+//                        . "{$signature}"
+//                        . "{$thread}"
+//                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
+//                    , $this->user->contact_name . ' <' . $os_domain_email . '>'
+//                    , false
+//                    , false
+//                );
+//            }
         }
 
         if ( $ticket->jira_id ) {
@@ -418,6 +418,12 @@ class CustomerSupportController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
+        $assigned_user = new User();
+        $assigned_user->get( $_POST['auid'] );
+        $response->check( $assigned_user->has_permission( User::ROLE_COMPANY_ADMIN ), 'Can not assign ticket to ' . $assigned_user->contact_name );
+        if ( $response->has_error() )
+            return $response;
+
         // Get ticket
         $ticket = new Ticket();
         $ticket->get( $_POST['tid'] );
@@ -434,9 +440,6 @@ class CustomerSupportController extends BaseController {
             Ticket::PRIORITY_HIGH => 'High',
             Ticket::PRIORITY_URGENT => 'Urgent'
         );
-
-        $assigned_user = new User();
-        $assigned_user->get( $_POST['auid'] );
 
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
