@@ -199,6 +199,9 @@ class Product extends ActiveRecordBase {
                 list($width, $height) = getimagesize($this->get_image_url( $images[$sequence], 'large', $this->industry ) );
             }
 
+            if ( !$width || !$height )
+                $width = $height = 0;
+
             $values .= "( $product_id, ?, $sequence, $width, $height )";
 
         }
