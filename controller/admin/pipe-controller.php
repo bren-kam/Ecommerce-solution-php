@@ -77,6 +77,12 @@ class PipeController extends BaseController {
                 }
             }
         }
+        if ( isset( $email['ExtractedAddresses']['cc:'][0]['address'] ) ) {
+            $to_list[] = $email['ExtractedAddresses']['cc:'][0]['address'];
+        }
+        if ( isset( $email['ExtractedAddresses']['bcc:'][0]['address'] ) ) {
+            $to_list[] = $email['ExtractedAddresses']['bcc:'][0]['address'];
+        }
 
         // attachments
         $attachments = [];

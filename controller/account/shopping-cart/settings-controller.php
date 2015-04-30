@@ -88,23 +88,48 @@ class SettingsController extends BaseController {
         }
 
         if ( $this->verified() ) {
-            $this->user->account->set_settings( array(
-                'payment-gateway-status' => $_POST['sStatus']
-                , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
-                , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
-                , 'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
-                , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
-                , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
-                , 'bill-me-later' => $_POST['cbBillMeLater']
-                , 'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
-                , 'selected-gateway' => $_POST['sSelectedGateway']
-            ) );
+            $new_settings = [];
+            if ( isset($_POST['sStatus']) ) {
+                $new_settings = [
+                    'payment-gateway-status' => $_POST['sStatus']
+                    , 'selected-gateway' => $_POST['sSelectedGateway']
+                ];
+            }
+            if ( isset($_POST['tAIMLogin']) ) {
+                $new_settings = [
+                    'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+            if ( isset($_POST['tPaypalExpressUsername']) ) {
+                $new_settings = [
+                    'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'bill-me-later' => $_POST['cbBillMeLater']
+                ];
+            }
+            if ( isset($_POST['tAIMLogin']) ) {
+                $new_settings = [
+                    'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+            if ( isset($_POST['tCrestFinancialDealerId']) ) {
+                $new_settings = [
+                    'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+
+            $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved.') );
             $this->log( 'update-payment-settings', $this->user->contact_name . ' updated payment settings on ' . $this->user->account->title );
 
             return new RedirectResponse( '/shopping-cart/settings/payment-settings/' );
         }
+
+        $this->resources->css('shopping-cart/settings/payment-settings');
 
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )

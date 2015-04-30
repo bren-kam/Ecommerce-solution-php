@@ -1,3 +1,9 @@
+<?php
+
+$nonce = nonce::create('payment_settings');
+
+?>
+
 <div class="row-fluid">
     <div class="col-lg-12">
         <section class="panel">
@@ -6,121 +12,144 @@
             </header>
             <div class="panel-body">
 
+                <h4>Add Credit Card Payments</h4>
+                <table class="table table-bordered">
+                    <tr>
+                        <td class="v-align text-center col-lg-3">
+                            <p><img src="/images/payment-logos/auth-net.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=207"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                        </td>
+                        <td class="v-align text-center col-lg-6">
+                            <ul>
+                                <li>Merchant account application required</li>
+                                <li>Integrated checkout on your site</li>
+                                <li>2.9% + .30c/transaction & setup fee</li>
+                                <li>Authorize.net charges $24/mnth and a one time setup fee of $49</li>
+                            </ul>
+                        </td>
+                        <td class="v-align text-center col-lg-3">
+                            <?php if( security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) ): ?>
+                                <p class="connected">
+                                    <span><img src="/images/payment-logos/check.png"></span>
+                                    <span><strong>Connected as <br><?php echo security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) ?></strong></span>
+                                </p>
+                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-authorize-net">Settings</a></p>
+                            <?php else: ?>
+                                <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-authorize-net">Enable</a></p>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="v-align text-center col-lg-3">
+                            <p><img src="/images/payment-logos/stripe.png"></p>
+                            <p><small><a target="_blank" href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                        </td>
+                        <td class="v-align text-center col-lg-6">
+                            <ul>
+                                <li>Integrated checkout on your site to accept credit cards</li>
+                                <li>No monthly fees, no refund costs, no hidden fees</li>
+                                <li>2.9% + .30c per successful charge</li>
+                                <li>Instantaneously accept credit cards on your site</li>
+                                <li>Earnings are transferred to your bank account on a 2-day rolling basis</li>
+                            </ul>
+                        </td>
+                        <td class="v-align text-center col-lg-3">
+                            <?php if ( isset($stripe_account['email']) ): ?>
+                                <p class="connected">
+                                    <span><img src="/images/payment-logos/check.png"></span>
+                                    <span><strong>Connected as <br><?php echo $stripe_account['email'] ?></strong></span>
+                                </p>
+                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-stripe">Settings</a></p>
+                            <?php else: ?>
+                                <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-stripe-create-account">Create Stripe Account</a></p>
+                                <p><a class="btn btn-primary" href="http://account.development.greysuitretail.com/shopping-cart/settings/stripe-connect/?website-id=1352&user-id=2696">I already have a Stripe Account</a></p>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                </table>
+
+                <h4>Alternative Payment Settings</h4>
+                <table class="table table-bordered">
+                    <tr>
+                        <td class="v-align text-center col-lg-3">
+                            <p><img src="/images/payment-logos/paypal.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=192"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                        </td>
+                        <td class="v-align text-center col-lg-6">
+                            <ul>
+                                <li>No setup fee or monthly cost</li>
+                                <li>2.9% + 30c/transaction</li>
+                                <li>No application fees</li>
+                            </ul>
+                        </td>
+                        <td class="v-align text-center col-lg-3">
+                            <?php if( security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) ): ?>
+                                <p class="connected">
+                                    <span><img src="/images/payment-logos/check.png"></span>
+                                    <span><strong>Connected as <br><?php echo security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) ?></strong></span>
+                                </p>
+                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-paypal">Settings</a></p>
+                            <?php else: ?>
+                                <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-paypal">Enable</a></p>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="v-align text-center col-lg-3">
+                            <p><img src="/images/payment-logos/crest-financial.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=207"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                        </td>
+                        <td class="v-align text-center col-lg-6">
+                            <ul>
+                                <li>Instantaneous financing approval for your customers through Crest Financial</li>
+                                <li>Retailer account application required</li>
+                                <li>Retailers may choose between 0% and up to 6% financing per lease</li>
+                                <li>There are no monthly fees or recurring fees for retailers</li>
+                            </ul>
+                        </td>
+                        <td class="v-align text-center col-lg-3">
+                            <?php if( security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) ): ?>
+                                <p class="connected">
+                                    <span><img src="/images/payment-logos/check.png"></span>
+                                    <span><strong>Connected as <br><?php echo security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) ?></strong></span>
+                                </p>
+                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-crest-financial">Settings</a></p>
+                            <?php else: ?>
+                                <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-crest-financial">Enable</a></p>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                </table>
+
                 <form action="" id="fPaymentSettings" method="post" name="fPaymentSettings">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h3>All Payment Methods</h3>
+                            <h4>All Payment Methods</h4>
 
                             <div class="form-group">
-                                <label for="sStatus">Status:</label>
+                                <label for="sStatus">Shopping Cart:</label>
                                 <select class="form-control" id="sStatus" name="sStatus">
                                     <option value="0" <?php if ( !$settings['payment-gateway-status'] ) echo 'selected'?>>Testing</option>
                                     <option value="1" <?php if ( $settings['payment-gateway-status'] ) echo 'selected'?>>Live</option>
                                 </select>
-                            </div><br>
+                            </div>
 
                             <div class="form-group">
-                                <label for="sSelectedGateway">Process Payments With:</label>
+                                <label for="sSelectedGateway">Process Credit Card Payments With:</label>
                                 <select class="form-control" id="sSelectedGateway" name="sSelectedGateway">
                                     <option value="aim" <?php if ( $settings['selected-gateway'] == 'aim' ) echo 'selected' ?>>Authorize.net/AIM</option>
                                     <option value="stripe" <?php if ( $settings['selected-gateway'] == 'stripe' ) echo 'selected' ?>>Stripe</option>
                                 </select>
                             </div>
 
-                            <h3>Authorize.net AIM</h3>
-
-                            <div class="form-group">
-                                <label for="tAIMLogin">AIM Login:</label>
-                                <input class="form-control" id="tAIMLogin" maxlength="30" name="tAIMLogin" type="text" value="<?php echo security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="tAIMTransactionKey">AIM Transaction Key:</label>
-                                <input class="form-control" id="tAIMTransactionKey" maxlength="30" name="tAIMTransactionKey" type="text" value="<?php echo security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) ?>">
-                            </div>
-
-                            <h3>Stripe</h3>
-
-                            <div class="form-group">
-                                <label for="tStripeId">Stripe ID:</label>
-                                <input type="text" class="form-control" disabled="disabled" value="<?php echo $stripe_account['stripe_user_id'] ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="tStripePublishableKey">Stripe Publishable Key:</label>
-                                <input type="text" class="form-control" disabled="disabled" value="<?php echo $stripe_account['stripe_publishable_key'] ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="tStripeId">Stripe Secret Key:</label>
-                                <input type="text" class="form-control" disabled="disabled" value="<?php echo $stripe_account['access_token'] ?>">
-                            </div>
-
-                            <?php if (isset($stripe_account['email'])): ?>
-                                <div class="form-group">
-                                    <label for="tStripeEmail">Stripe Email Address:</label>
-                                    <input type="text" class="form-control" disabled="disabled" value="<?php echo $stripe_account['email'] ?>">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
+                                    <button class="btn btn-primary" type="submit">Save</button>
                                 </div>
-                                <p>
-                                    Fill out your bank account details to collect the money from your sales.
-                                    <a target="_blank" href="https://dashboard.stripe.com/account/activate?client_id=<?php echo Config::key('stripe-client-id') ?>&user_id=<?php echo $stripe_account['stripe_user_id'] ?>">Start now.</a>
-                                    |
-                                    <a href="/shopping-cart/settings/stripe-unlink/?_nonce=<?php echo nonce::create("stripe_unlink") ?>" confirm="Are you sure you want to Unlink your shop from Stripe?" class="btn btn-default btn-sm">Unlink your Stripe Account</a>
-                                </p>
-                            <?php endif; ?>
-
-                            <?php if ( !isset($stripe_account) ): ?>
-                                <p>
-                                    <a class="btn btn-primary" data-toggle="modal" data-target="#modal-create-stripe-account" href="javascript:;"">Create Stripe Account</a>
-                                    <a class="btn btn-primary" href="http://account.development.greysuitretail.com/shopping-cart/settings/stripe-connect/?website-id=1352&user-id=2696">I already have a Stripe Account</a>
-                                </p>
-                            <?php endif; ?>
-
-                            <h3>PayPal Express Checkout</h3>
-
-                            <div class="form-group">
-                                <label for="tPaypalExpressUsername">Username:</label>
-                                <input class="form-control" id="tPaypalExpressUsername" maxlength="100" name="tPaypalExpressUsername" type="text" value="<?php echo security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="tPaypalExpressPassword">Password:</label>
-                                <input class="form-control" id="tPaypalExpressPassword" maxlength="100" name="tPaypalExpressPassword" type="text" value="<?php echo security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY ) ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="tPaypalExpressSignature">API Signature:</label>
-                                <input class="form-control" id="tPaypalExpressSignature" maxlength="100" name="tPaypalExpressSignature" type="text" value="<?php echo security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY ) ?>">
-                            </div>
-
-                            <div class="checkbox">
-                                <label>
-                                    <input id="cbBillMeLater14" name="cbBillMeLater" type="checkbox" value="1" <?php if( $settings['bill-me-later'] ) echo 'checked' ?>>
-                                    Bill Me Later
-                                </label>
-                            </div>
-
-                            <p>
-                                <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal">Test PayPal Credentials</a>
-                            </p>
-
-                            <h3>Crest Financial</h3>
-
-                            <div class="form-group">
-                                <label for="tCrestFinancialDealerId">Dealer ID:</label>
-                                <input class="form-control" id="tCrestFinancialDealerId" maxlength="10" name="tCrestFinancialDealerId" type="text" value="<?php echo security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) ?>">
                             </div>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <button class="btn btn-primary" type="submit">Save</button>
-                        </div>
-                    </div>
-
-                    <?php nonce::field('payment_settings') ?>
-
                 </form>
 
             </div>
@@ -128,7 +157,40 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal-create-stripe-account" tabindex="-1" role="dialog" aria-hidden="true" >
+<div class="modal fade" id="modal-authorize-net" tabindex="-1" role="dialog" aria-hidden="true" >
+    <form action="/shopping-cart/settings/payment-settings/" method="post" role="form">
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Authorize.NET / AIM</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="tAIMLogin">AIM Login:</label>
+                        <input class="form-control" id="tAIMLogin" maxlength="30" name="tAIMLogin" type="text" value="<?php echo security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ); ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tAIMTransactionKey">AIM Transaction Key:</label>
+                        <input class="form-control" id="tAIMTransactionKey" maxlength="30" name="tAIMTransactionKey" type="text" value="<?php echo security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+
+                    <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="modal-stripe-create-account" tabindex="-1" role="dialog" aria-hidden="true" >
     <form action="/shopping-cart/settings/stripe-create-account/" method="post" role="form">
         <?php nonce::field( 'stripe_create_account' )?>
         <!-- Modal -->
@@ -153,8 +215,114 @@
             </div>
         </div>
     </form>
+</div>
 
-    <!-- Real Uploader -->
-    <div id="ticket-uploader"></div>
-    <?php nonce::field( 'upload_to_ticket', '_upload_to_ticket' ) ?>
+<div class="modal fade" id="modal-stripe" tabindex="-1" role="dialog" aria-hidden="true" >
+    <!-- Modal -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Stripe</h4>
+            </div>
+            <div class="modal-body">
+
+                <?php if (isset($stripe_account['email'])): ?>
+                    <div class="form-group">
+                        <label for="tStripeEmail">Stripe Email Address:</label>
+                        <input type="text" class="form-control" disabled="disabled" value="<?php echo $stripe_account['email'] ?>">
+                    </div>
+                    <p>
+                        Fill out your bank account details to collect the money from your sales.
+                        <a target="_blank" href="https://dashboard.stripe.com/account/activate?client_id=<?php echo Config::key('stripe-client-id') ?>&user_id=<?php echo $stripe_account['stripe_user_id'] ?>">Start now.</a>
+                    </p>
+                    <p>
+                        <a href="/shopping-cart/settings/stripe-unlink/?_nonce=<?php echo nonce::create("stripe_unlink") ?>" confirm="Are you sure you want to Unlink your shop from Stripe?" class="btn btn-default btn-sm">Unlink your Stripe Account</a>
+                    </p>
+                <?php endif; ?>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-paypal" tabindex="-1" role="dialog" aria-hidden="true" >
+    <form action="/shopping-cart/settings/payment-settings/" method="post" role="form">
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">PayPal Express Checkout</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="tPaypalExpressUsername">Username:</label>
+                        <input class="form-control" id="tPaypalExpressUsername" maxlength="100" name="tPaypalExpressUsername" type="text" value="<?php echo security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tPaypalExpressPassword">Password:</label>
+                        <input class="form-control" id="tPaypalExpressPassword" maxlength="100" name="tPaypalExpressPassword" type="text" value="<?php echo security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tPaypalExpressSignature">API Signature:</label>
+                        <input class="form-control" id="tPaypalExpressSignature" maxlength="100" name="tPaypalExpressSignature" type="text" value="<?php echo security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input id="cbBillMeLater14" name="cbBillMeLater" type="checkbox" value="1" <?php if( $settings['bill-me-later'] ) echo 'checked' ?>>
+                            Bill Me Later
+                        </label>
+                    </div>
+
+                    <p>
+                        <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal">Test PayPal Credentials</a>
+                    </p>
+
+                    <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="modal-crest-financial" tabindex="-1" role="dialog" aria-hidden="true" >
+    <form action="/shopping-cart/settings/payment-settings/" method="post" role="form">
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Crest Financial</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="tCrestFinancialDealerId">Dealer ID:</label>
+                        <input class="form-control" id="tCrestFinancialDealerId" maxlength="10" name="tCrestFinancialDealerId" type="text" value="<?php echo security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+
+                    <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
