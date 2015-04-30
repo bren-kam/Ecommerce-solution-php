@@ -127,9 +127,10 @@ class WebsiteCart extends ActiveRecordBase {
     /**
      * Get Remarketing Report
      * @param $website_id
+     * @param $since
      * @return array
      */
-    public function get_remarketing_report($website_id) {
+    public function get_remarketing_report($website_id, DateTime $since) {
         return $this->prepare(
             "SELECT
                 SUM( CASE WHEN wo.website_cart_id IS NULL THEN wc.total_price ELSE 0 END ) as abandoned_amount,
@@ -140,8 +141,8 @@ class WebsiteCart extends ActiveRecordBase {
                 COUNT(*) as total_count
             FROM website_carts wc
             LEFT JOIN website_orders wo ON ( wc.website_cart_id = wo.website_cart_id )
-            WHERE wc.website_id = :website_id AND wc.email IS NOT NULL AND wc.timestamp >= CURDATE() - INTERVAL 1 MONTH"
-            , 'i', [':website_id' => $website_id]
+            WHERE wc.website_id = :website_id AND wc.email IS NOT NULL AND wc.timestamp >= :since"
+            , 'i', [':website_id' => $website_id, ':since' => $since->format('Y-m-d')]
         )->get_row( PDO::FETCH_ASSOC );
     }
 

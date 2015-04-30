@@ -25,12 +25,17 @@ class RemarketingController extends BaseController {
     protected function index() {
 
         $website_cart = new WebsiteCart();
-        $overview = $website_cart->get_remarketing_report( $this->user->account->id );
+
+        $since = new DateTime();
+        $since->sub(new DateInterval('P1M'));
+        $overview = $website_cart->get_remarketing_report( $this->user->account->id, $since );
+
+        $this->resources->css('shopping-cart/remarketing/index');
 
         return $this->get_template_response( 'index' )
             ->kb( 120 )
             ->menu_item( 'shopping-cart/remarketing/list' )
-            ->set( compact('overview') );
+            ->set( compact('overview', 'since') );
     }
 
     /**
