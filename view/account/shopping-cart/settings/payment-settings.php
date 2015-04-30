@@ -16,14 +16,15 @@ $nonce = nonce::create('payment_settings');
                 <table class="table table-bordered">
                     <tr>
                         <td class="v-align text-center col-lg-3">
-                            <p><img  src="/images/payment-logos/auth-net.png"></p>
-                            <p><small><a href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p><img src="/images/payment-logos/auth-net.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=207"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
                                 <li>Merchant account application required</li>
                                 <li>Integrated checkout on your site</li>
-                                <li>2.4% plus 30c/transaction &amp; setup fee</li>
+                                <li>2.9% + .30c/transaction & setup fee</li>
+                                <li>Authorize.net charges $24/mnth and a one time setup fee of $49</li>
                             </ul>
                         </td>
                         <td class="v-align text-center col-lg-3">
@@ -40,14 +41,16 @@ $nonce = nonce::create('payment_settings');
                     </tr>
                     <tr>
                         <td class="v-align text-center col-lg-3">
-                            <p><img  src="/images/payment-logos/stripe.png"></p>
-                            <p><small><a href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p><img src="/images/payment-logos/stripe.png"></p>
+                            <p><small><a target="_blank" href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
-                                <li>Merchant account application required</li>
-                                <li>Integrated checkout on your site</li>
-                                <li>2.4% plus 30c/transaction &amp; setup fee</li>
+                                <li>Integrated checkout on your site to accept credit cards</li>
+                                <li>No monthly fees, no refund costs, no hidden fees</li>
+                                <li>2.9% + .30c per successful charge</li>
+                                <li>Instantaneously accept credit cards on your site</li>
+                                <li>Earnings are transferred to your bank account on a 2-day rolling basis</li>
                             </ul>
                         </td>
                         <td class="v-align text-center col-lg-3">
@@ -69,15 +72,14 @@ $nonce = nonce::create('payment_settings');
                 <table class="table table-bordered">
                     <tr>
                         <td class="v-align text-center col-lg-3">
-                            <p><img  src="/images/payment-logos/paypal.png"></p>
-                            <p><small><a href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p><img src="/images/payment-logos/paypal.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=192"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
-                                <li>Instantly start accepting credit cards</li>
-                                <li>Integrated shopping cart on your site</li>
-                                <li>2.9% plus 30c per transaction</li>
-                                <li>Funds deposited after 7 days</li>
+                                <li>No setup fee or monthly cost</li>
+                                <li>2.9% + 30c/transaction</li>
+                                <li>No application fees</li>
                             </ul>
                         </td>
                         <td class="v-align text-center col-lg-3">
@@ -94,15 +96,15 @@ $nonce = nonce::create('payment_settings');
                     </tr>
                     <tr>
                         <td class="v-align text-center col-lg-3">
-                            <p><img  src="/images/payment-logos/crest-financial.png"></p>
-                            <p><small><a href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p><img src="/images/payment-logos/crest-financial.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=207"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
-                                <li>Instantly start accepting credit cards</li>
-                                <li>Integrated shopping cart on your site</li>
-                                <li>2.9% plus 30c per transaction</li>
-                                <li>Funds deposited after 7 days</li>
+                                <li>Instantaneous financing approval for your customers through Crest Financial</li>
+                                <li>Retailer account application required</li>
+                                <li>Retailers may choose between 0% and up to 6% financing per lease</li>
+                                <li>There are no monthly fees or recurring fees for retailers</li>
                             </ul>
                         </td>
                         <td class="v-align text-center col-lg-3">
