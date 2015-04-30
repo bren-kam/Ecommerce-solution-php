@@ -196,11 +196,7 @@ class Product extends ActiveRecordBase {
             if ( $skip_getimagesize ) {
                 $width = $height = 0;
             } else {
-                if ( stristr( $images[$sequence], 'http' ) ) {
-                    list($width, $height) = getimagesize($images[$sequence]);
-                } else {
-                    list($width, $height) = getimagesize('http://' . $this->industry . '.retailcatalog.us/products/' . $this->id . '/large/' . $images[$sequence]);
-                }
+                list($width, $height) = getimagesize($this->get_image_url( $images[$sequence], 'large', $this->industry ) );
             }
 
             $values .= "( $product_id, ?, $sequence, $width, $height )";
