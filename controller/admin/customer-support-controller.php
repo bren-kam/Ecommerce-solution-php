@@ -94,7 +94,7 @@ class CustomerSupportController extends BaseController {
                 'id' => $ticket->id
                 , 'user_name' => $ticket->name
                 , 'user_email' => $ticket->email
-                , 'summary' => substr($ticket->summary, 0, 40)
+                , 'summary' => substr($ticket->summary . ($ticket->website ? " | {$ticket->website}" : ''), 0, 50)
                 , 'intro_text' => substr(str_replace("\n", " ", strip_tags($ticket->message)), 0, 40)
                 , 'priority' => $ticket->priority
                 , 'status' => $ticket->status
