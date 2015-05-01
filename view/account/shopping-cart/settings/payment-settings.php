@@ -42,7 +42,7 @@ $nonce = nonce::create('payment_settings');
                     <tr>
                         <td class="v-align text-center col-lg-3">
                             <p><img src="/images/payment-logos/stripe.png"></p>
-                            <p><small><a target="_blank" href="javascript:;"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p><small><a target="_blank" href="https://stripe.com/us/pricing"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
