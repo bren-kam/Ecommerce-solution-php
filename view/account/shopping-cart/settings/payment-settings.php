@@ -73,7 +73,7 @@ $nonce = nonce::create('payment_settings');
                     <tr>
                         <td class="v-align text-center col-lg-3">
                             <p><img src="/images/payment-logos/paypal.png"></p>
-                            <p><small><a target="_blank" href="/kb/article/?aid=192"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=193"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
