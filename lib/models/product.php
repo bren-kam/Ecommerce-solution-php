@@ -174,8 +174,9 @@ class Product extends ActiveRecordBase {
      * Add Images
      *
      * @param array $images
+     * @param bool $skip_getimagesize [optional]
      */
-    public function add_images( array $images ) {
+    public function add_images( array $images, $skip_getimagesize = false ) {
         // Determine how many images we have
         $image_count = count( $images );
 
@@ -192,7 +193,15 @@ class Product extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            list( $width, $height ) = getimagesize( $images[$sequence] );
+            if ( $skip_getimagesize ) {
+                $width = $height = 0;
+            } else {
+                list($width, $height) = getimagesize($this->get_image_url( $images[$sequence], 'large', $this->industry ) );
+            }
+
+            if ( !$width || !$height )
+                $width = $height = 0;
+
             $values .= "( $product_id, ?, $sequence, $width, $height )";
 
         }
