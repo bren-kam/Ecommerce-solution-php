@@ -279,6 +279,7 @@
                         <li <?php if ( $template->in_menu_item('analytics/traffic-sources') ) echo 'class="active"'?>><a href="/analytics/traffic-sources/">Sources</a></li>
                         <li <?php if ( $template->in_menu_item('analytics/keywords') ) echo 'class="active"'?>><a href="/analytics/keywords/">Keywords</a></li>
                         <li <?php if ( $template->in_menu_item('analytics/email-marketing') ) echo 'class="active"'?>><a href="/analytics/email-marketing/">Email Marketing</a></li>
+                        <li <?php if ( $template->in_menu_item('analytics/settings') ) echo 'class="active"'?>><a href="/analytics/settings/">Settings</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
@@ -396,6 +397,12 @@
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/add') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/add-edit/">Add</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/apply-to-brand') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/apply-to-brand/">Apply to Brand</a></li>
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/products') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
                             </ul>
                         </li>
                         <li class="submenu">

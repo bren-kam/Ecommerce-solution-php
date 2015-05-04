@@ -805,6 +805,58 @@ class AnalyticsController extends BaseController {
 
         return new HtmlResponse('<script>window.opener.location = "/analytics/"; window.close();</script>'); // RedirectResponse( $_SESSION['google-analytics-callback'] );
     }
+
+    /**
+     * Settings
+     * @return RedirectResponse
+     */
+    public function settings() {
+        $form = new BootstrapForm('analytics-settings');
+        $settings = $this->user->account->get_settings(
+            'ga-username'
+            , 'ga-password'
+            , 'gm-api-key'
+            , 'gm-contact-page'
+        );
+
+        $form->add_field( 'text', _('Google Analytics Username'), 'tGAUsername', security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ) );
+        $form->add_field( 'text', _('Google Analytics Password'), 'tGAPassword', security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ) );
+        $form->add_field( 'text', _('Google Analytics Profile ID'), 'tGAProfileID', $this->user->account->ga_profile_id );
+        $form->add_field( 'text', _('Google Analytics Tracking Key'), 'tGATrackingKey', $this->user->account->ga_tracking_key );
+        $form->add_field( 'text', _('Google Maps API Key'), 'tGMAPIKey', $settings['gm-api-key'] );
+        $form->add_field( 'checkbox', _('Google Maps Contact Page'), 'cbGoogleMapsContactPage', $settings['gm-contact-page'] );
+
+        if ( $form->posted() ) {
+            $this->user->account->server_id = $_POST['sServerId'];
+            $this->user->account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
+            $this->user->account->ftp_password = security::encrypt( $_POST['tFTPPassword'], ENCRYPTION_KEY, true );
+            $this->user->account->ga_profile_id = $_POST['tGAProfileID'];
+            $this->user->account->ga_tracking_key = $_POST['tGATrackingKey'];
+            $this->user->account->wordpress_username = security::encrypt( $_POST['tWPUsername'], ENCRYPTION_KEY, true );
+            $this->user->account->wordpress_password = security::encrypt( $_POST['tWPPassword'], ENCRYPTION_KEY, true );
+            $this->user->account->user_id_updated = $this->user->id;
+
+            $this->user->account->save();
+
+            // Update settings
+            $this->user->account->set_settings( array(
+                'ga-username' => security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY, true )
+                , 'ga-password' => security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY, true )
+                , 'gm-api-key' => $_POST['tGMAPIKey']
+                , 'gm-contact-page' => (int) isset( $_POST['cbGoogleMapsContactPage'] ) && $_POST['cbGoogleMapsContactPage']
+            ));
+
+            // Redirect to main page
+            return new RedirectResponse( '/analytics/settings/' );
+        }
+
+        $form_html = $form->generate_form();
+
+        return $this->get_template_response('settings')
+            ->menu_item('analytics/settings')
+            ->set(compact('form_html'));
+
+    }
 }
 
 

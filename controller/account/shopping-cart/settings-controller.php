@@ -83,93 +83,45 @@ class SettingsController extends BaseController {
             , 'crest-financial-dealer-id'
         );
 
-        // Create Form
-        $form = new BootstrapForm( 'fPaymentSettings' );
-
-
-        $form->add_field( 'row', '', _('All Payment Methods') );
-
-        $form->add_field( 'select', _('Status'), 'sStatus', $settings['payment-gateway-status'] )
-            ->options( array(
-                0 => _('Testing')
-                , 1 => _("Live")
-            )
-        );
-
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('Authorize.net AIM') );
-
-        $aim_login = security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY );
-        $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', $aim_login )
-            ->attribute( 'maxlength', 30 );
-
-        $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 30 );
-
-        $form->add_field( 'row', '', _('Stripe') );
-
         if ( $settings['stripe-account'] ) {
             $stripe_account = json_decode($settings['stripe-account'], true);
-
-            $form->add_field( 'text', _('Stripe ID'), 'tStripeId', $stripe_account['stripe_user_id'] )
-                ->attribute('disabled', 'disabled');
-
-            $form->add_field( 'text', _('Stripe Publishable Key'), 'tStripePublishableKey', $stripe_account['stripe_publishable_key'] )
-                ->attribute('disabled', 'disabled');
-
-            $form->add_field( 'text', _('Stripe Secret Key'), 'tStripeSecretKey', $stripe_account['access_token'] )
-                ->attribute('disabled', 'disabled');
-        } else {
-            $form->add_field('anchor', 'Connect to Stripe')
-                ->attribute('href', "http://account.dev.greysuitretail.com/shopping-cart/settings/stripe-connect/?website-id={$this->user->account->id}&user-id={$this->user->id}")
-                ->attribute('class', 'btn btn-primary');
         }
 
-        $gateway_options = [];
-        $form->add_field( 'select', 'Process Payments With', 'sSelectedGateway', $settings['selected-gateway'] )
-            ->options([
-                'aim' => 'AIM',
-                'stripe' => 'Stripe'
-            ]);
+        if ( $this->verified() ) {
+            $new_settings = [];
+            if ( isset($_POST['sStatus']) ) {
+                $new_settings = [
+                    'payment-gateway-status' => $_POST['sStatus']
+                    , 'selected-gateway' => $_POST['sSelectedGateway']
+                ];
+            }
+            if ( isset($_POST['tAIMLogin']) ) {
+                $new_settings = [
+                    'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+            if ( isset($_POST['tPaypalExpressUsername']) ) {
+                $new_settings = [
+                    'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'bill-me-later' => $_POST['cbBillMeLater']
+                ];
+            }
+            if ( isset($_POST['tAIMLogin']) ) {
+                $new_settings = [
+                    'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
+                    , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+            if ( isset($_POST['tCrestFinancialDealerId']) ) {
+                $new_settings = [
+                    'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
 
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('PayPal Express Checkout') );
-
-        $form->add_field( 'text', _('Username'), 'tPaypalExpressUsername', security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 100 );
-
-        $form->add_field( 'text', _('Password'), 'tPaypalExpressPassword', security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 100 );
-
-        $form->add_field( 'text', _('API Signature'), 'tPaypalExpressSignature', security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 100 );
-
-        $form->add_field( 'checkbox', _('Bill Me Later'), 'cbBillMeLater', $settings['bill-me-later'] );
-
-        $form->add_field( 'anchor', _('Test PayPal Credentials') )
-            ->attribute( 'id', 'test-paypal' )
-            ->attribute( 'ajax', '1' )
-            ->attribute( 'class', 'btn btn-primary' )
-            ->attribute( 'href', '/shopping-cart/settings/test-paypal/?_nonce=' . nonce::create('test_paypal') );
-
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('Crest Financial') );
-
-        $form->add_field( 'text', _('Dealer ID'), 'tCrestFinancialDealerId', security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 10 );
-
-        if ( $form->posted() ) {
-            $this->user->account->set_settings( array(
-                'payment-gateway-status' => $_POST['sStatus']
-                , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
-                , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
-                , 'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
-                , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
-                , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
-                , 'bill-me-later' => $_POST['cbBillMeLater']
-                , 'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
-                , 'selected-gateway' => $_POST['sSelectedGateway']
-            ) );
+            $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved.') );
             $this->log( 'update-payment-settings', $this->user->contact_name . ' updated payment settings on ' . $this->user->account->title );
@@ -177,11 +129,11 @@ class SettingsController extends BaseController {
             return new RedirectResponse( '/shopping-cart/settings/payment-settings/' );
         }
 
-        $form = $form->generate_form();
+        $this->resources->css('shopping-cart/settings/payment-settings');
 
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
-            ->set( compact( 'form' ) )
+            ->set( compact( 'settings', 'stripe_account' ) )
             ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
     }
@@ -277,12 +229,48 @@ class SettingsController extends BaseController {
     }
 
     /**
+     * Stripe Create Account
+     */
+    public function stripe_create_account() {
+        if ( $this->verified() ) {
+            library('stripe-php/init');
+            \Stripe\Stripe::setApiKey( Config::key('stripe-secret-key') );
+            $email = $_POST['email'];
+            try {
+                $stripe_account = \Stripe\Account::create([
+                    'managed' => false,
+                    'country' => 'US',
+                    'email' => $email
+                ]);
+                $stripe_settings = [
+                    'email' => $email,
+                    'stripe_publishable_key' => $stripe_account['keys']['publishable'],
+                    'access_token' => $stripe_account['keys']['secret'],
+                    'stripe_user_id' => $stripe_account['id']
+                ];
+                $this->user->account->set_settings( [ 'stripe-account' => json_encode($stripe_settings) ] );
+                $this->notify('Congratulations! Your store is connected with Stripe and you are now accepting Payments from customers! <br><br> Stripe needs you to provide some additional information in order to deposit money into your bank account. Please check your email for details on completing this final step.');
+            } catch (Exception $e) {
+                $this->notify('There was an error creating your stripe account, please try again later. ' . $e->getMessage(), false);
+            }
+        }
+        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
+    }
+
+    /**
      * Stripe Connect
      */
     public function stripe_connect() {
         $stripe_client_id = Config::key('stripe-client-id');
-        $url = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id={$stripe_client_id}&scope=read_write";
+        $url = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id={$stripe_client_id}&scope=read_write&stripe_landing=login";
         url::redirect($url);
+    }
+
+    public function stripe_unlink() {
+        if ($this->verified()) {
+            $this->user->account->set_settings(['stripe-account' => null]);
+        }
+        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
     }
 
     /**

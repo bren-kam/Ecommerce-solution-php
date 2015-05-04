@@ -1,0 +1,24 @@
+table ul {
+  margin-top: 35px;
+  margin-left: 20%;
+  text-align: left;
+}
+table ul li {
+  list-style: disc;
+  line-height: 28px;
+}
+table p.connected {
+  text-align: center;
+  width: 70%;
+  margin: 0 auto 5px;
+}
+table p.connected > span:first-child {
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: top;
+}
+table p.connected > span:last-child {
+  display: inline-block;
+  text-align: left;
+  vertical-align: top;
+}

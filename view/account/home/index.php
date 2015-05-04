@@ -16,7 +16,7 @@
  */
 ?>
 
-<?php if ( $show_new_features ): ?>
+<?php //if ( $show_new_features ): ?>
     <div class="row-fluid">
         <div class="col-lg-12">
             <div id="new-features">
@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-<?php endif; ?>
+<?php //endif; ?>
 
 <div class="row-fluid">
     <div class="col-lg-12">
