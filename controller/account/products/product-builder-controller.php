@@ -130,6 +130,7 @@ class ProductBuilderController extends BaseController {
             $product->category_id = $_POST['sCategory'];
             $product->brand_id = $_POST['sBrand'];
             $product->industry_id = $_POST['sIndustry'];
+            $product->industry = $industry->name;
             $product->name = $_POST['tName'];
             $product->slug = $_POST['tProductSlug'];
             $product->description = $_POST['taDescription'];

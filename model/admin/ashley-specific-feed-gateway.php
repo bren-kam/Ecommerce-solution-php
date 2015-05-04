@@ -624,7 +624,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      */
     protected function get_existing_products() {
         $products = $this->prepare(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id`, p.`timestamp` 
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`volume`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, p.`category_id`, p.`timestamp`
             FROM `products` AS p
             LEFT JOIN `products` as p2 ON p.sku = p2.sku AND p.user_id_created = p2.user_id_created AND p.product_id < p2.product_id
             LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id`)
@@ -1574,8 +1574,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 //            }
 
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
+            $product->country = $this->identical( $item['country'], $product->country, 'country' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
             $product->price = $this->identical( $item['price'], $product->price, 'price' );
+            $product->price_net = $this->identical( $item['price_net'], $product->price_net, 'price_net' );
+            $product->price_freight = $this->identical( $item['price_freight'], $product->price_freight, 'price_freight' );
+            $product->price_discount = $this->identical( $item['price_discount'], $product->price_discount, 'price_discount' );
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
@@ -1641,6 +1645,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         $new_product = array(
             'sku' => trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber )
+            , 'country' => trim( $item['countryOfOrigin'] )
             , 'description' => trim( $item->itemIdentification->itemDescription['itemFriendlyDescription'] )
             , 'status' => ( 'Discontinued' == trim( $item['itemStatus'] ) ) ? 'discontinued' : 'in-stock'
             , 'group' => trim( $item['itemGroupCode'] )
@@ -1648,6 +1653,9 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             , 'brand_id' => $this->get_brand( trim( $item['retailSalesCategory'] ) )
             , 'weight' => trim( $item->itemIdentification->packageCharacteristics->packageDimensions->weight['value'] )
             , 'price' => (float) trim( $item->itemPricing->unitPrice )
+            , 'price_net' => (float) trim( $item->itemPricing->netPrice )
+            , 'price_freight' => (float) trim( $item->itemPricing->freightAmount )
+            , 'price_discount' => (float) trim( $item->itemPricing->discountAmount )
             , 'volume' => 0
             , 'specs' => array()
         );

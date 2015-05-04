@@ -118,7 +118,7 @@ class ProductTest extends BaseDatabaseTest {
     public function testAddImages() {
         // Add images
         $this->product->id = self::PRODUCT_ID;
-        $this->product->add_images( array( self::IMAGE ) );
+        $this->product->add_images( array( self::IMAGE ), true );
 
         // Get
         $ph_product_image = $this->phactory->get( 'product_images', array( 'product_id' => self::PRODUCT_ID ) );

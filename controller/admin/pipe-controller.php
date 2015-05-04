@@ -77,6 +77,12 @@ class PipeController extends BaseController {
                 }
             }
         }
+        if ( isset( $email['ExtractedAddresses']['cc:'][0]['address'] ) ) {
+            $to_list[] = $email['ExtractedAddresses']['cc:'][0]['address'];
+        }
+        if ( isset( $email['ExtractedAddresses']['bcc:'][0]['address'] ) ) {
+            $to_list[] = $email['ExtractedAddresses']['bcc:'][0]['address'];
+        }
 
         // attachments
         $attachments = [];
@@ -158,11 +164,11 @@ class PipeController extends BaseController {
 
             // Try to guess the Account
             $account = new Account();
-            $accounts = $account->get_by_user( $to_user->id );
+            $accounts = $account->get_by_user( $from_user->id );
             if ( $accounts ) {
                 $account = reset($accounts);
             } else {
-                $accounts = $account->get_by_authorized_user( $to_user->id );
+                $accounts = $account->get_by_authorized_user( $from_user->id );
                 $account = reset($accounts);
             }
 
