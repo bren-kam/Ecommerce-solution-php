@@ -285,7 +285,7 @@
             <?php endif; ?>
 
             <?php if ( $user->account->blog == 1 ): ?>
-                <form action="http://<?php echo $user->account->domain; ?>/blog/log-me-in/" target="_blank" method="post" id="fBlogForm" class="hidden">
+                <form action="http://<?php echo $user->account->domain; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm" class="hidden">
                     <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
                     <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
                 </form>
