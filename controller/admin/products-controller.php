@@ -140,6 +140,7 @@ ProductsController extends BaseController {
                 $product->category_id = $_POST['sCategory'];
                 $product->brand_id = $_POST['sBrand'];
                 $product->industry_id = $_POST['sIndustry'];
+                $product->industry = $industry->name;
                 $product->name = $_POST['tName'];
                 $product->slug = $_POST['tProductSlug'];
                 $product->description = $_POST['taDescription'];
@@ -953,6 +954,7 @@ ProductsController extends BaseController {
                 $slug = f::strip_extension( f::name( $p->image ) );
                 $industry = format::slug( $p->industry_name );
                 $image_name = $product->upload_image( $p->image, $slug, $industry );
+                $product->industry = $industry;
                 $product->add_images( array( $image_name ) );
             } else {
                 // Override Images
@@ -960,6 +962,7 @@ ProductsController extends BaseController {
                 $slug = f::strip_extension( f::name( $p->image ) );
                 $industry = format::slug( $p->industry_name );
                 $image_name = $product->upload_image( $p->image, $slug, $industry );
+                $product->industry = $industry;
                 $product->add_images( array( $image_name ) );
             }
 
