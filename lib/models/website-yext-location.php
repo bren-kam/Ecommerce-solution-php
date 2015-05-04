@@ -200,7 +200,7 @@ class WebsiteYextLocation extends ActiveRecordBase {
             $yext_lists_items[ $parent_category->id ][] = [
                 'id' => $product['product_id']
                 , 'name' => $product['name']
-                , 'description' => $product['description']
+                , 'description' => strip_tags($product['description'])
                 , 'idCode' => $product['sku']
                 , 'cost' => [
                     'type' => 'PRICE'

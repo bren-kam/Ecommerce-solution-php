@@ -297,55 +297,55 @@ class AshleyExpressFeedGateway extends ActiveRecordBase {
 
         $account_ae_skus = $this->flag_bulk( $account, $ashley_express_skus );
 
-//        // Add Packages -------------------------------------------
-//        // --------------------------------------------------------
-//        $packages = $this->get_ashley_packages();
-//        $package_skus = array();
-//        $group_items = array();
-//        foreach( $account_ae_skus as $sku ) {
-//            // Setup packages
-//            if ( stristr( $sku, '-' ) ) {
-//                list( $series, $item ) = explode( '-', $sku, 2 );
-//            } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
-//                $series = substr( $sku, 0, 5 );
-//                $item = substr( $sku, 5 );
-//            } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
-//                $series = substr( $sku, 0, 6 );
-//                $item = substr( $sku, 6 );
-//            } else {
-//                continue;
-//            }
-//            $package_skus[$series][] = $item;
-//        }
-//
-//        // Add packages if they have all the pieces
-//        foreach ( $packages as $series => $items ) {
-//            // Go through each item
-//            foreach ( $items as $product_id => $package_pieces ) {
-//                // See if they have all the items necessary
-//                foreach ( $package_pieces as $item ) {
-//                    // Check if it is a series such as "W123-45" or "W12345"
-//                    if ( is_array( $package_skus[$series] ) && in_array( $item, $package_skus[$series] ) ) {
-//                        $group_items[$series] = true;
-//                        continue;
-//                    }
-//
-//                    if ( in_array( $series . $item, $account_ae_skus ) ) {
-//                        $group_items[$series] = true;
-//                        continue;
-//                    }
-//
-//                    // If they don't have both, then stop this item
-//                    unset ( $group_items[$series] );
-//                    continue 2; // Drop out of both
-//                }
-//
-//                // Add to packages list
-//                $ashley_package_product_ids[] = $product_id;
-//            }
-//        }
-//
-//        $this->flag_packages( $account, $ashley_package_product_ids );
+        // Add Packages -------------------------------------------
+        // --------------------------------------------------------
+        $packages = $this->get_ashley_packages();
+        $package_skus = array();
+        $group_items = array();
+        foreach( $account_ae_skus as $sku ) {
+            // Setup packages
+            if ( stristr( $sku, '-' ) ) {
+                list( $series, $item ) = explode( '-', $sku, 2 );
+            } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
+                $series = substr( $sku, 0, 5 );
+                $item = substr( $sku, 5 );
+            } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
+                $series = substr( $sku, 0, 6 );
+                $item = substr( $sku, 6 );
+            } else {
+                continue;
+            }
+            $package_skus[$series][] = $item;
+        }
+
+        // Add packages if they have all the pieces
+        foreach ( $packages as $series => $items ) {
+            // Go through each item
+            foreach ( $items as $product_id => $package_pieces ) {
+                // See if they have all the items necessary
+                foreach ( $package_pieces as $item ) {
+                    // Check if it is a series such as "W123-45" or "W12345"
+                    if ( is_array( $package_skus[$series] ) && in_array( $item, $package_skus[$series] ) ) {
+                        $group_items[$series] = true;
+                        continue;
+                    }
+
+                    if ( in_array( $series . $item, $account_ae_skus ) ) {
+                        $group_items[$series] = true;
+                        continue;
+                    }
+
+                    // If they don't have both, then stop this item
+                    unset ( $group_items[$series] );
+                    continue 2; // Drop out of both
+                }
+
+                // Add to packages list
+                $ashley_package_product_ids[] = $product_id;
+            }
+        }
+
+        $this->flag_packages( $account, $ashley_package_product_ids );
 
 	}
 
