@@ -201,7 +201,10 @@
                                     <li <?php if ( $template->in_menu_item('website/settings/website-footer') ) echo 'class="active"' ?>><a href="/website/footer/">Website Footer</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/html-head') ) echo 'class="active"' ?>><a href="/website/html-head/">HTML &lt;head&gt;</a></li>
                                     <li <?php if ( $template->in_menu_item('website/settings/custom-404') ) echo 'class="active"' ?>><a href="/website/custom-404/">Custom 404 Page</a></li>
-                                    <li <?php if ( $template->in_menu_item('website/settings/home-page-layout') ) echo 'class="active"' ?>><a href="/website/home-page-layout/">Home Page Layout</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/home-page-layout') ) echo 'class="active"' ?>><a href="/website/home-page-layout/">Homepage Layout</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/homepage-settings') ) echo 'class="active"' ?>><a href="/website/homepage-settings/">Homepage Settings</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/css') ) echo 'class="active"' ?>><a href="/website/stylesheet/">LESS/CSS</a></li>
+                                    <li <?php if ( $template->in_menu_item('website/settings/favicon') ) echo 'class="active"' ?>><a href="/website/favicon/">Favicon</a></li>
                                 <?php endif; ?>
                             </ul>
                         </li>
@@ -229,6 +232,7 @@
                                 <li <?php if ( $template->in_menu_item('products/products/manually-priced') ) echo 'class="active"' ?>><a href="/products/manually-priced/">Manually Priced</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/auto-price') ) echo 'class="active"' ?>><a href="/products/auto-price/">Pricing Tools</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/export') ) echo 'class="active"' ?>><a href="/products/export/">Export</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/import') ) echo 'class="active"' ?>><a href="/products/import/">Import</a></li>
                             </ul>
                         </li>
                         <li class="submenu">

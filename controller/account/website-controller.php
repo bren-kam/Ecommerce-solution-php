@@ -2748,5 +2748,232 @@ class WebsiteController extends BaseController {
             ->set( compact( 'pages', 'top_site_navigation' ) );
     }
 
+    /**
+     * Add/Edit A Company
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function stylesheet() {
+        // Get Account
+        $account = new Account();
+        $account->get( $this->user->account->id );
+
+        if ( $this->user->account->id != Account::TEMPLATE_UNLOCKED ) {
+            $unlocked = new Account();
+            $unlocked->get( Account::TEMPLATE_UNLOCKED );
+            $unlocked_less = $unlocked->get_settings('less');
+        } else {
+            $unlocked_less = false;
+        }
+
+        $less = $account->get_settings('less');
+
+        $this->resources
+            ->css('website/css')
+            ->javascript('website/css')
+            ->javascript_url( Config::resource('ace-js') );
+
+        return $this->get_template_response( 'css' )
+            ->kb( 10 )
+            ->menu_item('website/settings/css')
+            ->set( compact( 'less', 'account', 'unlocked_less' ) )
+            ->add_title( _('LESS CSS') );
+    }
+
+    /**
+     * Save LESS
+     *
+     * @return AjaxResponse
+     */
+    protected function save_less() {
+        set_time_limit(3600);
+
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse($this->verified());
+
+        // We need backslashes
+        $_POST['less'] = addcslashes( $_POST['less'], '\\');
+
+        // Get account
+        if ( $this->user->account->id == Account::TEMPLATE_UNLOCKED ) {
+            $less_css = $_POST['less'];
+        } else {
+            $unlocked = new Account();
+            $unlocked->get( Account::TEMPLATE_UNLOCKED );
+            $unlocked_less = $unlocked->get_settings('less');
+            $less_css = $unlocked_less . $_POST['less'];
+        }
+
+        $account = new Account();
+        $account->get($this->user->account->id);
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        library('lessc.inc');
+        $less = new lessc;
+        $less->setFormatter("compressed");
+
+        try {
+            $css = $less->compile( $less_css );
+        } catch (exception $e) {
+            $response->notify( 'Error: ' . $e->getMessage(), false );
+            return $response;
+        }
+
+        $account->set_settings( array( 'less' => $_POST['less'], 'css' => $css ) );
+
+        $response->notify( 'LESS/CSS has been successfully updated!' );
+
+        // Update all other LESS sites
+        if ( $this->user->account->id == Account::TEMPLATE_UNLOCKED ) {
+            $less_accounts = $account->get_less_sites();
+
+            /**
+             * @var Account $less_account
+             * @var string $unlocked_less
+             */
+            if ( !empty( $less_accounts ) )
+                foreach ( $less_accounts as $less_account ) {
+                    if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
+                        continue;
+
+                    $less = new lessc;
+                    $less->setFormatter("compressed");
+                    $site_less = $less_account->get_settings('less');
+
+                    $less_account->set_settings( array(
+                        'css' => $less->compile( $less_css . $site_less )
+                    ));
+
+                    unset( $less );
+                    unset( $site_less );
+                    unset( $less_account );
+                    gc_collect_cycles();
+                }
+        }
+
+        return $response;
+    }
+
+    /**
+     * Homepage Settings
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+        protected function homepage_settings() {
+        // Setup objects
+        $ft = new BootstrapForm( _('fCustomizeSettings') );
+
+        // Get variables
+        $settings = $this->user->account->get_settings(
+            'slideshow-fixed-width'
+            , 'slideshow-categories'
+            , 'sidebar-left'
+        );
+
+        // Start adding fields
+        $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
+        $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
+        $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
+
+        if ( $ft->posted() ) {
+            // Update settings
+            $this->user->account->set_settings( array(
+                'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
+            , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
+            , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
+            ));
+
+            $this->notify( _('Settings have been updated!') );
+
+            return new RedirectResponse( '/website/homepage-settings' );
+        }
+
+        // Create Form
+        $form = $ft->generate_form();
+
+        return $this->get_template_response('homepage-settings')
+            ->kb( 0 )
+            ->add_title( _('Settings') )
+            ->menu_item('website/settings/homepage-settings')
+            ->set( compact( 'account', 'form' ) );
+    }
+
+    /**
+     * Add/Edit Favicon
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function favicon() {
+        $favicon = $this->user->account->get_settings("favicon");
+        $this->resources->javascript('fileuploader', 'website/favicon')
+            ->css( 'website/favicon' );
+
+        return $this->get_template_response('favicon')
+            ->menu_item('website/settings/favicon')
+            ->set(compact('favicon', 'account'))
+            ->add_title(_('Favicon'));
+    }
+
+    /**
+     * Upload Favicon
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_favicon() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse($this->verified());
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+        $account_file = new AccountFile();
+
+        // Create uploader
+        $uploader = new qqFileUploader( array( 'ico' ), 6144000 );
+
+        // Upload file
+        $result = $uploader->handleUpload('gsr_');
+
+        $response->check( $result['success'], _('Failed to upload favicon') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() ) {
+            $response->add_response( "error", $result["error"] );
+            return $response;
+        }
+
+        //Create favicon name
+        $favicon_name =  'favicon.ico';
+
+        // Create the different versions we need
+        $favicon_dir = $this->user->account->id . '/favicon/';
+
+        // Normal and large
+        $file_url =  $file->upload_file( $result['file_path'], $favicon_name, $favicon_dir );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
+        // Create account file
+        $account_file->website_id = $this->user->account->id;
+        $account_file->file_path = $file_url;
+        $account_file->create();
+
+        $this->user->account->set_settings( array( 'favicon' => $file_url ) );
+
+        $response->add_response( 'refresh', true );
+
+        return $response;
+    }
 
 }
