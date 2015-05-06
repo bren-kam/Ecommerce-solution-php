@@ -771,6 +771,9 @@ class WebsiteController extends BaseController {
             , 'images-alt'
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
+            ,'slideshow-fixed-width'
+            , 'slideshow-categories'
+            , 'sidebar-left'
         );
 
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
@@ -904,6 +907,10 @@ class WebsiteController extends BaseController {
         $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
 
         $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] );
+
+        $form->add_field( 'checkbox', _('Fixed-width Slideshow'), 'slideshow-fixed-width', $settings['slideshow-fixed-width'] );
+        $form->add_field( 'checkbox', _('Slideshow w/ Categories'), 'slideshow-categories', $settings['slideshow-categories'] );
+        $form->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'sidebar-left', $settings['sidebar-left'] );
 
         if ( $form->posted() ) {
             $new_settings = array();
@@ -2855,50 +2862,6 @@ class WebsiteController extends BaseController {
         }
 
         return $response;
-    }
-
-    /**
-     * Homepage Settings
-     *
-     * @return TemplateResponse|RedirectResponse
-     */
-        protected function homepage_settings() {
-        // Setup objects
-        $ft = new BootstrapForm( _('fCustomizeSettings') );
-
-        // Get variables
-        $settings = $this->user->account->get_settings(
-            'slideshow-fixed-width'
-            , 'slideshow-categories'
-            , 'sidebar-left'
-        );
-
-        // Start adding fields
-        $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
-        $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
-        $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
-
-        if ( $ft->posted() ) {
-            // Update settings
-            $this->user->account->set_settings( array(
-                'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
-            , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
-            , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
-            ));
-
-            $this->notify( _('Settings have been updated!') );
-
-            return new RedirectResponse( '/website/homepage-settings' );
-        }
-
-        // Create Form
-        $form = $ft->generate_form();
-
-        return $this->get_template_response('homepage-settings')
-            ->kb( 0 )
-            ->add_title( _('Settings') )
-            ->menu_item('website/settings/homepage-settings')
-            ->set( compact( 'account', 'form' ) );
     }
 
     /**
