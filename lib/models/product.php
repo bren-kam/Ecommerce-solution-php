@@ -76,10 +76,15 @@ class Product extends ActiveRecordBase {
      *
      * @param string $sku
      * @param int $brand_id
+     * @param int $website_id
      */
-    public function get_by_sku_by_brand( $sku, $brand_id ) {
+    public function get_by_sku_by_brand( $sku, $brand_id, $website_id = 0 ) {
+        $where = '';
+        if ( $website_id ) {
+            $where = " AND p.website_id = {$website_id} ";
+        }
         $this->prepare(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_min`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`depth`, p.`height`, p.`length`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`brand_id` = :brand_id AND p.`sku` = :sku GROUP BY p.`product_id` ORDER BY p.`product_id` DESC LIMIT 1"
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_min`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`depth`, p.`height`, p.`length`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`brand_id` = :brand_id AND p.`sku` = :sku $where GROUP BY p.`product_id` ORDER BY p.`product_id` DESC LIMIT 1"
             , 'is'
             , array( ':brand_id' => $brand_id, ':sku' => $sku )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -477,8 +482,8 @@ class Product extends ActiveRecordBase {
         $new_image_name = rawurldecode($slug);
         $image_extension = strtolower( f::extension( $image_url ) );
         $full_image_name = "{$new_image_name}.{$image_extension}";
-        $image_path = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $full_image_name;
-        //$image_path = '/tmp/' . $full_image_name;
+        // $image_path = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $full_image_name;
+        $image_path = '/tmp/' . $full_image_name;
 
         // If it already exists, no reason to go on
         if( is_file( $image_path ) && curl::check_file( "http://{$industry}.retailcatalog.us/products/{$this->id}/thumbnail/{$full_image_name}" ) )
