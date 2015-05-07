@@ -22,10 +22,14 @@ var Navigation = {
                             .data('id', element_id )
                             .find('.dd3-content').prepend( name ).end()
                             .find('.page-url').prepend( url ).end()
-                            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( url + '|' + name ).end());
+                            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( url + '|' + name ).end()
+                        );
 
                         Navigation.updateTree();
                     }
+                    dropped.sourceEl.find('select').hide();
+                } else {
+                    dropped.sourceEl.find('select').show();
                 }
             }
         }).on( 'change', Navigation.updateTree ).change();

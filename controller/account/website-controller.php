@@ -661,7 +661,11 @@ class WebsiteController extends BaseController {
                     $page = $_POST['navigation'][$tree_node['id']];
                     list( $url, $name ) = explode( '|', $page );
                     $name = htmlentities( $name );
-                    $navigation_node = compact( 'url', 'name' );
+                    $submenu_columns = 1;
+                    if ( isset( $_POST['submenu-columns'][$tree_node['id']] ) ) {
+                        $submenu_columns = $_POST['submenu-columns'][$tree_node['id']];
+                    }
+                    $navigation_node = compact( 'url', 'name', 'submenu_columns' );
 
                     // children - sub items
                     // we only accept one child level, so we are ok with this

@@ -31,6 +31,11 @@
                                     <div class="dd3-content">
                                         <?php echo $page->name ?>
                                         <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
+                                        <select name="submenu-columns[<?php echo $k ?>]">
+                                            <?php for($cols=1; $cols<=4; $cols++): ?>
+                                                <option value="<?php echo $cols ?>" <?php if (isset($page->submenu_columns) && $page->submenu_columns == $cols) echo "selected"?>>Place sub-items in <?php echo $cols ?> column(s)</option>
+                                            <?php endfor; ?>
+                                        </select>
                                         <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
                                         <input type="hidden" name="navigation[<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
                                     </div>
