@@ -653,36 +653,27 @@ class WebsiteController extends BaseController {
             ->javascript( 'jquery.nestable', 'website/navigation' );
 
         if ( $this->verified() ) {
-            $navigation = array();
             $tree = json_decode( $_POST['tree'], true );
 
-            if ( $tree ) {
+            $get_navigation = function($tree, $data) use (&$get_navigation){
+                $navigation = [];
                 foreach ( $tree as $tree_node ) {
-                    $page = $_POST['navigation'][$tree_node['id']];
+                    $page = $data[$tree_node['id']];
                     list( $url, $name ) = explode( '|', $page );
                     $name = htmlentities( $name );
-                    $submenu_columns = 1;
-                    if ( isset( $_POST['submenu-columns'][$tree_node['id']] ) ) {
-                        $submenu_columns = $_POST['submenu-columns'][$tree_node['id']];
-                    }
-                    $navigation_node = compact( 'url', 'name', 'submenu_columns' );
+                    $navigation_node = compact( 'url', 'name' );
 
-                    // children - sub items
-                    // we only accept one child level, so we are ok with this
                     if ( isset( $tree_node['children'] ) ) {
-                        $navigation_node['children'] = array();
-                        foreach ( $tree_node['children'] as $child_node ) {
-                            $sub_page = $_POST['navigation'][$child_node['id']];
-                            list( $url, $name ) = explode( '|', $sub_page );
-                            $name = htmlentities( $name );
-                            $navigation_node['children'][] = compact( 'url', 'name' );
-                        }
-                        if ( empty( $navigation_node['children'] ) )
-                            unset( $navigation_node['children'] );
+                        $navigation_node['children'] = $get_navigation($tree_node['children'], $data);
                     }
 
                     $navigation[] = $navigation_node;
                 }
+                return $navigation;
+            };
+
+            if ( $tree ) {
+                $navigation = $get_navigation($tree, $_POST['navigation']);
             }
 
             $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );

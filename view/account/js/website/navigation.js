@@ -4,7 +4,7 @@ var Navigation = {
 
     , init: function() {
         $('#navigation').nestable( {
-            maxDepth: 2,
+            maxDepth: 3,
             dropCallback: function(dropped) {
                 if(dropped.destParent && dropped.destParent[0] && dropped.destParent[0].dataset && dropped.destParent[0].dataset.id){
                     var id=dropped.destParent[0].dataset.id;
@@ -27,9 +27,6 @@ var Navigation = {
 
                         Navigation.updateTree();
                     }
-                    dropped.sourceEl.find('select').hide();
-                } else {
-                    dropped.sourceEl.find('select').show();
                 }
             }
         }).on( 'change', Navigation.updateTree ).change();
