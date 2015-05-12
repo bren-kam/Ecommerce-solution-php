@@ -138,77 +138,37 @@ class RemarketingController extends BaseController {
         $form = new BootstrapForm('remarketing-settings');
 
         $settings = $this->user->account->get_settings(
-            'remarketing-title'
+            'remarketing-popup-image'
+            , 'remarketing-title'
             , 'remarketing-intro-text'
+            , 'remarketing-submit-color'
             , 'remarketing-idle-seconds'
             , 'remarketing-notification-email'
             , 'remarketing-coupon'
         );
 
-        $form->add_field('text', 'Show popup after seconds', 'idle-seconds', $settings['remarketing-idle-seconds'] ? $settings['remarketing-idle-seconds'] : 60)
-            ->add_validation('req', 'Required');
-
-        $form->add_field('text', 'Title', 'title', $settings['remarketing-title']);
-
-        $settings['remarketing-intro-text'] = html_entity_decode($settings['remarketing-intro-text']);
-        $form->add_field('textarea', 'Intro Text', 'intro-text', $settings['remarketing-intro-text'])
-            ->attribute('rte', 1);
-
-        $upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
-        $search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
-        $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
-        $form->add_field('anchor', 'Add Image', 'Add Image')
-            ->attribute('href', 'javascript:;')
-            ->attribute('class', 'btn btn-default btn-xs')
-            ->attribute('title', 'Open Media Manager')
-            ->attribute('data-media-manager', '1')
-            ->attribute('data-upload-url', $upload_url)
-            ->attribute('data-search-url', $search_url)
-            ->attribute('data-delete-url', $delete_url);
-
-        $form->add_field('text', 'Notification Email', 'notification-email', $settings['remarketing-notification-email']);
-
-        $form->add_field('image', 'Coupon', 'coupon' )
-            ->attribute('src', $settings['remarketing-coupon'] ? $settings['remarketing-coupon'] : '//placehold.it/200x150&text=No+Coupon+Yet');
-
-        $form->add_field('hidden', 'coupon-path', 'coupon-path', $settings['remarketing-coupon']);
-
-        $form->add_field('anchor', 'Upload Coupon', 'upload')
-            ->attribute('href', 'javascript:;')
-            ->attribute('class', 'btn btn-default btn-xs')
-            ->attribute('title', 'Upload Coupon');
-
-        $form->add_field('block', 'uploader', 'uploader', '');
-
-        if ( $form->posted() ) {
-
-            // Make URLs work on SSL and non-SSL
-            $intro = preg_replace( '/src="http(s?):\/\//i', '/src="//', $_POST['intro-text'] );
-            // Make S3 Images work on SSL and non-SSL
-            $intro = preg_replace( '/src="http:\/\/(.*?)\.retailcatalog\.us\/(.*?)"/i', 'src="//s3.amazonaws.com/$1.retailcatalog.us/$2"', $intro );
-            // Encode Entities
-            $intro = htmlentities( $intro );
-
+        if ( $this->verified() ) {
             $this->user->account->set_settings([
-                'remarketing-title' => $_POST['title']
-                , 'remarketing-intro-text' => $intro
+                'remarketing-popup-image' => $_POST['popup-image']
+                , 'remarketing-title' => $_POST['title']
+                , 'remarketing-intro-text' => $_POST['intro-text']
+                , 'remarketing-submit-color' => $_POST['submit-color']
                 , 'remarketing-idle-seconds' => $_POST['idle-seconds']
                 , 'remarketing-notification-email' => $_POST['notification-email']
                 , 'remarketing-coupon' => $_POST['coupon-path']
             ]);
 
+            $this->notify('Remarketing settings updated');
             return new RedirectResponse('/shopping-cart/remarketing/settings/');
         }
 
-        $form_html = $form->generate_form();
-
-        $this->resources->javascript('fileuploader', 'media-manager', 'shopping-cart/remarketing/settings')
-            ->css('media-manager');
+        $this->resources->javascript('fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
+            ->css('media-manager', 'colpick', 'shopping-cart/remarketing/settings');
 
         return $this->get_template_response('settings')
             ->menu_item('shopping-cart/remarketing/settings')
             ->add_title('Settings')
-            ->set(compact('form_html'));
+            ->set(compact('form_html', 'settings'));
     }
 
     public function upload_coupon() {

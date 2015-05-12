@@ -402,13 +402,15 @@
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/products') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
                             </ul>
                         </li>
-                        <li class="submenu">
-                            <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
-                            <ul class="sub">
-                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/">List</a></li>
-                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
-                            </ul>
-                        </li>
+                        <?php if ( COMPANY_ID == 4 ): ?>
+                            <li class="submenu">
+                                <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
+                                <ul class="sub">
+                                    <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/">List</a></li>
+                                    <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
                         <li class="submenu">
                             <a href="/shopping-cart/settings/" class="<?php if ( $template->in_menu_item('shopping-cart/settings') ) echo 'active'?>">Settings</a>
                             <ul class="sub">
