@@ -21,7 +21,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                     data-search-url="<?php echo $search_url ?>"
                                     data-delete-url="<?php echo $delete_url ?>"
                                     data-image-target="#popup-image">
-                                <img class="img-responsive" src="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '//placehold.it/700x200/eee/a1a1a1&text=700+x+200+px+image' ?>" />
+                                <img class="img-responsive" src="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '/images/email-capture-banner.png' ?>" />
                                 <input type="hidden" name="popup-image" value="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '' ?>" />
                             </a>
                         </div>
@@ -47,8 +47,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="row">
                             <div class="col-lg-6">
                                 <select class="form-control" name="idle-seconds">
-                                    <?php for($i=300; $i<=3600; $i+=300): ?>
-                                        <option value="<?php echo $i ?>" <?php if ($settings['remarketing-idle-seconds'] == $i) echo 'selected' ?>>Popup after <?php echo $i / 60?> minutes</option>
+                                    <?php for($i=30; $i<=3600; $i+=30): ?>
+                                        <option value="<?php echo $i ?>" <?php if ($settings['remarketing-idle-seconds'] == $i) echo 'selected' ?>>Popup after <?php echo $i ?> seconds</option>
                                     <?php endfor; ?>
                                 </select>
                             </div>
