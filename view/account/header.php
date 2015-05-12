@@ -288,7 +288,7 @@
             <?php endif; ?>
 
             <?php if ( $user->account->blog == 1 ): ?>
-                <form action="http://<?php echo $user->account->domain; ?>/blog/log-me-in/" target="_blank" method="post" id="fBlogForm" class="hidden">
+                <form action="http://<?php echo $user->account->domain; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm" class="hidden">
                     <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
                     <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
                 </form>
@@ -402,13 +402,15 @@
                                 <li <?php if ( $template->in_menu_item('shopping-cart/coupons/products') ) echo 'class="active"'?>><a href="/shopping-cart/coupons/products/">Products in Coupon</a></li>
                             </ul>
                         </li>
-                        <li class="submenu">
-                            <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
-                            <ul class="sub">
-                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/">List</a></li>
-                                <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
-                            </ul>
-                        </li>
+                        <?php if ( COMPANY_ID == 4 ): ?>
+                            <li class="submenu">
+                                <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
+                                <ul class="sub">
+                                    <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/">List</a></li>
+                                    <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
                         <li class="submenu">
                             <a href="/shopping-cart/settings/" class="<?php if ( $template->in_menu_item('shopping-cart/settings') ) echo 'active'?>">Settings</a>
                             <ul class="sub">

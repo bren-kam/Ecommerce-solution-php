@@ -505,6 +505,9 @@ class CronsController extends BaseController {
         return new HtmlResponse( 'Finished' );
     }
 
+    /**
+     * Jira get Updates
+     */
     protected function jira_get_updates() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
@@ -568,6 +571,9 @@ class CronsController extends BaseController {
 
     }
 
+    /**
+     * Add Image Dimensions
+     */
     public function addImageDimensions() {
         ini_set( 'memory_limit', '512M' );
         $product = new Product();
@@ -600,6 +606,12 @@ class CronsController extends BaseController {
             }
         }
         echo "Finished\n";
+    }
+
+    public function discontinue_orphan_packages() {
+        $product = new Product();
+
+        $product->discontinue_orphan_packages( true );
     }
 
     /**

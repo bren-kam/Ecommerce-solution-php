@@ -1,55 +1,57 @@
-var SettingsForm = {
+var PopupForm = {
 
-    uploader: null
-
-    , init: function() {
-        // Setup File Uploader
-        SettingsForm.uploader = new qq.FileUploader({
-            action: '/shopping-cart/remarketing/upload-coupon/'
-            , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
-            , element: $('#uploader')[0]
-            , sizeLimit: 10485760 // 10 mb's
-            , onSubmit: SettingsForm.submit
-            , onComplete: SettingsForm.complete
+    /**
+     * Init
+     */
+    init: function() {
+        $('#submit-color').colpick({
+            onChange: PopupForm.changeSubmitColor
         });
 
-        // Upload file trigger
-        $('#upload').click( SettingsForm.open );
+        MediaManager.submit = PopupForm.setImage;
 
+        $('#coupon-image').mouseleave(PopupForm.hideDeleteCoupon);
+        $('#coupon-image').mouseenter(PopupForm.showDeleteCoupon);
+        $('#delete-coupon').click(PopupForm.deleteCoupon);
     }
 
-    , submit: function( id, fileName ) {
-        SettingsForm.uploader.setParams({
-            _nonce : $('#_upload_coupon').val()
-        });
-
-        $('#upload').hide();
-        $('#upload-loader').removeClass('hidden').show();
+    /**
+     * Change Submit Color
+     */
+    , changeSubmitColor: function(hsb, hex, rgb, e, bySetColor) {
+        color = "#" + hex;
+        $('#popup-submit-color').val(color);
+        $('#selected-color').text(color);
+        $('#submit-color').css('background-color', color);
     }
 
-    , complete: function( id, fileName, response ) {
-        $('#upload-loader').hide();
-        $('#upload').show();
+    /**
+     * Set Image - Overwrites MediaManager submit function to add images
+     */
+    , setImage: function() {
+        var file = MediaManager.view.find( '.mm-file.selected:first').parents( 'li:first').data();
 
-        GSR.defaultAjaxResponse( response );
-
-        if ( response.success ) {
-            $('#coupon' ).html( '<img src="' + response.url + '" />' );
-            $('#coupon-path' ).val( response.url );
+        if ( file && MediaManager.isImage( file ) ) {
+            $( MediaManager.targetOptions.imageTarget )
+                .find('img:first').attr('src', file.url).end()
+                .find('input').val(file.url).end();
         }
     }
 
-    , open: function(e) {
-        if ( e )
-            e.preventDefault();
-
-        if ( $.support.cors ) {
-            $('#uploader input:first').click();
-        } else {
-            alert( $('#err-support-cors').text() );
-        }
+    , deleteCoupon: function() {
+        $('#coupon-image').find('img').attr('src', '//placehold.it/700x200/eee/a1a1a1&text=upload+coupon');
+        $('#coupon-image').find('input').val('');
     }
 
+    , hideDeleteCoupon: function() {
+        $('#delete-coupon').hide();
+    }
+
+    , showDeleteCoupon: function() {
+        if ( $('#coupon-image').find('input').val() ) {
+            $('#delete-coupon').show();
+        }
+    }
 };
 
-jQuery(SettingsForm.init);
+jQuery(PopupForm.init);
