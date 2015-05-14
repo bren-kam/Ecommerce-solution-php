@@ -76,6 +76,15 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                     <?php for($email_number=1; $email_number<=3; $email_number++): $email_number_text = str_replace([1, 2, 3], ['First', 'Second', 'Third'], $email_number ); ?>
                         <div class="email-settings">
                             <h3><?php echo $email_number_text ?> Email</h3>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="email<?php echo $email_number?>-enabled" value="1" <?php echo $settings["remarketing-email{$email_number}-enabled"] ? 'checked' : '' ?> />
+                                    Enable this email
+                                </label>
+
+                            </div>
+
                             <div class="form-group">
                                 <select class="form-control" name="email<?php echo $email_number?>-delay">
                                     <?php for($i=3600; $i<=3600*24*7; $i+=3600): ?>
