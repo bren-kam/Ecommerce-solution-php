@@ -71,14 +71,47 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             </a>
                             <a href="javascript:;" id="delete-coupon"><i class="fa fa-trash-o"></i></a>
                         </div>
-
-                        <p class="text-right">
-                            <?php nonce::field('settings')?>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </p>
                     </div>
-                </form>
 
+                    <?php for($email_number=1; $email_number<=3; $email_number++): $email_number_text = str_replace([1, 2, 3], ['First', 'Second', 'Third'], $email_number ); ?>
+                        <div class="email-settings">
+                            <h3><?php echo $email_number_text ?> Email</h3>
+                            <div class="form-group">
+                                <select class="form-control" name="email<?php echo $email_number?>-delay">
+                                    <?php for($i=3600; $i<=3600*24*7; $i+=3600): ?>
+                                        <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+
+                            <div id="email<?php echo $email_number?>-header" class="email-header">
+                                <a href="javascript:;"
+                                   data-media-manager
+                                   data-upload-url="<?php echo $upload_url ?>"
+                                   data-search-url="<?php echo $search_url ?>"
+                                   data-delete-url="<?php echo $delete_url ?>"
+                                   data-image-target="#email<?php echo $email_number?>-header">
+                                    <img class="img-responsive" src="<?php echo $settings["remarketing-email{$email_number}-header"] ? $settings["remarketing-email{$email_number}-header"] : "//placehold.it/700x200/eee/a1a1a1&text={$email_number_text}+email+header+image" ?>" />
+                                    <input type="hidden" name="email<?php echo $email_number?>-header" value="<?php echo $settings["remarketing-email{$email_number}-header"] ?>" />
+                                </a>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-control" name="email<?php echo $email_number?>-title" value="<?php echo $settings["remarketing-email{$email_number}-title"] ?>" placeholder="Email Title"/>
+                            </div>
+
+                            <div class="form-group">
+                                <textarea class="form-control" rows="3" name="email<?php echo $email_number?>-body" placeholder="Email Body"><?php echo $settings["remarketing-email{$email_number}-body"] ?></textarea>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
+
+                    <p class="text-right">
+                        <?php nonce::field('settings') ?>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </p>
+
+                </form>
 
             </div>
         </section>

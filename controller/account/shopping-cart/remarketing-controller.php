@@ -145,6 +145,18 @@ class RemarketingController extends BaseController {
             , 'remarketing-idle-seconds'
             , 'remarketing-notification-email'
             , 'remarketing-coupon'
+            , 'remarketing-email1-delay'
+            , 'remarketing-email1-header'
+            , 'remarketing-email1-title'
+            , 'remarketing-email1-body'
+            , 'remarketing-email2-delay'
+            , 'remarketing-email2-header'
+            , 'remarketing-email2-title'
+            , 'remarketing-email2-body'
+            , 'remarketing-email3-delay'
+            , 'remarketing-email3-header'
+            , 'remarketing-email3-title'
+            , 'remarketing-email3-body'
         );
 
         if ( $this->verified() ) {
@@ -156,6 +168,18 @@ class RemarketingController extends BaseController {
                 , 'remarketing-idle-seconds' => $_POST['idle-seconds']
                 , 'remarketing-notification-email' => $_POST['notification-email']
                 , 'remarketing-coupon' => $_POST['coupon-path']
+                , 'remarketing-email1-delay' => $_POST['email1-delay']
+                , 'remarketing-email1-header' => $_POST['email1-header']
+                , 'remarketing-email1-title' => $_POST['email1-title']
+                , 'remarketing-email1-body' => $_POST['email1-body']
+                , 'remarketing-email2-delay' => $_POST['email2-delay']
+                , 'remarketing-email2-header' => $_POST['email2-header']
+                , 'remarketing-email2-title' => $_POST['email2-title']
+                , 'remarketing-email2-body' => $_POST['email2-body']
+                , 'remarketing-email3-delay' => $_POST['email3-delay']
+                , 'remarketing-email3-header' => $_POST['email3-header']
+                , 'remarketing-email3-title' => $_POST['email3-title']
+                , 'remarketing-email3-body' => $_POST['email3-body']
             ]);
 
             $this->notify('Remarketing settings updated');
