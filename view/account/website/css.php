@@ -18,7 +18,7 @@
         <section class="panel">
 
             <header class="panel-heading">
-                CSS/LESS:
+                CSS
             </header>
 
             <div class="panel-body">
@@ -27,12 +27,12 @@
                 nonce::field('save_less');
                 if ( $unlocked_less ): ?>
 
-                    <h3><?php echo _('Core LESS'); ?></h3>
+                    <h3>Base Theme CSS (Uneditable)</h3>
                     <div id="core-container">
                         <div id="core"><?php echo $unlocked_less; ?></div>
                     </div>
 
-                    <h3><?php echo _('LESS'); ?></h3>
+                    <h3>CSS</h3>
 
                 <?php endif; ?>
 
