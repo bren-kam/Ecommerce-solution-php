@@ -1097,6 +1097,9 @@ class WebsiteController extends BaseController {
 
         $response->add_response( 'jquery', jQuery::getResponse() );
         $this->log( 'delete-website-page', $this->user->contact_name . ' deleted a website page on ' . $this->user->account->title );
+        
+        // Add the response
+        $response->add_response( 'refresh', 1 );
 
         return $response;
     }
