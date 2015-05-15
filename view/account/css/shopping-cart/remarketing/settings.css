@@ -3,7 +3,7 @@
   margin: 0 auto 75px;
 }
 #popup-editor #popup-image {
-  border: 3px dashed #ddd;
+  border: 2px dashed #ddd;
   margin-bottom: 5px;
 }
 #popup-editor #popup-body {
@@ -58,7 +58,7 @@
   margin: 0 auto;
 }
 #settings-editor #coupon-image {
-  border: 3px dashed #ddd;
+  border: 2px dashed #ddd;
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
@@ -75,7 +75,7 @@
   margin: 0 auto;
 }
 .email-settings .email-header {
-  border: 3px dashed #ddd;
+  border: 2px dashed #ddd;
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
