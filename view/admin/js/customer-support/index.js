@@ -348,11 +348,6 @@ var Ticket = {
                 GSR.defaultAjaxResponse( response );
                 if ( response.success ) {
                     InboxNavigation.getTickets();
-                    //if ( status == 1 ) {  // closed
-                    //    $('#compose').click();
-                    //} else {
-                    //    Ticket.reload();
-                    //}
                 }
             }
         );
@@ -372,7 +367,6 @@ var Ticket = {
                 GSR.defaultAjaxResponse( response );
                 if ( response.success ) {
                     InboxNavigation.getTickets();
-                    Ticket.reload();
                 }
             }
         );
@@ -464,6 +458,7 @@ var TicketCommentForm = {
         for (var i in CKEDITOR.instances) {
             CKEDITOR.instances[i].updateElement();
         }
+        form.find(':submit').prop('disabled', true);
         $.post(
             '/customer-support/add-comment/'
             , form.serialize()
@@ -473,6 +468,7 @@ var TicketCommentForm = {
     }
 
     , addComplete: function( response ) {
+        $('#send-comment-form').find(':submit').prop('disabled', false);
         GSR.defaultAjaxResponse( response );
         if ( response.success ) {
             Ticket.reload();
@@ -490,6 +486,8 @@ var TicketCommentForm = {
         $('#show-cc').show();
         $('#bcc-address').parent().hide();
         $('#show-bcc').show();
+        $('input[name=private]').prop('checked', false);
+        $('input[name=include-whole-thread]').prop('checked', false);
     }
 
     , delete: function () {

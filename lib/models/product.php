@@ -525,4 +525,49 @@ class Product extends ActiveRecordBase {
 
         return 'http://' . str_replace( ' ', '', $industry ) . '.retailcatalog.us/products/' . $product_id . '/' . ($size ? ($size . '/') : '') .$image;
     }
+
+
+    /**
+     * Discontinue Orphan Packages
+     * @param bool $echo_log
+     * @throws ModelException
+     */
+    public function discontinue_orphan_packages( $echo_log = false ) {
+        if ( $echo_log )
+            echo "Getting packages...\n";
+
+        $packages = $this->get_results(
+            "SELECT product_id, sku FROM products WHERE user_id_created = 1477 AND publish_visibility = 'public' AND status = 'in-stock'"
+            , PDO::FETCH_ASSOC
+        );
+
+        if ( $echo_log )
+            echo "Getting pieces...\n";
+        $active_pieces = $this->get_col(
+            "SELECT sku FROM products WHERE user_id_created = 353 AND publish_visibility = 'public' AND status = 'in-stock'"
+        );
+
+        foreach ( $packages as $package ) {
+            // These will be used twice
+            $sku_pieces = explode( '/', $package['sku'] );
+            $serie = array_shift( $sku_pieces );
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                // remove things in parenthesis
+                $piece = preg_replace( $regex, '', $sp );
+
+                if ( !in_array("{$serie}{$piece}", $active_pieces) && !in_array("{$serie}-{$piece}", $active_pieces) ) {
+                    if ( $echo_log )
+                        echo "Discontinuing {$package['sku']} as {$serie}-{$piece} is discontinued\n";
+                    $this->query("UPDATE products SET status = 'discontinued' WHERE product_id = '{$package['product_id']}' LIMIT 1");
+                }
+            }
+
+        }
+
+        if ( $echo_log )
+            echo "Finished\n";
+    }
+
 }

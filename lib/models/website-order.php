@@ -136,7 +136,14 @@ class WebsiteOrder extends ActiveRecordBase {
 
         $sm = new WebsiteShippingMethod();
         $sm->get( $this->website_shipping_method_id, $this->website_id );
-        return $sm->type == 'ashley-express-ups' || $sm->type == 'ashley-express-fedex';
+        if ( $sm->type == 'ashley-express-ups' || $sm->type == 'ashley-express-fedex' )
+            return true;
+
+        return (bool) $this->get_var("SELECT COUNT(DISTINCT ae.product_id)
+            FROM website_orders wo
+            INNER JOIN website_order_items woi ON wo.website_order_id = woi.website_order_id
+            INNER JOIN website_product_ashley_express ae ON woi.product_id = ae.product_id AND wo.website_id = ae.website_id
+            WHERE wo.website_order_id = '{$this->website_order_id}'");
     }
 
     /**

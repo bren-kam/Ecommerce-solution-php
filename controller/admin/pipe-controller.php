@@ -129,7 +129,7 @@ class PipeController extends BaseController {
         $to = null;
         foreach ( $to_list as $to_address ) {
             $to_user->get_by_email( $to_address, false );
-            if ( $to_user->id ) {
+            if ( $to_user->id && $to_user->has_permission(User::ROLE_ONLINE_SPECIALIST)) {
                 $to = $to_address;
                 break;
             }
