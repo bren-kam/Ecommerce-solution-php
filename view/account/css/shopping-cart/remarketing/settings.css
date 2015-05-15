@@ -34,11 +34,23 @@
 #popup-editor #popup-form #popup-fields {
   text-align: center;
 }
-#popup-editor #popup-form #popup-fields .popup-field {
+#popup-editor #popup-form #popup-fields .popup-field-left {
+  margin-right: 10px;
+  padding-top: 7px;
   height: 34px;
   width: 40%;
   display: inline-block;
   background-color: #ddd;
+  color: white;
+}
+#popup-editor #popup-form #popup-fields .popup-field-right {
+  margin-left: 10px;
+  padding-top: 7px;
+  height: 34px;
+  width: 40%;
+  display: inline-block;
+  background-color: #ddd;
+  color: white;
 }
 #popup-editor #popup-form #submit-color {
   position: absolute;
