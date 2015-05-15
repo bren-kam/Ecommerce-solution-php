@@ -64,6 +64,7 @@
   padding-top: 25px;
   color: white;
   z-index: 1;
+  border: 2px solid #ddd;
 }
 #settings-editor {
   width: 700px;
