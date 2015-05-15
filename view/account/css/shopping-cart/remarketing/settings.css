@@ -1,0 +1,89 @@
+#popup-editor {
+  width: 700px;
+  margin: 0 auto 75px;
+}
+#popup-editor #popup-image {
+  border: 3px dashed #ddd;
+  margin-bottom: 5px;
+}
+#popup-editor #popup-body {
+  border: 3px solid #ddd;
+  text-align: center;
+  padding: 15px;
+  margin-bottom: 5px;
+}
+#popup-editor #popup-body #popup-title {
+  font-size: 28px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: none;
+  resize: none;
+}
+#popup-editor #popup-body #popup-text {
+  font-size: 16px;
+  text-align: center;
+  border: none;
+  resize: none;
+}
+#popup-editor #popup-form {
+  border: 3px solid #ddd;
+  padding: 15px;
+  height: 150px;
+  position: relative;
+}
+#popup-editor #popup-form #popup-fields {
+  text-align: center;
+}
+#popup-editor #popup-form #popup-fields .popup-field {
+  height: 34px;
+  width: 40%;
+  display: inline-block;
+  background-color: #ddd;
+}
+#popup-editor #popup-form #submit-color {
+  position: absolute;
+  border-radius: 100px;
+  background-color: #72CEE0;
+  width: 100px;
+  height: 100px;
+  bottom: -50px;
+  left: 300px;
+  text-align: center;
+  padding-top: 25px;
+  color: white;
+  z-index: 1;
+}
+#settings-editor {
+  width: 700px;
+  margin: 0 auto;
+}
+#settings-editor #coupon-image {
+  border: 3px dashed #ddd;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  position: relative;
+}
+#settings-editor #coupon-image #delete-coupon {
+  position: absolute;
+  color: red;
+  top: 0px;
+  right: 5px;
+  display: none;
+}
+.email-settings {
+  width: 700px;
+  margin: 0 auto;
+}
+.email-settings .email-header {
+  border: 3px dashed #ddd;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  position: relative;
+}
+.email-settings .email-header .delete {
+  position: absolute;
+  color: red;
+  top: 0px;
+  right: 5px;
+  display: none;
+}

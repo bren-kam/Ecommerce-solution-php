@@ -155,7 +155,7 @@ var SidebarVideo = {
         // Setup File Uploader
         SidebarVideo.uploader = new qq.FileUploader({
             action: '/website/upload-sidebar-video/'
-            , allowedExtensions: ['mp4']
+            , allowedExtensions: ['mp4', 'wmv', '3gp', 'mpg', 'mpeg', 'avi']
             , element: $('#video-uploader')[0]
             , sizeLimit: 25*1024*1024 // 25 mb's
             , onSubmit: SidebarVideo.submit

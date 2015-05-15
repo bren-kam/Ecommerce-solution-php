@@ -10,7 +10,25 @@
  * @var AccountPage[] $pages
  * @var array $navigation
  */
-?>
+
+$print_navigation = function($navigation, $prefix = "") use ( &$print_navigation ) { ?>
+    <?php foreach ( $navigation as $k => $page ): ?>
+        <li class="dd-item dd3-item" data-id="<?php echo "{$prefix}{$k}" ?>">
+            <div class="dd-handle dd3-handle"></div>
+            <div class="dd3-content">
+                <?php echo $page->name ?>
+                <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
+                <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
+                <input type="hidden" name="navigation[<?php echo "{$prefix}{$k}" ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
+            </div>
+            <?php if ( isset( $page->children ) && !empty($page->children) ): ?>
+                <ol class="dd-list">
+                    <?php $print_navigation($page->children, "{$prefix}_{$k}_") ?>
+                </ol>
+            <?php endif; ?>
+        </li>
+    <?php endforeach; ?>
+<?php } ?>
 
 <div class="row-fluid">
     <div class="col-lg-12">
@@ -25,33 +43,8 @@
                 <form method="post" role="form">
                     <div class="dd" id="navigation">
                         <ol class="dd-list">
-                            <?php foreach ( $navigation as $k => $page ): ?>
-                                <li class="dd-item dd3-item" data-id="<?php echo $k ?>">
-                                    <div class="dd-handle dd3-handle"></div>
-                                    <div class="dd3-content">
-                                        <?php echo $page->name ?>
-                                        <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
-                                        <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
-                                        <input type="hidden" name="navigation[<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
-                                    </div>
-                                    <?php if ( isset( $page->children ) ): ?>
-                                        <ol class="dd-list">
-                                            <?php foreach ( $page->children as $child_k => $child_page ): ?>
-                                                <li class="dd-item dd3-item" data-id="<?php echo $k . "_" . $child_k ?>">
-                                                    <div class="dd-handle dd3-handle"></div>
-                                                    <div class="dd3-content">
-                                                        <?php echo $child_page->name ?>
-                                                        <span class="page-url"><?php echo $child_page->url ? $child_page->url : '/' ?></span>
-                                                        <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
-                                                        <input type="hidden" name="navigation[<?php echo $k . '_' . $child_k ?>]" value="<?php echo $child_page->url . '|' . $child_page->name; ?>">
-                                                    </div>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ol>
-                                    <?php endif; ?>
-                                </li>
-                            <?php endforeach; ?>
-                           </ol>
+                            <?php $print_navigation($navigation); ?>
+                        </ol>
                     </div>
 
                     <p>
