@@ -1499,7 +1499,7 @@ class WebsiteController extends BaseController {
 
         if ( $result ) {
             $video_url = str_replace($input_key, $output_key, $video_url);
-            $this->notify('Your video was successfully uploaded and might take a few seconds to get optimized and public available.');
+            $this->notify('Your video is being uploaded and will take a few minutes to be optimized and publicly available.  Please check back in 5 minutes.');
         }
 
         // Delete file
