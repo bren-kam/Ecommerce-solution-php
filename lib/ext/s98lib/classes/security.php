@@ -42,7 +42,7 @@ class security extends Base_Class {
 		return (
             ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' )
                 || ( !isset( $_SERVER['HTTPS'] ) && 443 == $_SERVER['SERVER_PORT'] )
-                || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'HTTPS' == strtoupper($_SERVER['HTTP_X_FORWARDED_PROTO']) )
+                || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && stristr( $_SERVER['HTTP_X_FORWARDED_PROTO'], 'https' ) )
             ) ? true : false;
 	}
 	
