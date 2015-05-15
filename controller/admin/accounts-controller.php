@@ -851,7 +851,7 @@ class AccountsController extends BaseController {
 
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $full_domain_name, $server->nodebalancer_ip, '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'MX', $full_domain_name, '0 mail.' . $full_domain_name, '14400', url::domain($account->domain, false));
-                $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"', '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"', '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'mail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'CNAME', 'www.' . $full_domain_name, $full_domain_name, '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'ftp.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
@@ -930,7 +930,7 @@ class AccountsController extends BaseController {
                 } else {
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $full_domain_name, $server->nodebalancer_ip, '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'MX', $full_domain_name, '0 mail.' . $full_domain_name, '14400', url::domain($account->domain, false));
-                    $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"', '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:207.97.247.132 ip4:204.232.171.66 ~all"', '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'mail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'CNAME', 'www.' . $full_domain_name, $full_domain_name, '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'ftp.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
