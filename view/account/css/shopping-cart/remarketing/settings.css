@@ -3,11 +3,11 @@
   margin: 0 auto 75px;
 }
 #popup-editor #popup-image {
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   margin-bottom: 5px;
 }
 #popup-editor #popup-body {
-  border: 3px solid #ddd;
+  border: 2px solid #ddd;
   text-align: center;
   padding: 15px;
   margin-bottom: 5px;
@@ -26,7 +26,7 @@
   resize: none;
 }
 #popup-editor #popup-form {
-  border: 3px solid #ddd;
+  border: 2px solid #ddd;
   padding: 15px;
   height: 150px;
   position: relative;
@@ -73,7 +73,7 @@
   margin: 0 auto;
 }
 #settings-editor #coupon-image {
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
@@ -90,7 +90,7 @@
   margin: 0 auto;
 }
 .email-settings .email-header {
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
