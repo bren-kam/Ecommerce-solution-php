@@ -75,7 +75,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                data-image-target="#coupon-image">
                                 <img class="img-responsive" src="<?php echo $settings['remarketing-coupon'] ? $settings['remarketing-coupon'] : '//placehold.it/700x200/eee/a1a1a1&text=+' ?>" />
                                 <input type="hidden" name="coupon-path" value="<?php echo $settings['remarketing-coupon'] ?>" />
-                                <span class="upload-tooltip">700x200px <i class="fa fa-upload"></i></span>
+                                <span class="upload-tooltip" style="right: 33%;">Upload Coupon <i class="fa fa-upload"></i></span>
                             </a>
                             <a href="javascript:;" id="delete-coupon"><i class="fa fa-trash-o"></i></a>
                         </div>
@@ -96,7 +96,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             <div class="form-group">
                                 <select class="form-control" name="email<?php echo $email_number?>-delay">
                                     <?php for($i=60; $i<=1800; $i+=60): ?>
-                                        <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
+                                        <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 60 ?> hour(s) abandoned.</option>
                                     <?php endfor; ?>
                                     <?php for($i=3600; $i<=3600*24; $i+=3600): ?>
                                         <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
