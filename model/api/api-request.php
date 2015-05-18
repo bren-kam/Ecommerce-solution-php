@@ -319,7 +319,8 @@ class ApiRequest {
             $account = new Account();
 
             $server = new Server();
-            $server->get($title{0} < 'i' ? 1 : 2);
+            //$title{0} < 'i' ? 1 : 2
+            $server->get(3);
 
             $this->log('method', '"' . $this->method . '": Title: ' . $title . '.Server: ' . json_encode($server), true);
 
