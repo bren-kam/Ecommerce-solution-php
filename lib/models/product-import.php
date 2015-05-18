@@ -30,18 +30,29 @@ class ProductImport extends ActiveRecordBase {
     
     /**
      * Delete all
+     * @param int $website_id
      */
-    public function delete_all() {
-        $this->prepare('DELETE FROM `product_import`', '', array())
+    public function delete_all( $website_id = null ) {
+        $where = '';
+        if ( $website_id ) {
+            $where = " WHERE website_id = {$website_id} ";
+        }
+        $this->prepare("DELETE FROM `product_import` {$where}", '', array())
             ->query();
     }
 
     /**
      * Get all
+     * @param int $website_id
+     * @return ProductImport[]
      */
-    public function get_all() {
+    public function get_all( $website_id = null ) {
+        $where = '';
+        if ( $website_id ) {
+            $where = " WHERE pi.website_id = {$website_id} ";
+        }
         return $this->prepare(
-            'SELECT `pi`.*, `i`.`name` as `industry_name` FROM `product_import` `pi` INNER JOIN `industries` `i` ON `pi`.`industry_id` = `i`.`industry_id`'
+            "SELECT `pi`.*, `i`.`name` as `industry_name` FROM `product_import` `pi` INNER JOIN `industries` `i` ON `pi`.`industry_id` = `i`.`industry_id` {$where}"
             , ''
             , array()
         )->get_results( PDO::FETCH_CLASS, 'ProductImport' );

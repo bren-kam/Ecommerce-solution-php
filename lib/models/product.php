@@ -76,10 +76,15 @@ class Product extends ActiveRecordBase {
      *
      * @param string $sku
      * @param int $brand_id
+     * @param int $website_id
      */
-    public function get_by_sku_by_brand( $sku, $brand_id ) {
+    public function get_by_sku_by_brand( $sku, $brand_id, $website_id = 0 ) {
+        $where = '';
+        if ( $website_id ) {
+            $where = " AND p.website_id = {$website_id} ";
+        }
         $this->prepare(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_min`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`depth`, p.`height`, p.`length`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`brand_id` = :brand_id AND p.`sku` = :sku GROUP BY p.`product_id` ORDER BY p.`product_id` DESC LIMIT 1"
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_min`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`depth`, p.`height`, p.`length`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`brand_id` = :brand_id AND p.`sku` = :sku $where GROUP BY p.`product_id` ORDER BY p.`product_id` DESC LIMIT 1"
             , 'is'
             , array( ':brand_id' => $brand_id, ':sku' => $sku )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -477,8 +482,8 @@ class Product extends ActiveRecordBase {
         $new_image_name = rawurldecode($slug);
         $image_extension = strtolower( f::extension( $image_url ) );
         $full_image_name = "{$new_image_name}.{$image_extension}";
-        $image_path = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $full_image_name;
-        //$image_path = '/tmp/' . $full_image_name;
+        // $image_path = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $full_image_name;
+        $image_path = '/tmp/' . $full_image_name;
 
         // If it already exists, no reason to go on
         if( is_file( $image_path ) && curl::check_file( "http://{$industry}.retailcatalog.us/products/{$this->id}/thumbnail/{$full_image_name}" ) )
@@ -520,4 +525,49 @@ class Product extends ActiveRecordBase {
 
         return 'http://' . str_replace( ' ', '', $industry ) . '.retailcatalog.us/products/' . $product_id . '/' . ($size ? ($size . '/') : '') .$image;
     }
+
+
+    /**
+     * Discontinue Orphan Packages
+     * @param bool $echo_log
+     * @throws ModelException
+     */
+    public function discontinue_orphan_packages( $echo_log = false ) {
+        if ( $echo_log )
+            echo "Getting packages...\n";
+
+        $packages = $this->get_results(
+            "SELECT product_id, sku FROM products WHERE user_id_created = 1477 AND publish_visibility = 'public' AND status = 'in-stock'"
+            , PDO::FETCH_ASSOC
+        );
+
+        if ( $echo_log )
+            echo "Getting pieces...\n";
+        $active_pieces = $this->get_col(
+            "SELECT sku FROM products WHERE user_id_created = 353 AND publish_visibility = 'public' AND status = 'in-stock'"
+        );
+
+        foreach ( $packages as $package ) {
+            // These will be used twice
+            $sku_pieces = explode( '/', $package['sku'] );
+            $serie = array_shift( $sku_pieces );
+            // Remove anything within parenthesis on SKU Pieces
+            $regex = '/\(([^)]*)\)/';
+            foreach ( $sku_pieces as $k => $sp ) {
+                // remove things in parenthesis
+                $piece = preg_replace( $regex, '', $sp );
+
+                if ( !in_array("{$serie}{$piece}", $active_pieces) && !in_array("{$serie}-{$piece}", $active_pieces) ) {
+                    if ( $echo_log )
+                        echo "Discontinuing {$package['sku']} as {$serie}-{$piece} is discontinued\n";
+                    $this->query("UPDATE products SET status = 'discontinued' WHERE product_id = '{$package['product_id']}' LIMIT 1");
+                }
+            }
+
+        }
+
+        if ( $echo_log )
+            echo "Finished\n";
+    }
+
 }

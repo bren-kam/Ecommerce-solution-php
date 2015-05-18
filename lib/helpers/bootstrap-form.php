@@ -685,6 +685,30 @@ class BootstrapForm_Anchor extends BootstrapForm_Field {
      *
      * @param string $name
      */
+    public function __construct( $nice_name, $name ) {
+        parent::__construct( $nice_name, $name );
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<p><a id="' . $this->name . '" ' . $this->format_attributes() . '>' . $this->nice_name . '</a></p>';
+    }
+}
+
+/**
+ * Image Row
+ */
+class BootstrapForm_Image extends BootstrapForm_Field {
+    /**
+     * Constructor -- Create a Anchor row
+     *
+     * @param string $name
+     */
     public function __construct( $name ) {
         parent::__construct( $name );
     }
@@ -696,7 +720,30 @@ class BootstrapForm_Anchor extends BootstrapForm_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        return '<p><a ' . $this->format_attributes() . '>' . $this->nice_name . '</a></p>';
+        return '<p id="' . $this->name . '"><img ' . $this->format_attributes() . ' alt="' . $this->nice_name .'"></p>';
+    }
+}
+
+/**
+ * Empty Div Row
+ */
+class BootstrapForm_Block extends BootstrapForm_Field {
+    /**
+     * Constructor -- Create a title row
+     * @param string $name
+     */
+    public function __construct($name) {
+        parent::__construct( $name );
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<div id="'. $this->name .'">' . $this->value . '</div>';
     }
 }
 
