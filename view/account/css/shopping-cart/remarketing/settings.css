@@ -5,6 +5,7 @@
 #popup-editor #popup-image {
   border: 2px solid #ddd;
   margin-bottom: 5px;
+  position: relative;
 }
 #popup-editor #popup-body {
   border: 2px solid #ddd;
@@ -101,4 +102,20 @@
   top: 0px;
   right: 5px;
   display: none;
+}
+.upload-tooltip {
+  padding: 15px 30px;
+  text-align: center;
+  background: #444;
+  color: white;
+  font-size: 18px;
+  opacity: 0.9;
+  font-weight: 600;
+  border-radius: 25px;
+  position: absolute;
+  top: 35%;
+  right: 37%;
+}
+.upload-tooltip i {
+  margin-left: 15px;
 }

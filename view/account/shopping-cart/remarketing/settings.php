@@ -14,7 +14,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                 <form method="post" role="form" action="">
 
                     <div id="popup-editor">
-                        <h3>Email Capture Popup Settings</h3>
+                        <h3>Email Capture Popup</h3>
 
                         <div id="popup-image">
                             <a href="javascript:;"
@@ -25,6 +25,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                     data-image-target="#popup-image">
                                 <img class="img-responsive" src="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '/images/email-capture-banner.png' ?>" />
                                 <input type="hidden" name="popup-image" value="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '' ?>" />
+                                <span class="upload-tooltip">700x200px <i class="fa fa-upload"></i></span>
                             </a>
                         </div>
                         <div id="popup-body">
@@ -68,8 +69,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                data-search-url="<?php echo $search_url ?>"
                                data-delete-url="<?php echo $delete_url ?>"
                                data-image-target="#coupon-image">
-                                <img class="img-responsive" src="<?php echo $settings['remarketing-coupon'] ? $settings['remarketing-coupon'] : '//placehold.it/700x200/eee/a1a1a1&text=upload+coupon' ?>" />
+                                <img class="img-responsive" src="<?php echo $settings['remarketing-coupon'] ? $settings['remarketing-coupon'] : '//placehold.it/700x200/eee/a1a1a1&text=+' ?>" />
                                 <input type="hidden" name="coupon-path" value="<?php echo $settings['remarketing-coupon'] ?>" />
+                                <span class="upload-tooltip">700x200px <i class="fa fa-upload"></i></span>
                             </a>
                             <a href="javascript:;" id="delete-coupon"><i class="fa fa-trash-o"></i></a>
                         </div>
@@ -102,8 +104,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                    data-search-url="<?php echo $search_url ?>"
                                    data-delete-url="<?php echo $delete_url ?>"
                                    data-image-target="#email<?php echo $email_number?>-header">
-                                    <img class="img-responsive" src="<?php echo $settings["remarketing-email{$email_number}-header"] ? $settings["remarketing-email{$email_number}-header"] : "//placehold.it/700x200/eee/a1a1a1&text={$email_number_text}+email+header+image" ?>" />
+                                    <img class="img-responsive" src="<?php echo $settings["remarketing-email{$email_number}-header"] ? $settings["remarketing-email{$email_number}-header"] : "//placehold.it/700x200/eee/a1a1a1&text=+" ?>" />
                                     <input type="hidden" name="email<?php echo $email_number?>-header" value="<?php echo $settings["remarketing-email{$email_number}-header"] ?>" />
+                                    <span class="upload-tooltip">700x200px <i class="fa fa-upload"></i></span>
                                 </a>
                             </div>
 
