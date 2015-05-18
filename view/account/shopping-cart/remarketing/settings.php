@@ -14,6 +14,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                 <form method="post" role="form" action="">
 
                     <div id="popup-editor">
+                        <h3>Email Capture Popup Settings</h3>
+
                         <div id="popup-image">
                             <a href="javascript:;"
                                     data-media-manager
