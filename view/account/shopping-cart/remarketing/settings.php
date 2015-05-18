@@ -50,8 +50,12 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="row">
                             <div class="col-lg-6">
                                 <select class="form-control" name="idle-seconds">
-                                    <?php for($i=30; $i<=3600; $i+=30): ?>
-                                        <option value="<?php echo $i ?>" <?php if ($settings['remarketing-idle-seconds'] == $i) echo 'selected' ?>>Popup after <?php echo $i ?> seconds</option>
+                                    <option value="-1">Disable Email Capture Popup</option>
+                                    <?php for($i=60; $i<=1800; $i+=60): ?>
+                                        <option value="<?php echo $i ?>" <?php if ($settings['remarketing-idle-seconds'] == $i) echo 'selected' ?>>Popup after <?php echo $i/60; ?> min</option>
+                                    <?php endfor; ?>
+                                    <?php for($i=3600; $i<=3600*24; $i+=3600): ?>
+                                        <option value="<?php echo $i ?>" <?php if ($settings['remarketing-idle-seconds'] == $i) echo 'selected' ?>>Popup after <?php echo $i/3600 ?> hr</option>
                                     <?php endfor; ?>
                                 </select>
                             </div>
@@ -91,7 +95,10 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
                             <div class="form-group">
                                 <select class="form-control" name="email<?php echo $email_number?>-delay">
-                                    <?php for($i=3600; $i<=3600*24*7; $i+=3600): ?>
+                                    <?php for($i=60; $i<=1800; $i+=60): ?>
+                                        <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
+                                    <?php endfor; ?>
+                                    <?php for($i=3600; $i<=3600*24; $i+=3600): ?>
                                         <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
                                     <?php endfor; ?>
                                 </select>
