@@ -31,8 +31,8 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         </div>
                         <div id="popup-form">
                             <div id="popup-fields">
-                                <div class="popup-field"></div>
-                                <div class="popup-field"></div>
+                                <div class="popup-field-left">Name</div>
+                                <div class="popup-field-right">Email</div>
                             </div>
 
                             <a id="submit-color" href="javascript:;" style="background-color: <?php echo $settings['remarketing-submit-color'] ?>;">

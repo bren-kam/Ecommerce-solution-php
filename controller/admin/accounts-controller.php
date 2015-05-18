@@ -370,26 +370,7 @@ class AccountsController extends BaseController {
             $account->company_package_id = $_POST['sPackage'];
             $account->domain = $_POST['tDomain'];
             $account->theme = $_POST['tTheme'];
-
-            if ( !$account->live && isset( $_POST['cbLive'] ) && $_POST['cbLive'] ) {
-                // Get Server
-                $server = new Server();
-                $server->get( $account->server_id );
-
-                // SSH Connection
-                $ssh_connection = ssh2_connect( $server->ip, 22 );
-                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
-
-                $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
-                $domain = url::domain( $account->domain, false );
-
-                ssh2_exec( $ssh_connection, "sed -i 's/\[domain\]/$domain/g' /home/$username/public_html/.htaccess" );
-                ssh2_exec( $ssh_connection, "sed -i 's/#Rewrite/Rewrite/g' /home/$username/public_html/.htaccess" );
-
-                $account->live = 1;
-            } else {
-                $account->live = isset( $_POST['cbLive'] );
-            }
+            $account->live = isset( $_POST['cbLive'] );
 
             $account->user_id_updated = $this->user->id;
 
@@ -873,7 +854,7 @@ class AccountsController extends BaseController {
 
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $full_domain_name, $server->nodebalancer_ip, '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'MX', $full_domain_name, '0 mail.' . $full_domain_name, '14400', url::domain($account->domain, false));
-                $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"', '14400', url::domain($account->domain, false));
+                $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.219 ~all"', '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'mail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'CNAME', 'www.' . $full_domain_name, $full_domain_name, '14400', url::domain($account->domain, false));
                 $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'ftp.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
@@ -952,7 +933,7 @@ class AccountsController extends BaseController {
                 } else {
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'A', $full_domain_name, $server->nodebalancer_ip, '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'MX', $full_domain_name, '0 mail.' . $full_domain_name, '14400', url::domain($account->domain, false));
-                    $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:199.79.48.137 ip4:208.53.48.135 ip4:199.79.48.25 ip4:162.218.139.218 ip4:162.218.139.218 ~all"', '14400', url::domain($account->domain, false));
+                    $cloudflare->create_dns_record($cloudflare_zone_id, 'TXT', $full_domain_name, '"v=spf1 a mx ip4:207.97.247.132 ip4:204.232.171.66 ~all"', '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'mail.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'CNAME', 'www.' . $full_domain_name, $full_domain_name, '14400', url::domain($account->domain, false));
                     $cloudflare->create_dns_record($cloudflare_zone_id, 'A', 'ftp.' . $full_domain_name, $server->ip, '14400', url::domain($account->domain, false));

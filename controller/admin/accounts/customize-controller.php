@@ -149,9 +149,6 @@ class CustomizeController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse($this->verified());
 
-        // We need backslashes
-        $_POST['less'] = addcslashes( $_POST['less'], '\\');
-
         // Get account
         if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_css = $_POST['less'];
