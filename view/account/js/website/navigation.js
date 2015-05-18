@@ -4,7 +4,7 @@ var Navigation = {
 
     , init: function() {
         $('#navigation').nestable( {
-            maxDepth: 2,
+            maxDepth: 3,
             dropCallback: function(dropped) {
                 if(dropped.destParent && dropped.destParent[0] && dropped.destParent[0].dataset && dropped.destParent[0].dataset.id){
                     var id=dropped.destParent[0].dataset.id;
@@ -22,7 +22,8 @@ var Navigation = {
                             .data('id', element_id )
                             .find('.dd3-content').prepend( name ).end()
                             .find('.page-url').prepend( url ).end()
-                            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( url + '|' + name ).end());
+                            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( url + '|' + name ).end()
+                        );
 
                         Navigation.updateTree();
                     }

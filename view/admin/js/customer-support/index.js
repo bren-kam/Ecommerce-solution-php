@@ -36,6 +36,12 @@ var InboxNavigation = {
         $('#refresh').click(InboxNavigation.getTickets);
 
         setInterval(InboxNavigation.getTickets, 30000);
+
+        var hashTicketId = window.location.hash;
+        if (hashTicketId.indexOf('!tid=') >= 0 ) {
+            ticketId = hashTicketId.substr(6);
+            Ticket.show(ticketId);
+        }
     }
 
     , getTickets: function() {
@@ -157,6 +163,8 @@ var Ticket = {
             var currentTicket = response.ticket;
             Ticket.currentTicket = currentTicket;
 
+            window.location.hash = '!tid=' + currentTicket.id;
+
             // Ticket --
             var statusText = 'Open';
             if (currentTicket.status == 1) {
@@ -173,6 +181,10 @@ var Ticket = {
                 Ticket.container.find('.ticket-priority').html('<i class="fa fa-circle ticket-open" title="Low Priority"></i> ');
             }
 
+            // we need to reset it as loading from hashbang fails
+            Ticket.container.find('#assign-to').selectpicker('val', 0);
+            Ticket.container.find('#change-status').selectpicker('val', 0);
+            Ticket.container.find('#change-priority').selectpicker('val', 0);
             Ticket.container.find('#assign-to').selectpicker('val', currentTicket.assigned_to_user_id);
             Ticket.container.find('#change-status').selectpicker('val', currentTicket.status);
             Ticket.container.find('#change-priority').selectpicker('val', currentTicket.priority);
@@ -336,11 +348,6 @@ var Ticket = {
                 GSR.defaultAjaxResponse( response );
                 if ( response.success ) {
                     InboxNavigation.getTickets();
-                    //if ( status == 1 ) {  // closed
-                    //    $('#compose').click();
-                    //} else {
-                    //    Ticket.reload();
-                    //}
                 }
             }
         );
@@ -360,7 +367,6 @@ var Ticket = {
                 GSR.defaultAjaxResponse( response );
                 if ( response.success ) {
                     InboxNavigation.getTickets();
-                    Ticket.reload();
                 }
             }
         );
@@ -452,6 +458,7 @@ var TicketCommentForm = {
         for (var i in CKEDITOR.instances) {
             CKEDITOR.instances[i].updateElement();
         }
+        form.find(':submit').prop('disabled', true);
         $.post(
             '/customer-support/add-comment/'
             , form.serialize()
@@ -461,6 +468,7 @@ var TicketCommentForm = {
     }
 
     , addComplete: function( response ) {
+        $('#send-comment-form').find(':submit').prop('disabled', false);
         GSR.defaultAjaxResponse( response );
         if ( response.success ) {
             Ticket.reload();
@@ -478,6 +486,8 @@ var TicketCommentForm = {
         $('#show-cc').show();
         $('#bcc-address').parent().hide();
         $('#show-bcc').show();
+        $('input[name=private]').prop('checked', false);
+        $('input[name=include-whole-thread]').prop('checked', false);
     }
 
     , delete: function () {
@@ -726,7 +736,9 @@ var NewTicketForm = {
 }
 
 
-jQuery(InboxNavigation.init);
-jQuery(Ticket.init);
-jQuery(TicketCommentForm.init);
-jQuery(NewTicketForm.init);
+jQuery(function() {
+    Ticket.init();
+    TicketCommentForm.init();
+    NewTicketForm.init();
+    InboxNavigation.init();
+});

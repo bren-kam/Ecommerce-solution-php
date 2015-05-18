@@ -653,32 +653,27 @@ class WebsiteController extends BaseController {
             ->javascript( 'jquery.nestable', 'website/navigation' );
 
         if ( $this->verified() ) {
-            $navigation = array();
             $tree = json_decode( $_POST['tree'], true );
 
-            if ( $tree ) {
+            $get_navigation = function($tree, $data) use (&$get_navigation){
+                $navigation = [];
                 foreach ( $tree as $tree_node ) {
-                    $page = $_POST['navigation'][$tree_node['id']];
+                    $page = $data[$tree_node['id']];
                     list( $url, $name ) = explode( '|', $page );
                     $name = htmlentities( $name );
                     $navigation_node = compact( 'url', 'name' );
 
-                    // children - sub items
-                    // we only accept one child level, so we are ok with this
                     if ( isset( $tree_node['children'] ) ) {
-                        $navigation_node['children'] = array();
-                        foreach ( $tree_node['children'] as $child_node ) {
-                            $sub_page = $_POST['navigation'][$child_node['id']];
-                            list( $url, $name ) = explode( '|', $sub_page );
-                            $name = htmlentities( $name );
-                            $navigation_node['children'][] = compact( 'url', 'name' );
-                        }
-                        if ( empty( $navigation_node['children'] ) )
-                            unset( $navigation_node['children'] );
+                        $navigation_node['children'] = $get_navigation($tree_node['children'], $data);
                     }
 
                     $navigation[] = $navigation_node;
                 }
+                return $navigation;
+            };
+
+            if ( $tree ) {
+                $navigation = $get_navigation($tree, $_POST['navigation']);
             }
 
             $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
@@ -771,6 +766,9 @@ class WebsiteController extends BaseController {
             , 'images-alt'
             , 'logo-link'
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
+            ,'slideshow-fixed-width'
+            , 'slideshow-categories'
+            , 'sidebar-left'
         );
 
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
@@ -904,6 +902,10 @@ class WebsiteController extends BaseController {
         $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
 
         $form->add_field( 'text', 'Product Price Max. Decimals', 'price-decimals', $settings['price-decimals'] );
+
+        $form->add_field( 'checkbox', _('Fixed-width Slideshow'), 'slideshow-fixed-width', $settings['slideshow-fixed-width'] );
+        $form->add_field( 'checkbox', _('Slideshow w/ Categories'), 'slideshow-categories', $settings['slideshow-categories'] );
+        $form->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'sidebar-left', $settings['sidebar-left'] );
 
         if ( $form->posted() ) {
             $new_settings = array();
@@ -1095,6 +1097,9 @@ class WebsiteController extends BaseController {
 
         $response->add_response( 'jquery', jQuery::getResponse() );
         $this->log( 'delete-website-page', $this->user->contact_name . ' deleted a website page on ' . $this->user->account->title );
+        
+        // Add the response
+        $response->add_response( 'refresh', 1 );
 
         return $response;
     }
@@ -2748,5 +2753,188 @@ class WebsiteController extends BaseController {
             ->set( compact( 'pages', 'top_site_navigation' ) );
     }
 
+    /**
+     * Add/Edit A Company
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function stylesheet() {
+        // Get Account
+        $account = new Account();
+        $account->get( $this->user->account->id );
+
+        if ( $this->user->account->id != Account::TEMPLATE_UNLOCKED ) {
+            $unlocked = new Account();
+            $unlocked->get( Account::TEMPLATE_UNLOCKED );
+            $unlocked_less = $unlocked->get_settings('less');
+        } else {
+            $unlocked_less = false;
+        }
+
+        $less = $account->get_settings('less');
+
+        $this->resources
+            ->css('website/css')
+            ->javascript('website/css')
+            ->javascript_url( Config::resource('ace-js') );
+
+        return $this->get_template_response( 'css' )
+            ->kb( 10 )
+            ->menu_item('website/settings/css')
+            ->set( compact( 'less', 'account', 'unlocked_less' ) )
+            ->add_title( _('LESS CSS') );
+    }
+
+    /**
+     * Save LESS
+     *
+     * @return AjaxResponse
+     */
+    protected function save_less() {
+        set_time_limit(3600);
+
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse($this->verified());
+
+        // We need backslashes
+        $_POST['less'] = addcslashes( $_POST['less'], '\\');
+
+        // Get account
+        if ( $this->user->account->id == Account::TEMPLATE_UNLOCKED ) {
+            $less_css = $_POST['less'];
+        } else {
+            $unlocked = new Account();
+            $unlocked->get( Account::TEMPLATE_UNLOCKED );
+            $unlocked_less = $unlocked->get_settings('less');
+            $less_css = $unlocked_less . $_POST['less'];
+        }
+
+        $account = new Account();
+        $account->get($this->user->account->id);
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        library('lessc.inc');
+        $less = new lessc;
+        $less->setFormatter("compressed");
+
+        try {
+            $css = $less->compile( $less_css );
+        } catch (exception $e) {
+            $response->notify( 'Error: ' . $e->getMessage(), false );
+            return $response;
+        }
+
+        $account->set_settings( array( 'less' => $_POST['less'], 'css' => $css ) );
+
+        $response->notify( 'LESS/CSS has been successfully updated!' );
+
+        // Update all other LESS sites
+        if ( $this->user->account->id == Account::TEMPLATE_UNLOCKED ) {
+            $less_accounts = $account->get_less_sites();
+
+            /**
+             * @var Account $less_account
+             * @var string $unlocked_less
+             */
+            if ( !empty( $less_accounts ) )
+                foreach ( $less_accounts as $less_account ) {
+                    if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
+                        continue;
+
+                    $less = new lessc;
+                    $less->setFormatter("compressed");
+                    $site_less = $less_account->get_settings('less');
+
+                    $less_account->set_settings( array(
+                        'css' => $less->compile( $less_css . $site_less )
+                    ));
+
+                    unset( $less );
+                    unset( $site_less );
+                    unset( $less_account );
+                    gc_collect_cycles();
+                }
+        }
+
+        return $response;
+    }
+
+    /**
+     * Add/Edit Favicon
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function favicon() {
+        $favicon = $this->user->account->get_settings("favicon");
+        $this->resources->javascript('fileuploader', 'website/favicon')
+            ->css( 'website/favicon' );
+
+        return $this->get_template_response('favicon')
+            ->menu_item('website/settings/favicon')
+            ->set(compact('favicon', 'account'))
+            ->add_title(_('Favicon'));
+    }
+
+    /**
+     * Upload Favicon
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_favicon() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse($this->verified());
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+        $account_file = new AccountFile();
+
+        // Create uploader
+        $uploader = new qqFileUploader( array( 'ico' ), 6144000 );
+
+        // Upload file
+        $result = $uploader->handleUpload('gsr_');
+
+        $response->check( $result['success'], _('Failed to upload favicon') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() ) {
+            $response->add_response( "error", $result["error"] );
+            return $response;
+        }
+
+        //Create favicon name
+        $favicon_name =  'favicon.ico';
+
+        // Create the different versions we need
+        $favicon_dir = $this->user->account->id . '/favicon/';
+
+        // Normal and large
+        $file_url =  $file->upload_file( $result['file_path'], $favicon_name, $favicon_dir );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
+        // Create account file
+        $account_file->website_id = $this->user->account->id;
+        $account_file->file_path = $file_url;
+        $account_file->create();
+
+        $this->user->account->set_settings( array( 'favicon' => $file_url ) );
+
+        $response->add_response( 'refresh', true );
+
+        return $response;
+    }
 
 }

@@ -2491,5 +2491,362 @@ class ProductsController extends BaseController {
         return new RedirectResponse( "/products/settings/" );
     }
 
+    /**
+     * Import
+     *
+     * @return TemplateResponse
+     */
+    protected function import() {
+        $this->resources
+            ->css( 'products/import' )
+            ->javascript( 'fileuploader', 'products/import' );
+
+        $brand = new Brand();
+        $brands = $brand->get_all();
+
+        return $this->get_template_response( 'import' )
+            ->kb( 0 )
+            ->select( 'products', 'products/import' )
+            ->add_title( _('Import') )
+            ->set( compact( 'brands' ) );
+    }
+
+    /**
+     * Import Products
+     *
+     * @return AjaxResponse
+     */
+    protected function prepare_import() {
+        set_time_limit( 30 * 60 );
+        ini_set( 'memory_limit', '512M' );
+
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error, return
+        if ( $response->has_error() )
+            return $response;
+
+        // All imported products are of the following brand
+        $brand_id = (int) $_GET['brand_id'];
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Upload file
+        $uploader = new qqFileUploader( array( 'csv', 'xls' ), 26214400 );
+        $result = $uploader->handleUpload( 'gsrs_' );
+
+        // Setup variables
+        $file_extension = strtolower( f::extension( $_GET['qqfile'] ) );
+
+        // get data regarding file extension
+        switch ( $file_extension ) {
+            case 'xls':
+                // Load excel reader
+                library('Excel_Reader/Excel_Reader');
+                $er = new Excel_Reader();
+                // Set the basics and then read in the rows
+                $er->setOutputEncoding('ASCII');
+                $er->read( $result['file_path'] );
+
+                $rows = $er->sheets[0]['cells'];
+
+                break;
+
+            case 'csv':
+                // Make sure it's opened properly
+                $response->check( $handler = fopen( $result['file_path'], 'r' ), _('An error occurred while trying to read your file.') );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+
+                // Loop through the rows
+                while ( $row = fgetcsv( $handler ) ) {
+                    $rows[] = $row;
+                }
+
+                fclose( $handler );
+
+                break;
+
+            default:
+                // Display an error
+                $response->check( false, _('Only CSV and Excel file types are accepted. File type: ') . $file_extension );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+                break;
+        }
+
+        $response->check( is_array( $rows ), _('There were no emails to import') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        foreach ($rows as &$r)
+            foreach ($r as &$c)
+                $c = trim($c);
+
+        $headers = array_shift( $rows );
+
+        // Industries
+        $industry = new Industry();
+        $industries = $industry->get_all();
+
+        // Categories
+        $category = new Category();
+        $categories = $category->get_all();
+        $categories_by_name = array();
+        foreach ( $categories as $category ) {
+            if ( $category->has_children() )
+                continue;
+
+            $category_string = $category->name;
+            $parents = $category->get_all_parents( $category->id );
+
+            foreach ( $parents as $parent_category ) {
+                $category_string = $parent_category->name . ' > ' . $category_string;
+            }
+
+            $categories_by_name[$category_string] = $category->id;
+        }
+        ksort( $categories_by_name );
+
+        // Our products to import
+        $products = array();
+        // Products that won't be imported
+        $skipped_products = array();
+        // # of Products that will update
+        $to_update = 0;
+
+        foreach ( $rows as &$values ) {
+            if ( count($headers) == count($values) ) {
+                $r = array_combine( $headers, $values );
+            } else {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Incomplete row. ";
+                $skipped_products[] = $r;
+                continue;
+            }
+
+            // basic input validation
+            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image' );
+            $valid = true;
+            foreach ($required_keys as $k) {
+                if ( empty( $r[$k] ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Required field '$k'. ";
+                    $valid = false;
+                }
+            }
+
+            $r['status'] = strtolower( $r['status'] );
+            if ( empty( $r['status'] ) )
+                $r['status'] = 'in-stock';
+            $available_status = array( 'in-stock', 'out-of-stock', 'discontinued' );
+            if ( !in_array( $r['status'], $available_status ) ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Invalid status '{$r['status']}'. ";
+                $valid = false;
+            }
+
+            $category_id = null;
+            if ( isset( $categories_by_name[$r['category']] ) ) {
+                $category_id = $categories_by_name[$r['category']];
+            }
+
+            if ( !$category_id ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Category not found '{$r['category']}'. ";
+                $valid = false;
+            }
+
+            $industry_id = null;
+            foreach ( $industries as $i ) {
+                if ( strcasecmp($i->name, $r['industry']) === 0) {
+                    $industry_id = $i->industry_id;
+                    break;
+                }
+            }
+
+            if ( !$industry_id ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Industry not found '{$r['industry']}'. ";
+                $valid = false;
+            }
+
+            if ( !$valid ) {
+                $skipped_products[] = $r;
+                continue;
+            }
+
+            // see if the product exists
+            $matching_product = new Product();
+            $matching_product->get_by_sku_by_brand( $r['sku'], $brand_id, $this->user->account->id );
+            // we will only load images for new products
+//            if ( !$matching_product->id ) {
+
+            $image_list = explode(',', $r['image']);
+            foreach( $image_list as $k => $image ) {
+                $image = trim($image);
+
+                if ( !regexp::match( $image, 'url' ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+                    $valid = false;
+                }
+
+                // we ensure the url is decoded before encode
+                $image = rawurldecode( $image );
+                // encode url
+                $url_parts = parse_url( $image );
+                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
+                foreach ( $path_parts as &$part)
+                    $part = rawurlencode( $part );
+                $url_parts['path'] = implode( '/', $path_parts );
+                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
+
+                // check if remote file exists
+                $file_exists = curl::check_file( $image );
+                if ( !$file_exists ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+                    $skipped_products[] = $r;
+                    continue 2;
+                }
+            }
+            //} else {
+            if ( $matching_product->id )
+                $to_update++;
+            //}
+
+            $product = array_slice($r, 0, 9);
+
+            $product['price_map'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_map']);
+            $product['price_map'] = $product['price_map'] ? $product['price_map'] : 0;
+            $product['price_wholesale'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_wholesale']);
+            $product['price_wholesale'] = $product['price_wholesale'] ? $product['price_wholesale'] : 0;
+            $product['category_id'] = $category_id;
+            $product['industry_id'] = $industry_id;
+            $product['brand_id'] = $brand_id;
+            $product['image'] = $r['image'];
+            $product['product_specifications'] = array();
+
+            // Set product specifications
+            $product_specifications = array_slice($r, 9);
+            foreach ( $product_specifications as $spec_name => $spec_value ) {
+                $product['product_specifications'][] = array( ucwords($spec_name), $spec_value );
+            }
+
+            // Append product
+            $products[] = $product;
+        }
+
+        $product = new Product();
+        $product_import = new ProductImport();
+        $product_import->delete_all( $this->user->account->id );
+
+        foreach ( $products as $pi ) {
+            $product_import = new ProductImport();
+            $product_import->category_id = $pi['category_id'];
+            $product_import->brand_id = $pi['brand_id'];
+            $product_import->industry_id = $pi['industry_id'];
+            $product_import->website_id = $this->user->account->id;
+            $product_import->name = ucwords( $pi['name'] );
+            $product_import->slug = format::slug( $pi['name'] );
+            $product_import->description = $pi['description'];
+            $product_import->status = $pi['status'];
+            $product_import->sku = $pi['sku'];
+            $product_import->price = $pi['price_wholesale'];
+            $product_import->price_min = $pi['price_map'];
+            $product_import->product_specifications = json_encode( $pi['product_specifications'] );
+            $product_import->image = $pi['image'];
+            $product_import->create();
+        }
+
+
+        // Add the response
+        $response->add_response( 'count', count($rows) );
+        $response->add_response( 'count_skipped', count($skipped_products) );
+        $response->add_response( 'count_to_import', count($products) );
+        $response->add_response( 'count_to_update', $to_update );
+        $response->add_response( 'skipped_rows', $skipped_products );
+
+        return $response;
+    }
+
+    /**
+     * Confirm Import
+     *
+     * @return RedirectResponse
+     */
+    protected function confirm_import() {
+        set_time_limit( 30 * 60 );
+        ini_set( 'memory_limit', '512M' );
+
+        if ( !$this->verified() ) {
+            return new RedirectResponse( '/products/' );
+        }
+
+        $product_import = new ProductImport();
+        $products = $product_import->get_all( $this->user->account->id );
+
+        foreach ( $products as $p ) {
+
+            $product = new Product();
+            $product->get_by_sku_by_brand( $p->sku, $p->brand_id, $this->user->account->id );
+            $product->category_id = $p->category_id;
+            $product->brand_id = $p->brand_id;
+            $product->industry_id = $p->industry_id;
+            $product->website_id = $this->user->account->id;
+            $product->name = $p->name;
+            $product->slug = $p->slug;
+            $product->status = $p->status;
+            $product->description = $p->description;
+            $product->sku = $p->sku;
+            $product->price = $p->price;
+            $product->price_min = $p->price_min;
+            $product->user_id_modified = $this->user->id;
+            $product->weight = 0;
+
+            // a new product?
+            if ( $product->id == null ) {
+                $product->user_id_created = $this->user->id;
+
+                $product->create();
+
+                $product->publish_visibility = 'public';
+                $product->publish_date = date( 'Y-m-d H:i:s' );
+            } else {
+                // Override Images
+                $product->delete_images();
+            }
+
+            $industry = format::slug( $p->industry_name );
+            $product->industry = $industry;
+
+            $image_list = explode(',', $p->image);
+            $product_images = [];
+            foreach( $image_list as $k => $image ) {
+                $image = trim($image);
+                $slug = f::strip_extension( f::name( $image ) );
+                $image_name = $product->upload_image( $image, $slug, $industry );
+                $product_images[] = $image_name;
+            }
+            $product->add_images( $product_images );
+
+            $product->save();
+
+            $product_specifications = json_decode( $p->product_specifications, true );
+            $product->delete_specifications(); // should I ?
+            if ( $product_specifications ) {
+                $product->add_specifications($product_specifications);
+            }
+
+        }
+        $product_import->delete_all( $this->user->account->id );
+
+        $this->notify( _( 'Your products has been imported successfully!' ) );
+        return new RedirectResponse( '/products/import/' );
+    }
+
+
 
 }
