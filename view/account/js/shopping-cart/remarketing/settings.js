@@ -13,6 +13,9 @@ var PopupForm = {
         $('#coupon-image').mouseleave(PopupForm.hideDeleteCoupon);
         $('#coupon-image').mouseenter(PopupForm.showDeleteCoupon);
         $('#delete-coupon').click(PopupForm.deleteCoupon);
+
+        autosize($('#popup-title'));
+        autosize($('#popup-text'));
     }
 
     /**

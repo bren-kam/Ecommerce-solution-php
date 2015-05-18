@@ -192,7 +192,7 @@ class RemarketingController extends BaseController {
             return new RedirectResponse('/shopping-cart/remarketing/settings/');
         }
 
-        $this->resources->javascript('fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
+        $this->resources->javascript('autosize.min', 'fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
             ->css('media-manager', 'colpick', 'shopping-cart/remarketing/settings');
 
         return $this->get_template_response('settings')
