@@ -2,6 +2,10 @@
   width: 700px;
   margin: 0 auto 75px;
 }
+#popup-editor #popup-popover {
+  color: #a1a1a1;
+  font-size: 16px;
+}
 #popup-editor #popup-image {
   border: 2px solid #ddd;
   margin-bottom: 5px;
