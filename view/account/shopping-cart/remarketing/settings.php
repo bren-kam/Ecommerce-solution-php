@@ -8,13 +8,27 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
         <section class="panel">
             <header class="panel-heading">
                 Settings
+
+                <p class="pull-right">
+                    <?php if ( $settings['remarketing-enabled'] ): ?>
+                        <a class="btn btn-default" href="/shopping-cart/remarketing/disable/?_nonce=<?php echo nonce::create('disable') ?>">Remarketing is Enabled, disable it now.</a>
+                    <?php else: ?>
+                        <a class="btn btn-primary" href="/shopping-cart/remarketing/enable/?_nonce=<?php echo nonce::create('enable') ?>">Remarketing is Disabled, enable it now.</a>
+                    <?php endif; ?>
+                </p>
             </header>
             <div class="panel-body">
 
                 <form method="post" role="form" action="">
 
                     <div id="popup-editor">
-                        <h3>Email Capture Popup</h3>
+                        <h3>
+                            Email Capture Popup
+
+                            <a class="popover-container" href="javascript:;" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-title="What is this." data-content="Use this popup to capture email data and send reminders if they abandon the site.">
+                                <span class="glyphicon glyphicon-question-sign"></span>
+                            </a>
+                        </h3>
 
                         <div id="popup-image">
                             <a href="javascript:;"
@@ -23,7 +37,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                     data-search-url="<?php echo $search_url ?>"
                                     data-delete-url="<?php echo $delete_url ?>"
                                     data-image-target="#popup-image">
-                                <img class="img-responsive" src="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '/images/email-capture-banner.png' ?>" />
+                                <img class="img-responsive" src="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '/images/remarketing-default-popup.jpg' ?>" />
                                 <input type="hidden" name="popup-image" value="<?php echo $settings['remarketing-popup-image'] ? $settings['remarketing-popup-image'] : '' ?>" />
                                 <span class="upload-tooltip">700x200px <i class="fa fa-upload"></i></span>
                             </a>
@@ -50,7 +64,6 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <div class="row">
                             <div class="col-lg-6">
                                 <select class="form-control" name="idle-seconds">
-                                    <option value="-1">Disable Email Capture Popup</option>
                                     <?php for($i=60; $i<=1800; $i+=60): ?>
                                         <option value="<?php echo $i ?>" <?php if ($settings['remarketing-idle-seconds'] == $i) echo 'selected' ?>>Popup after <?php echo $i/60; ?> min</option>
                                     <?php endfor; ?>
@@ -73,7 +86,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                data-search-url="<?php echo $search_url ?>"
                                data-delete-url="<?php echo $delete_url ?>"
                                data-image-target="#coupon-image">
-                                <img class="img-responsive" src="<?php echo $settings['remarketing-coupon'] ? $settings['remarketing-coupon'] : '//placehold.it/700x200/eee/a1a1a1&text=+' ?>" />
+                                <img class="img-responsive" src="<?php echo $settings['remarketing-coupon'] ? $settings['remarketing-coupon'] : '/images/remarketing-default-coupon.jpg' ?>" />
                                 <input type="hidden" name="coupon-path" value="<?php echo $settings['remarketing-coupon'] ?>" />
                                 <span class="upload-tooltip" style="right: 33%;">Upload Coupon <i class="fa fa-upload"></i></span>
                             </a>
@@ -83,7 +96,12 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
                     <?php for($email_number=1; $email_number<=3; $email_number++): $email_number_text = str_replace([1, 2, 3], ['First', 'Second', 'Third'], $email_number ); ?>
                         <div class="email-settings">
-                            <h3><?php echo $email_number_text ?> Email</h3>
+                            <h3>
+                                <?php echo $email_number_text ?> Email
+                                <a class="popover-container" href="javascript:;" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-title="What is this." data-content="Here you can design the email that gets sent to users who abandoned their carts.">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </a>
+                            </h3>
 
                             <div class="checkbox">
                                 <label>
@@ -101,6 +119,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                     <?php for($i=3600; $i<=3600*24; $i+=3600): ?>
                                         <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
                                     <?php endfor; ?>
+                                    <?php for($i=3600*48; $i<=3600*96; $i+=3600*24): ?>
+                                        <option value="<?php echo $i ?>" <?php if ($settings["remarketing-email{$email_number}-delay"] == $i) echo 'selected' ?>>Send <?php echo $email_number_text ?> email after <?php echo $i / 3600 ?> hour(s) abandoned.</option>
+                                    <?php endfor; ?>
                                 </select>
                             </div>
 
@@ -111,7 +132,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                    data-search-url="<?php echo $search_url ?>"
                                    data-delete-url="<?php echo $delete_url ?>"
                                    data-image-target="#email<?php echo $email_number?>-header">
-                                    <img class="img-responsive" src="<?php echo $settings["remarketing-email{$email_number}-header"] ? $settings["remarketing-email{$email_number}-header"] : "//placehold.it/640x180/eee/a1a1a1&text=+" ?>" />
+                                    <img class="img-responsive" src="<?php echo $settings["remarketing-email{$email_number}-header"] ? $settings["remarketing-email{$email_number}-header"] : "/images/remarketing-default-email.jpg" ?>" />
                                     <input type="hidden" name="email<?php echo $email_number?>-header" value="<?php echo $settings["remarketing-email{$email_number}-header"] ?>" />
                                     <span class="upload-tooltip">640x180px <i class="fa fa-upload"></i></span>
                                 </a>

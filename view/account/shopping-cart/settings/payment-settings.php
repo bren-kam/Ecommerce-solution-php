@@ -284,7 +284,7 @@ $nonce = nonce::create('payment_settings');
                     </div>
 
                     <p>
-                        <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal">Test PayPal Credentials</a>
+                        <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal" ajax="1">Test PayPal Credentials</a>
                     </p>
 
                     <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
