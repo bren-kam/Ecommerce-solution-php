@@ -17,7 +17,7 @@ var PopupForm = {
         autosize($('#popup-title'));
         autosize($('#popup-text'));
 
-        $('#popup-popover').popover();
+        $('.popover-container').popover();
     }
 
     /**

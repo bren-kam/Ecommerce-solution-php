@@ -25,10 +25,9 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                         <h3>
                             Email Capture Popup
 
-                            <a id="popup-popover" href="javascript:;" data-container="body" data-toggle="popover" data-placement="right" data-title="What is this." data-content="Use this popup to capture email data and send reminders if they abandon the site.">
+                            <a class="popover-container" href="javascript:;" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-title="What is this." data-content="Use this popup to capture email data and send reminders if they abandon the site.">
                                 <span class="glyphicon glyphicon-question-sign"></span>
                             </a>
-
                         </h3>
 
                         <div id="popup-image">
@@ -97,7 +96,12 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 
                     <?php for($email_number=1; $email_number<=3; $email_number++): $email_number_text = str_replace([1, 2, 3], ['First', 'Second', 'Third'], $email_number ); ?>
                         <div class="email-settings">
-                            <h3><?php echo $email_number_text ?> Email</h3>
+                            <h3>
+                                <?php echo $email_number_text ?> Email
+                                <a class="popover-container" href="javascript:;" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="right" data-title="What is this." data-content="Here you can design the email that gets sent to users who abandoned their carts.">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </a>
+                            </h3>
 
                             <div class="checkbox">
                                 <label>
