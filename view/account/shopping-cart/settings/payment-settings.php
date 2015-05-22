@@ -12,7 +12,7 @@ $nonce = nonce::create('payment_settings');
 
                 <p class="pull-right">
                     <?php if ( $settings['payment-gateway-status'] == 1 ): ?>
-                        <a class="btn btn-primary" href="/shopping-cart/settings/payment-test-mode-disable/?_nonce=<?php echo nonce::create('payment_test_mode_disable') ?>">Shopping Cart is LIVE, put it TEST MODE.</a>
+                        <a class="btn btn-primary" href="/shopping-cart/settings/payment-test-mode-disable/?_nonce=<?php echo nonce::create('payment_test_mode_disable') ?>">Shopping Cart is LIVE, put it in TEST MODE.</a>
                     <?php else: ?>
                         <a class="btn btn-default" href="/shopping-cart/settings/payment-test-mode-enable/?_nonce=<?php echo nonce::create('payment_test_mode_enable') ?>">Shopping cart is in TEST MODE, make it LIVE.</a>
                     <?php endif; ?>
