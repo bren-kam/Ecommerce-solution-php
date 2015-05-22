@@ -38,6 +38,14 @@ class CronsController extends BaseController {
     }
 
     /**
+     * Delete Old Action Log
+     */
+    public function cleanup_action_log() {
+        $action_log = new ActionLog();
+        $action_log->cleanup();
+    }
+
+    /**
      * Hourly
      */
     public function facebook_posts() {
