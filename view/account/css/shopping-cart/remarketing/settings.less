@@ -3,12 +3,13 @@
   margin: 0 auto 75px;
 
   #popup-image {
-    border: 3px dashed #ddd;
+    border: 2px solid #ddd;
     margin-bottom: 5px;
+    position: relative;
   }
 
   #popup-body {
-    border: 3px solid #ddd;
+    border: 2px solid #ddd;
     text-align: center;
     padding: 15px;
     margin-bottom: 5px;
@@ -31,18 +32,32 @@
   }
 
   #popup-form {
-    border: 3px solid #ddd;
+    border: 2px solid #ddd;
     padding: 15px;
     height: 150px;
     position: relative;
 
     #popup-fields {
       text-align: center;
-      .popup-field {
+      margin-top: 20px;
+      font-size: 16px;
+      .popup-field-left {
+        margin-right: 10px;
+        padding-top: 7px;
         height: 34px;
         width: 40%;
         display: inline-block;
         background-color: #ddd;
+        color: white;
+      }
+      .popup-field-right {
+        margin-left: 10px;
+        padding-top: 7px;
+        height: 34px;
+        width: 40%;
+        display: inline-block;
+        background-color: #ddd;
+        color: white;
       }
     }
 
@@ -59,6 +74,7 @@
       padding-top: 25px;
       color: white;
       z-index: 1;
+      border: 2px solid #ddd;
     }
   }
 
@@ -69,7 +85,7 @@
   margin: 0 auto;
 
   #coupon-image {
-    border: 3px dashed #ddd;
+    border: 2px solid #ddd;
     margin-top: 15px;
     margin-bottom: 15px;
     position: relative;
@@ -82,4 +98,55 @@
       display: none;
     }
   }
+}
+
+.email-settings {
+  width: 640px;
+  margin: 0 auto;
+
+  h3 {
+    margin-top: 40px;
+  }
+
+  .email-header {
+    border: 2px solid #ddd;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    position: relative;
+
+    .delete {
+      position: absolute;
+      color: red;
+      top: 0px;
+      right: 5px;
+      display: none;
+    }
+  }
+
+}
+
+.upload-tooltip {
+  padding: 15px 30px;
+  text-align: center;
+  background: #000;
+  color: white;
+  font-size: 18px;
+  opacity: 0.7;
+  font-weight: 600;
+  border-radius: 25px;
+  position: absolute;
+  top: 35%;
+  right: 37%;
+
+  i {
+    margin-left: 15px;
+  }
+}
+
+h3 {
+  a {
+    color: #a1a1a1;
+    font-size: 16px;
+  }
+
 }

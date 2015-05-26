@@ -204,13 +204,13 @@
                             <?php endif; ?>
                         </div>
                         <div class="col-lg-1 text-right">
-                            $<?php $item_price = $item->price + $additional_price; echo number_format( $item_price, 2 ); ?>
+                            $<?php $item_price = $item->price + $additional_price; echo number_format( $item_price / $item->quantity, 2 ); ?>
                         </div>
                         <div class="col-lg-1 text-right">
                             <?php echo number_format( $item->quantity ); ?>
                         </div>
                         <div class="col-lg-1 text-right">
-                            $<?php echo number_format( $item_price * $item->quantity, 2 ); ?>
+                            $<?php echo number_format( $item_price, 2 ); ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

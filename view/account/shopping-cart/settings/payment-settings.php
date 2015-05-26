@@ -9,6 +9,14 @@ $nonce = nonce::create('payment_settings');
         <section class="panel">
             <header class="panel-heading">
                 Payment Settings
+
+                <p class="pull-right">
+                    <?php if ( $settings['payment-gateway-status'] == 1 ): ?>
+                        <a class="btn btn-primary" href="/shopping-cart/settings/payment-test-mode-disable/?_nonce=<?php echo nonce::create('payment_test_mode_disable') ?>">Shopping Cart is LIVE, put it in TEST MODE.</a>
+                    <?php else: ?>
+                        <a class="btn btn-default" href="/shopping-cart/settings/payment-test-mode-enable/?_nonce=<?php echo nonce::create('payment_test_mode_enable') ?>">Shopping cart is in TEST MODE, make it LIVE.</a>
+                    <?php endif; ?>
+                </p>
             </header>
             <div class="panel-body">
 
@@ -125,14 +133,6 @@ $nonce = nonce::create('payment_settings');
                     <div class="row">
                         <div class="col-lg-12">
                             <h4>All Payment Methods</h4>
-
-                            <div class="form-group">
-                                <label for="sStatus">Shopping Cart:</label>
-                                <select class="form-control" id="sStatus" name="sStatus">
-                                    <option value="0" <?php if ( !$settings['payment-gateway-status'] ) echo 'selected'?>>Testing</option>
-                                    <option value="1" <?php if ( $settings['payment-gateway-status'] ) echo 'selected'?>>Live</option>
-                                </select>
-                            </div>
 
                             <div class="form-group">
                                 <label for="sSelectedGateway">Process Credit Card Payments With:</label>
@@ -284,7 +284,7 @@ $nonce = nonce::create('payment_settings');
                     </div>
 
                     <p>
-                        <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal">Test PayPal Credentials</a>
+                        <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal" ajax="1">Test PayPal Credentials</a>
                     </p>
 
                     <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
