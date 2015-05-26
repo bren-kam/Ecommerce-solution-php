@@ -38,6 +38,14 @@ class CronsController extends BaseController {
     }
 
     /**
+     * Delete Old Action Log
+     */
+    public function cleanup_action_log() {
+        $action_log = new ActionLog();
+        $action_log->cleanup();
+    }
+
+    /**
      * Hourly
      */
     public function facebook_posts() {
@@ -608,10 +616,95 @@ class CronsController extends BaseController {
         echo "Finished\n";
     }
 
+    /**
+     * Discontinue Orphan Packages
+     */
     public function discontinue_orphan_packages() {
         $product = new Product();
 
         $product->discontinue_orphan_packages( true );
+    }
+
+    /**
+     * Send Remarketing Emails
+     */
+    public function send_remarketing_emails() {
+        $account = new Account();
+        $website_ids = $account->get_col("SELECT website_id FROM website_settings WHERE `key` = 'remarketing-enabled' AND `value` = 1");
+
+        foreach ( $website_ids as $website_id ) {
+            echo "Looking for pending emails for website $website_id\n";
+
+            $website_carts = $account->get_results("SELECT wc.website_cart_id, wc.name, wc.email, wc.last_remarketing_email, wc.timestamp FROM website_carts wc LEFT JOIN website_orders wo ON wc.website_cart_id = wo.website_cart_id WHERE wo.website_cart_id IS NULL and wc.email IS NOT NULL AND last_remarketing_email < 3 AND wc.website_id = {$website_id}", PDO::FETCH_ASSOC);
+            $account->get($website_id);
+
+            $reply_to = new User();
+            $reply_to->get($account->user_id);
+
+            $settings = $account->get_settings([
+                'remarketing-email1-enabled'
+                , 'remarketing-email1-delay'
+                , 'remarketing-email2-enabled'
+                , 'remarketing-email2-delay'
+                , 'remarketing-email3-enabled'
+                , 'remarketing-email3-delay'
+            ]);
+
+            foreach ( $website_carts as $website_cart ) {
+                echo "> Cart {$website_cart['website_cart_id']} '{$website_cart['name']}' <{$website_cart['email']}>.\n> Emails sent so far: {$website_cart['last_remarketing_email']}\n";
+
+                $email_number = $website_cart['last_remarketing_email'] + 1;
+                if ( $email_number < 1 ) {
+                    $email_number = 1;
+                }
+
+                $email_body_url = "http://{$account->domain}/shopping-cart/remarketing-email/?wcid={$website_cart['website_cart_id']}&email_number={$email_number}";
+                $email_body = '';//file_get_contents($email_body_url);
+
+                if ( strpos($email_body, '<img src="" alt="" border="0"/>') !== FALSE ) {
+                    echo "> > Could not get email for cart {$website_cart['website_cart_id']}, trying again later\n";
+                    echo "> > Please visit {$email_body_url} for more information\n";
+                    continue;
+                }
+
+                $is_enabled = (bool) $settings["remarketing-email{$email_number}-enabled"];
+
+                if ( !$is_enabled ) {
+                    echo "> > Email #{$email_number} disabled. Skipping\n";
+                    continue;
+                }
+
+                $email_delay = (int) $settings["remarketing-email{$email_number}-delay"];
+                echo "> > Ema   il Delay: {$email_delay} seconds.\n";
+
+                $time_elapsed = (new DateTime())->getTimestamp() - (new DateTime($website_cart['timestamp']))->getTimestamp();
+                if ( $time_elapsed < $email_delay ) {
+                    echo "> > We need to wait " . ( $email_delay - $time_elapsed ) . " seconds. Skipping\n";
+                    continue;
+                }
+
+                $email_sent = fn::mail(
+                    $website_cart['email']
+                    , "Your shopping cart is saved!"
+                    , $email_body
+                    , "no-reply@blinkyblinky.me"
+                    , $reply_to->email
+                    , false
+                    , false
+                );
+
+                if ( $email_sent ) {
+                    echo "> > Email #{$email_number} sent!\n";
+                    $account->query("UPDATE website_carts SET last_remarketing_email = {$email_number} WHERE website_cart_id = {$website_cart['website_cart_id']}");
+                } else {
+                    echo "> > There was an error sending email #{$email_number}. Trying again later\n";
+                }
+
+            }
+            echo "Processed " . count($website_carts) . " carts for {$website_id}\n\n";
+        }
+
+        echo "Finished\n";
     }
 
     /**

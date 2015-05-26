@@ -96,8 +96,8 @@ class WebsiteCart extends ActiveRecordBase {
             "SELECT wc.`website_cart_id`, wc.`website_id`, wc.`name`, wc.`total_price`, wo.`website_order_id`, wc.`date_created`, GROUP_CONCAT(p.`name`) products, wc.timestamp
               FROM `website_carts` wc
               LEFT JOIN `website_orders` wo ON ( wo.website_cart_id = wc.website_cart_id )
-              LEFT JOIN `website_cart_items` wci ON ( wc.website_cart_id = wci.website_cart_id )
-              LEFT JOIN `products` p ON ( p.product_id = wci.product_id )
+              INNER JOIN `website_cart_items` wci ON ( wc.website_cart_id = wci.website_cart_id )
+              INNER JOIN `products` p ON ( p.product_id = wci.product_id )
               WHERE 1 $where
               GROUP BY wc.website_cart_id
               $order_by
@@ -141,6 +141,7 @@ class WebsiteCart extends ActiveRecordBase {
                 COUNT(*) as total_count
             FROM website_carts wc
             LEFT JOIN website_orders wo ON ( wc.website_cart_id = wo.website_cart_id )
+            INNER JOIN (SELECT wci.website_cart_id, COUNT(*) FROM website_cart_items wci GROUP BY wci.website_cart_id) wct ON wc.website_cart_id = wct.website_cart_id
             WHERE wc.website_id = :website_id AND wc.email IS NOT NULL AND wc.timestamp >= :since"
             , 'i', [':website_id' => $website_id, ':since' => $since->format('Y-m-d')]
         )->get_row( PDO::FETCH_ASSOC );

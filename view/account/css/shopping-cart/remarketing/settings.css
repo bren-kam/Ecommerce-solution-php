@@ -3,11 +3,12 @@
   margin: 0 auto 75px;
 }
 #popup-editor #popup-image {
-  border: 2px dashed #ddd;
+  border: 2px solid #ddd;
   margin-bottom: 5px;
+  position: relative;
 }
 #popup-editor #popup-body {
-  border: 3px solid #ddd;
+  border: 2px solid #ddd;
   text-align: center;
   padding: 15px;
   margin-bottom: 5px;
@@ -26,13 +27,15 @@
   resize: none;
 }
 #popup-editor #popup-form {
-  border: 3px solid #ddd;
+  border: 2px solid #ddd;
   padding: 15px;
   height: 150px;
   position: relative;
 }
 #popup-editor #popup-form #popup-fields {
   text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
 }
 #popup-editor #popup-form #popup-fields .popup-field-left {
   margin-right: 10px;
@@ -71,7 +74,7 @@
   margin: 0 auto;
 }
 #settings-editor #coupon-image {
-  border: 2px dashed #ddd;
+  border: 2px solid #ddd;
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
@@ -84,11 +87,14 @@
   display: none;
 }
 .email-settings {
-  width: 700px;
+  width: 640px;
   margin: 0 auto;
 }
+.email-settings h3 {
+  margin-top: 40px;
+}
 .email-settings .email-header {
-  border: 2px dashed #ddd;
+  border: 2px solid #ddd;
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
@@ -99,4 +105,24 @@
   top: 0px;
   right: 5px;
   display: none;
+}
+.upload-tooltip {
+  padding: 15px 30px;
+  text-align: center;
+  background: #000;
+  color: white;
+  font-size: 18px;
+  opacity: 0.7;
+  font-weight: 600;
+  border-radius: 25px;
+  position: absolute;
+  top: 35%;
+  right: 37%;
+}
+.upload-tooltip i {
+  margin-left: 15px;
+}
+h3 a {
+  color: #a1a1a1;
+  font-size: 16px;
 }

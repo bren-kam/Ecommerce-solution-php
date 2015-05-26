@@ -91,8 +91,7 @@ class SettingsController extends BaseController {
             $new_settings = [];
             if ( isset($_POST['sStatus']) ) {
                 $new_settings = [
-                    'payment-gateway-status' => $_POST['sStatus']
-                    , 'selected-gateway' => $_POST['sSelectedGateway']
+                    'selected-gateway' => $_POST['sSelectedGateway']
                 ];
             }
             if ( isset($_POST['tAIMLogin']) ) {
@@ -136,6 +135,32 @@ class SettingsController extends BaseController {
             ->set( compact( 'settings', 'stripe_account' ) )
             ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
+    }
+
+    /**
+     * Payment Test Mode Enable
+     * @return RedirectResponse
+     */
+    protected function payment_test_mode_enable() {
+        if ( $this->verified() ) {
+            $this->user->account->set_settings([
+                'payment-gateway-status' => 1
+            ]);
+        }
+        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
+    }
+
+    /**
+     * Payment Test Mode Disable
+     * @return RedirectResponse
+     */
+    protected function payment_test_mode_disable() {
+        if ( $this->verified() ) {
+            $this->user->account->set_settings([
+                'payment-gateway-status' => 0
+            ]);
+        }
+        return new RedirectResponse('/shopping-cart/settings/payment-settings/');
     }
 
     /**

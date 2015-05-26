@@ -223,9 +223,9 @@ class AccountProduct extends ActiveRecordBase {
         $where = '';
         $inner_join = '';
         // Add the where by Brand
-        if ( $brand_id > 0 && $brand_id != 1048576 ) {
+        if ( $brand_id > 0 && $brand_id != Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             $where = ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( $brand_id == 1048576 ) {
+        } else if ( $brand_id == Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         }
@@ -311,9 +311,9 @@ class AccountProduct extends ActiveRecordBase {
         // Add the where
         $inner_join = '';
         // Add the where by Brand
-        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != 1048576 ) {
+        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             $where .= ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( is_numeric($brand_id) && $brand_id == 1048576 ) {
+        } else if ( is_numeric($brand_id) && $brand_id == Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         } else {

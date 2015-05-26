@@ -25,4 +25,11 @@ class ActionLog extends ActiveRecordBase {
             , 'date_created' => $this->date_created
         ), 'iissss' );
     }
+
+    /**
+     * Cleanup
+     */
+    public function cleanup() {
+        $this->query('DELETE FROM `action_log` WHERE `date_created` > DATE_SUB(NOW(), INTERVAL 30 DAY)');
+    }
 }
