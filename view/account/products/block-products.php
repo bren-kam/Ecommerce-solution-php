@@ -3,7 +3,7 @@
         <section class="panel">
 
             <header class="panel-heading">
-                Block Products
+                Hide Products
             </header>
             <div class="panel-body">
                 <?php echo $form ?>
@@ -17,7 +17,7 @@
         <section class="panel">
 
             <header class="panel-heading">
-                Blocked Products
+                Hidden Products
             </header>
             <div class="panel-body">
 
@@ -35,7 +35,7 @@
 
                     <p>
                         <?php nonce::field( 'unblock_products' ) ?>
-                        <button type="submit" class="btn btn-primary">Unblock Products</button>
+                        <button type="submit" class="btn btn-primary">Unhide Products</button>
                     </p>
                 </form>
 

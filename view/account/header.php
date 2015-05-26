@@ -226,7 +226,7 @@
                                 <li <?php if ( $template->in_menu_item('products/products/all') ) echo 'class="active"' ?>><a href="/products/all/">All Products</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/catalog-dump') ) echo 'class="active"' ?>><a href="/products/catalog-dump/">Catalog Dump</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/add-bulk') ) echo 'class="active"' ?>><a href="/products/add-bulk/">Add Bulk</a></li>
-                                <li <?php if ( $template->in_menu_item('products/products/block-products') ) echo 'class="active"' ?>><a href="/products/block-products/">Block Products</a></li>
+                                <li <?php if ( $template->in_menu_item('products/products/block-products') ) echo 'class="active"' ?>><a href="/products/block-products/">Hidden Products</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/hide-categories') ) echo 'class="active"' ?>><a href="/products/hide-categories/">Hide Categories</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/manually-priced') ) echo 'class="active"' ?>><a href="/products/manually-priced/">Manually Priced</a></li>
                                 <li <?php if ( $template->in_menu_item('products/products/auto-price') ) echo 'class="active"' ?>><a href="/products/auto-price/">Pricing Tools</a></li>
