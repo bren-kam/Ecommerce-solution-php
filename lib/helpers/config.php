@@ -109,7 +109,7 @@ class Config {
             , 'port'        => '22'
         )
         , '207.97.247.132' => array(
-            'ip'            => '207.97.247.132'
+            'ip'            => '172.24.32.132'
             , 'username'    => 'rpendery'
             , 'password'    => 'ZBqgaDxfkR2I'
             , 'port'        => '22522'
