@@ -119,7 +119,7 @@
                         </tr>
                     <?php endif; ?>
                     <tr>
-                        <td>Total</td>
+                        <td>Total Ticket Sale</td>
                         <td class="text-right">$<?php echo number_format( $order->total_cost, 2 ); ?></td>
                     </tr>
                 </table>
@@ -140,9 +140,9 @@
                 <div class="row">
                     <div class="col-lg-2"><strong>Image</strong></div>
                     <div class="col-lg-7"><strong>Description</strong></div>
-                    <div class="col-lg-1 text-right"><strong>Price</strong></div>
                     <div class="col-lg-1 text-right"><strong>Quantity</strong></div>
-                    <div class="col-lg-1 text-right"><strong>Total</strong></div>
+                    <div class="col-lg-1 text-right"><strong>Unit Price</strong></div>
+                    <div class="col-lg-1 text-right"><strong>Amount</strong></div>
                 </div>
                 <div class="row"><div class="col-lg-12">&nbsp;</div></div>
                 <?php foreach ( $order->items as $item ): ?>
@@ -204,10 +204,10 @@
                             <?php endif; ?>
                         </div>
                         <div class="col-lg-1 text-right">
-                            $<?php $item_price = $item->price + $additional_price; echo number_format( $item_price / $item->quantity, 2 ); ?>
+                            <?php echo number_format( $item->quantity ); ?>
                         </div>
                         <div class="col-lg-1 text-right">
-                            <?php echo number_format( $item->quantity ); ?>
+                            $<?php $item_price = $item->price + $additional_price; echo number_format( $item_price / $item->quantity, 2 ); ?>
                         </div>
                         <div class="col-lg-1 text-right">
                             $<?php echo number_format( $item_price, 2 ); ?>
