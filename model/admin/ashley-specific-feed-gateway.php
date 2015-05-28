@@ -280,7 +280,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Add to Account any products they don't have
             if ( !array_key_exists( $sku, $products ) )
                 $new_product_skus[] = $sku;
-
+			
             // Setup packages
 			if ( stristr( $sku, '-' ) ) {
                 list( $series, $item ) = explode( '-', $sku, 2 );
@@ -1465,7 +1465,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Generate array of our items
         foreach( $products as $item_key => $item ) {
             /***** SETUP OF PRODUCT *****/
-
             // Trick to make sure the page doesn't timeout or segfault
             set_time_limit(3600);
 
@@ -1500,23 +1499,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Get Product
             $product = $this->get_existing_product( $sku );
 
-            $two_days_ago = new DateTime();
-            $two_days_ago->sub( new DateInterval("P2D"));
-            $last_update = new DateTime($product->timestamp);
-            if ( $last_update > $two_days_ago )
-                continue;
-
-            // If the SKU is "Deleted" in our system
-            // We will skip ONLY if name matches
-            // (They reuse old skus on new products)
-            if ( 'deleted' == $product->publish_visibility ) {
-                if ( $product->name == $name ) {
-                    continue;
-                } else {
-                    $product = null;  // mark a new product
-                }
-            }
-
             // Now we have the product
             if ( !$product instanceof Product ) {
                 $new_product = true;
@@ -1530,6 +1512,24 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 // Set publish date
                 $product->publish_date = dt::now();
             } else {
+				$two_days_ago = new DateTime();
+				$two_days_ago->sub( new DateInterval("P2D"));
+				$last_update = new DateTime($product->timestamp);
+				
+				if ( $last_update > $two_days_ago )
+					continue;
+				
+				// If the SKU is "Deleted" in our system
+				// We will skip ONLY if name matches
+				// (They reuse old skus on new products)
+				if ( 'deleted' == $product->publish_visibility ) {
+					if ( $product->name == $name ) {
+						continue;
+					} else {
+						$product = null;  // mark a new product
+					}
+				}
+				
                 $new_product = false;
                 $product->user_id_modified = self::USER_ID;
             }
