@@ -1256,7 +1256,10 @@ class ProductsController extends BaseController {
         $account_product->get( $_GET['pid'], $this->user->account->id );
         $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
         $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_GET['pid'] );
-        $product_options_array = $product_option->get_by_product( $_GET['pid'] );
+        $product_options_array = array_merge(
+            $product_option->get_by_product( $_GET['pid'] )
+            , $product_option->get_by_website( $this->user->account->id )
+        );
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();

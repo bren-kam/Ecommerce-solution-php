@@ -119,7 +119,7 @@
                         </tr>
                     <?php endif; ?>
                     <tr>
-                        <td>Total</td>
+                        <td>Total Ticket Sale</td>
                         <td class="text-right">$<?php echo number_format( $order->total_cost, 2 ); ?></td>
                     </tr>
                 </table>
