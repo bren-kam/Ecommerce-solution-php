@@ -1,5 +1,4 @@
 <?php
-
 class InstallService {
     /**
      * Install a website
@@ -24,19 +23,23 @@ class InstallService {
         $server->get( $account->server_id );
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( $server->ip, 22 );
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
+
         ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
-        // Copy files
-        ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
-
+		// Setup as root
+        ssh2_exec( $ssh_connection, "sudo su -" );
+		
+		// Copy files
+		ssh2_exec( $ssh_connection, "sudo cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
+		
         // Update config & .htaccess file
-        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
-
-        ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
+        ssh2_exec( $ssh_connection, "sudo sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
+        
+		ssh2_exec( $ssh_connection, "sudo chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
-        ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
+        ssh2_exec( $ssh_connection, "sudo chown $username:nobody /home/$username/public_html" );
 
         // Updated website version
         $account->version = 1;
@@ -109,20 +112,23 @@ class InstallService {
         $server->get( $account->server_id );
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( $server->ip, 22 );
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
         ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
-
+		
+		// Setup as root
+        ssh2_exec( $ssh_connection, "sudo su -" );
+		
         // Copy files
-        ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
+        ssh2_exec( $ssh_connection, "sudo cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
 
         // Update config & .htaccess file
-        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
+        ssh2_exec( $ssh_connection, "sudo sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
 
         // Change files owner
-        ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
+        ssh2_exec( $ssh_connection, "sudo chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
-        ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
+        ssh2_exec( $ssh_connection, "sudo chown $username:nobody /home/$username/public_html" );
 
         // Copy account pages
         $account_page = new AccountPage();

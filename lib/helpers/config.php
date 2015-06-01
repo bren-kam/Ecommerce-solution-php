@@ -88,26 +88,37 @@ class Config {
             'ip'            => '199.79.48.137'
             , 'username'    => 'root'
             , 'password'    => 'WIxp2sDfRgLMDTL5'
+            , 'port'        => '22'
         )
         , '162.218.139.218' => array(
             'ip'            => '162.218.139.218'
             , 'username'    => 'root'
             , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+            , 'port'        => '22'
         )
         , 'mail09.blinkyblinky.me' => array(
             'ip'            => '162.218.139.218'
             , 'username'    => 'root'
             , 'password'    => 'ZjhNCaLL9YhYD5Rf'
+            , 'port'        => '22'
         )
         , '162.218.139.219' => array(
             'ip'            => '162.218.139.219'
             , 'username'    => 'root'
             , 'password'    => 'IlkWJGkM8e75uYxh'
+            , 'port'        => '22'
+        )
+        , '207.97.247.132' => array(
+            'ip'            => '172.24.32.132'
+            , 'username'    => 'rpendery'
+            , 'password'    => 'ZBqgaDxfkR2I'
+            , 'port'        => '22522'
         )
         , 'mail10.blinkyblinky.me' => array(
             'ip'            => '162.218.139.219'
             , 'username'    => 'root'
             , 'password'    => 'IlkWJGkM8e75uYxh'
+            , 'port'        => '22'
         )
     );
 
