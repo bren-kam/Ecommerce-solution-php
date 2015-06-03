@@ -132,9 +132,8 @@
                         <li><?php echo $ns; ?></li>
                         <?php endforeach; ?>
                     </ul>
-                </form>
-
             <?php endif; ?>
+                </form>
             </div>
         </section>
     </div>
