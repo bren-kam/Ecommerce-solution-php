@@ -306,6 +306,13 @@ class EmailMessage extends ActiveRecordBase {
         )->get_var();
     }
 
+    /**
+     * Get Full Message
+     *
+     * @param Account $account
+     * @return string
+     * @throws \TijsVerkoyen\CssToInlineStyles\Exception
+     */
     public function get_full_message( $account ) {
         // Get Email
         $email_css = file_get_contents( VIEW_PATH . 'css/email-marketing/campaigns/email.css');
@@ -317,7 +324,7 @@ class EmailMessage extends ActiveRecordBase {
         $full_message = $inliner->convert();
 
         // if uses a template, place $full_message inside Template's [message]
-        if ( $this->email_template_id ) {
+        if ( $this->email_template_id && !$account->get_settings('remove-header-footer') ) {
             $email_template = new EmailTemplate();
             $email_template->get( $this->email_template_id, $account->id );
 
