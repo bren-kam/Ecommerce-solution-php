@@ -89,7 +89,7 @@ class SettingsController extends BaseController {
 
         if ( $this->verified() ) {
             $new_settings = [];
-            if ( isset($_POST['sStatus']) ) {
+            if ( isset($_POST['sSelectedGateway']) ) {
                 $new_settings = [
                     'selected-gateway' => $_POST['sSelectedGateway']
                 ];
