@@ -116,11 +116,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        $ssh_connection = ssh2_connect( Config::setting('server-ip'), Config::setting('server-port') );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
+        // Setup as root
+        ssh2_exec( $ssh_connection, "sudo su -" );
+
         // Delete all files
-        ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
+        ssh2_exec( $ssh_connection, "sudo rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
 
         if ( is_array( $accounts ) ) {
             library('cloudflare-api');
