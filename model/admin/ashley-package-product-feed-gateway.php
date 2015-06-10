@@ -644,9 +644,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             }
 
             // Change publish visibility to private if there are no images
-            if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
+            if ( 0 == count( $images ) && Product::PUBLISH_VISIBILITY_PRIVATE != $product->publish_visibility ) {
                 $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'private';
+                $product->publish_visibility = Product::PUBLISH_VISIBILITY_PRIVATE;
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
