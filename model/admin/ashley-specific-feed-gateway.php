@@ -1505,7 +1505,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $product = new Product();
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
-                $product->publish_visibility = 'private';
+                $product->publish_visibility = Product::PUBLISH_VISIBILITY_PRIVATE;
 
                 $product->create();
 
