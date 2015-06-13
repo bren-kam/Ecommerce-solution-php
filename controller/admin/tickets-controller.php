@@ -323,9 +323,8 @@ class TicketsController extends BaseController {
             $response->add_response( 'uploads', $response_uploads );
         }
 
-        if ( $ticket->jira_id ) {
+        if ( $ticket->jira_id )
             $ticket_comment->create_jira_comment();
-        }
 
         return $response;
     }
