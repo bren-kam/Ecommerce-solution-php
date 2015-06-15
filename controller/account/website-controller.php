@@ -1498,6 +1498,11 @@ class WebsiteController extends BaseController {
         $input = ['Key' => $input_key];
         $output = ['Key' => $output_key, 'PresetId' => '1351620000001-000050'];
 
+
+        // Delete any file that may exist
+        $file->delete_file($output_key);
+
+        // Transcode
         $result = $transcoder->createJob($input, [$output], $pipeline_id);
 
         if ( $result ) {

@@ -20,7 +20,7 @@ build:
     after-steps:
       - mies/email-notify:
           from: alerts@wercker.com
-          to: wercker@greysuitretail.com
+          to: wercker@imagineretailer.com
           username: $EMAIL_USER
           password: $EMAIL_PASSWORD
-          host: mail.greysuitretail.com:25
+          host: mail.imagineretailer.com:587

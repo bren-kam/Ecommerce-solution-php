@@ -323,9 +323,8 @@ class TicketsController extends BaseController {
             $response->add_response( 'uploads', $response_uploads );
         }
 
-        if ( $ticket->jira_id ) {
+        if ( $ticket->jira_id )
             $ticket_comment->create_jira_comment();
-        }
 
         return $response;
     }
@@ -350,7 +349,7 @@ class TicketsController extends BaseController {
         $ticket_upload = new TicketUpload();
         $ticket = new Ticket();
         $file = new File( 'retailcatalog.us' );
-        $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt'), 10485760 );
+        $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt', 'eml'), 10485760 );
 
         if ( !isset( $_GET['tid'] ) || empty( $_GET['tid'] ) ) {
             $ticket->status = -1;

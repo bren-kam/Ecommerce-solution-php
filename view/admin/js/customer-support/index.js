@@ -247,7 +247,14 @@ var Ticket = {
 
             // Comments --
             Ticket.commentsContainer.empty();
-            var comments = response.comments;
+			var comments = [];
+			
+			for ( i in response.comments ) {
+				comments[i] = response.comments[i];
+			}
+			
+            comments = comments.sort(function(a, b){return b.id-a.id});
+			
             for ( i in comments ) {
                 var comment = comments[i];
                 var item = Ticket.commentTemplate.clone();

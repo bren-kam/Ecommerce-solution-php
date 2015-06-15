@@ -29,8 +29,8 @@ $statuses = array(
 );
 
 $visibilities = array(
-    'public' => 'Public'
-    , 'private' => 'Private'
+    Product::PUBLISH_VISIBILITY_PUBLIC => 'Public'
+    , Product::PUBLISH_VISIBILITY_PRIVATE => 'Private'
 );
 if ( $product->id )
     $visibilities['deleted'] = 'Deleted';
