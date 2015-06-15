@@ -116,11 +116,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        $ssh_connection = ssh2_connect( Config::setting('server-ip'), Config::setting('server-port') );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
+        // Setup as root
+        ssh2_exec( $ssh_connection, "sudo su -" );
+
         // Delete all files
-        ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
+        ssh2_exec( $ssh_connection, "sudo rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
 
         if ( is_array( $accounts ) ) {
             library('cloudflare-api');
@@ -1505,7 +1508,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $product = new Product();
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
-                $product->publish_visibility = 'private';
+                $product->publish_visibility = Product::PUBLISH_VISIBILITY_PRIVATE;
 
                 $product->create();
 

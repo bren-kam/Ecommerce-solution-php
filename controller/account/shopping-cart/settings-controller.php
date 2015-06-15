@@ -89,7 +89,7 @@ class SettingsController extends BaseController {
 
         if ( $this->verified() ) {
             $new_settings = [];
-            if ( isset($_POST['sStatus']) ) {
+            if ( isset($_POST['sSelectedGateway']) ) {
                 $new_settings = [
                     'selected-gateway' => $_POST['sSelectedGateway']
                 ];
@@ -120,7 +120,8 @@ class SettingsController extends BaseController {
                 ];
             }
 
-            $this->user->account->set_settings( $new_settings );
+            if ( $new_settings )
+                $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved.') );
             $this->log( 'update-payment-settings', $this->user->contact_name . ' updated payment settings on ' . $this->user->account->title );

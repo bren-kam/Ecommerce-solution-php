@@ -57,7 +57,7 @@ class InstallService {
         $email_autoresponder->website_id = $account->id;
         $email_autoresponder->email_list_id = $email_list->id;
         $email_autoresponder->name = 'Default';
-        $email_autoresponder->subject = $account->title . ' - Current Offer';
+        $email_autoresponder->subject = 'Current Offer';
         $email_autoresponder->message = '<p>Thank you for signing up for the latest tips, trends and special offers. Here is the current offer from our store.<p><br /><br />';
         $email_autoresponder->current_offer = 1;
         $email_autoresponder->default = 1;

@@ -72,9 +72,10 @@ class Config {
      */
     private static $settings = array(
         'server-timezone'       => 'America/Chicago'
-        , 'server-ip'           => '199.79.48.137'
-        , 'server-username'     => 'root'
-        , 'server-password'     => 'WIxp2sDfRgLMDTL5'
+        , 'server-ip'           => '172.24.32.132'
+        , 'server-username'     => 'rpendery'
+        , 'server-password'     => 'ZBqgaDxfkR2I'
+        , 'server-port'         => 22522
         , 'default-timezone'    => 'America/New_York'
     );
 
