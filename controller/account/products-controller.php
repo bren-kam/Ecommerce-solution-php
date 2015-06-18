@@ -1345,6 +1345,7 @@ class ProductsController extends BaseController {
         $account_product->product_note = $_POST['taProductNote'];
         $account_product->warranty_length = $_POST['tWarrantyLength'];
         $account_product->display_inventory = ( isset( $_POST['cbDisplayInventory'] ) ) ? 1 : 0;
+        $account_product->inventory_tracking = ( isset( $_POST['cbInventoryTracking'] ) ) ? 1 : 0;        
         $account_product->on_sale = ( isset( $_POST['cbOnSale'] ) ) ? 1 : 0;
         $account_product->status = $_POST['sStatus'];
         $account_product->meta_title = $_POST['tMetaTitle'];

@@ -86,6 +86,12 @@
                                         Display Inventory?
                                     </label>
                                 </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="cbInventoryTracking" name="cbInventoryTracking" value="1" <?php if ( $product->inventory_tracking ) echo 'checked'; ?> />
+                                        Inventory Tracking?
+                                    </label>
+                                </div>
                                 <div class="form-group">
                                     <label for="sStatus">Status:</label>
                                     <select class="form-control" id="sStatus" name="sStatus">
