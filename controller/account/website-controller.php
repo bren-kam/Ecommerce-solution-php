@@ -1466,7 +1466,7 @@ class WebsiteController extends BaseController {
         $attachment = new AccountPageAttachment();
         $page = new AccountPage();
         $account_file = new AccountFile();
-        $uploader = new qqFileUploader( array( 'mp4' ), 26214400 );
+        $uploader = new qqFileUploader( array( 'mp4', 'wmv', '3gp', 'mpg', 'mpeg', 'avi' ), 26214400 );
 
         // Set video
         $video_name =  'video.' . f::extension( $_GET['qqfile'] );
@@ -1486,6 +1486,24 @@ class WebsiteController extends BaseController {
         $video_dir = $this->user->account->id . "/sidebar/";
         $video_url = $file->upload_file( $result['file_path'], $video_name, $video_dir );
         $video_url = str_replace( 's3.amazonaws.com/', '', $video_url );
+
+        // AMAZON VIDEO TRANSCODER
+        library('ElasticTranscoder');
+        $input_key = "{$video_dir}{$video_name}";
+        $output_key = "{$video_dir}transcoded.{$video_name}";
+        $region = 'us-west-2';
+        $pipeline_id = '1431531483367-87tajb';
+        $transcoder = new AWS_ET(Config::key('aws-access-key'), Config::key('aws-secret-key'), $region);
+
+        $input = ['Key' => $input_key];
+        $output = ['Key' => $output_key, 'PresetId' => '1351620000001-000050'];
+
+        $result = $transcoder->createJob($input, [$output], $pipeline_id);
+
+        if ( $result ) {
+            $video_url = str_replace($input_key, $output_key, $video_url);
+            $this->notify('Your video is being uploaded and will take a few minutes to be optimized and publicly available.  Please check back in 5 minutes.');
+        }
 
         // Delete file
         if ( is_file( $result['file_path'] ) )

@@ -73,13 +73,14 @@ class AccountsController extends BaseController {
             ->add_validation( 'req', _('The "Online Specialist" field is required') )
             ->options( $os_users );
 
-        $ft->add_field( 'select', _('Type'), 'sType' )
-            ->options( array(
-                _('Furniture') => _('Furniture')
-                , _('RTO') => _('RTO')
-                , _('EVR') => _('EVR')
-                , _('High Impact') => _('High Impact')
-            ));
+        $industry = new Industry();
+        $industry_options = [];
+        foreach( $industry->get_all() as $industry ) {
+            $industry_options[$industry->id] = ucwords($industry->name);
+        }
+
+        $ft->add_field( 'select', _('Industry'), 'sIndustry' )
+            ->options( $industry_options );
 
         // Update the account if posted
         if ( $ft->posted() ) {
@@ -87,7 +88,7 @@ class AccountsController extends BaseController {
             $account->os_user_id = $_POST['sOnlineSpecialistID'];
             $account->domain = $_POST['tDomain'];
             $account->title = $_POST['tTitle'];
-            $account->type = $_POST['sType'];
+            $account->type = 'Furniture'; // $_POST['sType'];
             $account->create();
 
             // Needs to create a checklist
@@ -99,6 +100,8 @@ class AccountsController extends BaseController {
             // Add checklist website items
             $checklist_website_item = new ChecklistWebsiteItem();
             $checklist_website_item->add_all_to_checklist( $checklist->id );
+
+            $account->add_industries([ $_POST['sIndustry'] ]);
 
             $this->notify( _('Your account was successfully created!') );
 
