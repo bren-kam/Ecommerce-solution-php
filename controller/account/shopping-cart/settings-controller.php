@@ -81,6 +81,7 @@ class SettingsController extends BaseController {
             , 'paypal-express-signature'
             , 'bill-me-later'
             , 'crest-financial-dealer-id'
+            , 'flexshopper-retailer-id'            
         );
 
         if ( $settings['stripe-account'] ) {
@@ -119,6 +120,12 @@ class SettingsController extends BaseController {
                     'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
                 ];
             }
+            if ( isset($_POST['tFlexShopperRetailerId']) ) {
+                $new_settings = [
+                    'flexshopper-retailer-id' => base64_encode( security::encrypt( $_POST['tFlexShopperRetailerId'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+
 
             $this->user->account->set_settings( $new_settings );
 
