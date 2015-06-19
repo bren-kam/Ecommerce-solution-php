@@ -138,7 +138,8 @@ class RemarketingController extends BaseController {
         $form = new BootstrapForm('remarketing-settings');
 
         $settings = $this->user->account->get_settings(
-            'remarketing-popup-image'
+            'remarketing-enabled'
+            , 'remarketing-popup-image'
             , 'remarketing-title'
             , 'remarketing-intro-text'
             , 'remarketing-submit-color'
@@ -162,6 +163,17 @@ class RemarketingController extends BaseController {
             , 'remarketing-email3-body'
         );
 
+        // Some defaults
+        $set_defaults = [];
+        if ( !$settings['remarketing-idle-seconds'] )       $set_defaults['remarketing-idle-seconds'] = 60;
+        if ( !$settings['remarketing-email1-delay'] )       $set_defaults['remarketing-email1-delay'] = 3600;
+        if ( !$settings['remarketing-email2-delay'] )       $set_defaults['remarketing-email2-delay'] = 3600*24;
+        if ( !$settings['remarketing-email3-delay'] )       $set_defaults['remarketing-email3-delay'] = 3600*72;
+        if( $set_defaults ){
+            $this->user->account->set_settings($set_defaults);
+        }
+
+        // Process POST/Submit
         if ( $this->verified() ) {
             $this->user->account->set_settings([
                 'remarketing-popup-image' => $_POST['popup-image']
@@ -192,7 +204,7 @@ class RemarketingController extends BaseController {
             return new RedirectResponse('/shopping-cart/remarketing/settings/');
         }
 
-        $this->resources->javascript('fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
+        $this->resources->javascript('autosize.min', 'fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
             ->css('media-manager', 'colpick', 'shopping-cart/remarketing/settings');
 
         return $this->get_template_response('settings')
@@ -240,6 +252,32 @@ class RemarketingController extends BaseController {
 
         return $response;
 
+    }
+
+    /**
+     * Enable
+     * @return RedirectResponse
+     */
+    public function enable() {
+        if ( $this->verified() ) {
+            $this->user->account->set_settings([
+                'remarketing-enabled' => 1
+            ]);
+        }
+        return new RedirectResponse('/shopping-cart/remarketing/settings/');
+    }
+
+    /**
+     * Disable
+     * @return RedirectResponse
+     */
+    public function disable() {
+        if ( $this->verified() ) {
+            $this->user->account->set_settings([
+                'remarketing-enabled' => 0
+            ]);
+        }
+        return new RedirectResponse('/shopping-cart/remarketing/settings/');
     }
 
 }

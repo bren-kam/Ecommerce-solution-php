@@ -12,7 +12,7 @@ class AccountProduct extends ActiveRecordBase {
         , $additional_shipping_amount, $weight, $additional_shipping_type
         , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $price_note
         , $product_note, $ships_in, $store_sku, $warranty_length, $alternate_price_strikethrough
-        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
+        , $display_inventory, $inventory_tracking, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
 
     // Artificial columns
     public $link, $industry, $coupons, $product_options, $created_by, $count;
@@ -223,9 +223,9 @@ class AccountProduct extends ActiveRecordBase {
         $where = '';
         $inner_join = '';
         // Add the where by Brand
-        if ( $brand_id > 0 && $brand_id != 1048576 ) {
+        if ( $brand_id > 0 && $brand_id != Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             $where = ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( $brand_id == 1048576 ) {
+        } else if ( $brand_id == Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         }
@@ -311,9 +311,9 @@ class AccountProduct extends ActiveRecordBase {
         // Add the where
         $inner_join = '';
         // Add the where by Brand
-        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != 1048576 ) {
+        if ( is_numeric($brand_id) && $brand_id > 0 && $brand_id != Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             $where .= ' AND p.`brand_id` = ' . (int) $brand_id;
-        } else if ( is_numeric($brand_id) && $brand_id == 1048576 ) {
+        } else if ( is_numeric($brand_id) && $brand_id == Brand::ARTIFICIAL_ASHLEY_EXPRESS ) {
             // Ashley Express Products
             $inner_join = 'INNER JOIN `website_product_ashley_express` wpae ON ( p.`product_id` = wpae.`product_id` AND wpae.`website_id` = wp.`website_id` ) ';
         } else {
@@ -374,6 +374,7 @@ class AccountProduct extends ActiveRecordBase {
             , 'product_note' => strip_tags($this->product_note)
             , 'warranty_length' => strip_tags($this->warranty_length)
             , 'display_inventory' => $this->display_inventory
+            , 'inventory_tracking' => $this->inventory_tracking            
             , 'on_sale' => $this->on_sale
             , 'status' => strip_tags($this->status)
             , 'meta_title' => strip_tags($this->meta_title)

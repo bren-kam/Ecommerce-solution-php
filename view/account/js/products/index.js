@@ -122,6 +122,7 @@ var ProductSearch = {
                     .find( '.edit' ).attr( 'href', '/products/edit/?_nonce=' + edit_nonce + '&pid=' + product.product_id ).end()
                     .find( '.block' ).attr( 'href', '/products/block/?_nonce=' + block_nonce + '&pid=' + product.product_id ).end()
                     .find( '.set-category-image' ).attr( 'href', '/products/set-category-image/?_nonce=' + category_image_nonce + '&cid=' + ( is_category_selected ? category_id : product.category_id ) + '&i=' + encodeURIComponent(product.image_url) + '&bid=' + product.brand_id ).end()
+                    .find( '.add-product-options' ).attr( 'href', '/products/product-options/add-edit/?pid='+  product.product_id ).end()
                     .appendTo('#product-list');
             }
 

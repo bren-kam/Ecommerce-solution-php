@@ -185,7 +185,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // We want to skip this account
             $ticket = new Ticket();
             $ticket->user_id = self::USER_ID; // Ashley
-            $ticket->assigned_to_user_id = User::CHRIS;
+            $ticket->assigned_to_user_id = User::KERRY; //User::CHRIS;
             $ticket->website_id = $account->id;
             $ticket->priority = Ticket::PRIORITY_HIGH;
             $ticket->status = Ticket::STATUS_OPEN;

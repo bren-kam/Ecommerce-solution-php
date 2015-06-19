@@ -3,7 +3,7 @@ class ProductOption extends ActiveRecordBase {
     const MATTRESS_SIZES = 357;
 
     // The columns we will have access to
-    public $id, $product_option_id, $type, $title, $name;
+    public $id, $product_option_id, $type, $title, $name, $website_id;
 
     // Columns from other tables
     public $product_option_list_item_id, $value;
@@ -26,10 +26,15 @@ class ProductOption extends ActiveRecordBase {
      * Get Product Option
      *
      * @param int $product_option_id
+     * @param int $website_id
      */
-    public function get( $product_option_id ) {
+    public function get( $product_option_id, $website_id = null ) {
+        $website_where = "";
+        if ( $website_id ) {
+            $website_where = " AND website_id = {$website_id} ";
+        }
         $this->prepare(
-            'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name FROM `product_options` WHERE `product_option_id` = :product_option_id'
+            "SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name, `website_id` FROM `product_options` WHERE `product_option_id` = :product_option_id $website_where"
             , 's'
             , array( ':product_option_id' => $product_option_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -43,7 +48,7 @@ class ProductOption extends ActiveRecordBase {
      * @return array
      */
     public function get_all() {
-        return $this->get_results( 'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
+        return $this->get_results( 'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name, `website_id` FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
     }
 
     /**
@@ -61,6 +66,20 @@ class ProductOption extends ActiveRecordBase {
     }
 
     /**
+     * Get by website
+     *
+     * @param int $website_id
+     * @return ProductOption[]
+     */
+    public function get_by_website( $website_id ) {
+        return $this->prepare(
+            'SELECT po.`product_option_id`, po.`option_type` AS type, po.`option_name` AS name, poli.`product_option_list_item_id`, poli.`value` FROM `product_options` AS po LEFT JOIN `product_option_list_items` AS poli ON ( poli.`product_option_id` = po.`product_option_id` ) WHERE po.`website_id` = :website_id ORDER BY poli.`sequence`'
+            , 'i'
+            , array( ':website_id' => $website_id )
+        )->get_results( PDO::FETCH_CLASS, 'ProductOption' );
+    }
+
+    /**
      * Create
      */
     public function create() {
@@ -68,6 +87,7 @@ class ProductOption extends ActiveRecordBase {
             'option_type' => strip_tags($this->type)
             , 'option_title' => strip_tags($this->title)
             , 'option_name' => strip_tags($this->name)
+            , 'website_id' => $this->website_id
         ), 'sss' );
 
         $this->product_option_id = $this->id = $this->get_insert_id();
@@ -81,6 +101,7 @@ class ProductOption extends ActiveRecordBase {
             'option_type' => strip_tags($this->type)
             , 'option_title' => strip_tags($this->title)
             , 'option_name' => strip_tags($this->name)
+            , 'website_id' => $this->website_id
         ), array(
             'product_option_id' => $this->id
         ), 'sss', 'i' );
