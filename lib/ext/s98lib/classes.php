@@ -32,7 +32,7 @@ function s98lib_classes( $class_name ) {
 
 	$class_name = $prefix . strtolower( str_replace( '_', '-', $class_name ) );
 	$class_path = FWPATH . "classes/$class_name.php";
-	
+
 	$libraries_path = FWPATH . "libraries/$class_name.php";
 
 	if ( file_exists( $class_path ) ) {
