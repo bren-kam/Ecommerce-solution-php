@@ -164,15 +164,13 @@ class Product extends ActiveRecordBase {
     public function create() {
         $this->date_created = dt::now();
 
-        $this->insert( array(
+        $this->id = $this->product_id = $this->insert( array(
             'category_id' => $this->category_id
             , 'website_id' => $this->website_id
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => $this->date_created
         ), 'iiiss' );
-        
-        $this->id = $this->product_id = $this->get_insert_id();
     }
 
     /**
