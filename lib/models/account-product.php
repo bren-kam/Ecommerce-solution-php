@@ -12,7 +12,7 @@ class AccountProduct extends ActiveRecordBase {
         , $additional_shipping_amount, $weight, $additional_shipping_type
         , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $price_note
         , $product_note, $ships_in, $store_sku, $warranty_length, $alternate_price_strikethrough
-        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
+        , $display_inventory, $inventory_tracking, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
 
     // Artificial columns
     public $link, $industry, $coupons, $product_options, $created_by, $count;
@@ -390,6 +390,7 @@ class AccountProduct extends ActiveRecordBase {
             , 'product_note' => strip_tags($this->product_note)
             , 'warranty_length' => strip_tags($this->warranty_length)
             , 'display_inventory' => $this->display_inventory
+            , 'inventory_tracking' => $this->inventory_tracking            
             , 'on_sale' => $this->on_sale
             , 'status' => strip_tags($this->status)
             , 'meta_title' => strip_tags($this->meta_title)

@@ -294,7 +294,7 @@ class ProductsController extends BaseController {
      */
     protected function block_products() {
         $form = new BootstrapForm( 'fBlockProducts' );
-        $form->submit( _('Block Products'), "", 1 );
+        $form->submit( _('Hide Products'), "", 1 );
         $form->add_field( 'textarea', "Separate SKU's by putting one on each line", 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
@@ -312,15 +312,16 @@ class ProductsController extends BaseController {
                 $account_category->reassign_image( $this->user->account->id, $account_product->product_id );
             }
 
-            $this->notify( _('Blocked Products have been successfully updated!') );
+            $this->notify( _('Hidden Products have been successfully updated!') );
             $this->log( 'block-products', $this->user->contact_name . ' blocked products on ' . $this->user->account->title, $skus );
         }
 
+        $account_product = new AccountProduct();
         $blocked_products = $account_product->get_blocked( $this->user->account->id );
 
         $response = $this->get_template_response( 'block-products' )
             ->kb( 50 )
-            ->add_title( _('Block Products') )
+            ->add_title( _('Hidden Products') )
             ->menu_item( 'products/products/block-products' )
             ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
 
@@ -581,7 +582,7 @@ class ProductsController extends BaseController {
             }
 
             // Notification
-            $this->notify( _('Blocked Products have been successfully updated!') );
+            $this->notify( _('Hidden Products have been successfully updated!') );
             $this->log( 'unblock-products', $this->user->contact_name . ' unblocked products on ' . $this->user->account->title, $_POST['unblock-products'] );
         }
 
@@ -1145,7 +1146,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['pid'] ), _('Blocking product failed') );
+        $response->check( isset( $_GET['pid'] ), _('Hiding product failed') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -1177,8 +1178,8 @@ class ProductsController extends BaseController {
             $cloudflare->purge( $cloudflare_zone_id );
         }
 
-        $response->notify( 'Product blocked' );
-        $this->log( 'block-product', $this->user->contact_name . ' has blocked a product on ' . $this->user->account->title, $_GET['pid'] );
+        $response->notify( 'Product hidden' );
+        $this->log( 'block-product', $this->user->contact_name . ' has hidden a product on ' . $this->user->account->title, $_GET['pid'] );
 
         return $response;
     }
@@ -1255,7 +1256,10 @@ class ProductsController extends BaseController {
         $account_product->get( $_GET['pid'], $this->user->account->id );
         $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
         $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_GET['pid'] );
-        $product_options_array = $product_option->get_by_product( $_GET['pid'] );
+        $product_options_array = array_merge(
+            $product_option->get_by_product( $_GET['pid'] )
+            , $product_option->get_by_website( $this->user->account->id )
+        );
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
@@ -1341,6 +1345,7 @@ class ProductsController extends BaseController {
         $account_product->product_note = $_POST['taProductNote'];
         $account_product->warranty_length = $_POST['tWarrantyLength'];
         $account_product->display_inventory = ( isset( $_POST['cbDisplayInventory'] ) ) ? 1 : 0;
+        $account_product->inventory_tracking = ( isset( $_POST['cbInventoryTracking'] ) ) ? 1 : 0;        
         $account_product->on_sale = ( isset( $_POST['cbOnSale'] ) ) ? 1 : 0;
         $account_product->status = $_POST['sStatus'];
         $account_product->meta_title = $_POST['tMetaTitle'];
