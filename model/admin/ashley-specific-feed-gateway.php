@@ -1529,10 +1529,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 					if ( $product->name == $name ) {
 						continue;
 					} else {
-						$product = null;  // mark a new product
+                        $new_product = null;  // mark a new product
 					}
 				}
-				
+
                 $new_product = false;
                 $product->user_id_modified = self::USER_ID;
             }

@@ -132,16 +132,16 @@ foreach ( $admin_users as $au ) {
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>User: <a href="javascript:;" class="assign-to-user"><strong class="ticket-user-name"></strong></a> | <a class="ticket-user-edit" href="javascript:;" target="_blank">Edit</a></li>
+                            <li>User: <a href="javascript:;" class="assign-to-user"><strong class="ticket-user-name"></strong></a></li>
                             <li>Email: <span class="ticket-user-email"></span></li>
                         </ul>
                         <ul>
                             <li>Ticket #: <strong class="ticket-id"></strong><br></li>
+                            <li>Account: <a href="javascript:;" class="ticket-account-domain" target="_blank"><strong class="ticket-account"></strong></a> - <a href="javascript:;" class="edit-account" target="_blank">Edit</a> | <a href="javascript:;" class="control-account" target="_blank">Control</a><br></li>
+                            <li>Online Specialist: <strong class="ticket-online-specialist"></strong><br></li>
                             <li>Updated: <strong class="ticket-updated"></strong><br></li>
                             <li>Created: <strong class="ticket-created"></strong><br></li>
                             <li>Created By: <strong class="ticket-creator"></strong><br></li>
-                            <li>Account: <a href="javascript:;" class="ticket-account-domain" target="_blank"><strong class="ticket-account"></strong></a> - <a href="javascript:;" class="edit-account" target="_blank">Edit</a> | <a href="javascript:;" class="control-account" target="_blank">Control</a><br></li>
-                            <li>Online Specialist: <strong class="ticket-online-specialist"></strong><br></li>
                         </ul>
                     </div>
                 </div>

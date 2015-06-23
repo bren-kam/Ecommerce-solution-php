@@ -202,8 +202,7 @@ var Ticket = {
                 Ticket.container.find('.assign-to-user').data('assign-to', null).css('color', '#333');
                 Ticket.container.find('.ticket-user-name').append(' - ' + currentTicket.website);
             } else {
-                Ticket.container.find('.assign-to-user').data('assign-to', null).removeAttr('style');
-                Ticket.container.find('.assign-to-user').data('assign-to', currentTicket.user_id);
+                Ticket.container.find('.assign-to-user').data('assign-to', currentTicket.user_id).removeAttr('style');
             }
             Ticket.container.find('.ticket-user-email').text('<' + currentTicket.email + '>');
             Ticket.container.find('.ticket-user-edit').attr('href', '/users/add-edit/?uid=' + currentTicket.user_id);
