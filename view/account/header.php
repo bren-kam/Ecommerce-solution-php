@@ -423,18 +423,6 @@
                 </li>
             <?php endif; ?>
 
-            <?php if ( $user->account->craigslist ): ?>
-                <li class="sub-menu">
-                    <a href="javascript:;" <?php if ( $template->in_menu_item('craigslist') ) echo 'class="active"'?>>
-                        <span>Craigslist</span>
-                    </a>
-                    <ul class="sub">
-                        <li <?php if ( $template->in_menu_item('craigslist/list') ) echo 'class="active"'?>><a href="/craigslist/">List All</a></li>
-                        <li <?php if ( $template->in_menu_item('craigslist/add') ) echo 'class="active"'?>><a href="/craigslist/add-edit/">Add</a></li>
-                    </ul>
-                </li>
-            <?php endif; ?>
-
             <?php if ( $user->account->social_media ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('social-media') || $template->in_menu_item('sm') ) echo 'class="active"'?>>

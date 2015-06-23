@@ -313,7 +313,7 @@ class ApiRequest {
         try {
 
             // Gets parameters and errors out if something is missing
-            extract($this->get_parameters('user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'room_planner', 'craigslist', 'social_media', 'geo_marketing', 'domain_registration', 'additional_email_addresses', 'products'));
+            extract($this->get_parameters('user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'room_planner', 'social_media', 'geo_marketing', 'domain_registration', 'additional_email_addresses', 'products'));
 
             // Create account
             $account = new Account();
@@ -339,7 +339,6 @@ class ApiRequest {
             $account->geo_marketing = (int) $geo_marketing > 0;
             $account->shopping_cart = $shopping_cart;
             $account->room_planner = $room_planner;
-            $account->craigslist = $craigslist;
             $account->social_media = $social_media;
             $account->domain_registration = $domain_registration;
             $account->additional_email_Addresses = $additional_email_addresses;
@@ -372,10 +371,6 @@ class ApiRequest {
                 $account->set_settings(array(
                     'yext-max-locations' => (int) $geo_marketing
                 ));
-
-            // Set Industries if they got craigslist
-            if ('1' == $account->craigslist)
-                $account->add_industries(array(1, 2, 3));
 
             // Hide blocked categories
             $category = new Category();
