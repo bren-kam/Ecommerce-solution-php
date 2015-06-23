@@ -302,7 +302,6 @@ class ApiRequest {
          * @param bool $email_marketing
          * @param bool $shopping_cart
          * @param bool $room_planner
-         * @param bool $craigslist
          * @param bool $social_media
          * @param bool $geo_marketing
          * @param bool $domain_registration
