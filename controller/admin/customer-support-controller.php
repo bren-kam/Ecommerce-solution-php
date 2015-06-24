@@ -21,9 +21,9 @@ class CustomerSupportController extends BaseController {
             ->javascript('customer-support/index')
             ->javascript_url( Config::resource('bootstrap-select-js'), Config::resource('typeahead-js'), Config::resource('handlebars-js') );
 
-        $admin_users = $this->user->get_admin_users();
+        $admin_users = $this->user->get_admin_users(User::$support_team);
         $account = new Account();
-        $accounts = $account->list_all([' AND a.status = 1 ', '', ' ORDER BY a.title ', 9999]);
+        $accounts = $account->list_all([' AND a.`status` = 1', '', ' ORDER BY a.`title` ', 9999]);
 
         return $this->get_template_response('index')
             ->menu_item('customer-support')

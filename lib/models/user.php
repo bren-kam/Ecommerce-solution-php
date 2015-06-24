@@ -37,6 +37,12 @@ class User extends ActiveRecordBase {
     // These columns belong to another table but might be available from the user
     public $company, $domain, $accounts, $main_website;
 
+    public static $support_team = [
+        User::DESIGN_TEAM
+        , User::DEVELOPMENT
+        , User::TECHNICAL
+    ];
+
     /**
      * Holds the account if it has it
      * @var Account
