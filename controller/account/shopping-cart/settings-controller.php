@@ -87,6 +87,7 @@ class SettingsController extends BaseController {
             $stripe_account = json_decode($settings['stripe-account'], true);
         }
 
+        $user = $this->user;
         if ( $this->verified() ) {
             $new_settings = [];
             if ( isset($_POST['sStatus']) ) {
@@ -132,7 +133,7 @@ class SettingsController extends BaseController {
 
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
-            ->set( compact( 'settings', 'stripe_account' ) )
+            ->set( compact( 'settings', 'stripe_account', 'user' ) )
             ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
     }
