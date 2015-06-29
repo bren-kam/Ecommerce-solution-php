@@ -26,7 +26,7 @@ class url extends Base_Class {
 		header::send( "Location: $location" );
         exit;
 	}
-	
+
 	/**
 	 * Returns the domain of a URL
 	 *
@@ -42,10 +42,10 @@ class url extends Base_Class {
 		$path_parts = explode( '/', $parse_url['path'], 2 );
 		$host = ( isset( $parse_url['host'] ) ) ? $parse_url['host'] : array_shift( $path_parts );
    		$domain = trim( $host );
-		
+
 		return ( $subdomains ) ? $domain : preg_replace( '/(?:[-a-zA-Z0-9]+\.)*([-a-zA-Z0-9]+\.[a-zA-Z]{2,3}){1,2}/', '$1', $domain );
 	}
-	
+
 	/**
 	 * Get the Subdomain
 	 *
@@ -55,7 +55,7 @@ class url extends Base_Class {
 	public static function subdomain( $url ) {
 		return str_replace( '.' . self::domain( $url, false ), '', self::domain( $url ) );
 	}
-	
+
 	/**
 	 * Encrypts a string or array for a post url value
 	 *
@@ -100,20 +100,20 @@ class url extends Base_Class {
 		} else {
 			$uri = ( @func_num_args() < 3 || false === @func_get_arg( 2 ) ) ? $_SERVER['REQUEST_URI'] : @func_get_arg( 2 );
 		}
-	
+
 		if ( $frag = strstr( $uri, '#' ) ) {
 			$uri = substr( $uri, 0, -strlen( $frag ) );
 		} else {
 			$frag = '';
 		}
-		
+
 		if ( preg_match( '|^https?://|i', $uri, $matches ) ) {
 			$protocol = $matches[0];
 			$uri = substr( $uri, strlen( $protocol ) );
 		} else {
 			$protocol = '';
 		}
-	
+
 		if ( strpos( $uri, '?' ) !== false ) {
 			$parts = explode( '?', $uri, 2 );
 			if ( 1 == count( $parts ) ) {
@@ -130,12 +130,12 @@ class url extends Base_Class {
 			$base = '';
 			$query = $uri;
 		}
-		
+
 		parse_str( $query, $qs );
-		
+
 		if ( get_magic_quotes_gpc() )
 			$qs = format::stripslashes_deep( $qs );
-		
+
 		$qs = format::urlencode_deep( $qs ); // this re-URL-encodes things that were already in the query string
 		if ( is_array( func_get_arg( 0 ) ) ) {
 			$kayvees = func_get_arg( 0 );
@@ -143,12 +143,12 @@ class url extends Base_Class {
 		} else {
 			$qs[func_get_arg( 0 )] = func_get_arg( 1 );
 		}
-	
+
 		foreach ( ( array ) $qs as $k => $v ) {
 			if ( $v === false )
 				unset( $qs[$k] );
 		}
-	
+
 		$ret = http_build_query( $qs, '', '&' );
 		$ret = trim( $ret, '?' );
 		$ret = preg_replace( '#=(&|$)#', '$1', $ret );
@@ -156,7 +156,7 @@ class url extends Base_Class {
 		$ret = rtrim( $ret, '?' );
 		return $ret;
 	}
-	
+
 	/**
 	 * Removes an item or list from the query string.
 	 *
@@ -174,7 +174,7 @@ class url extends Base_Class {
 
 			return $query;
 		}
-		
+
 		return self::add_query_arg( $key, false, $query );
 	}
 
