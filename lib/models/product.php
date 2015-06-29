@@ -8,7 +8,7 @@ class Product extends ActiveRecordBase {
     public $id, $product_id, $category_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku
         , $country, $price, $price_min, $price_net, $price_freight, $price_discount, $status, $weight, $depth, $height
         , $length, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified
-        , $date_created, $timestamp;
+        , $date_created, $timestamp, $parent_product_id;
 
     // Artificial columns
     public $images, $industry, $order, $created_by, $updated_by, $specifications;
@@ -164,15 +164,14 @@ class Product extends ActiveRecordBase {
     public function create() {
         $this->date_created = dt::now();
 
-        $this->insert( array(
+        $this->id = $this->product_id = $this->insert( array(
             'category_id' => $this->category_id
             , 'website_id' => $this->website_id
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => $this->date_created
+            , 'parent_product_id' => $this->parent_product_id
         ), 'iiiss' );
-        
-        $this->id = $this->product_id = $this->get_insert_id();
     }
 
     /**
@@ -287,6 +286,7 @@ class Product extends ActiveRecordBase {
                 , 'publish_date' => strip_tags($this->publish_date)
                 , 'publish_visibility' => strip_tags($this->publish_visibility)
                 , 'user_id_modified' => $this->user_id_modified
+            , 'parent_product_id' => $this->parent_product_id
             )
             , array( 'product_id' => $this->id )
             , 'iiiisssssdddddsissi'
@@ -569,5 +569,41 @@ class Product extends ActiveRecordBase {
         if ( $echo_log )
             echo "Finished\n";
     }
+
+    /**
+     * Get all information of the products
+     *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+     * @return Product[]
+     */
+    public function list_child_products( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT p.`product_id`, p.`sku`, p.`name` FROM products p WHERE p.parent_product_id IS NOT NULL $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count all the products
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_child_products( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT(*) FROM products p WHERE p.parent_product_id IS NOT NULL $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+    }
+
 
 }

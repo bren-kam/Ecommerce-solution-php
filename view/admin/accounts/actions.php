@@ -24,10 +24,6 @@
                     <li><a href="/accounts/other-settings/?aid=<?php echo $account->id ?>">Other</a></li>
                     <li class="active"><a href="/accounts/actions/?aid=<?php echo $account->id ?>">Actions</a></li>
 
-                    <?php if ( $account->craigslist ): ?>
-                        <div class="tab-link"><a href="/accounts/craigslist/?aid=<?php echo $account->id; ?>" title="<?php echo _('Craigslist'); ?>"><?php echo _('Craigslist'); ?></a></div>
-                    <?php endif; ?>
-
                     <?php if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ): ?>
                         <li><a href="/accounts/dns/?aid=<?php echo $account->id ?>">DNS</a></li>
                     <?php endif; ?>

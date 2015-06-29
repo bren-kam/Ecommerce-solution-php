@@ -119,6 +119,7 @@ nonce::field( 'update_sequence', '_update_sequence' );
                             | <a href="javascript:;" class="edit" data-modal>Edit</a>
                             | <a href="javascript:;" class="block" ajax="1">Block</a>
                             | <a href="javascript:;" class="set-category-image" ajax="1">Set as Category Picture</a>
+                            | <a href="javascript:;" class="add-product-options">Add Product Options</a>
                         </p>
                     </div>
                 </div>

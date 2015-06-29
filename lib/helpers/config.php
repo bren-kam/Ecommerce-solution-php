@@ -20,9 +20,6 @@ class Config {
 		, 'aws-access-key'			=> 'AKIAIM64EVOSIJZMTA3Q'
 		, 'aws-secret-key'			=> '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'
 		, 'aws-bucket-domain'		=> '.retailcatalog.us'
-		// Craigslist
-		, 'craigslist-gsr-id'		=> 2
-		, 'craigslist-gsr-key'		=> 'uCYS6jfM6XbyBfZJ'
         // Trumpia
         , 'trumpia-admin-username'  => 'greysuitretail'
         , 'trumpia-admin-password'  => 'V5JC7B#v691j'

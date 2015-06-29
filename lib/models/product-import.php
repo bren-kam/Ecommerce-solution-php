@@ -12,7 +12,7 @@ class ProductImport extends ActiveRecordBase {
      */
     public $category_id, $brand_id, $industry_id, $website_id, $name, $slug,
             $description, $status, $sku, $price, $price_min, 
-            $product_specifications, $image;
+            $product_specifications, $image, $inventory;
             
     /**
      * Columns from other tables
@@ -62,27 +62,22 @@ class ProductImport extends ActiveRecordBase {
      * Create
      */
     public function create() {
-        
-        return $this->prepare(
-            'INSERT INTO `product_import`(`category_id`, `brand_id`, `industry_id`, `website_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `price_min`, `product_specifications`, `image`)
-             VALUES (:category_id, :brand_id, :industry_id, :website_id, :name, :slug, :description, :status, :sku, :price, :price_min, :product_specifications, :image)'
-            , 'iiiisssssdds'
-            , array(
-                ':category_id' => $this->category_id
-                ,':brand_id' => $this->brand_id
-                ,':industry_id' => $this->industry_id
-                ,':website_id' => $this->website_id
-                ,':name' => $this->name
-                ,':slug' => $this->slug
-                ,':description' => $this->description
-                ,':status' => $this->status
-                ,':sku' => $this->sku
-                ,':price' => $this->price
-                ,':price_min' => $this->price_min
-                ,':product_specifications' => $this->product_specifications
-                ,':image' => $this->image
-            )
-        )->query();
+        $this->insert([
+            'category_id' => $this->category_id
+            ,'brand_id' => $this->brand_id
+            ,'industry_id' => $this->industry_id
+            ,'website_id' => $this->website_id
+            ,'name' => $this->name
+            ,'slug' => $this->slug
+            ,'description' => $this->description
+            ,'status' => $this->status
+            ,'sku' => $this->sku
+            ,'price' => $this->price
+            ,'price_min' => $this->price_min
+            ,'product_specifications' => $this->product_specifications
+            ,'image' => $this->image
+            ,'inventory' => $this->inventory
+        ], ['iiiisssisddssi'] );
     }
     
     

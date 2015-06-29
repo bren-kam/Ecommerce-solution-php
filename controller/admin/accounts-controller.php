@@ -177,7 +177,6 @@ class AccountsController extends BaseController {
                     $account->product_catalog = (int) isset( $_POST['cbProductCatalog'] );
                     $account->room_planner = (int) isset( $_POST['cbRoomPlanner'] );
                     $account->blog = (int) isset( $_POST['cbBlog'] );
-                    $account->craigslist = (int) isset( $_POST['cbCraigslist'] );
                     $account->email_marketing = (int) isset( $_POST['cbEmailMarketing'] );
                     $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
@@ -249,7 +248,6 @@ class AccountsController extends BaseController {
             , 'product_catalog'
             , 'room_planner'
             , 'blog'
-            , 'craigslist'
             , 'email_marketing'
             , 'domain_registration'
             , 'additional_email_addresses'
@@ -573,7 +571,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get api keys
-        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username', 'yext-subscription-id', 'cloudflare-zone-id' );
+        $settings = $account->get_settings( 'sendgrid-username', 'yext-subscription-id', 'cloudflare-zone-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -589,157 +587,6 @@ class AccountsController extends BaseController {
             ->set( compact( 'account', 'settings' ) )
             ->select('accounts');
 
-    }
-
-    /**
-     * Craigslist
-     *
-     * @return TemplateResponse
-     */
-    protected function craigslist() {
-        // Make sure they can be here
-        if ( !isset( $_GET['aid'] ) )
-            return new RedirectResponse('/accounts/');
-
-        // Load the library
-        library( 'craigslist-api' );
-
-        // Initialize classes
-        $account = new Account;
-        $account->get( $_GET['aid'] );
-
-        $craigslist_market_link = new CraigslistMarketLink();
-        $craigslist_market = new CraigslistMarket();
-        $craigslist_api = new Craigslist_API( Config::key('craigslist-gsr-id'), Config::key('craigslist-gsr-key') );
-
-        // Get variables
-        $craigslist_markets = $craigslist_market->get_all();
-        $account_market_links = array();
-
-        // Add validation
-        $v = new Validator( 'fLinkMarket' );
-
-        $v->add_validation( 'sMarketId', 'req', _('The "Market" field is required') );
-        $v->add_validation( 'sCLCategoryId', 'req', _('The "Category" field is required') );
-
-        $errs = false;
-
-        if ( $this->verified() ) {
-            $errs = $v->validate();
-
-            if ( empty( $errs ) ) {
-                // Get the craigslist market
-                $craigslist_market->get( $_POST['sMarketId'] );
-
-                // Get addresses
-                $account_pagemeta = new AccountPagemeta();
-                $addresses = @unserialize( $account_pagemeta->get_by_account_and_keys( $account->id, 'addresses' ) );
-
-                // Create as many locations as we can, up to 10;
-                if ( is_array( $addresses ) )
-                foreach ( $addresses as $addr ) {
-                    $locations[] = $addr['city'] . ', ' . $addr['state'];
-                }
-
-                $locations[] = $craigslist_market->market;
-
-                if ( !empty( $craigslist_market->area ) )
-                    $locations[] = $craigslist_market->city . ', ' . $craigslist_market->state;
-
-                $locations[] = $craigslist_market->city;
-                $locations[] = $craigslist_market->city . ' Area';
-
-                // Finalize the locations to 10 at the max
-                $locations = array_slice( array_unique( $locations ), 0, 10 );
-
-                // Add the store link
-                if ( 1 == $account->pages && !empty( $account->domain ) ) {
-                    $url = 'http://' . $account->domain . '/';
-                    $store['storelink'] = $url;
-                }
-
-                // See if they have a remote logo
-                $remote_logo = stristr( $account->logo, 'http' );
-
-                /**
-                 * @var string $url
-                 */
-                // Add a store logo if they have one
-                if ( !empty( $website['logo'] ) && ( $remote_logo || isset( $url ) ) ) {
-                    $logo = ( $remote_logo ) ? $website['logo'] :  "{$url}custom/uploads/images/" . $website['logo'];
-                    $store['storelogo'] = $logo;
-                }
-
-                // Set the store name -- everyone should have one of these
-                $store['storename'] = $account->title;
-
-                // Set the phone if they have one
-                $store['storephone'] = $account->get_settings('phone');
-
-                $craigslist_customer_id = $account->get_settings('craigslist_customer_id');
-
-                if ( empty( $craigslist_customer_id ) ) {
-                    // Create the customer
-                    $craigslist_customer_id = $craigslist_api->add_customer( $account->title );
-
-                    if ( $craigslist_customer_id )
-                        $account->set_settings( array( 'craigslist-customer-id' => $craigslist_customer_id ) );
-                }
-
-                // Get the market id
-                $market_id = $craigslist_api->add_market( $craigslist_customer_id, $craigslist_market->cl_market_id, $locations, $_POST['sCLCategoryId'], $store );
-
-                // Link it in our database
-                if ( $market_id ) {
-                    $craigslist_market_link->website_id = $account->id;
-                    $craigslist_market_link->craigslist_market_id = $_POST['sMarketId'];
-                    $craigslist_market_link->market_id = $market_id;
-                    $craigslist_market_link->cl_category_id = $_POST['sCLCategoryId'];
-                    $craigslist_market_link->create();
-
-                    $this->notify( _('Your account has been successfully linked to the market and category!') );
-                } else {
-                    $errs .= _('An error occurred while trying to link your market. Please contact a system administrator.');
-                }
-            }
-        }
-
-        // Get account market links
-        $account_craigslist_market_links = $craigslist_market_link->get_by_account( $account->id );
-
-        /**
-         * @var CraigslistMarketLink $acml
-         */
-        if ( is_array( $account_craigslist_market_links ) ) {
-            $category_markets = array();
-
-            foreach ( $account_craigslist_market_links as $acml ) {
-                if ( !isset( $category_markets[$acml->cl_market_id] ) )
-                    $category_markets[$acml->cl_market_id] = $craigslist_api->get_cl_market_categories( $acml->cl_market_id );
-
-                $category = '(No Category)';
-
-                if ( is_array( $category_markets[$acml->cl_market_id] ) )
-                foreach ( $category_markets[$acml->cl_market_id] as $cm ) {
-                    if ( $cm->cl_category_id == $acml->cl_category_id ) {
-                        $category = $cm->name;
-                        break;
-                    }
-                }
-
-                $account_market_links[] = $acml->market . ' / ' . $category;
-            }
-        }
-
-        $template_response = $this->get_template_response('craigslist')
-            ->set( compact( 'account', 'account_market_links', 'craigslist_markets', 'errs' ) )
-            ->select('accounts');
-
-        $this->resources
-            ->css('accounts/edit')
-            ->javascript('accounts/craigslist');
-
-        return $template_response;
     }
 
     /**
@@ -1439,38 +1286,7 @@ class AccountsController extends BaseController {
         return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'], '/accounts/actions/' ) );
     }
 
-    /**
-     * Create craigslist account
-     *
-     * @return RedirectResponse
-     */
-    protected function create_craigslist_account() {
-        // Get the account
-        $account = new Account();
-        $account->get( $_GET['aid'] );
 
-        // Load the library
-        library( 'craigslist-api' );
-
-        // Create API object
-        $craigslist_api = new Craigslist_API( Config::key('craigslist-gsr-id'), Config::key('craigslist-gsr-key') );
-
-        // Create the customer
-        $customer_id = $craigslist_api->add_customer( $account->title );
-
-        if ( $customer_id ) {
-            $account->set_settings( array( 'craigslist-customer-id' => $customer_id ) );
-            $message = _('Craigslist account has been successfully created!');
-            $url = url::add_query_arg( 'aid', $account->id, '/accounts/craigslist/' );
-        } else {
-            $message = _('Craigslist account failed to get created. Please contact support.');
-            $url = url::add_query_arg( 'aid', $account->id, '/accounts/actions/' );
-        }
-
-        $this->notify( $message );
-
-        return new RedirectResponse( $url );
-    }
 
     /***** AJAX *****/
 
@@ -1705,54 +1521,6 @@ class AccountsController extends BaseController {
         if ( $account_note->id ) {
             $account_note->remove();
         }
-
-        return $response;
-    }
-
-    /**
-     * Get craigslist market categories
-     *
-     * @return AjaxResponse
-     */
-    protected function get_craigslist_market_categories() {
-        // Verify the nonce
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_POST['clmid'] ) && isset( $_POST['aid'] ), _('Failed to get craigslist market categories') );
-
-        // If there is an error or now user id, return
-        if ( $response->has_error() )
-            return $response;
-
-        // Get the account
-        $account = new Account();
-        $account->get( $_POST['aid'] );
-
-        // Get the craigslist market id
-        $craigslist_market_link = new CraigslistMarketLink();
-        $cl_category_ids = $craigslist_market_link->get_cl_category_ids_by_account( $account->id, $_POST['clmid'] );
-
-        // Load Craigslist API
-        library('craigslist-api');
-
-        $craigslist_api = new Craigslist_API( Config::key('craigslist-gsr-id'), Config::key('craigslist-gsr-key') );
-        $market_categories = $craigslist_api->get_cl_market_categories( $_POST['clmid'] );
-
-        // Need to create new options
-        $options_html = '<option value="">-- ' . _('Select Category') . ' --</option>';
-
-        if ( is_array( $market_categories ) )
-        foreach ( $market_categories as $mc ) {
-            if ( in_array( $mc->cl_category_id, $cl_category_ids ) )
-                continue;
-
-            $options_html .= '<option value="' . $mc->cl_category_id . '">' . $mc->name . '</option>';
-        }
-
-        // Replace old ones
-        jQuery('#sCLCategoryId')->empty()->append( $options_html );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
