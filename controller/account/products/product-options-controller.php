@@ -100,7 +100,7 @@ class ProductOptionsController extends BaseController {
 
             $product_option = new ProductOption();
             $product_option->website_id = $this->user->account->id;
-            $product_option->name = $_POST['hName'];
+            $product_option->name = current($_POST['option-name']);
             $product_option->type = $_POST['hType'];
             $product_option->create();
 
