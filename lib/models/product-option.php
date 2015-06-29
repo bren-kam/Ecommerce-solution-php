@@ -39,4 +39,19 @@ class ProductOption extends ActiveRecordBase {
 
         $this->query( 'INSERT INTO `product_option_product` ( `product_option_id`, `product_id` ) VALUES ' . $values );
     }
+
+    /**
+     * Get by product
+     *
+     * @param int $website_id
+     * @param int $product_id
+     * @return ProductOption[]
+     */
+    public function get_by_product( $website_id, $product_id ) {
+        return $this->prepare(
+            'SELECT po.`id`, po.`name`, po.`type` FROM `product_option` po LEFT JOIN `product_option_product` pop ON ( pop.`product_option_id` = po.`id` ) WHERE po.`website_id` = :website_id AND pop.`product_id` = :product_id'
+            , 'ii'
+            , array( ':website_id' => $website_id, ':product_id' => $product_id )
+        )->get_results( PDO::FETCH_CLASS, 'ProductOption' );
+    }
 }

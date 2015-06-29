@@ -605,5 +605,16 @@ class Product extends ActiveRecordBase {
         )->get_var();
     }
 
-
+    /**
+     * Get By Parent
+     * @param $parent_product_id
+     * @return Product[]
+     */
+    public function get_by_parent( $parent_product_id ) {
+        return $this->prepare(
+            'SELECT p.`product_id` as `id`, p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_min`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`depth`, p.`height`, p.`length`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, b.`name` AS brand, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id`, c.`name` AS category, p.`parent_product_id` FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) WHERE p.`parent_product_id` = :parent_product_id GROUP BY p.`product_id`'
+            , 'i'
+            , array( ':parent_product_id' => $parent_product_id )
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
 }

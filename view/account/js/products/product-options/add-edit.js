@@ -23,10 +23,6 @@ ProductOptionEditor = {
         $('#add-product-option-group').click(ProductOptionEditor.addGroup);
         $('body').on( 'click', '.delete-product-option-group', ProductOptionEditor.removeGroup );
 
-        $('#product-option-name').keyup( function(){
-            $('#hName').val($(this).val());
-        });
-
         if ( $('#product-option-group-container div').size() == 0 ) {
             ProductOptionEditor.addGroup();
         }

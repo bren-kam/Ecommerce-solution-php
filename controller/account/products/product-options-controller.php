@@ -115,12 +115,14 @@ class ProductOptionsController extends BaseController {
                 $child_product->clone_product($product->product_id, $this->user->id);
                 $child_product->get($child_product->product_id);
 
-                $product_ids[] = $child_product->website_id = $this->user->account->id;
+                $child_product->website_id = $this->user->account->id;
                 $child_product->sku .= '-' . $sku_suffix;
                 $child_product->name .= ' ' . $name_suffix;
                 $child_product->name = str_replace(' (Clone)', '', $child_product->name );
                 $child_product->parent_product_id = $product->product_id;
                 $child_product->save();
+
+                $product_ids[] = $child_product->id;
             }
 
             $product_option->add_relations($product_ids);

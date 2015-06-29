@@ -1246,7 +1246,6 @@ class ProductsController extends BaseController {
     protected function edit() {
         // Instantiate objects
         $account_product = new AccountProduct();
-        $account_product_option = new AccountProductOption();
         $product_option = new ProductOption();
         $website_coupon = new WebsiteCoupon();
         $product = new Product();  // For getting images
@@ -1255,11 +1254,7 @@ class ProductsController extends BaseController {
         // Get variables
         $account_product->get( $_GET['pid'], $this->user->account->id );
         $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
-        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_GET['pid'] );
-        $product_options_array = array_merge(
-            $product_option->get_by_product( $_GET['pid'] )
-            , $product_option->get_by_website( $this->user->account->id )
-        );
+        $account_product->product_options = $product_option->get_by_product( $this->user->account->id, $_GET['pid'] );
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
@@ -1274,16 +1269,10 @@ class ProductsController extends BaseController {
         }
         $account_product->link .= ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
 
-        $product_options = array();
-
-        if ( $product_options_array )
-		foreach ( $product_options_array as $po ) {
-			$product_options[$po->id]['option_type'] = $po->type;
-			$product_options[$po->id]['option_name'] = $po->name;
-			$product_options[$po->id]['list_items'][$po->product_option_list_item_id] = $po->value;
-		}
-
         $coupons = $website_coupon->get_by_account( $this->user->account->id );
+
+        // Get Product Options
+        $child_products = $product->get_by_parent( $product->product_id );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -1298,7 +1287,7 @@ class ProductsController extends BaseController {
         $response = new CustomResponse( $this->resources, 'products/edit' );
         $response->set( array(
             'product' => $account_product
-            , 'product_options' => $product_options
+            , 'child_products' => $child_products
             , 'coupons' => $coupons
         ) );
 

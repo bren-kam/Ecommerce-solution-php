@@ -31,7 +31,6 @@
                     </div>
 
                     <input type="hidden" name="hType" value="drop-down-list" />
-                    <input type="hidden" name="hName" id="hName" value="" />
                     <?php nonce::field('add_edit'); ?>
 
                     <p>
