@@ -125,9 +125,12 @@ class ProductOptionsController extends BaseController {
                 $product_ids[] = $child_product->id;
             }
 
+            // add new products to website
+            $account_product = new AccountProduct();
+            $account_product->add_bulk_by_ids( $this->user->account->id, $product_ids );
             $product_option->add_relations($product_ids);
 
-            return new RedirectResponse('/products/product-options/');
+            return new RedirectResponse('/products/#!p={$product->product_id}/options');
         }
 
         $this->resources
