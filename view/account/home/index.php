@@ -128,7 +128,7 @@
                                     <?php foreach($website_reaches as $reach): ?>
                                         <tr>
                                             <td>
-                                                <a href="/products/reaches/reach/?wrid=<?php echo $reach->website_reach_id ?>"><?php echo $reach->name . ( $reach->meta['product-name'] ? ' - ' . $reach->meta['product-name'] : '' ) ?></a>
+                                                <a href="/sales-desk/reach/?wrid=<?php echo $reach->website_reach_id ?>"><?php echo $reach->name . ( $reach->meta['product-name'] ? ' - ' . $reach->meta['product-name'] : '' ) ?></a>
                                             </td>
                                             <td class="text-right"><?php echo (new DateTime($reach->date_created))->format('m/d/Y') ?></td>
                                         </tr>

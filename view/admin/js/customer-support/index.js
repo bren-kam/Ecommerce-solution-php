@@ -202,8 +202,7 @@ var Ticket = {
                 Ticket.container.find('.assign-to-user').data('assign-to', null).css('color', '#333');
                 Ticket.container.find('.ticket-user-name').append(' - ' + currentTicket.website);
             } else {
-                Ticket.container.find('.assign-to-user').data('assign-to', null).removeAttr('style');
-                Ticket.container.find('.assign-to-user').data('assign-to', currentTicket.user_id);
+                Ticket.container.find('.assign-to-user').data('assign-to', currentTicket.user_id).removeAttr('style');
             }
             Ticket.container.find('.ticket-user-email').text('<' + currentTicket.email + '>');
             Ticket.container.find('.ticket-user-edit').attr('href', '/users/add-edit/?uid=' + currentTicket.user_id);
@@ -247,7 +246,14 @@ var Ticket = {
 
             // Comments --
             Ticket.commentsContainer.empty();
-            var comments = response.comments;
+			var comments = [];
+			
+			for ( i in response.comments ) {
+				comments[i] = response.comments[i];
+			}
+			
+            comments = comments.sort(function(a, b){return b.id-a.id});
+			
             for ( i in comments ) {
                 var comment = comments[i];
                 var item = Ticket.commentTemplate.clone();
