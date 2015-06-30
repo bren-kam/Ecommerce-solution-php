@@ -1722,12 +1722,19 @@ class AccountsController extends BaseController {
         $server->get( $account->server_id );
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
         ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
-        ssh2_exec( $ssh_connection, "mv /home/$username/public_html/index.php /home/$username/public_html/index.php.old" );
-        ssh2_exec( $ssh_connection, "cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
-        ssh2_exec( $ssh_connection, "sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
+        // SSH Connection
+        $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
+        ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+        // Setup as root
+        ssh2_exec( $ssh_connection, "sudo su -" );
+
+        ssh2_exec( $ssh_connection, "sudo mv /home/$username/public_html/index.php /home/$username/public_html/index.php.old" );
+        ssh2_exec( $ssh_connection, "sudo cp /gsr/systems/gsr-site/copy/index.php /home/$username/public_html/index.php" );
+        ssh2_exec( $ssh_connection, "sudo sed -i 's/\\[website_id\\]/{$account->id}/g' /home/$username/public_html/index.php" );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $account->get_settings('cloudflare-zone-id');

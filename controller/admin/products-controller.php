@@ -381,15 +381,15 @@ ProductsController extends BaseController {
         if ( isset( $_SESSION['products']['visibility'] ) && !empty( $_SESSION['products']['visibility'] ) ) {
             switch ( $_SESSION['products']['visibility'] ) {
                 default:
-                case 'public':
+                case Product::PUBLISH_VISIBILITY_PUBLIC:
                     $visibility = " AND p.`publish_visibility` = 'public'";
                 break;
 
-                case 'private':
+                case Product::PUBLISH_VISIBILITY_PRIVATE:
                     $visibility = " AND p.`publish_visibility` = 'private'";
                 break;
 
-                case 'deleted':
+                case Product::PUBLISH_VISIBILITY_DELETED:
                     $visibility = " AND p.`publish_visibility` = 'deleted'";
                 break;
 
@@ -568,15 +568,15 @@ ProductsController extends BaseController {
         // Visibility
         if ( isset( $_SESSION['products']['visibility'] ) ) {
             switch ( $_SESSION['products']['visibility'] ) {
-                case 'public':
+                case Product::PUBLISH_VISIBILITY_PUBLIC:
                     $where .= " AND p.`publish_visibility` = 'public'";
                 break;
 
-                case 'private':
+                case Product::PUBLISH_VISIBILITY_PRIVATE:
                     $where .= " AND p.`publish_visibility` = 'private'";
                 break;
 
-                case 'deleted':
+                case Product::PUBLISH_VISIBILITY_DELETED:
                     $where .= " AND p.`publish_visibility` = 'deleted'";
                 break;
             }

@@ -124,7 +124,7 @@
                             <button type="submit" class="btn btn-primary pull-right">Save DNS</button>
                         </p>
 
-                        <?php nonce::field('dns'); ?>
+                        <?php nonce::field('domain'); ?>
                     <?php else: ?>
                     <p>Please adjust your name servers to the following:</p>
                     <ul>
@@ -132,9 +132,8 @@
                         <li><?php echo $ns; ?></li>
                         <?php endforeach; ?>
                     </ul>
-                </form>
-
             <?php endif; ?>
+                </form>
             </div>
         </section>
     </div>
