@@ -27,7 +27,7 @@ class ProductOptionItem extends ActiveRecordBase {
      * @param int $product_option_id
      * @return ProductOptionItem[]
      */
-    public function get_by_product( $product_option_id ) {
+    public function get_by_product_option( $product_option_id ) {
         return $this->prepare(
             'SELECT * FROM `product_option_item` WHERE `product_option_id` = :product_option_id'
             , 'i'
