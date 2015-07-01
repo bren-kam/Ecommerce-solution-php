@@ -133,6 +133,7 @@
                                     <?php } ?>
                                 </ul>
                                 <?php endif; ?>
+                                <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Edit product options</a>
                             <?php } ?>
                         <?php endif; ?>
                         <?php if ( $child_products ): ?>
@@ -157,12 +158,11 @@
                             </table>
 
                             <p>
-                                <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Create product options for this product</a>
                                 <a href="/products/product-options/pricing-tool/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Product Options Pricing Tool</a>
                             </p>
                         <?php else: ?>
                             <p>
-                                <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Create product options for this product</a>
+                                <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Create product options</a>
                             </p>
                         <?php endif; ?>
 

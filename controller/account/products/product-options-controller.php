@@ -24,6 +24,9 @@ class ProductOptionsController extends BaseController {
         $product = new Product();
         $product->get($product_id);
 
+        $account_product = new AccountProduct();
+        $account_product->get( $product_id, $this->user->account->id );
+
         if ( $this->verified() ) {
             $factor_permutations = function ($lists) {
                 $permutations = array();
@@ -95,6 +98,6 @@ class ProductOptionsController extends BaseController {
             ->kb( 19 )
             ->select( 'products', 'products/product-options/add' )
             ->add_title( 'Add' )
-            ->set( compact( 'product' ) );
+            ->set( compact( 'product', 'account_product' ) );
     }
 }
