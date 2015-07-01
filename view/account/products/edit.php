@@ -120,9 +120,23 @@
 
                     </div>
                     <div class="tab-pane <?php if ($_GET['tab'] == 'options' ) echo 'active' ?>" id="options">
+                        <?php if ( $product->product_options() ): ?>
+                            <h3>Product Options</h3>
+                            <?php foreach( $product->product_options() as $product_option ) { ?>
+                            <h4><?php echo $product_option->name; ?></h4>
+                            <?php if ( $product_option->items() ): ?>
+                            <ul>
+                                <?php foreach( $product_option->items() as $item ) { ?>
+                                    <li><?php echo $item->name; ?></li>
+                                <?php } ?>
+                            </ul>
 
+                            <?php
+                                endif;
+                            endif;
+                        ?>
                         <?php if ( $child_products ): ?>
-                            <h3>Current Product Options</h3>
+                            <h3>Product Option Mutations</h3>
 
                             <table class="table">
                                 <tbody>

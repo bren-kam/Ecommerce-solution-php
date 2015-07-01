@@ -4,6 +4,11 @@ class ProductOption extends ActiveRecordBase {
     public $id, $website_id, $product_id, $name, $type;
 
     /**
+     * @var ProductOptionItem[]
+     */
+    protected $items;
+
+    /**
      * Setup the initial data
      */
     public function __construct() {
@@ -35,5 +40,20 @@ class ProductOption extends ActiveRecordBase {
             , 'ii'
             , array( ':website_id' => $website_id, ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'ProductOption' );
+    }
+
+    /**
+     * Link to items
+     *
+     * @param bool $force_refresh [optional]
+     * @return ProductOptionItem[]
+     */
+    public function items( $force_refresh = false ){
+        if ( $force_refresh || empty( $this->items ) ) {
+            $product_option_item = new ProductOptionItem();
+            $this->items = $product_option_item->get_by_product_option( $this->id );
+        }
+
+        return $this->items;
     }
 }

@@ -1254,7 +1254,7 @@ class ProductsController extends BaseController {
         // Get variables
         $account_product->get( $_GET['pid'], $this->user->account->id );
         $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
-        $account_product->product_options = $product_option->get_by_product( $this->user->account->id, $_GET['pid'] );
+        $account_product->product_options();
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();

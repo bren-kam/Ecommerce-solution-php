@@ -15,7 +15,12 @@ class AccountProduct extends ActiveRecordBase {
         , $display_inventory, $inventory_tracking, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated, $setup_fee;
 
     // Artificial columns
-    public $link, $industry, $coupons, $product_options, $created_by, $count;
+    public $link, $industry, $coupons, $created_by, $count;
+
+    /**
+     * @var ProductOption[]
+     */
+    protected $product_options;
 
     // Columns from other tables
     public $brand_id, $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
@@ -1368,6 +1373,21 @@ class AccountProduct extends ActiveRecordBase {
              INNER JOIN products p ON p.product_id = wp.product_id
              WHERE wp.website_id = {$website_id} AND p.brand_id IN (". implode(',', $brand_ids) .")"
         );
+    }
+
+    /**
+     * Link to product_options
+     *
+     * @param bool $force_refresh [optional]
+     * @return ProductOption[]
+     */
+    public function product_options( $force_refresh = false ){
+        if ( $force_refresh || empty( $this->product_options ) ) {
+            $product_option = new ProductOption();
+            $this->product_options = $product_option->get_by_product( $this->website_id, $this->product_id );
+        }
+
+        return $this->product_options;
     }
 
 }
