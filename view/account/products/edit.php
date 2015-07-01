@@ -133,8 +133,8 @@
                                     <?php } ?>
                                 </ul>
                                 <?php endif; ?>
-                                <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Edit product options</a>
                             <?php } ?>
+                            <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Edit product options</a>
                         <?php endif; ?>
                         <?php if ( $child_products ): ?>
                             <h3>Product Option Mutations</h3>
