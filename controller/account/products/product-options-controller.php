@@ -47,6 +47,7 @@ class ProductOptionsController extends BaseController {
             foreach ( $_POST['option-name'] as $key => $name ) {
                 $product_option = new ProductOption();
                 $product_option->website_id = $this->user->account->id;
+                $product_option->product_id = $product->id;
                 $product_option->name = $name;
                 $product_option->type = $_POST['hType'];
                 $product_option->create();

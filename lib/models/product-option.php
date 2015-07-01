@@ -31,7 +31,7 @@ class ProductOption extends ActiveRecordBase {
      */
     public function get_by_product( $website_id, $product_id ) {
         return $this->prepare(
-            'SELECT po.`id`, po.`name`, po.`type` FROM `product_option` po LEFT JOIN `product_option_product` pop ON ( pop.`product_option_id` = po.`id` ) WHERE po.`website_id` = :website_id AND pop.`product_id` = :product_id'
+            'SELECT `id`, `name`, `type` FROM `product_option` WHERE `website_id` = :website_id AND `product_id` = :product_id'
             , 'ii'
             , array( ':website_id' => $website_id, ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'ProductOption' );
