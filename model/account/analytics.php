@@ -681,6 +681,7 @@ class Analytics {
 
                     $log = "Success\n$log";
                     $api_ext_log = new ApiExtLog();
+                    $api_ext_log->website_id = $account->id;
                     $api_ext_log->api = 'Analytics OAuth';
                     $api_ext_log->method = 'Token';
                     $api_ext_log->raw_response = $log;
@@ -743,6 +744,7 @@ class Analytics {
         }
 
         $api_ext_log = new ApiExtLog();
+        $api_ext_log->website_id = $account->id;
         $api_ext_log->api = 'Analytics OAuth';
         $api_ext_log->method = 'Token';
         $api_ext_log->raw_response = $log;
