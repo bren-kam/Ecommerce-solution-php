@@ -13,60 +13,6 @@ class ProductOptionsController extends BaseController {
         $this->title .= _('Product Options');
     }
 
-    /**
-     * List Users
-     *
-     * @return TemplateResponse
-     */
-    protected function index() {
-        // Don't forget to RUN:
-        // alter table products add column parent_product_id int null default null, add index fk_products_products(parent_product_id);
-        return $this->get_template_response( 'index' )
-            ->kb( 18 )
-            ->add_title( _('Product Options') )
-            ->select( 'products', 'products/product-options' );
-    }
-
-    /**
-     * List Product Options
-     *
-     * @return DataTableResponse
-     */
-    protected function list_all() {
-        // Get response
-        $dt = new DataTableResponse( $this->user );
-
-        // Set Order by
-        $dt->order_by( 'p.`product_id`', 'p.`sku`', 'p.`name`' );
-        $dt->search( array( 'p.`product_id`', 'p.`sku`' => true, 'p.`name`' => true ) );
-        $dt->add_where( " AND p.website_id = {$this->user->account->id} " );
-
-        // Get product option
-        $product = new Product();
-
-        // Get attributes
-        $child_products = $product->list_child_products( $dt->get_variables() );
-        $dt->set_row_count( $product->count_child_products( $dt->get_count_variables() ) );
-
-        // Set initial data
-        $data = [];
-
-        if ( is_array( $child_products ) ) {
-            foreach ($child_products as $cp) {
-                $data[] = [
-                    $cp->product_id . "<br><a href=\"/products/product-builder/add-edit/?pid={$cp->product_id}\">Edit</a>",
-                    $cp->sku,
-                    $cp->name,
-                ];
-            }
-        }
-
-        // Send response
-        $dt->set_data( $data );
-
-        return $dt;
-    }
-
 
     /**
      * Add/Edit

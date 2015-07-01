@@ -571,41 +571,6 @@ class Product extends ActiveRecordBase {
     }
 
     /**
-     * Get all information of the products
-     *
-     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-     * @return Product[]
-     */
-    public function list_child_products( $variables ) {
-        // Get the variables
-        list( $where, $values, $order_by, $limit ) = $variables;
-
-        return $this->prepare(
-            "SELECT p.`product_id`, p.`sku`, p.`name` FROM products p WHERE p.parent_product_id IS NOT NULL $where $order_by LIMIT $limit"
-            , str_repeat( 's', count( $values ) )
-            , $values
-        )->get_results( PDO::FETCH_CLASS, 'Product' );
-    }
-
-    /**
-     * Count all the products
-     *
-     * @param array $variables
-     * @return int
-     */
-    public function count_child_products( $variables ) {
-        // Get the variables
-        list( $where, $values ) = $variables;
-
-        // Get the website count
-        return $this->prepare(
-            "SELECT COUNT(*) FROM products p WHERE p.parent_product_id IS NOT NULL $where"
-            , str_repeat( 's', count( $values ) )
-            , $values
-        )->get_var();
-    }
-
-    /**
      * Get By Parent
      * @param $parent_product_id
      * @return Product[]
