@@ -22,25 +22,6 @@ class ProductOption extends ActiveRecordBase {
     }
 
     /**
-     * Add Product Option > Product Relations
-     *
-     * @param array $product_ids
-     * @throws ModelException
-     */
-    public function add_relations( array $product_ids ) {
-        $values = '';
-
-        foreach ( $product_ids as &$product_id ) {
-            if ( !empty( $values ) )
-                $values .= ',';
-
-            $values .= '('  . (int) $this->id  . ', ' . (int) $product_id . ')';
-        }
-
-        $this->query( 'INSERT INTO `product_option_product` ( `product_option_id`, `product_id` ) VALUES ' . $values );
-    }
-
-    /**
      * Get by product
      *
      * @param int $website_id

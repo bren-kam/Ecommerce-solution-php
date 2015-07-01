@@ -13,7 +13,6 @@ class ProductOptionsController extends BaseController {
         $this->title .= _('Product Options');
     }
 
-
     /**
      * Add/Edit
      *
@@ -26,7 +25,6 @@ class ProductOptionsController extends BaseController {
         $product->get($product_id);
 
         if ( $this->verified() ) {
-
             $factor_permutations = function ($lists) {
                 $permutations = array();
                 $iter = 0;
@@ -44,13 +42,23 @@ class ProductOptionsController extends BaseController {
                 return $permutations;
             };
 
-            $product_option = new ProductOption();
-            $product_option->website_id = $this->user->account->id;
-            $product_option->name = current($_POST['option-name']);
-            $product_option->type = $_POST['hType'];
-            $product_option->create();
-
             $product_ids = [];
+
+            foreach ( $_POST['option-name'] as $key => $name ) {
+                $product_option = new ProductOption();
+                $product_option->website_id = $this->user->account->id;
+                $product_option->name = $name;
+                $product_option->type = $_POST['hType'];
+                $product_option->create();
+
+                foreach ( $_POST['list-items'][substr($key, 1)] as $item ) {
+                    $product_option_item = new ProductOptionItem();
+                    $product_option_item->product_option_id = $product_option->id;
+                    $product_option_item->name = $item;
+                    $product_option_item->create();
+                }
+            }
+
 
             $child_sku_pieces = $factor_permutations($_POST['list-items']);
             foreach ($child_sku_pieces as $child_sku_piece) {
@@ -76,7 +84,7 @@ class ProductOptionsController extends BaseController {
             $account_product->add_bulk_by_ids( $this->user->account->id, $product_ids );
             $product_option->add_relations($product_ids);
 
-            return new RedirectResponse('/products/#!p={$product->product_id}/options');
+            return new RedirectResponse("/products/#!p={$product->product_id}/options");
         }
 
         $this->resources
@@ -89,6 +97,4 @@ class ProductOptionsController extends BaseController {
             ->add_title( 'Add' )
             ->set( compact( 'product' ) );
     }
-
-
 }
