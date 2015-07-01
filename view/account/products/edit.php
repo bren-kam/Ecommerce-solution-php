@@ -3,6 +3,7 @@
  * @var AccountProduct $product
  * @var array $product_options
  * @var WebsiteCoupon[] $coupons
+ * @var Product[] $child_products
  */
 ?>
 
@@ -22,9 +23,9 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a href="#product" role="tab" data-toggle="tab">Product &amp; Pricing</a></li>
-                    <li><a href="#options" role="tab" data-toggle="tab">Product Options</a></li>
-                    <li><a href="#shopping-cart" role="tab" data-toggle="tab">Shopping Cart</a></li>
+                    <li class="<?php if (!$_GET['tab'] || $_GET['tab'] == 'product' ) echo 'active' ?>"><a href="#product" role="tab" data-toggle="tab">Product &amp; Pricing</a></li>
+                    <li class="<?php if ($_GET['tab'] == 'options' ) echo 'active' ?>"><a href="#options" role="tab" data-toggle="tab">Product Options</a></li>
+                    <li class="<?php if ($_GET['tab'] == 'shopping-cart' ) echo 'active' ?>"><a href="#shopping-cart" role="tab" data-toggle="tab">Shopping Cart</a></li>
                     <li><a target="_blank" href="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=<?php echo $product->product_id ?>">Master Catalog</a></li>
                 </ul>
 
@@ -32,7 +33,7 @@
 
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div class="tab-pane active" id="product">
+                    <div class="tab-pane <?php if (!$_GET['tab'] || $_GET['tab'] == 'product' ) echo 'active' ?>" id="product">
 
                         <div class="row">
                             <div class="col-lg-4">
@@ -118,7 +119,8 @@
                         </div>
 
                     </div>
-                    <div class="tab-pane" id="options">
+                    <div class="tab-pane <?php if ($_GET['tab'] == 'options' ) echo 'active' ?>" id="options">
+
                         <?php if ( $child_products ): ?>
                             <h3>Current Product Options</h3>
 
@@ -150,8 +152,9 @@
                             </p>
                         <?php endif; ?>
 
+
                     </div>
-                    <div class="tab-pane" id="shopping-cart">
+                    <div class="tab-pane <?php if ($_GET['tab'] == 'shopping-cart' ) echo 'active' ?>" id="shopping-cart">
                         <div class="form-group">
                             <label for="tStoreSKU">Store SKU:</label>
                             <input type="text" class="form-control" id="tStoreSKU" name="tStoreSKU" value="<?php echo $product->store_sku ?>" />
