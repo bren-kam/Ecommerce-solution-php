@@ -1,7 +1,7 @@
 <?php
 class ProductOption extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $website_id, $name, $type;
+    public $id, $website_id, $product_id, $name, $type;
 
     /**
      * Setup the initial data
@@ -16,9 +16,10 @@ class ProductOption extends ActiveRecordBase {
     public function create() {
         $this->id = $this->insert([
             'website_id' => $this->website_id
+            , 'product_id' => $this->product_id
             , 'name' => $this->name
             , 'type' => $this->type
-        ], 'iss');
+        ], 'iiss');
     }
 
     /**
