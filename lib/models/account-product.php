@@ -1384,7 +1384,11 @@ class AccountProduct extends ActiveRecordBase {
     public function product_options( $force_refresh = false ){
         if ( $force_refresh || empty( $this->product_options ) ) {
             $product_option = new ProductOption();
-            $this->product_options = $product_option->get_by_product( $this->website_id, $this->product_id );
+            $product_options = $product_option->get_by_product( $this->website_id, $this->product_id );
+
+            foreach ( $product_options as $product_option ) {
+                $this->product_options[$product_option->id] = $product_option;
+            }
         }
 
         return $this->product_options;

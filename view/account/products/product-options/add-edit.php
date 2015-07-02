@@ -33,7 +33,7 @@
 
                                     <div class="form-group">
                                         <label>Option Name:*</label>
-                                        <input type="text" class="form-control" maxlength="200"name="option-name[n<?php echo $product_option->id; ?>]" value="<?php echo $product_option->name; ?>" />
+                                        <input type="text" class="form-control" maxlength="200" name="option-name[n<?php echo $product_option->id; ?>]" value="<?php echo $product_option->name; ?>" />
                                     </div>
 
                                     <div class="form-group product-option-item-list">
@@ -58,7 +58,7 @@
                                         <?php } ?>
                                     </div>
                                     <!-- Unique to previous product options to let them know to update it -->
-                                    <input type="hidden" name="product-option-id[]" value="<?php echo $product_option->id; ?>"?
+                                    <input type="hidden" class="action" name="action[<?php echo $product_option->id; ?>]" value="update">
                                 </div>
                             <?php } ?>
                         <?php } ?>

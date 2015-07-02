@@ -28,6 +28,31 @@ class ProductOption extends ActiveRecordBase {
     }
 
     /**
+     * Save
+     */
+    public function save() {
+        $this->update([
+            'name' => $this->name
+        ], [
+            'product_option_id' => $this->id
+        ], 's', 'i' );
+    }
+
+    /**
+     * Get by id
+     *
+     * @param int $product_option_id
+     * @param int $website_id
+     */
+    public function get( $product_option_id, $website_id ) {
+        $this->prepare(
+            'SELECT `id`, `name`, `type` FROM `product_option` WHERE `product_option_id` = :product_option_id AND `website_id` = :website_id'
+            , 'ii'
+            , array( ':product_option_id' => $product_option_id, ':website_id' => $website_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
      * Get by product
      *
      * @param int $website_id
@@ -51,9 +76,41 @@ class ProductOption extends ActiveRecordBase {
     public function items( $force_refresh = false ){
         if ( $force_refresh || empty( $this->items ) ) {
             $product_option_item = new ProductOptionItem();
-            $this->items = $product_option_item->get_by_product_option( $this->id );
+            $items = $product_option_item->get_by_product_option( $this->id );
+
+            foreach ( $items as $item ) {
+                $this->items[$item->id] = $item;
+            }
         }
 
         return $this->items;
+    }
+
+    /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete_associated_products();
+        $this->remove_self();
+    }
+
+    /**
+     * Remove self
+     */
+    protected function remove_self() {
+        $this->delete([
+            'product_option_id' => $this->id
+        ], 'i' );
+    }
+
+    /**
+     * Deleted all products associated with product option
+     */
+    protected function delete_associated_products() {
+        $this->prepare(
+            'DELETE p.* FROM `products` p LEFT JOIN `product_option_item_product` poip ON ( poip.`product_id` = p.`product_id` ) LEFT JOIN `product_option_item` poi ON ( poi.`product_option_item_id` = poip.`product_option_item_id` ) WHERE poi.`product_option_id` = :product_option_id'
+            , 'i'
+            , [':product_option_id' => $this->id]
+        )->query();
     }
 }
