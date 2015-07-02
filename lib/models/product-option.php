@@ -34,7 +34,7 @@ class ProductOption extends ActiveRecordBase {
         $this->update([
             'name' => $this->name
         ], [
-            'product_option_id' => $this->id
+            'id' => $this->id
         ], 's', 'i' );
     }
 

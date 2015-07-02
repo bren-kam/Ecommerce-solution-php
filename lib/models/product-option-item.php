@@ -22,6 +22,17 @@ class ProductOptionItem extends ActiveRecordBase {
     }
 
     /**
+     * Saves a Product Option Item
+     */
+    public function save() {
+        $this->update([
+            'name' => $this->name
+        ], [
+            'id' => $this->id
+        ], 's', 'i' );
+    }
+
+    /**
      * Get by id
      *
      * @param int $product_option_item_id

@@ -128,7 +128,10 @@ class ProductOptionsController extends BaseController {
 				}
             }
 
-            // Add product relations
+            /**
+             * Add product relations
+             * @var ProductOptionItem[] $items
+             */
 			foreach ( $options as $items ) {
 				foreach ( $items as $item ) {
 					$item->add_relations( $product_ids[$item->id] );
@@ -140,7 +143,10 @@ class ProductOptionsController extends BaseController {
                 $product_option->remove();
             }
 
-            // Delete old product option items
+            /**
+             * Delete old product option items
+             * @var ProductOptionItem[] $original_product_option_items
+             */
             foreach ( $original_product_option_items as $product_option_item ) {
                 $product_option_item->remove();
             }
