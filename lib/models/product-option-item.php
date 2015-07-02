@@ -34,4 +34,23 @@ class ProductOptionItem extends ActiveRecordBase {
             , array( ':product_option_id' => $product_option_id )
         )->get_results( PDO::FETCH_CLASS, 'ProductOptionItem' );
     }
+
+    /**
+     * Add Relations
+     *
+     * @param array $product_ids
+     */
+    public function add_relations( array $product_ids ) {
+        if ( !$product_ids )
+            return;
+
+        $product_ids_count = count( $product_ids );
+        $values = substr( str_repeat( ',(' . (int) $this->id . ', ? )', $product_ids_count ), 1 );
+
+        $this->prepare(
+            'INSERT INTO `product_option_item_product` (`product_option_item_id`, `product_id`) VALUES ' . $values
+            , str_repeat( 's', count( $product_ids ) )
+            , $product_ids
+        )->query();
+    }
 }

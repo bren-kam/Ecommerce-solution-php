@@ -46,6 +46,7 @@ class ProductOptionsController extends BaseController {
             };
 
             $product_ids = [];
+            $options = [];
 
             foreach ( $_POST['option-name'] as $key => $name ) {
                 $product_option = new ProductOption();
@@ -60,13 +61,19 @@ class ProductOptionsController extends BaseController {
                     $product_option_item->product_option_id = $product_option->id;
                     $product_option_item->name = $item;
                     $product_option_item->create();
+                    
+                    $options[$product_option->id][] = $product_option_item;
                 }
             }
-
-
-            $child_sku_pieces = $factor_permutations($_POST['list-items']);
-            foreach ($child_sku_pieces as $child_sku_piece) {
-                $sku_suffix = strtolower(format::slug( implode('-', $child_sku_piece) ) );
+            
+            $item_permutations = $factor_permutations( $options );
+            foreach ($item_permutations as $permutation_group) {
+				$names = [];
+				foreach ( $permutation_group as $item ) {
+					$names[] = $item->name;
+				}
+				
+                $sku_suffix = strtolower(format::slug( implode('-', $names) ) );
                 $name_suffix = implode(' ', $child_sku_piece);
 
                 $child_product = new Product();
@@ -80,8 +87,16 @@ class ProductOptionsController extends BaseController {
                 $child_product->parent_product_id = $product->product_id;
                 $child_product->save();
 
-                $product_ids[] = $child_product->id;
+				foreach ( $permutation_group as $item ) {
+					$product_ids[$item->id][] = $child_product->id;
+				}
             }
+			
+			foreach ( $options as $items ) {
+				foreach ( $items as $item ) {
+					$item->add_relations( $product_ids[$item->id] );
+				}
+			}
 
             // add new products to website
             $account_product = new AccountProduct();
