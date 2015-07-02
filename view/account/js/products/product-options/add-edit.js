@@ -65,7 +65,7 @@ ProductOptionEditor = {
         if (e) e.preventDefault();
 
         var productOptionGroup = $(this).parents('.product-option-group');
-        if ( !productOptionGroup.has('input.action') || productOptionGroup.has('input.action') && confirm('By clicking "OK" you will also delete all Product Permutations.') )
+        if ( !productOptionGroup.has('input.action') || productOptionGroup.has('input.action') && confirm('By clicking "OK" you will also delete all Product Permutations relating to this item.') )
             $(this).parents('.product-option-item:first').remove();
     }
 
@@ -84,7 +84,7 @@ ProductOptionEditor = {
     , removeGroup: function() {
         var productOptionGroup = $(this).parents('.product-option-group');
 
-        if ( !productOptionGroup.has('input.action') || productOptionGroup.has('input.action') && confirm('By clicking "OK" you will also delete all Product Permutations.') )
+        if ( !productOptionGroup.has('input.action') || productOptionGroup.has('input.action') && confirm('By clicking "OK" you will also delete all Product Permutations in this product option.') )
             productOptionGroup.remove();
     }
 }

@@ -29,7 +29,7 @@ class ProductOptionItem extends ActiveRecordBase {
      */
     public function get( $product_option_item_id, $product_option_id ) {
         $this->prepare(
-            'SELECT `id`, `name` FROM `product_option_item` WHERE `product_option_item_id` = :product_option_item_id AND `product_option_id` = :product_option_id'
+            'SELECT `id`, `name` FROM `product_option_item` WHERE `id` = :product_option_item_id AND `product_option_id` = :product_option_id'
             , 'ii'
             , array( ':product_option_item_id' => $product_option_item_id, ':product_option_id' => $product_option_id )
         )->get_row( PDO::FETCH_INTO, $this );
