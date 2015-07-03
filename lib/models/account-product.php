@@ -31,6 +31,22 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Create
+     */
+    public function create() {
+        $this->insert( array(
+            'website_id' => $this->website_id
+            , 'product_id' => $this->product_note
+            , 'alternate_price' => $this->alternate_price
+            , 'price' => $this->price
+            , 'sale_price' => $this->sale_price
+            , 'wholesale_price' => $this->wholesale_price
+            , 'inventory' => $this->inventory
+            , 'active' => $this->active
+        ), 'iiddddii' );
+    }
+
+    /**
      * Get
      *
      * @param int $product_id

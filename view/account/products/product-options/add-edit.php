@@ -31,6 +31,7 @@
                     </div>
 
                     <input type="hidden" name="hType" value="drop-down-list" />
+                    <input type="hidden" name="hName" id="hName" value="" />
                     <?php nonce::field('add_edit'); ?>
 
                     <p>
@@ -46,7 +47,7 @@
 </div>
 
 <div class="input-group product-option-item hidden" id="product-option-item-template">
-    <input type="text" class="form-control" name="list-items[]" />
+    <input type="text" class="form-control" name="list-items[]" id="product-option-name" />
     <span class="input-group-btn">
         <button type="button" class="btn btn-danger delete-product-option-item"><i class="fa fa-trash-o"></i></button>
     </span>

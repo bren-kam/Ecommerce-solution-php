@@ -98,6 +98,14 @@ class ProductOptionsController extends BaseController {
                 return $permutations;
             };
 
+            $product_option = new ProductOption();
+            $product_option->website_id = $this->user->account->id;
+            $product_option->name = $_POST['hName'];
+            $product_option->type = $_POST['hType'];
+            $product_option->create();
+
+            $product_ids = [];
+
             $child_sku_pieces = $factor_permutations($_POST['list-items']);
             foreach ($child_sku_pieces as $child_sku_piece) {
                 $sku_suffix = strtolower(format::slug( implode('-', $child_sku_piece) ) );
@@ -107,13 +115,15 @@ class ProductOptionsController extends BaseController {
                 $child_product->clone_product($product->product_id, $this->user->id);
                 $child_product->get($child_product->product_id);
 
-                $child_product->website_id = $this->user->account->id;
+                $product_ids[] = $child_product->website_id = $this->user->account->id;
                 $child_product->sku .= '-' . $sku_suffix;
                 $child_product->name .= ' ' . $name_suffix;
                 $child_product->name = str_replace(' (Clone)', '', $child_product->name );
                 $child_product->parent_product_id = $product->product_id;
                 $child_product->save();
             }
+
+            $product_option->add_relations($product_ids);
 
             return new RedirectResponse('/products/product-options/');
         }

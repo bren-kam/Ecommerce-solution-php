@@ -47,7 +47,6 @@ if ( LIVE ) {
 /** Include Studio98 library */
 require LIB_PATH . 'ext/s98lib/init.php';
 
-
 /** Dynamic definitions */
 $domain = ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : url::domain( $_SERVER['SERVER_NAME'], false );
 

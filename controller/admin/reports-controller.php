@@ -25,7 +25,6 @@ class ReportsController extends BaseController {
             , 'geo_marketing' => 'GeoMarketing'
             , 'shopping_cart' => _('Shopping Cart')
             , 'room_planner' => _('Room Planner')
-            , 'craigslist' => _('Craigslist')
             , 'domain_registration' => _('Domain')
             , 'additional_email_addresses' => _('Additional Email Addresses')
         );
@@ -182,7 +181,6 @@ class ReportsController extends BaseController {
             , 'geo_marketing'
             , 'shopping_cart'
             , 'room_planner'
-            , 'craigslist'
             , 'domain_registration'
             , 'additional_email_addresses'
         );
