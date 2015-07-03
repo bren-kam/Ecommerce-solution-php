@@ -33,7 +33,7 @@
 
                                     <div class="form-group">
                                         <label>Option Name:*</label>
-                                        <input type="text" class="form-control" maxlength="200" name="option-name[n<?php echo $product_option->id; ?>]" value="<?php echo $product_option->name; ?>" />
+                                        <input type="text" class="form-control" readonly="readonly" maxlength="200" name="option-name[n<?php echo $product_option->id; ?>]" value="<?php echo $product_option->name; ?>" />
                                     </div>
 
                                     <div class="form-group product-option-item-list">
@@ -49,7 +49,7 @@
                                             foreach ( $product_option->items() as $item ) {
                                             ?>
                                             <div class="input-group product-option-item">
-                                                <input type="text" class="form-control" name="list-items[<?php echo $product_option->id; ?>][<?php echo $item->id; ?>]" value="<?php echo $item->name; ?>" />
+                                                <input type="text" class="form-control" readonly="readonly" name="list-items[<?php echo $product_option->id; ?>][<?php echo $item->id; ?>]" value="<?php echo $item->name; ?>" />
                                                 <span class="input-group-btn">
                                                     <button type="button" class="btn btn-danger delete-product-option-item"><i class="fa fa-trash-o"></i></button>
                                                 </span>
