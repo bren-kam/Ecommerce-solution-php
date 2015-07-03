@@ -71,7 +71,7 @@ class ProductOption extends ActiveRecordBase {
      * Link to items
      *
      * @param bool $force_refresh [optional]
-     * @return ProductOptionItem[]
+     * @return ProductOptionItem[]|array
      */
     public function items( $force_refresh = false ){
         if ( $force_refresh || empty( $this->items ) ) {
@@ -83,7 +83,7 @@ class ProductOption extends ActiveRecordBase {
             }
         }
 
-        return $this->items;
+        return ( $this->items ) ? $this->items : array();
     }
 
     /**
@@ -108,7 +108,7 @@ class ProductOption extends ActiveRecordBase {
      */
     protected function delete_associated_products() {
         $this->prepare(
-            'DELETE p.* FROM `products` p LEFT JOIN `product_option_item_product` poip ON ( poip.`product_id` = p.`product_id` ) LEFT JOIN `product_option_item` poi ON ( poi.`product_option_item_id` = poip.`product_option_item_id` ) WHERE poi.`product_option_id` = :product_option_id'
+            'DELETE p.* FROM `products` p LEFT JOIN `product_option_item_product` poip ON ( poip.`product_id` = p.`product_id` ) LEFT JOIN `product_option_item` poi ON ( poi.`id` = poip.`product_option_item_id` ) WHERE poi.`product_option_id` = :product_option_id'
             , 'i'
             , [':product_option_id' => $this->id]
         )->query();

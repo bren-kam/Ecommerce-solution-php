@@ -1379,7 +1379,7 @@ class AccountProduct extends ActiveRecordBase {
      * Link to product_options
      *
      * @param bool $force_refresh [optional]
-     * @return ProductOption[]
+     * @return ProductOption[]|array
      */
     public function product_options( $force_refresh = false ){
         if ( $force_refresh || empty( $this->product_options ) ) {
@@ -1391,7 +1391,7 @@ class AccountProduct extends ActiveRecordBase {
             }
         }
 
-        return $this->product_options;
+        return ( $this->product_options ) ? $this->product_options : array();
     }
 
 }
