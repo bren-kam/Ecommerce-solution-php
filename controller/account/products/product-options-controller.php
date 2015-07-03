@@ -109,6 +109,9 @@ class ProductOptionsController extends BaseController {
 				foreach ( $permutation_group as $item ) {
 					$names[] = $item->name;
 				}
+
+                if ( empty( $item->name ) )
+                    contiue;
 				
                 $sku_suffix = strtolower(format::slug( implode('-', $names) ) );
                 $name_suffix = implode(' ', $names);
