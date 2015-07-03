@@ -659,7 +659,7 @@ class CronsController extends BaseController {
                 }
 
                 $email_body_url = "http://{$account->domain}/shopping-cart/remarketing-email/?wcid={$website_cart['website_cart_id']}&email_number={$email_number}";
-                $email_body = '';//file_get_contents($email_body_url);
+                $email_body = file_get_contents($email_body_url);
 
                 if ( strpos($email_body, '<img src="" alt="" border="0"/>') !== FALSE ) {
                     echo "> > Could not get email for cart {$website_cart['website_cart_id']}, trying again later\n";
