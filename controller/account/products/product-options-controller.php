@@ -45,13 +45,13 @@ class ProductOptionsController extends BaseController {
                 return $permutations;
             };
 
-
             // Set Variables
             $original_product_options = $account_product->product_options();
             $original_product_option_items = [];
             foreach ( $original_product_options as $original_product_option ) {
-                $original_product_option_items = array_merge( $original_product_option_items, $original_product_option->items() );
+                $original_product_option_items = $original_product_option_items + $original_product_option->items();
             }
+			
             $product_ids = [];
             $options = [];
 
@@ -92,17 +92,18 @@ class ProductOptionsController extends BaseController {
                         $product_option->save();
 
                         // Update the list of product options (that will be removed)
-                        unset( $original_product_option_items[$item->id] );
+                        unset( $original_product_option_items[$product_option_item->id] );
                     } else {
                         $product_option_item->product_option_id = $product_option->id;
                         $product_option_item->create();
+						
+						$options[$product_option->id][] = $product_option_item;
                     }
-
-                    $options[$product_option->id][] = $product_option_item;
                 }
             }
             
             $item_permutations = $factor_permutations( $options );
+			
             foreach ($item_permutations as $permutation_group) {
 				$names = [];
 				foreach ( $permutation_group as $item ) {
@@ -152,9 +153,11 @@ class ProductOptionsController extends BaseController {
             }
 
             // add new products to website
-            $account_product = new AccountProduct();
-            $account_product->add_bulk_by_ids( $this->user->account->id, $product_ids );
-
+			if ( $product_ids ) {
+				$account_product = new AccountProduct();
+				$account_product->add_bulk_by_ids( $this->user->account->id, $product_ids );
+			}
+			
             return new RedirectResponse("/products/#!p={$product->product_id}/options");
         }
 
