@@ -99,7 +99,7 @@ class ProductOption extends ActiveRecordBase {
      */
     protected function remove_self() {
         $this->delete([
-            'product_option_id' => $this->id
+            'id' => $this->id
         ], 'i' );
     }
 
