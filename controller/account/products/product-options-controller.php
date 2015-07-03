@@ -111,7 +111,7 @@ class ProductOptionsController extends BaseController {
 				}
 
                 if ( empty( $item->name ) )
-                    contiue;
+                    continue;
 				
                 $sku_suffix = strtolower(format::slug( implode('-', $names) ) );
                 $name_suffix = implode(' ', $names);
