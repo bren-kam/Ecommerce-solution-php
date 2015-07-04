@@ -1477,6 +1477,40 @@ class ProductsController extends BaseController {
         return $response;
     }
 
+    protected function update_product_status(){
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['product_id'], $_POST['status'] ), 'Error while trying to process your request, please try again' );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate objects
+        $product = new Product();
+        $account_product = new AccountProduct();
+
+        // Get product
+        $account_product->get( $_POST['product_id'], $this->user->account->id );
+
+        // Make sure we have permission
+        $response->check( $account_product->product_id, 'You do not have permission to modify this product');
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get product
+        $product->get( $account_product->product_id );
+
+        // Change visibility
+        $product->publish_visibility = ( 'private' == $_POST['status'] ) ? Product::PUBLISH_VISIBILITY_PRIVATE : Product::PUBLISH_VISIBILITY_PUBLIC;
+        $product->save();
+
+        return $response;
+    }
+
     /**
      * Check to see if a SKU already exists
      *

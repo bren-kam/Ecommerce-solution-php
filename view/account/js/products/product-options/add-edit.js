@@ -58,7 +58,7 @@ ProductOptionEditor = {
                 .end()
             .appendTo( itemsList );
 
-        item.val('').trigger('blur');
+        item.val('').focus();
     }
 
     , remove: function(e) {

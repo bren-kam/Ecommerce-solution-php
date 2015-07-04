@@ -52,7 +52,7 @@ class ProductOptionsController extends BaseController {
                 $original_product_option_items = $original_product_option_items + $original_product_option->items();
             }
 			
-            $product_ids = [];
+            $product_ids = $all_product_ids = [];
             $options = [];
 
             foreach ( $_POST['option-name'] as $key => $name ) {
@@ -128,7 +128,7 @@ class ProductOptionsController extends BaseController {
                 $child_product->save();
 
 				foreach ( $permutation_group as $item ) {
-					$product_ids[$item->id][] = $child_product->id;
+					$product_ids[$item->id][] = $all_product_ids[] = $child_product->id;
 				}
             }
 
@@ -158,7 +158,7 @@ class ProductOptionsController extends BaseController {
             // add new products to website
 			if ( $product_ids ) {
 				$account_product = new AccountProduct();
-				$account_product->add_bulk_by_ids( $this->user->account->id, $product_ids );
+				$account_product->add_bulk_by_ids( $this->user->account->id, $all_product_ids );
 			}
 			
             return new RedirectResponse("/products/#!p={$product->product_id}/options");

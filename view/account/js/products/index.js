@@ -296,7 +296,7 @@ var ProductForm = {
     , toggleChildProduct: function() {
         var checkbox = $(this);
         var productId = $(this).data('product-id');
-        var nonce = $('#update-product-status-nonce').val();
+        var nonce = $('#_update_product_status').val();
         if ( !productId )
             return;
 

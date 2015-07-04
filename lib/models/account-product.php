@@ -413,7 +413,7 @@ class AccountProduct extends ActiveRecordBase {
         ), array(
             'website_id' => $this->website_id
             , 'product_id' => $this->product_id
-        ), 'iiiissssiiisssiiiissssii', 'ii' );
+        ), 'dddissssiiissssddiissidd', 'ii' );
     }
 
     /**
