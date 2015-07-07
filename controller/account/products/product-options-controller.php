@@ -174,4 +174,58 @@ class ProductOptionsController extends BaseController {
             ->add_title( 'Add' )
             ->set( compact( 'product', 'account_product' ) );
     }
+
+    /**
+     * Pricing Tool
+     * @return RedirectResponse|TemplateResponse
+     */
+    protected function pricing_tool() {
+        $product_id = $_GET['pid'];
+        $parent_product = new Product();
+        $parent_product->get($product_id);
+
+        if ( !$parent_product->id )
+            return new RedirectResponse('/products');
+
+        $account_product = new AccountProduct();
+        $child_prices = $account_product->get_child_prices( $parent_product->id, $this->user->account->id );
+
+        if ( empty( $child_prices ) )
+            return new RedirectResponse('/products');
+
+        if ( $this->verified() ) {
+
+            $product_prices = $_POST['product'];
+            foreach ( $product_prices as $product_id => &$pp ) {
+                $pp['account_id'] = $this->user->account->id;
+                $pp['product_id'] = $product_id;
+            }
+
+
+            // Set prices on Master Products (visible on product builder and used by auto-price)
+            $product = new Product();
+            $child_products = $product->get_by_parent($parent_product->id);
+            foreach ( $child_products as $child_product ) {
+                if ( !isset($product_prices[ $child_product->id ]) )
+                    continue;
+
+                $child_product->price = $product_prices[ $child_product->id ]['wholesale_price'];
+                $child_product->price_min = $product_prices[ $child_product->id ]['map_price'];
+                $child_product->save();
+            }
+
+            // Set prices on Account Products (website visible products)
+            $account_product->set_product_prices($this->user->account->id, $product_prices);
+            $this->notify('Product Prices Updated');
+
+            // Refresh
+            $child_prices = $account_product->get_child_prices( $parent_product->id, $this->user->account->id );
+        }
+
+        return $this->get_template_response( 'pricing-tool' )
+            ->kb( 19 )
+            ->menu_item( 'products/product-options/pricing-tool' )
+            ->add_title( 'Pricing' )
+            ->set( compact( 'parent_product', 'child_prices' ) );
+    }
 }

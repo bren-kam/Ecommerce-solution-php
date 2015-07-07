@@ -1394,4 +1394,23 @@ class AccountProduct extends ActiveRecordBase {
         return ( $this->product_options ) ? $this->product_options : array();
     }
 
+    /**
+     * Get Child Prices
+     *
+     * @param int $parent_product_id
+     * @param int $website_id
+     * @return array
+     */
+    public function get_child_prices( $parent_product_id, $website_id ) {
+       return $this
+           ->prepare(
+               "SELECT p.`product_id`, p.`sku`, p.`name`, p.`price` as wholesale_price, p.`price_min` as map_price, wp.`price`, wp.`sale_price`, wp.`alternate_price`
+                FROM `products` p
+                LEFT JOIN `website_products` wp ON p.`product_id` = wp.`product_id`
+                WHERE p.`parent_product_id` = :parent_product_id AND p.`website_id` = :website_id AND p.`publish_visibility` = 'public'"
+               , "i"
+               , [":parent_product_id" => $parent_product_id, ":website_id" => $website_id]
+           )
+           ->get_results(PDO::FETCH_ASSOC);
+    }
 }

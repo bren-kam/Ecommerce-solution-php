@@ -262,6 +262,7 @@ class Product extends ActiveRecordBase {
      * Update
      */
     public function save() {
+
         parent::update(
             array(
                 'category_id' => $this->category_id
@@ -280,7 +281,7 @@ class Product extends ActiveRecordBase {
                 , 'price_freight' => $this->price_freight
                 , 'price_discount' => $this->price_discount
                 , 'status' => strip_tags($this->status)
-                , 'weight' => $this->weight
+                , 'weight' => (float) $this->weight
                 , 'depth' => $this->depth
                 , 'height' => $this->height
                 , 'length' => $this->length
@@ -289,7 +290,7 @@ class Product extends ActiveRecordBase {
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iiiiisssssdddddsiss'
+            , 'iiiiisssssdddddsddsdssi'
             , 'i'
         );
     }
