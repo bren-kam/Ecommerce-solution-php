@@ -368,8 +368,13 @@ $nonce = nonce::create('payment_settings');
 
                     <div class="form-group">
                         <label for="tFlexShopperRetailerId">Retailer ID:</label>
-                        <input class="form-control" id="tFlexShopperRetailerId" maxlength="10" name="tFlexShopperRetailerId" type="text" value="<?php echo security::decrypt( base64_decode( $settings['flexshopper-retailer-id'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                        <input class="form-control" id="tFlexShopperRetailerId"  name="tFlexShopperRetailerId" type="text" value="<?php echo security::decrypt( base64_decode( $settings['flexshopper-retailer-id'] ), PAYMENT_DECRYPTION_KEY ) ?>">
                     </div>
+                    <div class="form-group">
+                        <label for="tFlexShopperRetailerToken">Retailer Token:</label>
+                        <input class="form-control" id="tFlexShopperRetailerToken"  name="tFlexShopperRetailerToken" type="text" value="<?php echo security::decrypt( base64_decode( $settings['flexshopper-retailer-token'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>                    
+
 
                     <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
 
