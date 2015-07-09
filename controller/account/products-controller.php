@@ -793,11 +793,24 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $products = $account_product->get_by_account( $this->user->account->id );
 
-        $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand', 'Created By' );
+        $product_option_item = new ProductOptionItem();
+        $product_option_items_list = $product_option_item->export( $this->user->account->id );
+        $product_option_items = [];
+
+        foreach ( $product_option_items_list as $product_option_item ) {
+            $product_option_items[$product_option_item->parent_product_id][] = $product_option_item;
+        }
+
+        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image' );
 
         foreach ( $products as $product ) {
             $category = ( empty( $product->parent_category ) ) ? $product->category : $product->parent_category . ' > ' . $product->category;
-            $output[] = array( $product->name, $product->sku, $category, $product->brand, $product->created_by );
+            $output[] = array( $product->product_id, 'product', $product->sku, $product->name, trim(strip_tags($product->description)), $product->industry, $category, $product->brand, $product->image );
+
+            if ( $product_option_items[$product->product_id] )
+            foreach ( $product_option_items[$product->product_id] as $product_option_item ) {
+                $output[] = array( $product_option_item->product_id, 'option', $product_option_item->sku, '[' . $product_option_item->product_option . ']' . $product_option_item->product_name, trim(strip_tags($product_option_item->description)), 'N/A/', 'N/A/', 'N/A', $product_option_item->image );
+            }
         }
 
         $this->log( 'export-products', $this->user->contact_name . ' generated a product export on ' . $this->user->account->title );

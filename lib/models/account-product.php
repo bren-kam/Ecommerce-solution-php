@@ -17,6 +17,9 @@ class AccountProduct extends ActiveRecordBase {
     // Artificial columns
     public $link, $industry, $coupons, $created_by, $count;
 
+    // Other columns
+    public $description;
+
     /**
      * @var ProductOption[]
      */
@@ -74,7 +77,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT p.`sku`, p.`name`, p.`price_min`, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            "SELECT p.`product_id`, p.`sku`, p.`name`, p.`description`, p.`price_min`, i.`name` AS industry, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, CONCAT('http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/large/', pi.`image` ) AS image, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND ( p.`parent_product_id` IS NULL OR p.`parent_product_id` = 0 ) AND pi.`sequence` = 0 GROUP BY wp.`product_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );

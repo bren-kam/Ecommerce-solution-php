@@ -4,6 +4,12 @@ class ProductOptionItem extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $product_option_id, $name;
 
+    // Artificial fields
+    public $product_option, $product_name;
+
+    // Fields from other tables
+    public $product_id, $parent_product_id;
+
     /**
      * Setup the initial data
      */
@@ -57,6 +63,20 @@ class ProductOptionItem extends ActiveRecordBase {
             'SELECT * FROM `product_option_item` WHERE `product_option_id` = :product_option_id'
             , 'i'
             , array( ':product_option_id' => $product_option_id )
+        )->get_results( PDO::FETCH_CLASS, 'ProductOptionItem' );
+    }
+
+    /**
+     * Export data
+     *
+     * @param int $website_id
+     * @return ProductOptionItem[]
+     */
+    public function export( $website_id ) {
+        return $this->prepare(
+            "SELECT GROUP_CONCAT(CONCAT(po.`name`,'=',poi.`name`)) as product_option, poip.`product_id`, p.`parent_product_id`, p.`sku`, p.`name` AS product_name, p.`description`, COALESCE( CONCAT('http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/large/', pi.`image`), '') AS image FROM `product_option_item` as poi LEFT JOIN `product_option` AS po ON ( po.`id` = poi.`product_option_id` ) LEFT JOIN `product_option_item_product` AS poip ON ( poip.`product_option_item_id` = poi.`id` ) LEFT JOIN `website_products` AS wp ON ( wp.`website_id` = po.`website_id` AND wp.`product_id` = poip.`product_id` ) LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` AND pi.`sequence` = 0 ) WHERE po.`website_id` = :website_id AND wp.`active` = 1 AND p.`publish_visibility` = :publish_visibility GROUP BY poip.`product_id`"
+            , 'is'
+            , array( ':website_id' => $website_id, ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC )
         )->get_results( PDO::FETCH_CLASS, 'ProductOptionItem' );
     }
 
