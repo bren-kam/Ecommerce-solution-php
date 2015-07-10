@@ -380,4 +380,24 @@ class Category extends ActiveRecordBase {
 
         return $filtered_categories;
     }
+
+    /**
+     * Get the taxonomy of a category
+     */
+    public function taxonomy() {
+        $parents = array_reverse( $this->get_all_parents( $this->id ) );
+        $taxonomy = '';
+
+        foreach ( $parents as $category ) {
+            if ( !empty( $taxonomy ) )
+                $taxonomy .= ' > ';
+
+            $taxonomy .= $category->name;
+        }
+
+        if ( !empty( $taxonomy ) )
+            $taxonomy .= ' > ';
+
+        return $taxonomy . $this->name;
+    }
 }

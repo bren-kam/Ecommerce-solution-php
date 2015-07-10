@@ -93,6 +93,22 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * Get by sku and website
+     *
+     * @param int $product_id
+     * @param int $website_id
+     */
+    public function get_by_id_by_website( $product_id, $website_id ) {
+        $this->prepare(
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`parent_product_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`country`, p.`price`, p.`price_min`, p.`price_net`, p.`price_freight`, p.`price_discount`, p.`weight`, p.`depth`, p.`height`, p.`length`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`product_id` = :product_id AND p.`website_id` = :website_id GROUP BY p.`product_id` ORDER BY p.`product_id` DESC LIMIT 1"
+            , 'ii'
+            , array( ':product_id' => $product_id, ':website_id' => $website_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->product_id;
+    }
+
+    /**
      * Get by ids
      *
      * @param array $product_ids

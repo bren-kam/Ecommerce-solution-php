@@ -91,14 +91,12 @@ class Brand extends ActiveRecordBase {
      * Create
      */
     public function create() {
-        $this->insert( array(
+        $this->brand_id = $this->id = $this->insert( [
             'name' => strip_tags($this->name)
             , 'slug' => strip_tags($this->slug)
             , 'link' => strip_tags($this->link)
             , 'image' => strip_tags($this->image)
-        ), 'ssss' );
-
-        $this->brand_id = $this->id = $this->get_insert_id();
+        ], 'ssss' );
     }
 
     /**

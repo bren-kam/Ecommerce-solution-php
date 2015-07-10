@@ -77,7 +77,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT p.`product_id`, p.`sku`, p.`name`, p.`description`, p.`price_min`, i.`name` AS industry, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, CONCAT('http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/large/', pi.`image` ) AS image, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND ( p.`parent_product_id` IS NULL OR p.`parent_product_id` = 0 ) AND pi.`sequence` = 0 GROUP BY wp.`product_id`"
+            "SELECT p.`product_id`, p.`sku`, p.`name`, p.`description`, p.`price` AS price_wholesale, p.`price_min` as price_map, wp.`price`, wp.`sale_price` AS price_sale, wp.`alternate_price` AS price_msrp, i.`name` AS industry, c.`category_id`, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, CONCAT('http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/large/', pi.`image` ) AS image, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND ( p.`parent_product_id` IS NULL OR p.`parent_product_id` = 0 ) AND pi.`sequence` = 0 GROUP BY wp.`product_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
@@ -475,7 +475,7 @@ class AccountProduct extends ActiveRecordBase {
         $sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
         $sql .= 'LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) ';
         $sql .= 'LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) ';
-        $sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' AND wbc.`category_id` IS NULL";
+        $sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' AND p.`parent_product_id` IS NULL AND wbc.`category_id` IS NULL";
         $sql .= $where;
         $sql .= " GROUP BY p.`product_id`";
         $sql .= " ORDER BY $sql_order_by ";
@@ -499,7 +499,7 @@ class AccountProduct extends ActiveRecordBase {
 		$sql .= 'LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) ';
-		$sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' ";
+		$sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' AND p.`parent_product_id` IS NULL ";
 		$sql .= $where;
 		$sql .= " ORDER BY wp.`sequence` ASC";
 
