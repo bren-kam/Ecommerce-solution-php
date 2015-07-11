@@ -2890,27 +2890,26 @@ class ProductsController extends BaseController {
         set_time_limit( 30 * 60 );
         ini_set( 'memory_limit', '512M' );
 
-        if ( !$this->verified() ) {
-            return new RedirectResponse( '/products/' );
-        }
+        if ( !$this->verified() )
+            return new RedirectResponse( '/products/import/' );
 
         $product_import = new ProductImport();
         $products = $product_import->get_all( $this->user->account->id );
 
         foreach ( $products as $p ) {
-
             $product = new Product();
-            $product->get_by_sku_by_brand( $p->sku, $p->brand_id, $this->user->account->id );
+            $product->get_by_id_by_website( $p->product_id, $this->user->account->id );
             $product->category_id = $p->category_id;
             $product->brand_id = $p->brand_id;
             $product->industry_id = $p->industry_id;
             $product->website_id = $this->user->account->id;
+            $product->parent_product_id = $p->parent_product_id;
             $product->name = $p->name;
             $product->slug = $p->slug;
             $product->status = $p->status;
             $product->description = $p->description;
             $product->sku = $p->sku;
-            $product->price = $p->price;
+            $product->price = $p->price_wholesale;
             $product->price_min = $p->price_min;
             $product->user_id_modified = $this->user->id;
             $product->weight = 0;
@@ -2925,22 +2924,21 @@ class ProductsController extends BaseController {
                 $product->publish_date = date( 'Y-m-d H:i:s' );
             } else {
                 // Override Images
-                $product->delete_images();
+                //$product->delete_images();
             }
 
             $industry = format::slug( $p->industry_name );
             $product->industry = $industry;
 
-            $image_list = explode(',', $p->image);
-            $product_images = [];
-            foreach( $image_list as $k => $image ) {
-                $image = trim($image);
-                $slug = f::strip_extension( f::name( $image ) );
-                $image_name = $product->upload_image( $image, $slug, $industry );
-                $product_images[] = $image_name;
-            }
-            $product->add_images( $product_images );
-
+//            $image_list = explode(',', $p->image);
+//            $product_images = [];
+//            foreach( $image_list as $k => $image ) {
+//                $image = trim($image);
+//                $slug = f::strip_extension( f::name( $image ) );
+//                $image_name = $product->upload_image( $image, $slug, $industry );
+//                $product_images[] = $image_name;
+//            }
+//            $product->add_images( $product_images );
             $product->save();
 
             $product_specifications = json_decode( $p->product_specifications, true );
