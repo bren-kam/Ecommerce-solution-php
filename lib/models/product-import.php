@@ -12,7 +12,7 @@ class ProductImport extends ActiveRecordBase {
      */
     public $product_id, $category_id, $brand_id, $industry_id, $website_id, $parent_product_id, $name, $description
         , $sku, $slug, $status, $price_wholesale, $price_min, $price, $sale_price, $alternate_price,
-        $product_specifications, $image, $inventory;
+        $product_specifications, $image, $inventory, $type;
             
     /**
      * Columns from other tables
@@ -82,7 +82,8 @@ class ProductImport extends ActiveRecordBase {
             , 'product_specifications' => $this->product_specifications
             , 'image' => $this->image
             , 'inventory' => $this->inventory
-        ], 'iiiiiisssisdddddssi' );
+            , 'type' => $this->type
+        ], 'iiiiiisssisdddddssis' );
     }
     
     

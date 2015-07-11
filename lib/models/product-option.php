@@ -1,5 +1,7 @@
 <?php
 class ProductOption extends ActiveRecordBase {
+    const TYPE_DROP_DOWN = 'drop-down-list';
+
     // The columns we will have access to
     public $id, $website_id, $product_id, $name, $type;
 
@@ -7,6 +9,11 @@ class ProductOption extends ActiveRecordBase {
      * @var ProductOptionItem[]
      */
     protected $items;
+
+    /**
+     * @var ProductOptionItem[]
+     */
+    protected $items_by_name;
 
     /**
      * Setup the initial data
@@ -68,6 +75,25 @@ class ProductOption extends ActiveRecordBase {
     }
 
     /**
+     * Sort by name
+     *
+     * @param int $website_id
+     * @param int $product_id
+     * @return ProductOption[]
+     */
+    public function sort_by_name( $website_id, $product_id ) {
+        $product_options = $this->get_by_product($website_id, $product_id);
+
+        $new_product_options = [];
+
+        foreach ( $product_options as $product_option ) {
+            $new_product_options[strtolower($product_option->name)] = $product_option;
+        }
+
+        return $new_product_options;
+    }
+
+    /**
      * Link to items
      *
      * @param bool $force_refresh [optional]
@@ -84,6 +110,25 @@ class ProductOption extends ActiveRecordBase {
         }
 
         return ( $this->items ) ? $this->items : array();
+    }
+
+    /**
+     * Link to items
+     *
+     * @param bool $force_refresh [optional]
+     * @return ProductOptionItem[]|array
+     */
+    public function items_by_name( $force_refresh = false ) {
+        if ( $force_refresh || empty( $this->items_by_name ) ) {
+            $product_option_item = new ProductOptionItem();
+            $items = $product_option_item->get_by_product_option( $this->id );
+
+            foreach ( $items as $item ) {
+                $this->items_by_name[strtolower($item->name)] = $item;
+            }
+        }
+
+        return ( $this->items_by_name ) ? $this->items_by_name : array();
     }
 
     /**

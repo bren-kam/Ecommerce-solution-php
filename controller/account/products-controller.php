@@ -2867,6 +2867,7 @@ class ProductsController extends BaseController {
             $product_import->alternate_price = $pi['msrp'];
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
+            $product_import->type = $pi['type'];
             $product_import->create();
         }
 
@@ -2904,7 +2905,14 @@ class ProductsController extends BaseController {
             $product->industry_id = $p->industry_id;
             $product->website_id = $this->user->account->id;
             $product->parent_product_id = $p->parent_product_id;
-            $product->name = $p->name;
+
+            if ( 'option' == $p->type ) {
+                preg_match( '/(\[[^\]]+])(.+)/', $p->name, $product_option_matches );
+                $product->name =  $product_option_matches[2];
+            } else {
+                $product->name = $p->name;
+            }
+
             $product->slug = $p->slug;
             $product->status = $p->status;
             $product->description = $p->description;
@@ -2925,6 +2933,44 @@ class ProductsController extends BaseController {
             } else {
                 // Override Images
                 //$product->delete_images();
+            }
+
+            // Make sure product options are added
+            if ( 'option' == $p->type ) {
+                $product_option = new ProductOption();
+                $product_options = $product_option->sort_by_name( $this->user->account->id, $product->id );
+                $product_option_groups = explode(',', substr($product_option_matches[1], 1, - 1));
+
+                foreach ($product_option_groups as $product_option_string) {
+                    list ($product_option_name, $product_option_item_name) = explode('=', $product_option_string);
+                    $po_name = strtolower($product_option_name);
+                    $poi_name = strtolower($product_option_item_name);
+
+                    if ($product_options[$po_name]) {
+                        $product_option = $product_options[$po_name];
+                    } else {
+                        $product_option = new ProductOption();
+                        $product_option->website_id = $this->user->account->id;
+                        $product_option->product_id = $product->id;
+                        $product_option->name = $product_option_name;
+                        $product_option->type = ProductOption::TYPE_DROP_DOWN;
+                        $product_option->create();
+                    }
+
+                    $product_option_items = $product_option->items_by_name();
+
+                    // Add the item
+                    if ( $product_option_items[$poi_name] ) {
+                        $product_option_item = $product_option_items[$poi_name];
+                    } else {
+                        $product_option_item = new ProductOptionItem();
+                        $product_option_item->product_option_id = $product_option->id;
+                        $product_option_item->name = $product_option_item_name;
+                        $product_option_item->create();
+                    }
+
+                    $product_option_item->add_relations([$product->id]);
+                }
             }
 
             $industry = format::slug( $p->industry_name );
