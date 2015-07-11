@@ -93,7 +93,7 @@ class ProductOptionItem extends ActiveRecordBase {
         $values = substr( str_repeat( ',(' . (int) $this->id . ', ? )', $product_ids_count ), 1 );
 
         $this->prepare(
-            'INSERT INTO `product_option_item_product` (`product_option_item_id`, `product_id`) VALUES ' . $values ' ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`)'
+            'INSERT INTO `product_option_item_product` (`product_option_item_id`, `product_id`) VALUES ' . $values . ' ON DUPLICATE KEY UPDATE `product_id` = VALUES(`product_id`)'
             , str_repeat( 's', count( $product_ids ) )
             , $product_ids
         )->query();

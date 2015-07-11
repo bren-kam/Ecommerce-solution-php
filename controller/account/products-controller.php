@@ -2938,7 +2938,7 @@ class ProductsController extends BaseController {
             // Make sure product options are added
             if ( 'option' == $p->type ) {
                 $product_option = new ProductOption();
-                $product_options = $product_option->sort_by_name( $this->user->account->id, $product->id );
+                $product_options = $product_option->sort_by_name( $this->user->account->id, $product->parent_product_id );
                 $product_option_groups = explode(',', substr($product_option_matches[1], 1, - 1));
 
                 foreach ($product_option_groups as $product_option_string) {
@@ -2951,7 +2951,7 @@ class ProductsController extends BaseController {
                     } else {
                         $product_option = new ProductOption();
                         $product_option->website_id = $this->user->account->id;
-                        $product_option->product_id = $product->id;
+                        $product_option->product_id = $product->parent_product_id;
                         $product_option->name = $product_option_name;
                         $product_option->type = ProductOption::TYPE_DROP_DOWN;
                         $product_option->create();
