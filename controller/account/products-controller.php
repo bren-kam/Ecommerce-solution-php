@@ -2691,13 +2691,15 @@ class ProductsController extends BaseController {
         // # of Products that will update
         $to_update = 0;
 
+        // Empty array
+        $last_product = [];
+
         foreach ( $rows as &$values ) {
             if ( count($headers) == count($values) ) {
                 $r = array_combine( $headers, $values );
             } else {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Incomplete row.";
                 $skipped_products[] = $r;
-                fn::info( $r );exit;
                 continue;
             }
 
@@ -2711,12 +2713,19 @@ class ProductsController extends BaseController {
                 if ( !isset( $r[$k] ) ) {
                     $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Required field '$k'. ";
                     $valid = false;
+
+                    if ( !isset( $last_product[$k] ) )
+                        $last_product[$k] = '';
                 }
             }
 
-            $category_id = null;
-            if ( isset( $categories_by_name[$r['category']] ) ) {
-                $category_id = $categories_by_name[$r['category']];
+            if ( 'product' == $r['type'] ) {
+                $category_id = null;
+                if ( isset( $categories_by_name[$r['category']] ) ) {
+                    $category_id = $categories_by_name[$r['category']];
+                }
+            } else {
+                $category_id = $last_product['category_id'];
             }
 
             if ( !$category_id ) {
@@ -2724,12 +2733,18 @@ class ProductsController extends BaseController {
                 $valid = false;
             }
 
-            $industry_id = null;
-            foreach ( $industries as $i ) {
-                if ( strcasecmp($i->name, $r['industry']) === 0) {
-                    $industry_id = $i->industry_id;
-                    break;
+            if ( 'product' == $r['type'] ) {
+                $industry_id = null;
+                foreach ($industries as $i)
+                {
+                    if (strcasecmp($i->name, $r['industry']) === 0)
+                    {
+                        $industry_id = $i->industry_id;
+                        break;
+                    }
                 }
+            } else {
+                $industry_id = $last_product['industry_id'];
             }
 
             if ( !$industry_id ) {
@@ -2737,11 +2752,16 @@ class ProductsController extends BaseController {
                 $valid = false;
             }
 
-            $brand_id = $brands_by_name[$r['brand']]->id;
+            if ( 'product' == $r['type'] ) {
+                $brand_id = $brands_by_name[$r['brand']]->id;
 
-            if ( !$brand_id ) {
-                $brand->name = $r['brand'];
-                $brand_id = $brand->create();
+                if (!$brand_id)
+                {
+                    $brand->name = $r['brand'];
+                    $brand_id = $brand->create();
+                }
+            } else {
+                $brand_id = $last_product['brand_id'];
             }
 
             if ( !$valid ) {
@@ -2756,56 +2776,71 @@ class ProductsController extends BaseController {
                 $matching_product->get_by_id_by_website( $r['productid'], $this->user->account->id );
 
             $image_list = explode(',', $r['image']);
-            foreach( $image_list as $k => $image ) {
-                $image = trim($image);
 
-                if ( !regexp::match( $image, 'url' ) ) {
-                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
-                    $valid = false;
-                }
-
-                // we ensure the url is decoded before encode
-                $image = rawurldecode( $image );
-                // encode url
-                $url_parts = parse_url( $image );
-                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
-                foreach ( $path_parts as &$part)
-                    $part = rawurlencode( $part );
-                $url_parts['path'] = implode( '/', $path_parts );
-                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
-
-                // check if remote file exists
-                $file_exists = curl::check_file( $image );
-                if ( !$file_exists ) {
-                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
-                    $skipped_products[] = $r;
-                    continue 2;
-                }
-            }
+//            foreach( $image_list as $k => $image ) {
+//                $image = trim($image);
+//
+//                if ( !regexp::match( $image, 'url' ) ) {
+//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+//                    $valid = false;
+//                }
+//
+//                // we ensure the url is decoded before encode
+//                $image = rawurldecode( $image );
+//                // encode url
+//                $url_parts = parse_url( $image );
+//                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
+//                foreach ( $path_parts as &$part)
+//                    $part = rawurlencode( $part );
+//                $url_parts['path'] = implode( '/', $path_parts );
+//                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
+//
+//                // check if remote file exists
+//                $file_exists = curl::check_file( $image );
+//                if ( !$file_exists ) {
+//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+//                    $skipped_products[] = $r;
+//                    continue 2;
+//                }
+//            }
 
             if ( $matching_product->id )
                 $to_update++;
 
-            $product = array_slice($r, 0, 9);
+            $product = array_slice($r, 0, 14);
 
-            $product['price_map'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_map']);
-            $product['price_map'] = $product['price_map'] ? $product['price_map'] : 0;
-            $product['price_wholesale'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_wholesale']);
-            $product['price_wholesale'] = $product['price_wholesale'] ? $product['price_wholesale'] : 0;
+            $product['map price'] = (float) preg_replace( '/[^0-9.]/', '', $r['map price']);
+            $product['map price'] = $product['price_map'] ? $product['map price'] : 0;
+            $product['wholesale price'] = (float) preg_replace( '/[^0-9.]/', '', $r['wholesale price']);
+            $product['wholesale price'] = $product['wholesale price'] ? $product['wholesale price'] : 0;
+            $product['price'] = (float) preg_replace( '/[^0-9.]/', '', $r['price']);
+            $product['price'] = $product['price'] ? $product['price'] : 0;
+            $product['sale price'] = (float) preg_replace( '/[^0-9.]/', '', $r['sale price']);
+            $product['sale price'] = $product['sale price'] ? $product['sale price'] : 0;
+            $product['msrp'] = (float) preg_replace( '/[^0-9.]/', '', $r['msrp']);
+            $product['msrp'] = $product['msrp'] ? $product['msrp'] : 0;
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
             $product['image'] = $r['image'];
             $product['product_specifications'] = array();
+            $product['product_id'] = $product['productid'];
+
+            if ( 'option' == $product['type']  && $last_product['product_id'] ) {
+                $product['parent_product_id'] = $last_product['product_id'];
+            }
 
             // Set product specifications
-            $product_specifications = array_slice($r, 9);
+            $product_specifications = array_slice($r, 14);
             foreach ( $product_specifications as $spec_name => $spec_value ) {
                 $product['product_specifications'][] = array( ucwords($spec_name), $spec_value );
             }
 
             // Append product
             $products[] = $product;
+
+            if ( 'product' == $product['type'] )
+                $last_product = $product;
         }
 
         $product = new Product();
@@ -2814,6 +2849,8 @@ class ProductsController extends BaseController {
 
         foreach ( $products as $pi ) {
             $product_import = new ProductImport();
+            $product_import->product_id = $pi['product_id'];
+            $product_import->parent_product_id = $pi['parent_product_id'];
             $product_import->category_id = $pi['category_id'];
             $product_import->brand_id = $pi['brand_id'];
             $product_import->industry_id = $pi['industry_id'];
@@ -2823,8 +2860,11 @@ class ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = $pi['status'];
             $product_import->sku = $pi['sku'];
-            $product_import->price = $pi['price_wholesale'];
-            $product_import->price_min = $pi['price_map'];
+            $product_import->price_min = $pi['map price'];
+            $product_import->price_wholesale = $pi['wholesale price'];
+            $product_import->price = $pi['price'];
+            $product_import->sale_price = $pi['sale price'];
+            $product_import->alternate_price = $pi['msrp'];
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
             $product_import->create();

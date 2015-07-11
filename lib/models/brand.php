@@ -89,6 +89,8 @@ class Brand extends ActiveRecordBase {
 
     /**
      * Create
+     *
+     * @return int
      */
     public function create() {
         $this->brand_id = $this->id = $this->insert( [
@@ -97,6 +99,8 @@ class Brand extends ActiveRecordBase {
             , 'link' => strip_tags($this->link)
             , 'image' => strip_tags($this->image)
         ], 'ssss' );
+
+        return $this->brand_id;
     }
 
     /**

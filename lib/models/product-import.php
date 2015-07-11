@@ -82,7 +82,7 @@ class ProductImport extends ActiveRecordBase {
             , 'product_specifications' => $this->product_specifications
             , 'image' => $this->image
             , 'inventory' => $this->inventory
-        ], ['iiiiiisssisdddddssi'] );
+        ], 'iiiiiisssisdddddssi' );
     }
     
     
