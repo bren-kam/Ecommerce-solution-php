@@ -11,11 +11,11 @@ define( 'FWURL', '/s98lib/' );
 
 // Debug
 define( 'DEBUG', TRUE );
-define( 'DEBUG_EMAIL', 'serveradmin@imagineretailer.com' );		// Used to be Info
+define( 'DEBUG_EMAIL', 'serveradmin@greysuitretail.com' );		// Used to be Info
 
 // Email
-define( 'FROM_EMAIL', 'noreply@imagineretailer.com' );
-define( 'FROM_NAME', 'ImagineRetailer.com' );
+define( 'FROM_EMAIL', 'noreply@greysuitretail.com' );
+define( 'FROM_NAME', 'GreySuitRetail.com' );
 
 // Keys ( http://framework.studio98.com/keys/1.0/ )
 define( 'SECRET_KEY',	 	'iSZuFFf:owshCCmU]@~$s!fzCFljweRx[*/{~VdaOOj(?djJ@?H_VAJX**(iLmuW' );

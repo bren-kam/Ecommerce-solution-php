@@ -868,6 +868,11 @@ ProductsController extends BaseController {
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
             $product['image'] = $r['image'];
+            $product['inventory'] = $r['inventory'];
+            $product['alternate_price'] = $r['alternate_price'];
+            $product['retail_price'] = $r['retail_price'];
+            $product['wholesale_price'] = $r['wholesale_price'];
+            $product['sale_price'] = $r['sale_price'];
             $product['product_specifications'] = array();
 
             // Set product specifications
@@ -899,6 +904,7 @@ ProductsController extends BaseController {
             $product_import->price_min = $pi['price_map'];
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
+            $product_import->inventory = $pi['inventory'];
             $product_import->create();
         }
 
@@ -981,7 +987,26 @@ ProductsController extends BaseController {
                 $product->add_specifications($product_specifications);
             }
 
+            // Now need to add to the site via an account product
+            $account_product = new AccountProduct();
+            $account_product->get( $product->id, $this->user->account->id );
+
+            $account_product->alternate_price = replace;
+            $account_product->price = replace;
+            $account_product->sale_price = replace;
+            $account_product->wholesale_price = replace;
+            $account_product->inventory = replace;
+            $account_product->active = AccountProduct::ACTIVE;
+
+            if ( $account_product->website_id ) {
+                $account_product->save();
+            } else {
+                $account_product->website_id = $this->user->account->id;
+                $account_product->product_id = $product->id;
+                $account_product->create();
+            }
         }
+
         $product_import->delete_all();
 
         $this->notify( _( 'Your products has been imported successfully!' ) );
