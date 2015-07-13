@@ -81,12 +81,15 @@ class SettingsController extends BaseController {
             , 'paypal-express-signature'
             , 'bill-me-later'
             , 'crest-financial-dealer-id'
+            , 'flexshopper-retailer-id'            
+            , 'flexshopper-retailer-token'            
         );
 
         if ( $settings['stripe-account'] ) {
             $stripe_account = json_decode($settings['stripe-account'], true);
         }
 
+        $user = $this->user;
         if ( $this->verified() ) {
             $new_settings = [];
             if ( isset($_POST['sStatus']) ) {
@@ -120,6 +123,14 @@ class SettingsController extends BaseController {
                 ];
             }
 
+            if ( isset($_POST['tFlexShopperRetailerId']) && $_POST['tFlexShopperRetailerToken'] ) {
+                $new_settings = [
+                                 'flexshopper-retailer-id' => base64_encode( security::encrypt( $_POST['tFlexShopperRetailerId'], PAYMENT_DECRYPTION_KEY ) )
+                                 , 'flexshopper-retailer-token' => base64_encode( security::encrypt( $_POST['tFlexShopperRetailerToken'], PAYMENT_DECRYPTION_KEY ) )
+                ];
+            }
+
+
             $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved.') );
@@ -132,7 +143,7 @@ class SettingsController extends BaseController {
 
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
-            ->set( compact( 'settings', 'stripe_account' ) )
+            ->set( compact( 'settings', 'stripe_account', 'user' ) )
             ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
     }
