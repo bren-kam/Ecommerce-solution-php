@@ -188,11 +188,17 @@ class Ticket extends ActiveRecordBase {
      */
     public function create_jira_issue() {
         library('jira');
-        $jira = new Jira();
+        $user = new User();
+        $user->get($this->user_id);
+        $assigned_user = new User();
+        $assigned_user->get($this->assigned_to_user_id);
+        $jira = new Jira( $user->jira_username, $user->jira_password );
 
         $ticket_description  = "*Priority*: {$priorities[$this->priority]}";
-        $ticket_description .= "\n*Control Account*: http://admin.greysuitretail.com/accounts/control/?aid={$this->website_id}";
-        $ticket_description .= "\n*Edit Account*: http://admin.greysuitretail.com/accounts/edit/?aid={$this->website_id}";
+        if($this->website_id) {
+            $ticket_description .= "\n*Control Account*: http://admin.greysuitretail.com/accounts/control/?aid={$this->website_id}";
+            $ticket_description .= "\n*Edit Account*: http://admin.greysuitretail.com/accounts/edit/?aid={$this->website_id}";
+        }
         $ticket_description .= "\n\n--\n\n*Message*\n\n" . str_replace( '<br />', "\n", $this->message );
 
         $ticket_upload = new TicketUpload();
@@ -209,6 +215,7 @@ class Ticket extends ActiveRecordBase {
                 'project' => [ 'key' => 'TIC' ]  // Project Tickets (TIC)
                 , 'reporter' => [ 'name' => 'jack napier' ]  // Reporter
                 , 'issuetype' => [ 'id' => 1 ]  // Bug
+                , 'assignee' => $assigned_user->jira_username
                 , 'summary' => "#{$this->id}: {$this->summary}"
                 , 'description' => $ticket_description
             ]
