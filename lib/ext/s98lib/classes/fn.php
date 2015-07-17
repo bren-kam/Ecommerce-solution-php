@@ -45,9 +45,10 @@ class fn extends Base_Class {
 	 * @param string $reply_to (optional) the reply-to information. If left empty, uses $from
      * @param bool $text (optional) whether to send text email
      * @param bool $use_html_template (optional) whether to wrap the email message with a default template
+     * @param headers $headers (optional) additional html headers for emails with attachments
 	 * @return bool
 	 */
-	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true, $cc = null, $bcc = null )
+    public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true, $cc = null, $bcc = null, $headers = null )
     {
         // Find out if they passes a string or array, if they passed an array parse it
         if (is_array($to)) {
@@ -72,13 +73,16 @@ class fn extends Base_Class {
             $reply_to = $from;
 
         $subject = html_entity_decode($subject);
-
-        $headers = '';
+        
+        if($headers != null)
+            $headers = '';
 
         if ( !$text ) {
 			// Headers for HTML emails
-			$headers .= 'MIME-Version: 1.0' . "\r\n";
-			$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+            if($headers != null) {
+                $headers .= 'MIME-Version: 1.0' . "\r\n";
+                $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+            }
             if ( $use_html_template ) {
                 $message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
@@ -178,6 +182,83 @@ class fn extends Base_Class {
 		return $b;
 	}
 
+    public static function build_html_with_attachments($html, $from, $domain) {
+        preg_match_all( '~<img.*?src=.([\/.a-z0-9:_-]+).*?>~si', $html,$matches);
+		
+        $paths = array();
+        $i = 0;
+        foreach ($matches[1] as $img) {
+            $img_old = $img;
+            if(strpos($img, "//") === 0) {
+                $img = str_replace('//', 'http://', $img);
+            }
+
+            if(strpos($img, "http://") === false) {
+                $uri = parse_url($img);
+                $paths[$uri['path']]['path'] = 'http://'.$domain.$uri['path'];
+                $content_id = md5($img);
+                $paths[$uri['path']]['cid'] = $content_id;
+            } else {
+                $paths[$img]['path'] = $img;
+                $content_id = md5($img);
+
+                $paths[$img]['cid'] = $content_id;
+            }
+                $html = str_replace($img_old,'cid:'.$content_id,$html);
+        }
+
+        $headers = "";
+        $boundary = "--".md5(uniqid(time()));
+        $headers .= "MIME-Version: 1.0\n";
+        $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\n";
+        $headers .= "From: ".$from."\r\n";
+        $multipart = "";
+        $multipart .= "--$boundary\n";
+        $kod = 'utf-8';
+        $multipart .= "Content-Type: text/html; charset=$kod\n";
+        $multipart .= "Content-Transfer-Encoding: Quot-Printed\n\n";
+        $multipart .= "$html\n\n";
+
+        foreach ($paths as $path) {
+
+            $file = file_get_contents($path['path']);
+            $imagetype = substr(strrchr($path['path'], '.' ),1);
+
+
+
+            $message_part = "";
+
+            switch ($imagetype) {
+              case 'png':
+              case 'PNG':
+                    $message_part .= "Content-Type: image/png";
+                    break;
+              case 'jpg':
+              case 'jpeg':
+              case 'JPG':
+              case 'JPEG':
+                    $message_part .= "Content-Type: image/jpeg";
+                    break;
+              case 'gif':
+              case 'GIF':
+                    $message_part .= "Content-Type: image/gif";
+                    break;
+            }
+
+            $message_part .= "; file_name = \"{$path['path']}\"\n";
+            $message_part .= 'Content-ID: <'.$path['cid'].">\n";
+            $message_part .= "Content-Transfer-Encoding: base64\n";
+            $message_part .= "Content-Disposition: inline; filename = \"".basename($path['path'])."\"\n\n";
+            $message_part .= chunk_split(base64_encode($file))."\n";
+            $multipart .= "--$boundary\n".$message_part."\n";
+                                       
+        }
+
+        $multipart .= "--$boundary--\n";
+        return array('multipart' => $multipart, 'headers' => $headers);  
+    }
+    
+    
 	/**
 	 * Check value to find if it was serialized.
 	 *
