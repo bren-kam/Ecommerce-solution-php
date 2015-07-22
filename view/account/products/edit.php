@@ -149,7 +149,6 @@
                                             <td>
                                                 <?php echo $child_product->sku ?> <br>
                                                 <a href="/products/product-builder/add-edit/?pid=<?php echo $child_product->product_id ?>">Edit</a>
-                                                <a href="http://<?php echo $user->account->domain . '/product/' . $child_product->slug ?>" class="view-child-product <?php if ( $child_product->publish_visibility != 'public' ) echo 'hidden' ?>">View</a>
                                             </td>
                                             <td><?php echo $child_product->name ?></td>
                                         </tr>
