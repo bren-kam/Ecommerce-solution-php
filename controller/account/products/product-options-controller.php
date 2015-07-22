@@ -63,6 +63,10 @@ class ProductOptionsController extends BaseController {
                 if ( $update )
                     $product_option->get( $product_option_id, $this->user->account->id );
 
+                // Don't create empty product options
+                if ( !$product_option->id && empty( $name ) )
+                    continue;
+
                 // Set variables
                 $product_option->name = $name;
 
