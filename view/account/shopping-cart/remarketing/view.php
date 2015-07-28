@@ -101,7 +101,7 @@
                         </tr>
                     <?php endif; ?>
                     <tr>
-                        <td>Total</td>
+                        <td>Total Ticket Sale</td>
                         <td class="text-right">$<?php echo number_format( $cart->total_price, 2 ); ?></td>
                     </tr>
                 </table>

@@ -3,12 +3,17 @@
 class Jira {
 
     public static $url = 'https://greysuitretail.atlassian.net/';
-    public static $user = 'gabrielbrunacci';
-    public static $password = 'longlive';
-
+    public $user = 'gabrielbrunacci';
+    public $password = 'longlive';
+    
     public $last_response_code;
 
-    public function __construct() {
+    public function __construct( $user = null, $password = null ){
+        if ($user){ 
+            $this->user = $user;
+            $this->password = $password;
+        } 
+
     }
 
     /**
@@ -94,7 +99,7 @@ class Jira {
 
         $curl = curl_init();
         curl_setopt( $curl, CURLOPT_URL, $url );
-        curl_setopt( $curl, CURLOPT_USERPWD, self::$user.":".self::$password);
+        curl_setopt( $curl, CURLOPT_USERPWD, $this->user.":".$this->password);
         if ( $method == 'get' ) {
             // do nothing
         } else if ( $method == 'post' ) {

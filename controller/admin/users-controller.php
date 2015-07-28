@@ -93,6 +93,12 @@ class UsersController extends BaseController {
         $ft->add_field( 'text', _('Store Name'), 'tStoreName', $user->store_name )
             ->attribute( 'maxlength', 80 );
 
+        
+        $ft->add_field( 'text', _('Jira Username'), 'tJiraUserName', $user->jira_username )
+            ->attribute( 'maxlength', 80 );
+        $ft->add_field( 'text', _('Jira Password'), 'tJiraPassword', $user->jira_password )
+            ->attribute( 'maxlength', 80 );
+
         $ft->add_field( 'select', _('Status'), 'sStatus', $user->status )
             ->options( array(
                 User::STATUS_ACTIVE => _('Active')
@@ -176,6 +182,8 @@ class UsersController extends BaseController {
             $user->store_name = $_POST['tStoreName'];
             $user->status = $_POST['sStatus'];
             $user->role = $_POST['sRole'];
+            $user->jira_username = $_POST['tJiraUserName'];
+            $user->jira_password = $_POST['tJiraPassword'];            
             $user->billing_first_name = $_POST['tFirstName'];
             $user->billing_last_name = $_POST['tLastName'];
             $user->billing_address1 = $_POST['tAddress'];
