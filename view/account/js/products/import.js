@@ -99,7 +99,8 @@ var ProductImport = {
      * @param e
      */
     , open: function(e) {
-        if ( e ) e.preventDefault();
+        if ( e )
+            e.preventDefault();
 
         if ( $.support.cors ) {
             $('#import-products input:first').click();

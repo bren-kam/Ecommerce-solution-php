@@ -3,6 +3,7 @@
  * @var AccountProduct $product
  * @var array $product_options
  * @var WebsiteCoupon[] $coupons
+ * @var Product[] $child_products
  */
 ?>
 
@@ -22,9 +23,9 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li class="active"><a href="#product" role="tab" data-toggle="tab">Product &amp; Pricing</a></li>
-                    <li><a href="#options" role="tab" data-toggle="tab">Product Options</a></li>
-                    <li><a href="#shopping-cart" role="tab" data-toggle="tab">Shopping Cart</a></li>
+                    <li class="<?php if (!$_GET['tab'] || $_GET['tab'] == 'product' ) echo 'active' ?>"><a href="#product" role="tab" data-toggle="tab">Product &amp; Pricing</a></li>
+                    <li class="<?php if ($_GET['tab'] == 'options' ) echo 'active' ?>"><a href="#options" role="tab" data-toggle="tab">Product Options</a></li>
+                    <li class="<?php if ($_GET['tab'] == 'shopping-cart' ) echo 'active' ?>"><a href="#shopping-cart" role="tab" data-toggle="tab">Shopping Cart</a></li>
                     <li><a target="_blank" href="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=<?php echo $product->product_id ?>">Master Catalog</a></li>
                 </ul>
 
@@ -32,7 +33,7 @@
 
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div class="tab-pane active" id="product">
+                    <div class="tab-pane <?php if (!$_GET['tab'] || $_GET['tab'] == 'product' ) echo 'active' ?>" id="product">
 
                         <div class="row">
                             <div class="col-lg-4">
@@ -118,30 +119,55 @@
                         </div>
 
                     </div>
-                    <div class="tab-pane" id="options">
+                    <div class="tab-pane <?php if ($_GET['tab'] == 'options' ) echo 'active' ?>" id="options">
+                        <?php if ( $product->product_options() ): ?>
+                            <h3>Product Options</h3>
+                            <?php foreach( $product->product_options() as $product_option )
+                            { ?>
+                                <h4><?php echo $product_option->name; ?></h4>
+                                <?php if ($product_option->items()): ?>
+                                <ul>
+                                    <?php foreach ($product_option->items() as $item)
+                                    { ?>
+                                        <li><?php echo $item->name; ?></li>
+                                    <?php } ?>
+                                </ul>
+                                <?php endif; ?>
+                            <?php } ?>
+                            <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Edit product options</a>
+                        <?php endif; ?>
+                        <?php if ( $child_products ): ?>
+                            <h3>Product Option Mutations</h3>
 
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <select id="sProductOptions" class="form-control">
-                                    <option></option>
-                                    <?php foreach ( $product_options as $product_option_id => $product_option ): ?>
-                                        <option value="<?php echo $product_option_id ?>" <?php if( isset($product->product_options[$product_option_id]) ) echo 'disabled'?>><?php echo $product_option['option_name'] ?></option>
+                            <table class="table">
+                                <tbody>
+                                    <?php foreach ( $child_products as $child_product ): ?>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-product-id="<?php echo $child_product->product_id ?>" class="toggle-child-product" <?php if ( $child_product->publish_visibility == 'public' ) echo 'checked' ?>/>
+                                            </td>
+                                            <td>
+                                                <?php echo $child_product->sku ?> <br>
+                                                <a href="/products/product-builder/add-edit/?pid=<?php echo $child_product->product_id ?>">Edit</a>
+                                            </td>
+                                            <td><?php echo $child_product->name ?></td>
+                                        </tr>
                                     <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-lg-6">
-                                <button type="button" class="btn btn-sm btn-default" id="add-product-option">Add</button>
-                            </div>
-                        </div>
+                                </tbody>
+                            </table>
 
-                        <br />
+                            <p>
+                                <a href="/products/product-options/pricing-tool/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Product Options Pricing Tool</a>
+                            </p>
+                        <?php else: ?>
+                            <p>
+                                <a href="/products/product-options/add-edit/?pid=<?php echo $product->product_id ?>" class="btn btn-primary">Create product options</a>
+                            </p>
+                        <?php endif; ?>
 
-                        <div id="product-option-list">
-
-                        </div>
 
                     </div>
-                    <div class="tab-pane" id="shopping-cart">
+                    <div class="tab-pane <?php if ($_GET['tab'] == 'shopping-cart' ) echo 'active' ?>" id="shopping-cart">
                         <div class="form-group">
                             <label for="tStoreSKU">Store SKU:</label>
                             <input type="text" class="form-control" id="tStoreSKU" name="tStoreSKU" value="<?php echo $product->store_sku ?>" />
@@ -211,80 +237,6 @@
     </div>
 
 </form>
-
-<!-- Product Option specific forms -->
-<div class="hidden" id="product-option-templates">
-    <?php foreach ( $product_options as $product_option_id => $product_option ): ?>
-        <div class="row" data-product-option-id="<?php echo $product_option_id ?>">
-            <input type="hidden" name="product_options[<?php echo $product_option_id ?>]" value="<?php echo $product_option_id ?>" />
-
-            <div class="col-lg-3">
-                <strong><?php echo $product_option['option_name'] ?></strong>
-                <a href="javascript:;" class="remove-product-option"><i class="fa fa-trash-o"></i></a>
-            </div>
-            <div class="col-lg-9">
-                <?php if ( $product_option['option_type'] == 'select' ): ?>
-                    <?php foreach ( $product_option['list_items'] as $product_option_list_item_id => $item ): ?>
-                        <div class="row">
-                            <?php if ( $product_option_id == 357 ): ?>
-                                <div class="col-lg-3">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="product_list_items[<?php echo $product_option_id ?>][<?php echo $product_option_list_item_id ?>]" value="true" <?php if ( isset( $product->product_options[$product_option_id]['list_items'][$product_option_list_item_id] ) ) echo 'checked' ?> />
-                                            <?php echo $item ?>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="tPrices[<?php echo $product_option_id ?>][<?php echo $product_option_list_item_id ?>][reg]" value="<?php echo $product->product_options[$product_option_id]['list_items'][$product_option_list_item_id]['alt_price'] ?>" placeholder="Regular Price"/>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="tPrices[<?php echo $product_option_id ?>][<?php echo $product_option_list_item_id ?>][our-price]" value="<?php echo $product->product_options[$product_option_id]['list_items'][$product_option_list_item_id]['alt_price2'] ?>" placeholder="Our Price"/>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="tPrices[<?php echo $product_option_id ?>][<?php echo $product_option_list_item_id ?>][sale]" value="<?php echo $product->product_options[$product_option_id]['list_items'][$product_option_list_item_id]['price'] ?>" placeholder="Sale Price"/>
-                                    </div>
-                                </div>
-                            <?php else: ?>
-                                <div class="col-lg-6">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="product_list_items[<?php echo $product_option_id ?>][<?php echo $product_option_list_item_id ?>]" value="true" <?php if ( isset( $product->product_options[$product_option_id]['list_items'][$product_option_list_item_id] ) ) echo 'checked' ?> />
-                                            <?php echo $item ?>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="tPrices[<?php echo $product_option_id ?>][<?php echo $product_option_list_item_id ?>]" value="<?php echo $product->product_options[$product_option_id]['list_items'][$product_option_list_item_id] ?>" placeholder="Price (optional)"/>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                            <?php ?>
-                        </div>
-                    <?php endforeach; ?>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="cbRequired<?php echo $product_option_id ?>" value="true">
-                            Required?
-                        </label>
-                    </div>
-                <?php else: ?>
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="tPrice<?php echo $product_option_id ?>" value="<?php echo $product->product_options[$product_option_id]['price'] ?>" placeholder="Price (Optional)"/>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>
 
 <ul class="hidden">
     <li id="coupon-template">

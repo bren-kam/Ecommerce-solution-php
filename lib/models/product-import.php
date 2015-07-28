@@ -10,9 +10,9 @@ class ProductImport extends ActiveRecordBase {
      * Table columns
      * @var mixed 
      */
-    public $category_id, $brand_id, $industry_id, $website_id, $name, $slug,
-            $description, $status, $sku, $price, $price_min, 
-            $product_specifications, $image, $inventory;
+    public $product_id, $category_id, $brand_id, $industry_id, $website_id, $parent_product_id, $name, $description
+        , $sku, $slug, $status, $price_wholesale, $price_min, $price, $sale_price, $alternate_price,
+        $product_specifications, $image, $inventory, $type;
             
     /**
      * Columns from other tables
@@ -63,21 +63,27 @@ class ProductImport extends ActiveRecordBase {
      */
     public function create() {
         $this->insert([
-            'category_id' => $this->category_id
-            ,'brand_id' => $this->brand_id
-            ,'industry_id' => $this->industry_id
-            ,'website_id' => $this->website_id
-            ,'name' => $this->name
-            ,'slug' => $this->slug
-            ,'description' => $this->description
-            ,'status' => $this->status
-            ,'sku' => $this->sku
-            ,'price' => $this->price
-            ,'price_min' => $this->price_min
-            ,'product_specifications' => $this->product_specifications
-            ,'image' => $this->image
-            ,'inventory' => $this->inventory
-        ], ['iiiisssisddssi'] );
+            'product_id' => $this->product_id
+            , 'category_id' => $this->category_id
+            , 'brand_id' => $this->brand_id
+            , 'industry_id' => $this->industry_id
+            , 'website_id' => $this->website_id
+            , 'parent_product_id' => $this->parent_product_id
+            , 'name' => $this->name
+            , 'slug' => $this->slug
+            , 'description' => $this->description
+            , 'status' => $this->status
+            , 'sku' => $this->sku
+            , 'price_wholesale' => $this->price_wholesale
+            , 'price_min' => $this->price_min
+            , 'price' => $this->price
+            , 'sale_price' => $this->sale_price
+            , 'alternate_price' => $this->alternate_price
+            , 'product_specifications' => $this->product_specifications
+            , 'image' => $this->image
+            , 'inventory' => $this->inventory
+            , 'type' => $this->type
+        ], 'iiiiiisssisdddddssis' );
     }
     
     

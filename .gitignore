@@ -1,3 +1,5 @@
 .idea
+.vagrant
+phpunit.phar
 cache
 nbproject

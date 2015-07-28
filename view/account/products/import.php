@@ -23,15 +23,6 @@
 
                     <p>On this page you can import a list of products.</p>
 
-                    <div class="form-group">
-                        <label for="brand">Brand:</label>
-                        <select class="form-control" id="brand">
-                            <?php foreach ( $brands as $brand ): ?>
-                                <option value="<?php echo $brand->brand_id ?>"><?php echo $brand->name ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
                     <p>
                         <button type="button" id="aUpload" class="btn btn-lg btn-primary">Select File</button>
                         <div class="progress progress-sm hidden" id="upload-loader">

@@ -116,11 +116,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 
         // SSH Connection
-        $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        $ssh_connection = ssh2_connect( Config::setting('server-ip'), Config::setting('server-port') );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
+        // Setup as root
+        ssh2_exec( $ssh_connection, "sudo su -" );
+
         // Delete all files
-        ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
+        ssh2_exec( $ssh_connection, "sudo rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
 
         if ( is_array( $accounts ) ) {
             library('cloudflare-api');
@@ -280,7 +283,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Add to Account any products they don't have
             if ( !array_key_exists( $sku, $products ) )
                 $new_product_skus[] = $sku;
-
+			
             // Setup packages
 			if ( stristr( $sku, '-' ) ) {
                 list( $series, $item ) = explode( '-', $sku, 2 );
@@ -1465,7 +1468,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Generate array of our items
         foreach( $products as $item_key => $item ) {
             /***** SETUP OF PRODUCT *****/
-
             // Trick to make sure the page doesn't timeout or segfault
             set_time_limit(3600);
 
@@ -1500,36 +1502,37 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Get Product
             $product = $this->get_existing_product( $sku );
 
-            $two_days_ago = new DateTime();
-            $two_days_ago->sub( new DateInterval("P2D"));
-            $last_update = new DateTime($product->timestamp);
-            if ( $last_update > $two_days_ago )
-                continue;
-
-            // If the SKU is "Deleted" in our system
-            // We will skip ONLY if name matches
-            // (They reuse old skus on new products)
-            if ( 'deleted' == $product->publish_visibility ) {
-                if ( $product->name == $name ) {
-                    continue;
-                } else {
-                    $product = null;  // mark a new product
-                }
-            }
-
             // Now we have the product
             if ( !$product instanceof Product ) {
                 $new_product = true;
                 $product = new Product();
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
-                $product->publish_visibility = 'private';
+                $product->publish_visibility = Product::PUBLISH_VISIBILITY_PRIVATE;
 
                 $product->create();
 
                 // Set publish date
                 $product->publish_date = dt::now();
             } else {
+				$two_days_ago = new DateTime();
+				$two_days_ago->sub( new DateInterval("P2D"));
+				$last_update = new DateTime($product->timestamp);
+				
+				if ( $last_update > $two_days_ago )
+					continue;
+				
+				// If the SKU is "Deleted" in our system
+				// We will skip ONLY if name matches
+				// (They reuse old skus on new products)
+				if ( 'deleted' == $product->publish_visibility ) {
+					if ( $product->name == $name ) {
+						continue;
+					} else {
+                        $new_product = null;  // mark a new product
+					}
+				}
+
                 $new_product = false;
                 $product->user_id_modified = self::USER_ID;
             }
