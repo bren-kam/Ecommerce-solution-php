@@ -87,9 +87,10 @@ class SettingsController extends BaseController {
             $stripe_account = json_decode($settings['stripe-account'], true);
         }
 
+        $user = $this->user;
         if ( $this->verified() ) {
             $new_settings = [];
-            if ( isset($_POST['sStatus']) ) {
+            if ( isset($_POST['sSelectedGateway']) ) {
                 $new_settings = [
                     'selected-gateway' => $_POST['sSelectedGateway']
                 ];
@@ -120,7 +121,8 @@ class SettingsController extends BaseController {
                 ];
             }
 
-            $this->user->account->set_settings( $new_settings );
+            if ( $new_settings )
+                $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved.') );
             $this->log( 'update-payment-settings', $this->user->contact_name . ' updated payment settings on ' . $this->user->account->title );
@@ -132,7 +134,7 @@ class SettingsController extends BaseController {
 
         return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
-            ->set( compact( 'settings', 'stripe_account' ) )
+            ->set( compact( 'settings', 'stripe_account', 'user' ) )
             ->menu_item( 'shopping-cart/settings/payment-settings' )
             ->add_title( _('Payment Settings') );
     }

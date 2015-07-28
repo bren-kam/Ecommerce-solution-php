@@ -123,7 +123,7 @@ class Account extends ActiveRecordBase {
     public function create() {
         $this->date_created = dt::now();
 
-        $this->insert( array(
+        $this->website_id = $this->id = $this->insert([
             'user_id' => $this->user_id
             , 'os_user_id' => $this->os_user_id
             , 'domain' => strip_tags($this->domain)
@@ -131,16 +131,14 @@ class Account extends ActiveRecordBase {
             , 'type' => strip_tags($this->type)
             , 'status' => 1
             , 'date_created' => $this->date_created
-        ), 'iisssis' );
-
-        $this->website_id = $this->id = $this->get_insert_id();
+        ], 'iisssis' );
     }
 
     /**
      * Update an account
      */
     public function save() {
-        parent::update( array(
+        parent::update([
             'company_package_id' => $this->company_package_id
             , 'user_id' => $this->user_id
             , 'os_user_id' => $this->os_user_id
@@ -172,7 +170,7 @@ class Account extends ActiveRecordBase {
             , 'live' => $this->live
             , 'status' => $this->status
             , 'user_id_updated' => $this->user_id_updated
-        ), array( 'website_id' => $this->id )
+        ], ['website_id' => $this->id]
         , 'iiiisssssiiiiiiiiiisissssiii', 'i' );
     }
 

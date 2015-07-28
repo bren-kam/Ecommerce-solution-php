@@ -23,10 +23,6 @@ ProductOptionEditor = {
         $('#add-product-option-group').click(ProductOptionEditor.addGroup);
         $('body').on( 'click', '.delete-product-option-group', ProductOptionEditor.removeGroup );
 
-        $('#product-option-name').keyup( function(){
-            $('#hName').val($(this).val());
-        });
-
         if ( $('#product-option-group-container div').size() == 0 ) {
             ProductOptionEditor.addGroup();
         }
@@ -62,13 +58,15 @@ ProductOptionEditor = {
                 .end()
             .appendTo( itemsList );
 
-        item.val('').trigger('blur');
+        item.val('').focus();
     }
 
     , remove: function(e) {
         if (e) e.preventDefault();
 
-        $(this).parents('.product-option-item:first').remove();
+        var productOptionGroup = $(this).parents('.product-option-group');
+        if ( !productOptionGroup.has('input.action') || productOptionGroup.has('input.action') && confirm('By clicking "OK" you will also delete all Product Permutations relating to this item.') )
+            $(this).parents('.product-option-item:first').remove();
     }
 
     , addGroup: function() {
@@ -84,7 +82,10 @@ ProductOptionEditor = {
     }
 
     , removeGroup: function() {
-        $(this).parents('.product-option-group').remove();
+        var productOptionGroup = $(this).parents('.product-option-group');
+
+        if ( !productOptionGroup.has('input.action') || productOptionGroup.has('input.action') && confirm('By clicking "OK" you will also delete all Product Permutations in this product option.') )
+            productOptionGroup.remove();
     }
 }
 

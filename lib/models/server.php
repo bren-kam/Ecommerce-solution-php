@@ -1,5 +1,8 @@
 <?php
 class Server extends ActiveRecordBase {
+    const SERVER_RACKSPACE_WEB_1 = 3;
+    const SERVER_RACKSPACE_WEB_3 = 4;
+
     // The columns we will have access to
     public $id, $name, $ip, $nodebalancer_ip, $whm_hash;
 

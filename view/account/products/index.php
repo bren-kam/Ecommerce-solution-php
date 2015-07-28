@@ -19,6 +19,7 @@ nonce::field( 'edit', '_edit' );
 nonce::field( 'block', '_block' );
 nonce::field( 'set_category_image', '_set_category_image' );
 nonce::field( 'update_sequence', '_update_sequence' );
+nonce::field( 'update_product_status', '_update_product_status' );
 ?>
 <div class="row-fluid">
     <div class="col-lg-12">

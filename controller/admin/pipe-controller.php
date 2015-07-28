@@ -249,17 +249,50 @@ class PipeController extends BaseController {
                     return $response;
 
                 $server = new Server();
-                $servers = $server->get_all();
+                $server->get(Server::SERVER_RACKSPACE_WEB_1);
 
-                // Build on all servers
-                foreach( $servers as $server ) {
-                    // SSH Connection
-                    $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
-                    ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
+                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
-                    // Build
-                    ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/backend-testing/build.xml" );
-                }
+                // Build
+                ssh2_exec( $ssh_connection, "sudo phing -verbose -f /gsr/build/backend-testing/build.xml" );
+            break;
+
+            case 'KerryJones/IMR-Site':
+                if ( !stristr( $message, 'development' ) )
+                    return $response;
+
+                $server = new Server();
+                $server->get(Server::SERVER_RACKSPACE_WEB_1);
+
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
+                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+                // Setup as root
+                ssh2_exec( $ssh_connection, "sudo su -" );
+
+                // Build
+                ssh2_exec( $ssh_connection, "sudo phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
+            break;
+
+            case 'KerryJones/Grey-Suit-Retail':
+                if ( !stristr( $message, 'development' ) )
+                    return $response;
+
+                $server = new Server();
+                $server->get(Server::SERVER_RACKSPACE_WEB_3);
+
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
+                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+
+                // Setup as root
+                ssh2_exec( $ssh_connection, "sudo su -" );
+
+                // Build
+                ssh2_exec( $ssh_connection, "sudo phing -verbose -f /gsr/build/backend-testing/build.xml" );
             break;
 
             case 'KerryJones/GSR-Site':
@@ -267,17 +300,17 @@ class PipeController extends BaseController {
                     return $response;
 
                 $server = new Server();
-                $servers = $server->get_all();
+                $server->get(Server::SERVER_RACKSPACE_WEB_3);
 
-                // Build on all servers
-                foreach( $servers as $server ) {
-                    // SSH Connection
-                    $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), 22 );
-                    ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::server('ip', $server->ip), Config::server('port', $server->ip) );
+                ssh2_auth_password( $ssh_connection, Config::server('username', $server->ip), Config::server('password', $server->ip) );
 
-                    // Build
-                    ssh2_exec( $ssh_connection, "phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
-                }
+                // Setup as root
+                ssh2_exec( $ssh_connection, "sudo su -" );
+
+                // Build
+                ssh2_exec( $ssh_connection, "sudo phing -verbose -f /gsr/build/gsr-site-testing/build.xml" );
             break;
 
             default:

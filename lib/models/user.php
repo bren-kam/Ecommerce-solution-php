@@ -37,6 +37,12 @@ class User extends ActiveRecordBase {
     // These columns belong to another table but might be available from the user
     public $company, $domain, $accounts, $main_website;
 
+    public static $support_team = [
+        User::DESIGN_TEAM
+        , User::DEVELOPMENT
+        , User::TECHNICAL
+    ];
+
     /**
      * Holds the account if it has it
      * @var Account
@@ -284,39 +290,39 @@ class User extends ActiveRecordBase {
     }
 
     /**
-	 * Get all information of the users
-	 *
+     * Get all information of the users
+     *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return User[]
-	 */
-	public function list_all( $variables ) {
-		// Get the variables
-		list( $where, $values, $order_by, $limit ) = $variables;
+     * @return User[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
 
-        return $this->prepare( "SELECT u.`user_id`, u.`email`, u.`contact_name`, u.`role`, w.`title` as main_website FROM `users` u LEFT JOIN `websites` w ON u.`user_id` = w.`user_id` WHERE u.`status` <> " . self::STATUS_INACTIVE . " $where $order_by LIMIT $limit"
+        return $this->prepare( "SELECT u.`user_id`, u.`email`, u.`contact_name`, u.`role`, w.`title` as main_website FROM `users` u LEFT JOIN `websites` w ON u.`user_id` = w.`user_id` WHERE u.`status` <> " . self::STATUS_INACTIVE . " $where GROUP BY u.`user_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'User' );
-	}
+    }
 
-	/**
-	 * Count all the websites
-	 *
-	 * @param array $variables
-	 * @return int
-	 */
-	public function count_all( $variables ) {
+    /**
+     * Count all the websites
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
         // Get the variables
-		list( $where, $values ) = $variables;
+        list( $where, $values ) = $variables;
 
-		// Get the website count
-        $count = $this->prepare( "SELECT COUNT( `user_id` ) FROM `users` WHERE `status` <> 0 $where"
+        // Get the website count
+        $count = $this->prepare( "SELECT COUNT( DISTINCT `user_id` ) FROM `users` WHERE `status` <> 0 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
 
-		return $count;
-	}
+        return $count;
+    }
 
     /**
      * Get Role Name

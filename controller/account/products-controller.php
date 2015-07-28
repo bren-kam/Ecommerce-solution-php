@@ -793,11 +793,36 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $products = $account_product->get_by_account( $this->user->account->id );
 
-        $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand', 'Created By' );
+        $product_option_item = new ProductOptionItem();
+        $product_option_items_list = $product_option_item->export( $this->user->account->id );
+        $product_option_items = [];
+
+        $category = new Category;
+        $category->get_all();
+
+        foreach ( $product_option_items_list as $product_option_item ) {
+            $product_option_items[$product_option_item->parent_product_id][] = $product_option_item;
+        }
+
+        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP' );
 
         foreach ( $products as $product ) {
-            $category = ( empty( $product->parent_category ) ) ? $product->category : $product->parent_category . ' > ' . $product->category;
-            $output[] = array( $product->name, $product->sku, $category, $product->brand, $product->created_by );
+            $category->get( $product->category_id );
+
+            $output[] = array( $product->product_id, 'product', $product->sku, $product->name
+                , trim(strip_tags($product->description)), $product->industry, $category->taxonomy(), $product->brand
+                , $product->image, $product->price_wholesale, $product->price_map, $product->price
+                , $product->price_msrp, $product->price_sale );
+
+            if ( $product_option_items[$product->product_id] )
+            foreach ( $product_option_items[$product->product_id] as $product_option_item ) {
+                $output[] = array( $product_option_item->product_id, 'option', $product_option_item->sku
+                    , '[' . $product_option_item->product_option . ']' . $product_option_item->product_name
+                    , trim(strip_tags($product_option_item->description)), 'N/A', 'N/A', 'N/A'
+                    , $product_option_item->image, $product_option_item->price_wholesale, $product_option_item->price_map
+                    , $product_option_item->price, $product_option_item->price_msrp, $product_option_item->price_sale
+                );
+            }
         }
 
         $this->log( 'export-products', $this->user->contact_name . ' generated a product export on ' . $this->user->account->title );
@@ -1246,7 +1271,6 @@ class ProductsController extends BaseController {
     protected function edit() {
         // Instantiate objects
         $account_product = new AccountProduct();
-        $account_product_option = new AccountProductOption();
         $product_option = new ProductOption();
         $website_coupon = new WebsiteCoupon();
         $product = new Product();  // For getting images
@@ -1255,11 +1279,7 @@ class ProductsController extends BaseController {
         // Get variables
         $account_product->get( $_GET['pid'], $this->user->account->id );
         $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_GET['pid'] );
-        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_GET['pid'] );
-        $product_options_array = array_merge(
-            $product_option->get_by_product( $_GET['pid'] )
-            , $product_option->get_by_website( $this->user->account->id )
-        );
+        $account_product->product_options();
 
         $product->get( $_GET['pid'] );
         $images = $product->get_images();
@@ -1274,16 +1294,10 @@ class ProductsController extends BaseController {
         }
         $account_product->link .= ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
 
-        $product_options = array();
-
-        if ( $product_options_array )
-		foreach ( $product_options_array as $po ) {
-			$product_options[$po->id]['option_type'] = $po->type;
-			$product_options[$po->id]['option_name'] = $po->name;
-			$product_options[$po->id]['list_items'][$po->product_option_list_item_id] = $po->value;
-		}
-
         $coupons = $website_coupon->get_by_account( $this->user->account->id );
+
+        // Get Product Options
+        $child_products = $product->get_by_parent( $product->product_id );
 
         // Clear CloudFlare Cache
         $cloudflare_zone_id = $this->user->account->get_settings('cloudflare-zone-id');
@@ -1298,7 +1312,7 @@ class ProductsController extends BaseController {
         $response = new CustomResponse( $this->resources, 'products/edit' );
         $response->set( array(
             'product' => $account_product
-            , 'product_options' => $product_options
+            , 'child_products' => $child_products
             , 'coupons' => $coupons
         ) );
 
@@ -1484,6 +1498,40 @@ class ProductsController extends BaseController {
         // Notification
         $response->notify( 'Product updated' );
         $this->log( 'update-product', $this->user->contact_name . ' updated a product on ' . $this->user->account->title, $_POST );
+
+        return $response;
+    }
+
+    protected function update_product_status(){
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['product_id'], $_POST['status'] ), 'Error while trying to process your request, please try again' );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate objects
+        $product = new Product();
+        $account_product = new AccountProduct();
+
+        // Get product
+        $account_product->get( $_POST['product_id'], $this->user->account->id );
+
+        // Make sure we have permission
+        $response->check( $account_product->product_id, 'You do not have permission to modify this product');
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get product
+        $product->get( $account_product->product_id );
+
+        // Change visibility
+        $product->publish_visibility = ( 'private' == $_POST['status'] ) ? Product::PUBLISH_VISIBILITY_PRIVATE : Product::PUBLISH_VISIBILITY_PUBLIC;
+        $product->save();
 
         return $response;
     }
@@ -2510,14 +2558,10 @@ class ProductsController extends BaseController {
             ->css( 'products/import' )
             ->javascript( 'fileuploader', 'products/import' );
 
-        $brand = new Brand();
-        $brands = $brand->get_all();
-
         return $this->get_template_response( 'import' )
             ->kb( 0 )
             ->select( 'products', 'products/import' )
-            ->add_title( _('Import') )
-            ->set( compact( 'brands' ) );
+            ->add_title( _('Import') );
     }
 
     /**
@@ -2601,6 +2645,9 @@ class ProductsController extends BaseController {
                 $c = trim($c);
 
         $headers = array_shift( $rows );
+        foreach ( $headers as &$column ) {
+            $column = strtolower($column);
+        }
 
         // Industries
         $industry = new Industry();
@@ -2609,7 +2656,8 @@ class ProductsController extends BaseController {
         // Categories
         $category = new Category();
         $categories = $category->get_all();
-        $categories_by_name = array();
+        $categories_by_name = [];
+
         foreach ( $categories as $category ) {
             if ( $category->has_children() )
                 continue;
@@ -2625,44 +2673,59 @@ class ProductsController extends BaseController {
         }
         ksort( $categories_by_name );
 
+        // Brands
+        $brand = new Brand();
+        $brands = $brand->get_all();
+        $brands_by_name = [];
+
+        foreach ( $brands as $brand ) {
+            $brands_by_name[$brand->name] = $brand;
+        }
+
         // Our products to import
         $products = array();
+
         // Products that won't be imported
         $skipped_products = array();
+
         // # of Products that will update
         $to_update = 0;
+
+        // Empty array
+        $last_product = [];
 
         foreach ( $rows as &$values ) {
             if ( count($headers) == count($values) ) {
                 $r = array_combine( $headers, $values );
             } else {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Incomplete row. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Incomplete row.";
                 $skipped_products[] = $r;
                 continue;
             }
 
             // basic input validation
-            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image' );
+            $required_keys = array(
+                'productid', 'type', 'sku', 'name', 'description', 'industry', 'category', 'brand', 'image'
+                , 'wholesale price', 'map price', 'price', 'sale price', 'msrp' );
+
             $valid = true;
             foreach ($required_keys as $k) {
-                if ( empty( $r[$k] ) ) {
+                if ( !isset( $r[$k] ) ) {
                     $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Required field '$k'. ";
                     $valid = false;
+
+                    if ( !isset( $last_product[$k] ) )
+                        $last_product[$k] = '';
                 }
             }
 
-            $r['status'] = strtolower( $r['status'] );
-            if ( empty( $r['status'] ) )
-                $r['status'] = 'in-stock';
-            $available_status = array( 'in-stock', 'out-of-stock', 'discontinued' );
-            if ( !in_array( $r['status'], $available_status ) ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Invalid status '{$r['status']}'. ";
-                $valid = false;
-            }
-
-            $category_id = null;
-            if ( isset( $categories_by_name[$r['category']] ) ) {
-                $category_id = $categories_by_name[$r['category']];
+            if ( 'product' == $r['type'] ) {
+                $category_id = null;
+                if ( isset( $categories_by_name[$r['category']] ) ) {
+                    $category_id = $categories_by_name[$r['category']];
+                }
+            } else {
+                $category_id = $last_product['category_id'];
             }
 
             if ( !$category_id ) {
@@ -2670,17 +2733,35 @@ class ProductsController extends BaseController {
                 $valid = false;
             }
 
-            $industry_id = null;
-            foreach ( $industries as $i ) {
-                if ( strcasecmp($i->name, $r['industry']) === 0) {
-                    $industry_id = $i->industry_id;
-                    break;
+            if ( 'product' == $r['type'] ) {
+                $industry_id = null;
+                foreach ($industries as $i)
+                {
+                    if (strcasecmp($i->name, $r['industry']) === 0)
+                    {
+                        $industry_id = $i->industry_id;
+                        break;
+                    }
                 }
+            } else {
+                $industry_id = $last_product['industry_id'];
             }
 
             if ( !$industry_id ) {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Industry not found '{$r['industry']}'. ";
                 $valid = false;
+            }
+
+            if ( 'product' == $r['type'] ) {
+                $brand_id = $brands_by_name[$r['brand']]->id;
+
+                if (!$brand_id)
+                {
+                    $brand->name = $r['brand'];
+                    $brand_id = $brand->create();
+                }
+            } else {
+                $brand_id = $last_product['brand_id'];
             }
 
             if ( !$valid ) {
@@ -2690,62 +2771,76 @@ class ProductsController extends BaseController {
 
             // see if the product exists
             $matching_product = new Product();
-            $matching_product->get_by_sku_by_brand( $r['sku'], $brand_id, $this->user->account->id );
-            // we will only load images for new products
-//            if ( !$matching_product->id ) {
+
+            if ( $r['productid'] )
+                $matching_product->get_by_id_by_website( $r['productid'], $this->user->account->id );
 
             $image_list = explode(',', $r['image']);
-            foreach( $image_list as $k => $image ) {
-                $image = trim($image);
 
-                if ( !regexp::match( $image, 'url' ) ) {
-                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
-                    $valid = false;
-                }
+//            foreach( $image_list as $k => $image ) {
+//                $image = trim($image);
+//
+//                if ( !regexp::match( $image, 'url' ) ) {
+//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+//                    $valid = false;
+//                }
+//
+//                // we ensure the url is decoded before encode
+//                $image = rawurldecode( $image );
+//                // encode url
+//                $url_parts = parse_url( $image );
+//                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
+//                foreach ( $path_parts as &$part)
+//                    $part = rawurlencode( $part );
+//                $url_parts['path'] = implode( '/', $path_parts );
+//                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
+//
+//                // check if remote file exists
+//                $file_exists = curl::check_file( $image );
+//                if ( !$file_exists ) {
+//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+//                    $skipped_products[] = $r;
+//                    continue 2;
+//                }
+//            }
 
-                // we ensure the url is decoded before encode
-                $image = rawurldecode( $image );
-                // encode url
-                $url_parts = parse_url( $image );
-                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
-                foreach ( $path_parts as &$part)
-                    $part = rawurlencode( $part );
-                $url_parts['path'] = implode( '/', $path_parts );
-                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
-
-                // check if remote file exists
-                $file_exists = curl::check_file( $image );
-                if ( !$file_exists ) {
-                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
-                    $skipped_products[] = $r;
-                    continue 2;
-                }
-            }
-            //} else {
             if ( $matching_product->id )
                 $to_update++;
-            //}
 
-            $product = array_slice($r, 0, 9);
+            $product = array_slice($r, 0, 14);
 
-            $product['price_map'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_map']);
-            $product['price_map'] = $product['price_map'] ? $product['price_map'] : 0;
-            $product['price_wholesale'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_wholesale']);
-            $product['price_wholesale'] = $product['price_wholesale'] ? $product['price_wholesale'] : 0;
+            $product['map price'] = (float) preg_replace( '/[^0-9.]/', '', $r['map price']);
+            $product['map price'] = $product['price_map'] ? $product['map price'] : 0;
+            $product['wholesale price'] = (float) preg_replace( '/[^0-9.]/', '', $r['wholesale price']);
+            $product['wholesale price'] = $product['wholesale price'] ? $product['wholesale price'] : 0;
+            $product['price'] = (float) preg_replace( '/[^0-9.]/', '', $r['price']);
+            $product['price'] = $product['price'] ? $product['price'] : 0;
+            $product['sale price'] = (float) preg_replace( '/[^0-9.]/', '', $r['sale price']);
+            $product['sale price'] = $product['sale price'] ? $product['sale price'] : 0;
+            $product['msrp'] = (float) preg_replace( '/[^0-9.]/', '', $r['msrp']);
+            $product['msrp'] = $product['msrp'] ? $product['msrp'] : 0;
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
             $product['image'] = $r['image'];
             $product['product_specifications'] = array();
+            $product['product_id'] = $product['productid'];
+
+            if ( 'option' == $product['type']  && $last_product['product_id'] ) {
+                $product['parent_product_id'] = $last_product['product_id'];
+            }
 
             // Set product specifications
-            $product_specifications = array_slice($r, 9);
+            $product_specifications = array_slice($r, 14);
             foreach ( $product_specifications as $spec_name => $spec_value ) {
                 $product['product_specifications'][] = array( ucwords($spec_name), $spec_value );
             }
 
             // Append product
             $products[] = $product;
+
+            if ( 'product' == $product['type'] )
+                $last_product = $product;
         }
 
         $product = new Product();
@@ -2754,6 +2849,8 @@ class ProductsController extends BaseController {
 
         foreach ( $products as $pi ) {
             $product_import = new ProductImport();
+            $product_import->product_id = $pi['product_id'];
+            $product_import->parent_product_id = $pi['parent_product_id'];
             $product_import->category_id = $pi['category_id'];
             $product_import->brand_id = $pi['brand_id'];
             $product_import->industry_id = $pi['industry_id'];
@@ -2763,10 +2860,14 @@ class ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = $pi['status'];
             $product_import->sku = $pi['sku'];
-            $product_import->price = $pi['price_wholesale'];
-            $product_import->price_min = $pi['price_map'];
+            $product_import->price_min = $pi['map price'];
+            $product_import->price_wholesale = $pi['wholesale price'];
+            $product_import->price = $pi['price'];
+            $product_import->sale_price = $pi['sale price'];
+            $product_import->alternate_price = $pi['msrp'];
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
+            $product_import->type = $pi['type'];
             $product_import->create();
         }
 
@@ -2790,27 +2891,33 @@ class ProductsController extends BaseController {
         set_time_limit( 30 * 60 );
         ini_set( 'memory_limit', '512M' );
 
-        if ( !$this->verified() ) {
-            return new RedirectResponse( '/products/' );
-        }
+        if ( !$this->verified() )
+            return new RedirectResponse( '/products/import/' );
 
         $product_import = new ProductImport();
         $products = $product_import->get_all( $this->user->account->id );
 
         foreach ( $products as $p ) {
-
             $product = new Product();
-            $product->get_by_sku_by_brand( $p->sku, $p->brand_id, $this->user->account->id );
+            $product->get_by_id_by_website( $p->product_id, $this->user->account->id );
             $product->category_id = $p->category_id;
             $product->brand_id = $p->brand_id;
             $product->industry_id = $p->industry_id;
             $product->website_id = $this->user->account->id;
-            $product->name = $p->name;
+            $product->parent_product_id = $p->parent_product_id;
+
+            if ( 'option' == $p->type ) {
+                preg_match( '/(\[[^\]]+])(.+)/', $p->name, $product_option_matches );
+                $product->name =  $product_option_matches[2];
+            } else {
+                $product->name = $p->name;
+            }
+
             $product->slug = $p->slug;
             $product->status = $p->status;
             $product->description = $p->description;
             $product->sku = $p->sku;
-            $product->price = $p->price;
+            $product->price = $p->price_wholesale;
             $product->price_min = $p->price_min;
             $product->user_id_modified = $this->user->id;
             $product->weight = 0;
@@ -2825,22 +2932,59 @@ class ProductsController extends BaseController {
                 $product->publish_date = date( 'Y-m-d H:i:s' );
             } else {
                 // Override Images
-                $product->delete_images();
+                //$product->delete_images();
+            }
+
+            // Make sure product options are added
+            if ( 'option' == $p->type ) {
+                $product_option = new ProductOption();
+                $product_options = $product_option->sort_by_name( $this->user->account->id, $product->parent_product_id );
+                $product_option_groups = explode(',', substr($product_option_matches[1], 1, - 1));
+
+                foreach ($product_option_groups as $product_option_string) {
+                    list ($product_option_name, $product_option_item_name) = explode('=', $product_option_string);
+                    $po_name = strtolower($product_option_name);
+                    $poi_name = strtolower($product_option_item_name);
+
+                    if ($product_options[$po_name]) {
+                        $product_option = $product_options[$po_name];
+                    } else {
+                        $product_option = new ProductOption();
+                        $product_option->website_id = $this->user->account->id;
+                        $product_option->product_id = $product->parent_product_id;
+                        $product_option->name = $product_option_name;
+                        $product_option->type = ProductOption::TYPE_DROP_DOWN;
+                        $product_option->create();
+                    }
+
+                    $product_option_items = $product_option->items_by_name();
+
+                    // Add the item
+                    if ( $product_option_items[$poi_name] ) {
+                        $product_option_item = $product_option_items[$poi_name];
+                    } else {
+                        $product_option_item = new ProductOptionItem();
+                        $product_option_item->product_option_id = $product_option->id;
+                        $product_option_item->name = $product_option_item_name;
+                        $product_option_item->create();
+                    }
+
+                    $product_option_item->add_relations([$product->id]);
+                }
             }
 
             $industry = format::slug( $p->industry_name );
             $product->industry = $industry;
 
-            $image_list = explode(',', $p->image);
-            $product_images = [];
-            foreach( $image_list as $k => $image ) {
-                $image = trim($image);
-                $slug = f::strip_extension( f::name( $image ) );
-                $image_name = $product->upload_image( $image, $slug, $industry );
-                $product_images[] = $image_name;
-            }
-            $product->add_images( $product_images );
-
+//            $image_list = explode(',', $p->image);
+//            $product_images = [];
+//            foreach( $image_list as $k => $image ) {
+//                $image = trim($image);
+//                $slug = f::strip_extension( f::name( $image ) );
+//                $image_name = $product->upload_image( $image, $slug, $industry );
+//                $product_images[] = $image_name;
+//            }
+//            $product->add_images( $product_images );
             $product->save();
 
             $product_specifications = json_decode( $p->product_specifications, true );

@@ -29,8 +29,8 @@ $statuses = array(
 );
 
 $visibilities = array(
-    'public' => 'Public'
-    , 'private' => 'Private'
+    Product::PUBLISH_VISIBILITY_PUBLIC => 'Public'
+    , Product::PUBLISH_VISIBILITY_PRIVATE => 'Private'
 );
 if ( $product->id )
     $visibilities['deleted'] = 'Deleted';
@@ -129,7 +129,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                         </div>
 
                         <div class="col-lg-6">
-
+                            <?php if ( !$product->parent_product_id ) { ?>
                             <div class="form-group">
                                 <label for="sBrand">Brand:</label>
                                 <select class="form-control" name="sBrand" id="sBrand">
@@ -163,6 +163,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                            <?php } ?>
 
                             <div class="form-group">
                                 <label for="tPriceMin">MAP Price:</label>

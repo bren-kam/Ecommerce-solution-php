@@ -14,61 +14,6 @@ class ProductOptionsController extends BaseController {
     }
 
     /**
-     * List Users
-     *
-     * @return TemplateResponse
-     */
-    protected function index() {
-        // Don't forget to RUN:
-        // alter table products add column parent_product_id int null default null, add index fk_products_products(parent_product_id);
-        return $this->get_template_response( 'index' )
-            ->kb( 18 )
-            ->add_title( _('Product Options') )
-            ->select( 'products', 'products/product-options' );
-    }
-
-    /**
-     * List Product Options
-     *
-     * @return DataTableResponse
-     */
-    protected function list_all() {
-        // Get response
-        $dt = new DataTableResponse( $this->user );
-
-        // Set Order by
-        $dt->order_by( 'p.`product_id`', 'p.`sku`', 'p.`name`' );
-        $dt->search( array( 'p.`product_id`', 'p.`sku`' => true, 'p.`name`' => true ) );
-        $dt->add_where( " AND p.website_id = {$this->user->account->id} " );
-
-        // Get product option
-        $product = new Product();
-
-        // Get attributes
-        $child_products = $product->list_child_products( $dt->get_variables() );
-        $dt->set_row_count( $product->count_child_products( $dt->get_count_variables() ) );
-
-        // Set initial data
-        $data = [];
-
-        if ( is_array( $child_products ) ) {
-            foreach ($child_products as $cp) {
-                $data[] = [
-                    $cp->product_id . "<br><a href=\"/products/product-builder/add-edit/?pid={$cp->product_id}\">Edit</a>",
-                    $cp->sku,
-                    $cp->name,
-                ];
-            }
-        }
-
-        // Send response
-        $dt->set_data( $data );
-
-        return $dt;
-    }
-
-
-    /**
      * Add/Edit
      *
      * @return TemplateResponse|RedirectResponse
@@ -79,8 +24,10 @@ class ProductOptionsController extends BaseController {
         $product = new Product();
         $product->get($product_id);
 
-        if ( $this->verified() ) {
+        $account_product = new AccountProduct();
+        $account_product->get( $product_id, $this->user->account->id );
 
+        if ( $this->verified() ) {
             $factor_permutations = function ($lists) {
                 $permutations = array();
                 $iter = 0;
@@ -98,34 +45,127 @@ class ProductOptionsController extends BaseController {
                 return $permutations;
             };
 
-            $product_option = new ProductOption();
-            $product_option->website_id = $this->user->account->id;
-            $product_option->name = $_POST['hName'];
-            $product_option->type = $_POST['hType'];
-            $product_option->create();
+            // Set Variables
+            $original_product_options = $account_product->product_options();
+            $original_product_option_items = [];
+            foreach ( $original_product_options as $original_product_option ) {
+                $original_product_option_items = $original_product_option_items + $original_product_option->items();
+            }
+			
+            $product_ids = $all_product_ids = [];
+            $options = [];
 
-            $product_ids = [];
+            foreach ( $_POST['option-name'] as $key => $name ) {
+                $product_option = new ProductOption();
+                $product_option_id = (int) substr( $key, 1 );
+                $update = isset( $_POST['action'][$product_option_id] );
 
-            $child_sku_pieces = $factor_permutations($_POST['list-items']);
-            foreach ($child_sku_pieces as $child_sku_piece) {
-                $sku_suffix = strtolower(format::slug( implode('-', $child_sku_piece) ) );
-                $name_suffix = implode(' ', $child_sku_piece);
+                if ( $update )
+                    $product_option->get( $product_option_id, $this->user->account->id );
+
+                // Don't create empty product options
+                if ( !$product_option->id && empty( $name ) )
+                    continue;
+
+                // Set variables
+                $product_option->name = $name;
+
+                // This means it's a number
+                if ( $product_option->id ) {
+                    $product_option->save();
+
+                    // Update the list of product options (that will be removed)
+                    unset( $original_product_options[$product_option->id] );
+                } else {
+                    $product_option->type = $_POST['hType'];
+                    $product_option->website_id = $this->user->account->id;
+                    $product_option->product_id = $product->id;
+                    $product_option->create();
+                }
+
+                foreach ( $_POST['list-items'][$product_option_id] as $product_option_item_id => $item ) {
+                    $product_option_item = new ProductOptionItem();
+
+                    if ( $update )
+                        $product_option_item->get( $product_option_item_id, $product_option->id );
+
+                    // Set variables
+                    $product_option_item->name = $item;
+
+                    if ( $product_option_item->id ){
+                        $product_option->save();
+
+                        // Update the list of product options (that will be removed)
+                        unset( $original_product_option_items[$product_option_item->id] );
+                    } else {
+                        $product_option_item->product_option_id = $product_option->id;
+                        $product_option_item->create();
+						
+						$options[$product_option->id][] = $product_option_item;
+                    }
+                }
+            }
+            
+            $item_permutations = $factor_permutations( $options );
+			
+            foreach ($item_permutations as $permutation_group) {
+				$names = [];
+				foreach ( $permutation_group as $item ) {
+					$names[] = $item->name;
+				}
+
+                if ( empty( $item->name ) )
+                    continue;
+				
+                $sku_suffix = strtolower(format::slug( implode('-', $names) ) );
+                $name_suffix = implode(' ', $names);
 
                 $child_product = new Product();
                 $child_product->clone_product($product->product_id, $this->user->id);
                 $child_product->get($child_product->product_id);
 
-                $product_ids[] = $child_product->website_id = $this->user->account->id;
+                $child_product->website_id = $this->user->account->id;
                 $child_product->sku .= '-' . $sku_suffix;
                 $child_product->name .= ' ' . $name_suffix;
                 $child_product->name = str_replace(' (Clone)', '', $child_product->name );
                 $child_product->parent_product_id = $product->product_id;
                 $child_product->save();
+
+				foreach ( $permutation_group as $item ) {
+					$product_ids[$item->id][] = $all_product_ids[] = $child_product->id;
+				}
             }
 
-            $product_option->add_relations($product_ids);
+            /**
+             * Add product relations
+             * @var ProductOptionItem[] $items
+             */
+			foreach ( $options as $items ) {
+				foreach ( $items as $item ) {
+					$item->add_relations( $product_ids[$item->id] );
+				}
+			}
 
-            return new RedirectResponse('/products/product-options/');
+            // Delete old product options
+            foreach ( $original_product_options as $product_option ) {
+                $product_option->remove();
+            }
+
+            /**
+             * Delete old product option items
+             * @var ProductOptionItem[] $original_product_option_items
+             */
+            foreach ( $original_product_option_items as $product_option_item ) {
+                $product_option_item->remove();
+            }
+
+            // add new products to website
+			if ( $product_ids ) {
+				$account_product = new AccountProduct();
+				$account_product->add_bulk_by_ids( $this->user->account->id, $all_product_ids );
+			}
+			
+            return new RedirectResponse("/products/#!p={$product->product_id}/options");
         }
 
         $this->resources
@@ -136,8 +176,60 @@ class ProductOptionsController extends BaseController {
             ->kb( 19 )
             ->select( 'products', 'products/product-options/add' )
             ->add_title( 'Add' )
-            ->set( compact( 'product' ) );
+            ->set( compact( 'product', 'account_product' ) );
     }
 
+    /**
+     * Pricing Tool
+     * @return RedirectResponse|TemplateResponse
+     */
+    protected function pricing_tool() {
+        $product_id = $_GET['pid'];
+        $parent_product = new Product();
+        $parent_product->get($product_id);
 
+        if ( !$parent_product->id )
+            return new RedirectResponse('/products');
+
+        $account_product = new AccountProduct();
+        $child_prices = $account_product->get_child_prices( $parent_product->id, $this->user->account->id );
+
+        if ( empty( $child_prices ) )
+            return new RedirectResponse('/products');
+
+        if ( $this->verified() ) {
+
+            $product_prices = $_POST['product'];
+            foreach ( $product_prices as $product_id => &$pp ) {
+                $pp['account_id'] = $this->user->account->id;
+                $pp['product_id'] = $product_id;
+            }
+
+
+            // Set prices on Master Products (visible on product builder and used by auto-price)
+            $product = new Product();
+            $child_products = $product->get_by_parent($parent_product->id);
+            foreach ( $child_products as $child_product ) {
+                if ( !isset($product_prices[ $child_product->id ]) )
+                    continue;
+
+                $child_product->price = $product_prices[ $child_product->id ]['wholesale_price'];
+                $child_product->price_min = $product_prices[ $child_product->id ]['map_price'];
+                $child_product->save();
+            }
+
+            // Set prices on Account Products (website visible products)
+            $account_product->set_product_prices($this->user->account->id, $product_prices);
+            $this->notify('Product Prices Updated');
+
+            // Refresh
+            $child_prices = $account_product->get_child_prices( $parent_product->id, $this->user->account->id );
+        }
+
+        return $this->get_template_response( 'pricing-tool' )
+            ->kb( 19 )
+            ->menu_item( 'products/product-options/pricing-tool' )
+            ->add_title( 'Pricing' )
+            ->set( compact( 'parent_product', 'child_prices' ) );
+    }
 }

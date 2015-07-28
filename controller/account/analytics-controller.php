@@ -753,7 +753,13 @@ class AnalyticsController extends BaseController {
 
         return $response;
     }
-    
+
+    /**
+     * Hand Google Analytics authentication
+     *
+     * @return TemplateResponse
+     * @throws Exception
+     */
     public function oauth2() {
         try {
             library("GoogleAnalyticsAPI");
@@ -776,6 +782,10 @@ class AnalyticsController extends BaseController {
             ->set( compact( 'login_url', 'ga_username', 'ga_password' ) );
     }
 
+    /**
+     * Callback for oauth
+     * @return HtmlResponse
+     */
     public function oauth2callback() {
         library("GoogleAnalyticsAPI");
 
