@@ -2897,6 +2897,15 @@ class ProductsController extends BaseController {
         $product_import = new ProductImport();
         $products = $product_import->get_all( $this->user->account->id );
 
+        // Add product to website
+        $account_product = new AccountProduct();
+        $account_products_array = $account_product->get_by_account($this->user->account->id);
+        $account_products = [];
+
+        foreach ( $account_products_array as $account_product ) {
+            $account_products[$account_product->product_id] = $account_product;
+        }
+
         foreach ( $products as $p ) {
             $product = new Product();
             $product->get_by_id_by_website( $p->product_id, $this->user->account->id );
@@ -2989,11 +2998,26 @@ class ProductsController extends BaseController {
 
             $product_specifications = json_decode( $p->product_specifications, true );
             $product->delete_specifications(); // should I ?
-            if ( $product_specifications ) {
+            if ( $product_specifications )
                 $product->add_specifications($product_specifications);
+
+            // Create the product on their account
+            if ( isset( $account_products[$product->id] ) ) {
+                $account_product = $account_products[$product->id];
+            } else {
+                $account_product = new AccountProduct();
+                $account_product->website_id = $this->user->account->id;
+                $account_product->product_id = $product->id;
+                $account_product->active = AccountProduct::INACTIVE;
+                $account_product->create();
             }
 
+            $account_product->price = $p->price;
+            $account_product->sale_price = $p->sale_price;
+            $account_product->alternate_price = $p->alternate_price;
+            $account_product->save();
         }
+
         $product_import->delete_all( $this->user->account->id );
 
         $this->notify( _( 'Your products has been imported successfully!' ) );
