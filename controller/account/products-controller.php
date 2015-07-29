@@ -2777,32 +2777,32 @@ class ProductsController extends BaseController {
 
             $image_list = explode(',', $r['image']);
 
-//            foreach( $image_list as $k => $image ) {
-//                $image = trim($image);
-//
-//                if ( !regexp::match( $image, 'url' ) ) {
-//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
-//                    $valid = false;
-//                }
-//
-//                // we ensure the url is decoded before encode
-//                $image = rawurldecode( $image );
-//                // encode url
-//                $url_parts = parse_url( $image );
-//                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
-//                foreach ( $path_parts as &$part)
-//                    $part = rawurlencode( $part );
-//                $url_parts['path'] = implode( '/', $path_parts );
-//                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
-//
-//                // check if remote file exists
-//                $file_exists = curl::check_file( $image );
-//                if ( !$file_exists ) {
-//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
-//                    $skipped_products[] = $r;
-//                    continue 2;
-//                }
-//            }
+            foreach( $image_list as $k => $image ) {
+                $image = trim($image);
+
+                if ( !regexp::match( $image, 'url' ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+                    $valid = false;
+                }
+
+                // we ensure the url is decoded before encode
+                $image = rawurldecode( $image );
+                // encode url
+                $url_parts = parse_url( $image );
+                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
+                foreach ( $path_parts as &$part)
+                    $part = rawurlencode( $part );
+                $url_parts['path'] = implode( '/', $path_parts );
+                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
+
+                // check if remote file exists
+                $file_exists = curl::check_file( $image );
+                if ( !$file_exists ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+                    $skipped_products[] = $r;
+                    continue 2;
+                }
+            }
 
             if ( $matching_product->id )
                 $to_update++;
@@ -2985,15 +2985,15 @@ class ProductsController extends BaseController {
             $industry = format::slug( $p->industry_name );
             $product->industry = $industry;
 
-//            $image_list = explode(',', $p->image);
-//            $product_images = [];
-//            foreach( $image_list as $k => $image ) {
-//                $image = trim($image);
-//                $slug = f::strip_extension( f::name( $image ) );
-//                $image_name = $product->upload_image( $image, $slug, $industry );
-//                $product_images[] = $image_name;
-//            }
-//            $product->add_images( $product_images );
+            $image_list = explode(',', $p->image);
+            $product_images = [];
+            foreach( $image_list as $k => $image ) {
+                $image = trim($image);
+                $slug = f::strip_extension( f::name( $image ) );
+                $image_name = $product->upload_image( $image, $slug, $industry );
+                $product_images[] = $image_name;
+            }
+            $product->add_images( $product_images );
             $product->save();
 
             $product_specifications = json_decode( $p->product_specifications, true );
