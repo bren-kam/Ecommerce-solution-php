@@ -3008,7 +3008,7 @@ class ProductsController extends BaseController {
                 $account_product = new AccountProduct();
                 $account_product->website_id = $this->user->account->id;
                 $account_product->product_id = $product->id;
-                $account_product->active = AccountProduct::INACTIVE;
+                $account_product->active = AccountProduct::ACTIVE;
                 $account_product->create();
             }
 
