@@ -2826,8 +2826,11 @@ class ProductsController extends BaseController {
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
 
-            if ( 'option' == $product['type']  && $last_product['product_id'] ) {
+            if ( 'option' == $product['type'] && $last_product['product_id'] ) {
                 $product['parent_product_id'] = $last_product['product_id'];
+                $product['category_id'] = $last_product['category_id'];
+                $product['industry_id'] = $last_product['industry_id'];
+                $product['brand_id'] = $last_product['brand_id'];
             }
 
             // Set product specifications
