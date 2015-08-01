@@ -128,6 +128,7 @@ class ProductOptionsController extends BaseController {
                 $child_product->sku .= '-' . $sku_suffix;
                 $child_product->name .= ' ' . $name_suffix;
                 $child_product->name = str_replace(' (Clone)', '', $child_product->name );
+                $child_product->slug = format::slug($child_product->name);
                 $child_product->parent_product_id = $product->product_id;
                 $child_product->save();
 

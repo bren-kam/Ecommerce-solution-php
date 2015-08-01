@@ -51,7 +51,7 @@ class AccountProduct extends ActiveRecordBase {
             , 'wholesale_price' => $this->wholesale_price
             , 'inventory' => $this->inventory
             , 'active' => $this->active
-        ), 'iiddddii' );
+        ), 'iiddddii', true );
     }
 
     /**
