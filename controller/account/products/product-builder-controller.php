@@ -195,8 +195,12 @@ class ProductBuilderController extends BaseController {
             // Now go back to products list with a notification
             $this->notify( _('Your product was successfully created or updated!') );
 
-            // Return to products list
-            return new RedirectResponse('/products/product-builder/');
+            if ( $product->parent_product_id ) {
+                return new RedirectResponse("/products/#!p={$product->parent_product_id}/options");
+            } else {
+                // Return to products list
+                return new RedirectResponse('/products/product-builder/');
+            }
         }
 
         $this->resources
