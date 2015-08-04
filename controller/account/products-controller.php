@@ -2826,8 +2826,11 @@ class ProductsController extends BaseController {
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
 
-            if ( 'option' == $product['type']  && $last_product['product_id'] ) {
+            if ( 'option' == $product['type'] && $last_product['product_id'] ) {
                 $product['parent_product_id'] = $last_product['product_id'];
+                $product['category_id'] = $last_product['category_id'];
+                $product['industry_id'] = $last_product['industry_id'];
+                $product['brand_id'] = $last_product['brand_id'];
             }
 
             // Set product specifications
@@ -3008,13 +3011,13 @@ class ProductsController extends BaseController {
                 $account_product = new AccountProduct();
                 $account_product->website_id = $this->user->account->id;
                 $account_product->product_id = $product->id;
-                $account_product->active = AccountProduct::ACTIVE;
                 $account_product->create();
             }
 
             $account_product->price = $p->price;
             $account_product->sale_price = $p->sale_price;
             $account_product->alternate_price = $p->alternate_price;
+            $account_product->active = AccountProduct::ACTIVE;
             $account_product->save();
         }
 

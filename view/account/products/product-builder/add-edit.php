@@ -163,6 +163,11 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                            <?php } else {
+                                ?>
+                                <input type="hidden" name="sBrand" id="sBrand" value="<?php echo $product->brand_id; ?>">
+                                <input type="hidden" name="sIndustry" id="sIndustry" value="<?php echo $product->industry_id; ?>">
+                                <input type="hidden" name="sCategory" id="sCategory" value="<?php echo $product->category_id; ?>">
                             <?php } ?>
 
                             <div class="form-group">
