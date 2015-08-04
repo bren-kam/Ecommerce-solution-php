@@ -663,6 +663,7 @@ class CronsController extends BaseController {
 
                 //    $email = fn::build_html_with_attachments($email_body, "{$account->title} <noreply@{$account->domain}>", $account->domain);
 
+
                 if ( strpos($email_body, '<img src="" alt="" border="0"/>') !== FALSE ) {
                     echo "> > Could not get email for cart {$website_cart['website_cart_id']}, trying again later\n";
                     echo "> > Please visit {$email_body_url} for more information\n";
