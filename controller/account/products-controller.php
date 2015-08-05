@@ -1588,7 +1588,7 @@ class ProductsController extends BaseController {
         // Set Order by
         $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`' );
         $dt->add_where( ' AND ( p.`website_id` = 0 || p.`website_id` = ' . $this->user->account->id . ')' );
-        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00'" );
+        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' AND p.`parent_product_id` IS NULL " );
 
         switch ( $_GET['sType'] ) {
         	case 'sku':

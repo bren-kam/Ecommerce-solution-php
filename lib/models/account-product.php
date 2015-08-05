@@ -381,7 +381,7 @@ class AccountProduct extends ActiveRecordBase {
     public function count( $account_id ) {
         $account_id = (int) $account_id;
 
-        return $this->get_var( "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND ( p.`website_id` = 0 || p.`website_id` = $account_id ) AND wp.`website_id` = $account_id AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00'" );
+        return $this->get_var( "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND ( p.`website_id` = 0 || p.`website_id` = $account_id ) AND wp.`website_id` = $account_id AND p.`publish_visibility` = 'public' AND p.`parent_product_id` IS NULL AND p.`publish_date` <> '0000-00-00 00:00:00'" );
     }
 
     /**
@@ -994,7 +994,7 @@ class AccountProduct extends ActiveRecordBase {
 
 
         return $this->prepare(
-            "SELECT DISTINCT p.`product_id` AS value, p.`$field` AS name FROM `products` AS p LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND ( p.`website_id` = 0 OR p.`website_id` = :account_id ) $where ORDER BY `$field` LIMIT 10"
+            "SELECT DISTINCT p.`product_id` AS value, p.`$field` AS name FROM `products` AS p LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND p.`parent_product_id` IS NULL AND ( p.`website_id` = 0 OR p.`website_id` = :account_id ) $where ORDER BY `$field` LIMIT 10"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );
@@ -1031,7 +1031,7 @@ class AccountProduct extends ActiveRecordBase {
         $limit_sql = ( $limit > 0 ) ? " LIMIT $limit " : "";
 
         return $this->prepare(
-            "SELECT DISTINCT p.`product_id` AS value, $select_fields FROM `website_products` AS wp INNER JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 $where ORDER BY $order_by $limit_sql"
+            "SELECT DISTINCT p.`product_id` AS value, $select_fields FROM `website_products` AS wp INNER JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND p.`parent_product_id` IS NULL AND wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 $where ORDER BY $order_by $limit_sql"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );
@@ -1048,7 +1048,7 @@ class AccountProduct extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT p.`product_id`, p.`name`, p.`sku`, p.`status`, b.`name` AS brand FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) WHERE wp.`active` = 1 AND wbc.`category_id` IS NULL $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            "SELECT p.`product_id`, p.`name`, p.`sku`, p.`status`, b.`name` AS brand FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) WHERE wp.`active` = 1 AND wbc.`category_id` IS NULL AND p.`parent_product_id` IS NULL $where GROUP BY p.`product_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -1066,7 +1066,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Get the website count
         return $this->prepare(
-            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where"
+            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 AND p.`parent_product_id` IS NULL $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
