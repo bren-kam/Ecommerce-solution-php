@@ -507,7 +507,7 @@ var TicketCommentForm = {
             return;
 
         $.post(
-            '/tickets/delete-comment/'
+            '/customer-support/delete-comment/'
             , { _nonce : $('#_delete_comment').val(), tcid : commentId }
             , function( response ) {
                 GSR.defaultAjaxResponse( response );
