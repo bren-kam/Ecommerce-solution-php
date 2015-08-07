@@ -54,7 +54,7 @@ class ProductOptionsController extends BaseController {
 			
             $product_ids = $all_product_ids = [];
             $options = [];
-
+			
             foreach ( $_POST['option-name'] as $key => $name ) {
                 $product_option = new ProductOption();
                 $product_option_id = (int) substr( $key, 1 );
@@ -82,7 +82,7 @@ class ProductOptionsController extends BaseController {
                     $product_option->product_id = $product->id;
                     $product_option->create();
                 }
-
+				
                 foreach ( $_POST['list-items'][$product_option_id] as $product_option_item_id => $item ) {
                     $product_option_item = new ProductOptionItem();
 
@@ -97,11 +97,13 @@ class ProductOptionsController extends BaseController {
 
                         // Update the list of product options (that will be removed)
                         unset( $original_product_option_items[$product_option_item->id] );
+						
+						$options[$product_option->id][] = [ $product_option_item, false ];
                     } else {
                         $product_option_item->product_option_id = $product_option->id;
                         $product_option_item->create();
 						
-						$options[$product_option->id][] = $product_option_item;
+						$options[$product_option->id][] = [ $product_option_item, true ];
                     }
                 }
             }
@@ -109,12 +111,20 @@ class ProductOptionsController extends BaseController {
             $item_permutations = $factor_permutations( $options );
 			
             foreach ($item_permutations as $permutation_group) {
+				$create = false;
 				$names = [];
+				
 				foreach ( $permutation_group as $item ) {
-					$names[] = $item->name;
+					if ( $item[1] )
+						$create = true;
+					
+					$names[] = $item[0]->name;
 				}
+				
+				if ( !$create )
+					continue;
 
-                if ( empty( $item->name ) )
+                if ( empty( $names ) )
                     continue;
 				
                 $sku_suffix = strtolower(format::slug( implode('-', $names) ) );
@@ -134,7 +144,7 @@ class ProductOptionsController extends BaseController {
                 $child_product->save();
 
 				foreach ( $permutation_group as $item ) {
-					$product_ids[$item->id][] = $all_product_ids[] = $child_product->id;
+					$product_ids[$item[0]->id][] = $all_product_ids[] = $child_product->id;
 				}
             }
 
@@ -144,7 +154,8 @@ class ProductOptionsController extends BaseController {
              */
 			foreach ( $options as $items ) {
 				foreach ( $items as $item ) {
-					$item->add_relations( $product_ids[$item->id] );
+					if ( $product_ids[$item[0]->id] )
+						$item[0]->add_relations( $product_ids[$item[0]->id] );
 				}
 			}
 
