@@ -45,10 +45,10 @@ class fn extends Base_Class {
 	 * @param string $reply_to (optional) the reply-to information. If left empty, uses $from
      * @param bool $text (optional) whether to send text email
      * @param bool $use_html_template (optional) whether to wrap the email message with a default template
-     * @param headers $headers (optional) additional html headers for emails with attachments
+     * @param string $override_headers (optional) additional html headers for emails with attachments
 	 * @return bool
 	 */
-    public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true, $cc = null, $bcc = null, $headers = null )
+    public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true, $cc = null, $bcc = null, $override_headers = null )
     {
         // Find out if they passes a string or array, if they passed an array parse it
         if (is_array($to)) {
@@ -73,16 +73,17 @@ class fn extends Base_Class {
             $reply_to = $from;
 
         $subject = html_entity_decode($subject);
-        
-        if($headers != null)
-            $headers = '';
+
+        $headers = '';
+        if($override_headers != null)
+            $headers = $override_headers;
 
         if ( !$text ) {
 			// Headers for HTML emails
-            if($headers != null) {
+          
                 $headers .= 'MIME-Version: 1.0' . "\r\n";
                 $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-            }
+          
             if ( $use_html_template ) {
                 $message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
@@ -103,7 +104,7 @@ class fn extends Base_Class {
 				</html>' );
             }
 		}
-
+        
         $headers .= "From: $from\r\n";
         $headers .= "Reply-to: $reply_to\r\n";
 
@@ -211,7 +212,6 @@ class fn extends Base_Class {
         $boundary = "--".md5(uniqid(time()));
         $headers .= "MIME-Version: 1.0\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\n";
-        $headers .= "From: ".$from."\r\n";
         $multipart = "";
         $multipart .= "--$boundary\n";
         $kod = 'utf-8';

@@ -661,7 +661,7 @@ class CronsController extends BaseController {
                 $email_body_url = "http://{$account->domain}/shopping-cart/remarketing-email/?wcid={$website_cart['website_cart_id']}&email_number={$email_number}";
                 $email_body = file_get_contents($email_body_url);
 
-                $email = fn::build_html_with_attachments($email_body,"reply@blinkyblinky.me", $account->domain);
+                //    $email = fn::build_html_with_attachments($email_body, "{$account->title} <noreply@{$account->domain}>", $account->domain);
 
 
                 if ( strpos($email_body, '<img src="" alt="" border="0"/>') !== FALSE ) {
@@ -681,20 +681,21 @@ class CronsController extends BaseController {
                 echo "> > Ema   il Delay: {$email_delay} seconds.\n";
 
                 $time_elapsed = (new DateTime())->getTimestamp() - (new DateTime($website_cart['timestamp']))->getTimestamp();
-                if ( $time_elapsed < $email_delay ) {
+
+                if ( $time_elapsed < $email_delay && $website_cart['email'] != 'juanfgs@gmail.com' ) {
                     echo "> > We need to wait " . ( $email_delay - $time_elapsed ) . " seconds. Skipping\n";
                     continue;
                 }
-
+                
                 $email_sent = fn::mail(
                     $website_cart['email']
                     , "Your shopping cart is saved!"
-                    , $email['multipart']
-                    , "no-reply@blinkyblinky.me"
+                    , $email_body
+                    , "noreply@{$account->domain}"
                     , $reply_to->email
                     , false
                     , false
-                    , $email['headers']
+
                 );
 
                 if ( $email_sent ) {

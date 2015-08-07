@@ -128,6 +128,33 @@ $nonce = nonce::create('payment_settings');
                             <?php endif; ?>
                         </td>
                     </tr>
+                    <!-- FlexShopper  -->
+                    <tr>
+                        <td class="v-align text-center col-lg-3">
+                            <p><img src="/images/payment-logos/flexshopper.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=207"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                        </td>
+                        <td class="v-align text-center col-lg-6">
+                            <ul>
+                                <li>Instantaneous financing approval for your customers through FlexShopper</li>
+                                <li>Retailer account application required</li>
+                                <li>Retailers may choose between 0% and up to 6% financing per lease</li>
+                                <li>There are no monthly fees or recurring fees for retailers</li>
+                            </ul>
+                        </td>
+                        <td class="v-align text-center col-lg-3">
+                            <?php if( security::decrypt( base64_decode( $settings['flexshopper-retailer-id'] ), PAYMENT_DECRYPTION_KEY ) ): ?>
+                                <p class="connected">
+                                    <span><img src="/images/payment-logos/check.png"></span>
+                                    <span><strong>Connected as <br><?php echo security::decrypt( base64_decode( $settings['flexshopper-retailer-id'] ), PAYMENT_DECRYPTION_KEY ) ?></strong></span>
+                                </p>
+                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-flexshopper">Settings</a></p>
+                            <?php else: ?>
+                                <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-flexshopper">Enable</a></p>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <!-- FlexShopper  -->
                 </table>
 
                 <form action="" id="fPaymentSettings" method="post" name="fPaymentSettings">
@@ -315,6 +342,40 @@ $nonce = nonce::create('payment_settings');
                         <label for="tCrestFinancialDealerId">Dealer ID:</label>
                         <input class="form-control" id="tCrestFinancialDealerId" maxlength="10" name="tCrestFinancialDealerId" type="text" value="<?php echo security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) ?>">
                     </div>
+
+                    <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="modal fade" id="modal-flexshopper" tabindex="-1" role="dialog" aria-hidden="true" >
+    <form action="/shopping-cart/settings/payment-settings/" method="post" role="form">
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">FlexShopper</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="tFlexShopperRetailerId">Retailer ID:</label>
+                        <input class="form-control" id="tFlexShopperRetailerId"  name="tFlexShopperRetailerId" type="text" value="<?php echo security::decrypt( base64_decode( $settings['flexshopper-retailer-id'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="tFlexShopperRetailerToken">Retailer Token:</label>
+                        <input class="form-control" id="tFlexShopperRetailerToken"  name="tFlexShopperRetailerToken" type="text" value="<?php echo security::decrypt( base64_decode( $settings['flexshopper-retailer-token'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>                    
+
 
                     <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
 
