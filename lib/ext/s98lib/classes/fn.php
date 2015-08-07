@@ -80,10 +80,10 @@ class fn extends Base_Class {
 
         if ( !$text ) {
 			// Headers for HTML emails
-            if($headers != null) {
+          
                 $headers .= 'MIME-Version: 1.0' . "\r\n";
                 $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-            }
+          
             if ( $use_html_template ) {
                 $message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
@@ -105,10 +105,9 @@ class fn extends Base_Class {
             }
 		}
         
-        if($override_headers == null){
-            $headers .= "From: $from\r\n";
-            $headers .= "Reply-to: $reply_to\r\n";
-        }
+        $headers .= "From: $from\r\n";
+        $headers .= "Reply-to: $reply_to\r\n";
+
         if ( $cc ) {
             $headers .= "Cc: $cc\r\n";
         }
@@ -213,7 +212,6 @@ class fn extends Base_Class {
         $boundary = "--".md5(uniqid(time()));
         $headers .= "MIME-Version: 1.0\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\n";
-        $headers .= "From: ".$from."\r\n";
         $multipart = "";
         $multipart .= "--$boundary\n";
         $kod = 'utf-8';

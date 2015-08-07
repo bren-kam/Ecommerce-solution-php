@@ -401,7 +401,53 @@ class CustomerSupportController extends BaseController {
 
         return $response;
     }
+    
+    /**
+     * Delete a comment
+     *
+     * @return AjaxResponse
+     */
+    
+    protected function delete_comment() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
 
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tcid'] ), _('Failed to delete comment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket comment
+        $ticket_comment = new TicketComment();
+        $ticket_comment->get( $_POST['tcid'] );
+
+        // Need to get uploads and delete them
+        $ticket_upload = new TicketUpload();
+        $uploads = $ticket_upload->get_by_comment( $_POST['tcid'] );
+
+        if ( is_array( $uploads ) ) {
+            $file = new File( 'retailcatalog.us' );
+
+            /**
+             * @var $upload TicketUpload
+             */
+            foreach ( $uploads as $upload ) {
+                // Delete the file
+                $file->delete_file( $upload->key, 'attachments/' );
+
+                // Delete the upload entry
+                $upload->remove();
+            }
+        }
+
+        // Then delete ticket
+        $ticket_comment->remove();
+
+        return $response;
+    }
+    
     /**
      * Update who the ticket is assigned to
      *
@@ -444,7 +490,7 @@ class CustomerSupportController extends BaseController {
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
         $message .= 'You have been assigned Ticket #' . $ticket->id . ". To view it, follow the link below:\n\n";
-        $message .= 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/tickets/ticket/?tid=' . $ticket->id . "\n\n";
+        $message .= 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/customer-support/#!tid=' . $ticket->id . "\n\n";
         $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 

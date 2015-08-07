@@ -1588,7 +1588,7 @@ class ProductsController extends BaseController {
         // Set Order by
         $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`' );
         $dt->add_where( ' AND ( p.`website_id` = 0 || p.`website_id` = ' . $this->user->account->id . ')' );
-        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00'" );
+        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' AND p.`parent_product_id` IS NULL " );
 
         switch ( $_GET['sType'] ) {
         	case 'sku':
@@ -2777,32 +2777,32 @@ class ProductsController extends BaseController {
 
             $image_list = explode(',', $r['image']);
 
-//            foreach( $image_list as $k => $image ) {
-//                $image = trim($image);
-//
-//                if ( !regexp::match( $image, 'url' ) ) {
-//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
-//                    $valid = false;
-//                }
-//
-//                // we ensure the url is decoded before encode
-//                $image = rawurldecode( $image );
-//                // encode url
-//                $url_parts = parse_url( $image );
-//                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
-//                foreach ( $path_parts as &$part)
-//                    $part = rawurlencode( $part );
-//                $url_parts['path'] = implode( '/', $path_parts );
-//                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
-//
-//                // check if remote file exists
-//                $file_exists = curl::check_file( $image );
-//                if ( !$file_exists ) {
-//                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
-//                    $skipped_products[] = $r;
-//                    continue 2;
-//                }
-//            }
+            foreach( $image_list as $k => $image ) {
+                $image = trim($image);
+
+                if ( !regexp::match( $image, 'url' ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+                    $valid = false;
+                }
+
+                // we ensure the url is decoded before encode
+                $image = rawurldecode( $image );
+                // encode url
+                $url_parts = parse_url( $image );
+                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
+                foreach ( $path_parts as &$part)
+                    $part = rawurlencode( $part );
+                $url_parts['path'] = implode( '/', $path_parts );
+                $image = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
+
+                // check if remote file exists
+                $file_exists = curl::check_file( $image );
+                if ( !$file_exists ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+                    $skipped_products[] = $r;
+                    continue 2;
+                }
+            }
 
             if ( $matching_product->id )
                 $to_update++;
@@ -2826,8 +2826,11 @@ class ProductsController extends BaseController {
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
 
-            if ( 'option' == $product['type']  && $last_product['product_id'] ) {
+            if ( 'option' == $product['type'] && $last_product['product_id'] ) {
                 $product['parent_product_id'] = $last_product['product_id'];
+                $product['category_id'] = $last_product['category_id'];
+                $product['industry_id'] = $last_product['industry_id'];
+                $product['brand_id'] = $last_product['brand_id'];
             }
 
             // Set product specifications
@@ -2896,6 +2899,15 @@ class ProductsController extends BaseController {
 
         $product_import = new ProductImport();
         $products = $product_import->get_all( $this->user->account->id );
+
+        // Add product to website
+        $account_product = new AccountProduct();
+        $account_products_array = $account_product->get_by_account($this->user->account->id);
+        $account_products = [];
+
+        foreach ( $account_products_array as $account_product ) {
+            $account_products[$account_product->product_id] = $account_product;
+        }
 
         foreach ( $products as $p ) {
             $product = new Product();
@@ -2976,24 +2988,39 @@ class ProductsController extends BaseController {
             $industry = format::slug( $p->industry_name );
             $product->industry = $industry;
 
-//            $image_list = explode(',', $p->image);
-//            $product_images = [];
-//            foreach( $image_list as $k => $image ) {
-//                $image = trim($image);
-//                $slug = f::strip_extension( f::name( $image ) );
-//                $image_name = $product->upload_image( $image, $slug, $industry );
-//                $product_images[] = $image_name;
-//            }
-//            $product->add_images( $product_images );
+            $image_list = explode(',', $p->image);
+            $product_images = [];
+            foreach( $image_list as $k => $image ) {
+                $image = trim($image);
+                $slug = f::strip_extension( f::name( $image ) );
+                $image_name = $product->upload_image( $image, $slug, $industry );
+                $product_images[] = $image_name;
+            }
+            $product->add_images( $product_images );
             $product->save();
 
             $product_specifications = json_decode( $p->product_specifications, true );
             $product->delete_specifications(); // should I ?
-            if ( $product_specifications ) {
+            if ( $product_specifications )
                 $product->add_specifications($product_specifications);
+
+            // Create the product on their account
+            if ( isset( $account_products[$product->id] ) ) {
+                $account_product = $account_products[$product->id];
+            } else {
+                $account_product = new AccountProduct();
+                $account_product->website_id = $this->user->account->id;
+                $account_product->product_id = $product->id;
+                $account_product->create();
             }
 
+            $account_product->price = $p->price;
+            $account_product->sale_price = $p->sale_price;
+            $account_product->alternate_price = $p->alternate_price;
+            $account_product->active = AccountProduct::ACTIVE;
+            $account_product->save();
         }
+
         $product_import->delete_all( $this->user->account->id );
 
         $this->notify( _( 'Your products has been imported successfully!' ) );
