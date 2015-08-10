@@ -67,7 +67,7 @@ $nonce = nonce::create('payment_settings');
                                     <span><img src="/images/payment-logos/check.png"></span>
                                     <span><strong>Connected as <br><?php echo $stripe_account['stripe_user_id'] ?></strong></span>
                                 </p>
-                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-stripe">Settings</a></p>
+                                <p><a class="btn btn-primary" href="/shopping-cart/settings/stripe-connect/?website-id=<?php echo $user->account->id; ?>&user-id=<?php echo $user->id; ?>">Switch Stripe Account</a></p>                            
                             <?php else: ?>
                             <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-stripe-create-account">Create Stripe Account</a></p>
                             
