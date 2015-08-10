@@ -156,7 +156,8 @@ $nonce = nonce::create('payment_settings');
                     </tr>
                     <!-- FlexShopper  -->
                 </table>
-
+                
+                <?php if(security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) && isset($stripe_account['stripe_user_id']) ) {?>
                 <form action="" id="fPaymentSettings" method="post" name="fPaymentSettings">
                     <div class="row">
                         <div class="col-lg-12">
@@ -179,7 +180,7 @@ $nonce = nonce::create('payment_settings');
                         </div>
                     </div>
                 </form>
-
+                <?php } ?>
             </div>
         </section>
     </div>
