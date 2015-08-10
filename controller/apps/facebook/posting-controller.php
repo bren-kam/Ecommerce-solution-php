@@ -1,7 +1,7 @@
 <?php
 class PostingController extends BaseController {
-    const APP_ID = '268649406514419';
-    const APP_SECRET = '6ca6df4c7e9d909a58d95ce7360adbf3';
+    const APP_ID = '484616121701707';
+    const APP_SECRET = 'ff73583d0f102b3a7131871e90712dda';
     const APP_URI = 'op-posting';
 
     /**
