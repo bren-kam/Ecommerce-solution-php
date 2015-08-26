@@ -126,6 +126,8 @@ class ProductBuilderController extends BaseController {
                 // Reassign different product to categories linked for image
                 $account_category->reassign_image( $account->id, $product->id );
             }
+			
+			$industry->get( $product->industry_id );
 
             $product->category_id = $_POST['sCategory'];
             $product->brand_id = $_POST['sBrand'];
@@ -145,7 +147,7 @@ class ProductBuilderController extends BaseController {
             $product->save();
 
             $this->log( 'update-custom-product', $this->user->contact_name . ' updated a custom product on ' . $this->user->account->title, $product->id );
-
+			
             // Delete all the things
             $product->delete_images();
             $product->delete_specifications();
@@ -158,7 +160,7 @@ class ProductBuilderController extends BaseController {
             if ( isset( $_POST['attributes'] ) )
                 $attribute_item->add_relations( $product->id, $_POST['attributes'] );
 
-            if ( isset( $_POST['images'] ) ) {
+			if ( isset( $_POST['images'] ) ) {
                 $product->add_images( $_POST['images'] );
 
                 // What images do we need to remove
