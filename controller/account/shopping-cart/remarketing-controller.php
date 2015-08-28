@@ -146,6 +146,7 @@ class RemarketingController extends BaseController {
             , 'remarketing-idle-seconds'
             , 'remarketing-notification-email'
             , 'remarketing-coupon'
+            , 'remarketing-autoresponder'            
             , 'remarketing-email1-enabled'
             , 'remarketing-email1-delay'
             , 'remarketing-email1-header'
@@ -183,6 +184,7 @@ class RemarketingController extends BaseController {
                 , 'remarketing-idle-seconds' => $_POST['idle-seconds']
                 , 'remarketing-notification-email' => $_POST['notification-email']
                 , 'remarketing-coupon' => $_POST['coupon-path']
+                , 'remarketing-autoresponder' => $_POST['autoresponder']                
                 , 'remarketing-email1-enabled' => isset($_POST['email1-enabled'])
                 , 'remarketing-email1-delay' => $_POST['email1-delay']
                 , 'remarketing-email1-header' => $_POST['email1-header']

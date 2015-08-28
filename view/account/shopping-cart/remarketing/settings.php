@@ -58,9 +58,20 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                                 <input type="hidden" name="submit-color" id="popup-submit-color" value="<?php echo $settings['remarketing-submit-color'] ?>">
                             </a>
                         </div>
+
+
                     </div>
 
                     <div id="settings-editor">
+                        <div class="row">
+
+                            <div class="form-group">
+                                <label>Autoresponder </label>
+                                <textarea class="form-control" rows="3" name="autoresponder" placeholder="Autoresponder"><?php echo $settings['remarketing-autoresponder']; ?></textarea>
+                            </div>
+
+                        </div>
+                        
                         <div class="row">
                             <div class="col-lg-6">
                                 <select class="form-control" name="idle-seconds">
