@@ -106,7 +106,8 @@
                    </td>
                </tr>
                 <?php foreach ( $records as $record ): ?>
-                    <tr>
+
+                    <tr id="record-<?php echo $record->id; ?>" data-original-type="<?php echo $record->type; ?>">
                         <td>
                             <input type="text" name="changes[<?php echo $record->id; ?>][name]" class="form-control disabled" disabled="disabled" placeholder="Domain" value="<?php echo $record->name; ?>" />
                             <input class="action disabled" type="hidden" disabled="disabled" name="changes[<?php echo $record->id; ?>][action]" value="" />
@@ -175,10 +176,10 @@
             <tbody>
             <?php
             if ( is_array( $records['ResourceRecordSets'] ) )
-                foreach ( $records['ResourceRecordSets'] as $r ):
+                foreach ( $records['ResourceRecordSets'] as $id => $r ):
                     $no_delete =  $full_domain_name == $r['Name'] && ( 'NS' == $r['Type'] || 'SOA' == $r['Type'] );
                     ?>
-                    <tr>
+                    <tr id="record-<?php echo $id;?>" data-original-type="<?php echo $r['Type']; ?>">
                         <td>
                             <?php if ( $no_delete ) { echo $r['Name']; } else { ?>
                                 <input type="text" name="changes[name][]" class="form-control disabled" disabled="disabled" placeholder="<?php echo _('Domain'); ?>" value="<?php echo $r['Name']; ?>" />
@@ -200,7 +201,21 @@
                         </td>
                         <td>
                             <?php if ( $no_delete ) { echo $r['TTL']; } else { ?>
-                                <input type="text" name="changes[ttl][]" class="form-control disabled" placeholder="TTL" value="<?php echo $r['TTL']; ?>" disabled="disabled" />
+                            <!--<input type="text" name="changes[ttl][]" class="form-control disabled" placeholder="TTL" value="<?php echo $r['TTL']; ?>" disabled="disabled" /> -->
+                            <select name="changes[ttl][]" class="form-control disabled" placeholder="TTL" disabled="disabled">
+                                <option value="">TTL </option>
+                                <option value="120">2 minutes </option>
+                                <option value="300">5 minutes </option>
+                                <option value="600">10 minutes </option>
+                                <option value="900">15 minutes </option>
+                                <option value="1200">20 minutes </option>
+                                <option value="1800">30 minutes </option>
+                                <option value="3600"> 1 hour </option>                                
+                                <option value="7200"> 2 hours </option>
+                                <option value="18000"> 5 hours </option>
+                                <option value="43200"> 12 hours </option>
+                                <option value="86400"> 1 day </option>                                                                                                                                
+                            </select>
                             <?php } ?>
                         </td>
                         <td>
@@ -245,3 +260,55 @@
 </div>
 
 
+
+<div class="modal fade" id="modal-TXT" tabindex="-1" role="dialog" aria-hidden="true" >
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Edit Record: TXT Content</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <input type="hidden" value="" name="record-id" class="record-id">
+                        <label>Current Value:</label>                        
+                        <pre class="previous-value">
+
+                        </pre>
+                        <label>New Value</label>
+                        <textarea class="form-control txt-value" value=""  name="txt-value" /></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="modal fade" id="modal-MX" tabindex="-1" role="dialog" aria-hidden="true" >
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Edit Record: MX Content</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <input type="hidden" value="" name="record-id" class="record-id">
+                        <label>Server:</label>                        
+                        <input type="text" class="form-control mx-server" value=""  name="mx-server" />
+                        <label>Priority:</label>
+                        <input type="number" class="form-control mx-priority" value=""  name="mx-priority" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+</div>

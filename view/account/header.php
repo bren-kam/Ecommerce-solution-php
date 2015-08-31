@@ -162,6 +162,15 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+     <?php
+     /*
+      * Restrict shown pages for geomarketing only users
+      * This should be reimplemented as a proper user role system
+     */
+
+          if (!$user->account->geomarketing_only()):
+     
+     ?>
 
             <?php if ( $user->account->pages ): ?>
                 <li class="sub-menu">
@@ -442,7 +451,7 @@
                     </ul>
                 </li>
             <?php endif; ?>
-
+            <?php endif; ?>
             <?php if ( $user->account->geo_marketing ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing') ) echo 'class="active"' ?>>
@@ -461,7 +470,8 @@
                     </ul>
                 </li>
             <?php endif; ?>
-
+            <?php if (!$user->account->geomarketing_only()):
+            ?>
             <li class="sub-menu">
                 <a href="javascript:;" <?php if ( stristr( $_SERVER['REQUEST_URI'], '/settings/' ) ) echo 'class="active"'?>>
                     <i class="fa fa-suitcase"></i>
@@ -481,6 +491,8 @@
                     <?php endif; ?>
                 </ul>
             </li>
+                                                                                        <?php endif;?>
+         </ul>
 
         </ul>
         <!-- sidebar menu end-->
