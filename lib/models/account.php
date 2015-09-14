@@ -487,4 +487,24 @@ class Account extends ActiveRecordBase {
         return implode(', ', $websites);
     }
 
+    /**
+     * Send activation link
+     * 
+     * @param int $user_id
+     * returns bool
+     */
+
+    public function geomarketing_only(){
+        $permissions = array( 'product_catalog','blog','email_marketing','social_media');
+
+        foreach($permissions as $permission) {
+            if($this->$permission != '0') {
+                echo $permission;
+                return false;
+            }
+
+        }
+        
+        return $this->geo_marketing == 1;
+    }
 }

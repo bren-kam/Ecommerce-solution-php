@@ -54,8 +54,12 @@ class LoginController extends BaseController {
                         // Two Weeks : Two Days
                         $expiration = ( isset( $_POST['remember-me'] ) ) ? 1209600 : 172800;
                         set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
-
+                        
                         if( !isset( $_SESSION['referer'] ) || isset( $_SESSION['referer'] ) && empty( $_SESSION['referer'] ) ) {
+
+                            if($accounts[0]->geomarketing_only()){
+                                return new RedirectResponse('/geo-marketing/analytics');
+                            }
                             return new RedirectResponse('/');
                         } else {
                             $referer = $_SESSION['referer'];

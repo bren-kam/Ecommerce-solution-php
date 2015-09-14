@@ -41,8 +41,8 @@ class Config {
         , 'sendgrid-timezone'       => 'America/Chicago'
 
         // Facebook
-        , 'facebook-key'        => '1613357988885586'
-        , 'facebook-secret'     => 'e57ed9886666f429d358355b9be89b06'
+        , 'facebook-key'        => '484616121701707'
+        , 'facebook-secret'     => 'ff73583d0f102b3a7131871e90712dda'
         , 'facebook-redirect'   => 'http://account.testing.greysuitretail.com/sm/facebook-callback/'
 
         // Twitter

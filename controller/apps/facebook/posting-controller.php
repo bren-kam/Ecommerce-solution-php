@@ -1,7 +1,7 @@
 <?php
 class PostingController extends BaseController {
-    const APP_ID = '268649406514419';
-    const APP_SECRET = '6ca6df4c7e9d909a58d95ce7360adbf3';
+    const APP_ID = '485345361628783';
+    const APP_SECRET = '727d8f0b3289e1c24d4fce1600c1f694';
     const APP_URI = 'op-posting';
 
     /**
@@ -20,7 +20,7 @@ class PostingController extends BaseController {
      * @return TemplateResponse|HtmlResponse
      */
     protected function index() {
-        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_actions' ) );
         $success = false;
         $options = array();
         $posting = new Posting();

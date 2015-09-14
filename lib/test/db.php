@@ -12,9 +12,9 @@ class DB {
      * Define connection parameters
      */
     CONST DB_HOST = 'localhost';
-    CONST DB_USER = 'imaginer_admin';
-    CONST DB_PASSWORD = 'rbDxn6kkj2e4';
-    CONST DB_NAME = 'imaginer_system';
+    CONST DB_USER = 'gsr';
+    CONST DB_PASSWORD = 'asdasd123';
+    CONST DB_NAME = 'gsr';
 
     /**
      * Hold the PDO object

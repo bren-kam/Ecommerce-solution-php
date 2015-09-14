@@ -67,7 +67,7 @@ $nonce = nonce::create('payment_settings');
                                     <span><img src="/images/payment-logos/check.png"></span>
                                     <span><strong>Connected as <br><?php echo $stripe_account['stripe_user_id'] ?></strong></span>
                                 </p>
-                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-stripe">Settings</a></p>
+                                <p><a class="btn btn-primary" href="/shopping-cart/settings/stripe-connect/?website-id=<?php echo $user->account->id; ?>&user-id=<?php echo $user->id; ?>">Switch Stripe Account</a></p>                            
                             <?php else: ?>
                             <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-stripe-create-account">Create Stripe Account</a></p>
                             
@@ -132,13 +132,13 @@ $nonce = nonce::create('payment_settings');
                     <tr>
                         <td class="v-align text-center col-lg-3">
                             <p><img src="/images/payment-logos/flexshopper.png"></p>
-                            <p><small><a target="_blank" href="/kb/article/?aid=207"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                            <p ><small><a target="_blank" href="/kb/article/?aid=251"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
                         </td>
                         <td class="v-align text-center col-lg-6">
                             <ul>
                                 <li>Instantaneous financing approval for your customers through FlexShopper</li>
                                 <li>Retailer account application required</li>
-                                <li>Retailers may choose between 0% and up to 6% financing per lease</li>
+                                <li>FlexShopper will pay you for the ticket amount within 24 - 48 hours</li>
                                 <li>There are no monthly fees or recurring fees for retailers</li>
                             </ul>
                         </td>
@@ -156,7 +156,8 @@ $nonce = nonce::create('payment_settings');
                     </tr>
                     <!-- FlexShopper  -->
                 </table>
-
+                
+                <?php if(security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) && isset($stripe_account['stripe_user_id']) ) {?>
                 <form action="" id="fPaymentSettings" method="post" name="fPaymentSettings">
                     <div class="row">
                         <div class="col-lg-12">
@@ -179,7 +180,7 @@ $nonce = nonce::create('payment_settings');
                         </div>
                     </div>
                 </form>
-
+                <?php } ?>
             </div>
         </section>
     </div>

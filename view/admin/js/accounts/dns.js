@@ -11,12 +11,72 @@ var DNS = {
         DNS._template.find('*').removeClass('disabled').removeAttr('disabled');
         first.remove();
 
+        $(document).on( 'focus', '.changes-records', DNS.changeRecord );
+        $(document).on( 'change', '.changes-type', DNS.changeType );
         $(document).on( 'click', '.edit-record', DNS.editRecord );
         $(document).on( 'click', '.delete-record', DNS.deleteRecord );
         $('#aAddRecord').click( DNS.addRecord );
         $('#fEditDNS').submit( DNS.submit );
     }
+    , changeRecord: function(e){
+	var parentRow = $(this).parent().parent()
+	var recordId = parentRow.attr("id");
+	var originalRecordType = parentRow.attr("data-original-type");
+	switch(originalRecordType){
+	case 'MX': // We display the MX edit dialog
+	case 'TXT':
+	    parentRow.find(".changes-type").trigger("change");
+	    break;
 
+	}
+    }
+    , changeType: function(e){
+	var parentRow = $(this).parent().parent()
+	var recordId = parentRow.attr("id");
+	var originalRecordType = parentRow.attr("data-original-type");
+	
+	switch($(this).val()){
+	case 'MX': // We display the MX edit dialog
+	    $("#modal-MX .mx-server").val('');
+	    $("#modal-MX .mx-priority").val('');	    
+	    $("#modal-MX .record-id").val('');	    
+	    
+	    if(originalRecordType == "MX"){
+
+		$("#modal-MX .record-id").val(recordId);
+		var values = parentRow.find(".changes-records").val().split(" ");
+		$("#modal-MX .mx-priority").val(values[0]);						
+		$("#modal-MX .mx-server").val(values[1]);
+	    }
+	    $("#modal-MX").modal("show");
+	    $("#modal-MX .btn-primary").click(function(){
+		parentRow.attr("data-original-type", "MX");		
+		parentRow.find(".changes-records").val($("#modal-MX .mx-priority").val() +" "+ $("#modal-MX .mx-server").val());
+		$("#modal-MX").modal("hide");		
+	    });
+	    break;
+	case 'TXT': // We display the TXT edit dialog 
+	    $("#modal-TXT .previous-value").val('');
+	    $("#modal-TXT .txt-value").val('');
+	    $("#modal-TXT .record-id").val('');	    
+	    
+	    if(originalRecordType == "TXT"){
+
+		$("#modal-TXT .previous-value").text(parentRow.find(".changes-records").val());
+		$("#modal-TXT .record-id").val(recordId);
+		$("#modal-TXT .txt-value").val(parentRow.find(".changes-records").val());		
+	    }
+	    $("#modal-TXT").modal("show");
+	    $("#modal-TXT .btn-primary").click(function(){
+		parentRow.attr("data-original-type", "TXT");
+		parentRow.find(".changes-records").val($("#modal-TXT .txt-value").val());
+		$("#modal-TXT").modal("hide");		
+	    });
+	    break;
+	}
+
+    }
+    
     , editRecord: function(e) {
         e.preventDefault();
 
@@ -61,6 +121,9 @@ var DNS = {
 
         // new row action=1 (add)
         row.find('.action').val('1');
+	
+	var recordId = Number($("#fEditDNS .table tr:last-child")[1].id.split("-")[1]);
+	row.attr("id", "record-" + Number(recordId + 1) );
 
         if ( row.hasClass('cloudflare') )
         row.find('input,select,textarea').each( function() {
