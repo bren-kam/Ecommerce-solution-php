@@ -114,7 +114,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
 
                             <div class="form-group">
                                 <label for="tSKU">SKU:</label>
-                                <input type="text" class="form-control" name="tSKU" id="tSKU" placeholder="SKU" maxlength="30" value="<?php echo $product->sku ?>" />
+                                <input type="text" class="form-control" name="tSKU" id="tSKU" placeholder="SKU" maxlength="60" value="<?php echo $product->sku ?>" />
                             </div>
 
                             <div class="form-group">
