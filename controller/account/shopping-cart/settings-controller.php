@@ -18,7 +18,7 @@ class SettingsController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed', 'authorize-net-id', 'authorize-net-authorize-only' );
+        $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed', 'authorize-net-id', 'authorize-net-authorize-only', 'terms-and-conditions' );
 
         $form = new BootstrapForm( 'fSettings' );
 
@@ -39,7 +39,11 @@ class SettingsController extends BaseController {
             ->attribute( 'maxlength', 50 );
 
         $form->add_field( 'checkbox', _('Authorize.net - Authorize  Only'), 'authorize-net-authorize-only', $settings['authorize-net-authorize-only'] );
+        
+        $form->add_field( 'textarea', _('Terms and conditions text'), 'terms-and-conditions', $settings['terms-and-conditions'] )
+                ->attribute( 'rte', '1' );
 
+        
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'email-receipt' => $_POST['tReceipt']
@@ -48,6 +52,8 @@ class SettingsController extends BaseController {
                 , 'google-feed' => $_POST['google-feed']
                 , 'authorize-net-id' => $_POST['authorize-net-id']
                 , 'authorize-net-authorize-only' => $_POST['authorize-net-authorize-only']
+                , 'terms-and-conditions' => $_POST['terms-and-conditions']
+                
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
