@@ -564,11 +564,11 @@ class TicketsController extends BaseController {
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
         $message .= 'You have been assigned Ticket #' . $ticket->id . ". To view it, follow the link below:\n\n";
-        $message .= 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/tickets/ticket/?tid=' . $ticket->id . "\n\n";
+        $message .= 'http://admin.greysuitretail.com/tickets/ticket/?tid=' . $ticket->id . "\n\n";
         $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
-        fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+        fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@greysuitretail.com>' );
 
         // If assigned to Development, make sure it's on Jira
         if ( $assigned_user->id == User::DEVELOPMENT ) {

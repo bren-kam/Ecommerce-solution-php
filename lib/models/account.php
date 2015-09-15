@@ -499,7 +499,6 @@ class Account extends ActiveRecordBase {
 
         foreach($permissions as $permission) {
             if($this->$permission != '0') {
-
                 return false;
             }
 
