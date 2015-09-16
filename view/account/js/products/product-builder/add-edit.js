@@ -536,6 +536,6 @@ jQuery(function(){
     ProductTagEditor.init();
     ProductAttributeEditor.init();
     ProductForm.init();
-    show_ashley_warning();
+
 });
 
