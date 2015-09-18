@@ -2993,7 +2993,14 @@ class ProductsController extends BaseController {
             foreach( $image_list as $k => $image ) {
                 $image = trim($image);
                 $slug = f::strip_extension( f::name( $image ) );
-                $image_name = $product->upload_image( $image, $slug, $industry );
+
+                try {
+                    $image_name = $product->upload_image( $image, $slug, $industry );
+                } catch (Exception $e) {
+                    $product->publish_visibility = Product::PUBLISH_VISIBILITY_PRIVATE;
+                    $product->save();
+                    continue 2;
+                }
                 $product_images[] = $image_name;
             }
             $product->add_images( $product_images );
