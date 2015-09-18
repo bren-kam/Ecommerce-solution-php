@@ -161,7 +161,7 @@ class ProductBuilderController extends BaseController {
                 $attribute_item->add_relations( $product->id, $_POST['attributes'] );
 
 			if ( isset( $_POST['images'] ) ) {
-                $product->add_images( $_POST['images'] );
+                $product->add_images( $_POST['images'], true );
 
                 // What images do we need to remove
                 $remove_images = array_diff( $product_images, $_POST['images'] );
