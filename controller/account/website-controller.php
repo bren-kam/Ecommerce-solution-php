@@ -708,14 +708,9 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     protected function footer_navigation() {
-        if ( $this->verified() ) {
-            $footer_navigation = array();
 
-            foreach ( $_POST['footer-navigation'] as $page ) {
-                list( $url, $name ) = explode( '|', $page );
-                $name = htmlentities( $name );
-                $footer_navigation[] = compact( 'url', 'name' );
-            }
+        if ( $this->verified() ) {
+
 
             $this->user->account->set_settings( array( 'footer-navigation' => json_encode( $footer_navigation ) ) );
 
@@ -727,7 +722,33 @@ class WebsiteController extends BaseController {
                 $cloudflare = new CloudFlareAPI( $this->user->account );
                 $cloudflare->purge( $cloudflare_zone_id );
             }
+            
 
+            $tree = json_decode( $_POST['tree'], true );
+
+            $get_navigation = function($tree, $data) use (&$get_navigation){
+                $navigation = [];
+                foreach ( $tree as $tree_node ) {
+                    $page = $data[$tree_node['id']];
+                    list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
+                    $navigation_node = compact( 'url', 'name' );
+
+                    if ( isset( $tree_node['children'] ) ) {
+                        $navigation_node['children'] = $get_navigation($tree_node['children'], $data);
+                    }
+
+                    $navigation[] = $navigation_node;
+                }
+                return $navigation;
+            };
+
+            if ( $tree ) {
+                $footer_navigation = $get_navigation($tree, $_POST['footer-navigation']);
+            }
+
+
+            $this->user->account->set_settings( array( 'footer-navigation' => json_encode( $footer_navigation ) ) );
             // Notification
             $this->notify('Your Footer Navigation settings have been saved!');
             $this->log( 'update-footer-navigation', $this->user->contact_name . ' updated the footer navigation on ' . $this->user->account->title, $footer_navigation );
@@ -737,6 +758,7 @@ class WebsiteController extends BaseController {
         $pages = $page->get_by_account( $this->user->account->id );
 
         $footer_navigation = $this->user->account->get_settings('footer-navigation');
+
         $footer_navigation = ( empty( $footer_navigation ) ) ? array() : json_decode( $footer_navigation );
 
         $this->resources
