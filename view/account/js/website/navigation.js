@@ -47,7 +47,7 @@ var Navigation = {
             .data('id', element_id )
             .find('.dd3-content').prepend( $('#name').val() ).end()
             .find('.page-url').prepend( $('#link').val() ).end()
-            .find('input').attr( 'name', 'footer_navigation[' + element_id + ']').val( $('#link').val() + '|' + $('#name').val() ).end()
+            .find('input').attr( 'name', 'navigation[' + element_id + ']').val( $('#link').val() + '|' + $('#name').val() ).end()
             .appendTo('#navigation > .dd-list');
 
         $('#name').val( '' );

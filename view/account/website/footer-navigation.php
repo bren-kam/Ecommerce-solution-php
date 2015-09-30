@@ -19,7 +19,7 @@ $print_navigation = function($navigation, $prefix = "") use ( &$print_navigation
                 <?php echo $page->name ?>
                 <span class="page-url"><?php echo $page->url ? $page->url : '/' ?></span>
                 <a href="javascript:;" class="delete"><i class="fa fa-trash-o"></i></a>
-                <input type="hidden" name="footer_navigation[<?php echo "{$prefix}{$k}" ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
+                <input type="hidden" name="footer-navigation[<?php echo "{$prefix}{$k}" ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
             </div>
             <?php if ( isset( $page->children ) && !empty($page->children) ): ?>
                 <ol class="dd-list">
