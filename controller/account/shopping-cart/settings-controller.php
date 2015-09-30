@@ -40,7 +40,11 @@ class SettingsController extends BaseController {
 
         $form->add_field( 'checkbox', _('Authorize.net - Authorize  Only'), 'authorize-net-authorize-only', $settings['authorize-net-authorize-only'] );
 
-        $form->add_field( 'textarea', _('Header Script'), 'header-script', $settings['header-script'] );        
+        $form->add_field( 'textarea', _('Order Confirmation Page Header Script'), 'header-script', $settings['header-script'] );
+        $form->add_field( 'row', _('If you use the tokens [ORDER_ID] and [AMOUNT] these will be replaced for the respective values of the orders'));
+
+           
+        
         
         $form->add_field( 'textarea', _('Terms and conditions text'), 'terms-and-conditions', $settings['terms-and-conditions'] )
                 ->attribute( 'rte', '1' );
@@ -56,7 +60,7 @@ class SettingsController extends BaseController {
                 , 'authorize-net-id' => $_POST['authorize-net-id']
                 , 'authorize-net-authorize-only' => $_POST['authorize-net-authorize-only']
                 , 'terms-and-conditions' => $_POST['terms-and-conditions']
-                , 'header-script' => $_POST['header-script']                
+                , 'header-script' => $_POST['header-script']              
                 
             ) );
 
