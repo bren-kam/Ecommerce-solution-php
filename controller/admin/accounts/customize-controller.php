@@ -39,13 +39,14 @@ class CustomizeController extends BaseController {
         // Get Account
         $account = new Account();
         $account->get( $_GET['aid'] );
-
+        $unlocked_less = false;
+        
         if ( $_GET['aid'] != Account::TEMPLATE_UNLOCKED ) {
             $unlocked = new Account();
             $unlocked->get( Account::TEMPLATE_UNLOCKED );
             $unlocked_less = $unlocked->get_settings('less');
         } else {
-            $unlocked_less = false;
+            $unlocked_less = true;
         }
 
         $less = $account->get_settings('less');
@@ -83,12 +84,15 @@ class CustomizeController extends BaseController {
             'slideshow-fixed-width'
             , 'slideshow-categories'
             , 'sidebar-left'
+            , 'header-full-width'
+
         );
 
         // Start adding fields
         $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
         $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
+        $ft->add_field( 'checkbox', _('Full Width Header'), 'cbHeaderFullWidth', $settings['header-full-width'] );        
 
         if ( $ft->posted() ) {
             // Update settings
@@ -96,6 +100,7 @@ class CustomizeController extends BaseController {
                 'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
                 , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
                 , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
+                , 'header-full-width' => (int) isset( $_POST['cbHeaderFullWidth'] ) && $_POST['cbHeaderFullWidth']                
             ));
 
             $this->notify( _('Settings have been updated!') );
