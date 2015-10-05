@@ -791,7 +791,7 @@ class TicketsController extends BaseController {
                 , 'New Comment on Ticket #' . $ticket->id . ' (Closed) - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                 . "\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . "."
-                . "\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id
+                . "\n\nhttp://admin.greysuitretail.com/tickets/ticket/?tid=" . $ticket->id
                 . "\n\n**Comment**"
                 . "\nThis ticket is being closed due to inactivity past 30 days. If you need furher help with this issue, please do not hesitate to contact us.\n\nTechnical Team"
                 . "\n\n**Support Issue**"
