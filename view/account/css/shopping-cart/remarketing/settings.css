@@ -126,3 +126,10 @@ h3 a {
   color: #a1a1a1;
   font-size: 16px;
 }
+
+.colpick {
+    height:180px;
+}
+.colpick_field_letter {
+    width:18px;
+}
