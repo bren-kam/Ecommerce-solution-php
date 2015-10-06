@@ -85,14 +85,15 @@ class CustomizeController extends BaseController {
             , 'slideshow-categories'
             , 'sidebar-left'
             , 'header-full-width'
-
+            , 'dropdown-hover'
         );
 
         // Start adding fields
         $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
         $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
-        $ft->add_field( 'checkbox', _('Full Width Header'), 'cbHeaderFullWidth', $settings['header-full-width'] );        
+        $ft->add_field( 'checkbox', _('Full Width Header'), 'cbHeaderFullWidth', $settings['header-full-width'] );
+        $ft->add_field( 'checkbox', _('Dropdown Hover'), 'cbDropdownHover', $settings['dropdown-hover'] );                
 
         if ( $ft->posted() ) {
             // Update settings
@@ -100,7 +101,8 @@ class CustomizeController extends BaseController {
                 'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
                 , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
                 , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
-                , 'header-full-width' => (int) isset( $_POST['cbHeaderFullWidth'] ) && $_POST['cbHeaderFullWidth']                
+                , 'header-full-width' => (int) isset( $_POST['cbHeaderFullWidth'] ) && $_POST['cbHeaderFullWidth']
+                , 'dropdown-hover' => (int) isset( $_POST['cbDropdownHover'] ) && $_POST['cbDropdownHover']                                
             ));
 
             $this->notify( _('Settings have been updated!') );

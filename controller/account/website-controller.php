@@ -790,6 +790,7 @@ class WebsiteController extends BaseController {
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
             ,'slideshow-fixed-width'
             , 'slideshow-categories'
+            , 'dropdown-hover'            
             , 'sidebar-left'
         );
 
@@ -928,6 +929,7 @@ class WebsiteController extends BaseController {
         $form->add_field( 'checkbox', _('Fixed-width Slideshow'), 'slideshow-fixed-width', $settings['slideshow-fixed-width'] );
         $form->add_field( 'checkbox', _('Slideshow w/ Categories'), 'slideshow-categories', $settings['slideshow-categories'] );
         $form->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'sidebar-left', $settings['sidebar-left'] );
+        $form->add_field( 'checkbox', _('Dropdown Hover'), 'dropdown-hover', $settings['dropdown-hover'] );
 
         if ( $form->posted() ) {
             $new_settings = array();
@@ -2867,6 +2869,7 @@ class WebsiteController extends BaseController {
 
         try {
             $css = $less->compile( $less_css );
+            echo $css;
         } catch (exception $e) {
             $response->notify( 'Error: ' . $e->getMessage(), false );
             return $response;
