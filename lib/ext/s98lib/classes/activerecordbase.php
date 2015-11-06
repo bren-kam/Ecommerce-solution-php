@@ -34,11 +34,24 @@ abstract class ActiveRecordBase {
     private $_pdo_slave;
 
     /**
+     * Hold the PDO object SLAVE
+     * @var PDO
+     */
+    private $_pdo_imr;
+    
+    protected $use_imr = false;
+
+    /**
      * Hold the last statement
      * @var PDOStatement
      */
     private $_statement = NULL;
 
+    private $_db_host = '207.97.247.131';
+    private $_db_username = 'imaginer_admin';
+    private $_db_password = 'rbDxn6kkj2e4';
+    private $_db_name = 'imaginer_system';
+    
     /**
      * Hold the last query
      * @var string
@@ -390,7 +403,7 @@ abstract class ActiveRecordBase {
      * @return int
      */
     public function get_insert_id() {
-        return $this->_pdo_master->lastInsertId();
+        return $this->getPdoMaster()->lastInsertId();
     }
 
     /**
@@ -422,7 +435,7 @@ abstract class ActiveRecordBase {
      * @return string
      */
     public function quote( $string ) {
-        return $this->_pdo_master->quote( $string );
+        return $this->getPdoMaster()->quote( $string );
     }
 
     /**
@@ -468,6 +481,24 @@ abstract class ActiveRecordBase {
                 // Set it in the registry
                 Registry::set( 'pdo_master', $this->_pdo_master );
                 Registry::set( 'pdo_slave', $this->_pdo_slave );
+            }
+        }
+
+        // Make sure we can do a query
+        if ( !$this->_pdo_imr instanceof PDO ) {
+            // Try to get it from the registry
+            $this->_pdo_imr = Registry::get('pdo_imr');
+
+            // Doesn't exist, then create it
+            if ( !$this->_pdo_imr ) {
+                try {
+                    $this->_pdo_imr = new PDO( 'mysql:host=' . $this->_db_host . ';dbname=' . $this->_db_name, $this->_db_username, $this->_db_password );
+                } catch( PDOException $e ) {
+                    throw new ModelException( $e->getMessage(), $e->getCode(), $e );
+                }
+
+                // Set it in the registry
+                Registry::set( 'pdo_imr', $this->_pdo_imr );
             }
         }
     }
@@ -537,9 +568,9 @@ abstract class ActiveRecordBase {
     private function _prepare( $sql ) {
         try {
             if ( stripos( $sql, "SELECT" ) === 0 ) {
-                $statement = $this->_pdo_slave->prepare( $sql );
+                $statement = $this->getPdoSlave()->prepare( $sql );
             } else {
-                $statement = $this->_pdo_master->prepare( $sql );
+                $statement = $this->getPdoMaster()->prepare( $sql );
             }
         } catch ( PDOException $e ) {
             throw new ModelException( $e->getMessage(), $e->getCode(), $e );
@@ -606,7 +637,7 @@ abstract class ActiveRecordBase {
             $key = ( is_string( $key ) ) ? $key : $key + 1;
 
             $replacement = ( is_string( $key ) ) ? $key : '?';
-            $this->_last_query = preg_replace( '/' . regexp::escape_string( $replacement ) . '/', $this->_pdo_master->quote( $value ), $this->_last_query, 1 );
+            $this->_last_query = preg_replace( '/' . regexp::escape_string( $replacement ) . '/', $this->getPdoMaster()->quote( $value ), $this->_last_query, 1 );
 
             // Bind the value
             try {
@@ -624,6 +655,22 @@ abstract class ActiveRecordBase {
      */
     private function _flush() {
         $this->_last_query = NULL;
+    }
+    
+    protected function getPdoSlave() {
+        return ( $this->use_imr ) ? $this->_pdo_imr : $this->_pdo_slave;
+    }
+    
+    protected function getPdoMaster() {
+        return ( $this->use_imr ) ? $this->_pdo_imr : $this->_pdo_master;
+    }
+
+    public function startUsingIMRDatabase() {
+        $this->use_imr = true;
+    }
+
+    public function stopUsingIMRDatabase() {
+        $this->use_imr = true;
     }
 }
 

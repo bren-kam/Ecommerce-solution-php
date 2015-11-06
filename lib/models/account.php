@@ -506,4 +506,13 @@ class Account extends ActiveRecordBase {
         
         return $this->geo_marketing == 1;
     }
+
+    public function transferToGSR($account_id) {
+        $old_account = new Account();
+        $old_account->startUsingIMRDatabase();
+            $old_account->get($account_id);
+        $old_account->stopUsingIMRDatabase();
+
+        fn::info($old_account);
+    }
 }
