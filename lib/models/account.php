@@ -511,7 +511,7 @@ class Account extends ActiveRecordBase {
         // Get old account
         $old_account = new Account();
         $old_account->startUsingIMRDatabase();
-        $old_account->prepare('SELECT * FROM `websites` WHERE `website_id` = ?', 'i', [$account_id])->get_row();
+        $old_account->prepare('SELECT * FROM `websites` WHERE `website_id` = :website_id', 'i', [':website_id' => $account_id])->get_row();
 
         $account = new Account();
         $account->get($old_account->id);
