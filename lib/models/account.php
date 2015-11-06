@@ -508,21 +508,24 @@ class Account extends ActiveRecordBase {
     }
 
     public function transferToGSR($account_id) {
+        // MAGIC
+        $new_account = new Account();
+
         // Get old account
         $old_account = new Account();
         $old_account->startUsingIMRDatabase();
-        $old_account->prepare('SELECT * FROM `websites` WHERE `website_id` = :website_id', 'i', [':website_id' => $account_id])->get_row(PDO::FETCH_INTO, $old_account);
-
-        $new_account = new Account();
-        $new_account->prepare('SELECT * FROM `websites` WHERE `website_id` = :website_id', 'i', [':website_id' => $old_account->website_id])->get_row(PDO::FETCH_INTO, $new_account);
+        $old_account->prepare('SELECT * FROM `websites` WHERE `website_id` = :website_id', 'i', [':website_id' => $account_id])->get_row(PDO::FETCH_INTO, $new_account);
 
         fn::info( $old_account );
         fn::info( $new_account );
+        $new_account->get($new_account->website_id);
+        fn::info($new_account);
         exit;
+
         // Ensure the same user
         $old_user = new User();
         $old_user->startUsingIMRDatabase();
-        $old_user->prepare('SELECT * FROM `users` WHERE `user_id` = ?', 'i', [$account->user_id])->get_row();
+        $old_user->prepare('SELECT * FROM `users` WHERE `user_id` = ?', 'i', [$old_account->user_id])->get_row(PDO::FETCH_INTO, $old_user);
 
         $new_user = new User();
         $new_user->get_by_email($old_user->email, false);
