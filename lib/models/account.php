@@ -508,11 +508,58 @@ class Account extends ActiveRecordBase {
     }
 
     public function transferToGSR($account_id) {
+        // Get old account
         $old_account = new Account();
         $old_account->startUsingIMRDatabase();
-            $old_account->get($account_id);
-        $old_account->stopUsingIMRDatabase();
+        $old_account->prepare('SELECT * FROM `websites` WHERE `website_id` = ?', 'i', [$account_id])->get_row();
+
+        $account = new Account();
+        $account->get($old_account->id);
+
+        fn::info( $old_account );
+        fn::info( $account);
+        exit;
+        // Ensure the same user
+        $old_user = new User();
+        $old_user->startUsingIMRDatabase();
+        $old_user->prepare('SELECT * FROM `users` WHERE `user_id` = ?', 'i', [$account->user_id])->get_row();
+
+        $new_user = new User();
+        $new_user->get_by_email($old_user->email, false);
+        if ( $new_user->id != $old_user->id)
+            $new_user = new User();
+
+        $new_user->copyProperties($old_user);
+
+        if ( !$new_user->user_id )
+            $new_user->create();
+
+        $new_user->save();
+
+        // Copy online specialist
+        $old_online_specialist = new User();
+        $old_online_specialist->startUsingIMRDatabase();
+        $old_online_specialist->get($old_account->os_user_id);
+
+        $new_account = new Account();
+        $new_account->get_by_domain($old_account->domain);
+        if ( $new_account->id != $old_account->id)
+            $new_account = new Account();
+
+        $new_account->copyProperties($old_account);
 
         fn::info($old_account);
+    }
+
+    public function copyProperties(Account $old_account) {
+        $this->company_package_id = $old_account->company_package_id;
+        $this->user_id = $old_account->user_id;
+        $this->company_package_id = $old_account->company_package_id;
+        $this->company_package_id = $old_account->company_package_id;
+        $this->company_package_id = $old_account->company_package_id;
+        $this->company_package_id = $old_account->company_package_id;
+        $this->company_package_id = $old_account->company_package_id;
+        $this->company_package_id = $old_account->company_package_id;
+        $this->company_package_id = $old_account->company_package_id;
     }
 }
