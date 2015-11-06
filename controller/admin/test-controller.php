@@ -19,6 +19,7 @@ class TestController extends BaseController {
      */
     protected function index() {
         $account = new Account();
+        $account->transferToGSR(1007);
 
         return new HtmlResponse( 'heh' );
     }
