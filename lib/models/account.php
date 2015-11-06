@@ -513,11 +513,11 @@ class Account extends ActiveRecordBase {
         $old_account->startUsingIMRDatabase();
         $old_account->prepare('SELECT * FROM `websites` WHERE `website_id` = :website_id', 'i', [':website_id' => $account_id])->get_row(PDO::FETCH_INTO, $old_account);
 
-        $account = new Account();
-        $account->get($old_account->id);
+        $new_account = new Account();
+        $new_account->prepare('SELECT * FROM `websites` WHERE `website_id` = :website_id', 'i', [':website_id' => $old_account->website_id])->get_row(PDO::FETCH_INTO, $new_account);
 
         fn::info( $old_account );
-        fn::info( $account);
+        fn::info( $new_account );
         exit;
         // Ensure the same user
         $old_user = new User();
