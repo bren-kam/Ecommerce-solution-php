@@ -490,7 +490,7 @@ class CustomerSupportController extends BaseController {
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
         $message .= 'You have been assigned Ticket #' . $ticket->id . ". To view it, follow the link below:\n\n";
-        $message .= 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/customer-support/#!tid=' . $ticket->id . "\n\n";
+        $message .= 'http://admin.greysuitretail.com/customer-support/#!tid=' . $ticket->id . "\n\n";
         $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
