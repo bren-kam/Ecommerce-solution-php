@@ -112,6 +112,13 @@ class Config {
             , 'password'    => 'ZBqgaDxfkR2I'
             , 'port'        => '22522'
         )
+        , '207.97.247.134' => array(
+            'ip'            => '172.24.32.134'
+            , 'username'    => 'rpendery'
+            , 'password'    => 'j0ZnayQahKWx'
+            , 'port'        => '22522'
+        )
+
         , 'mail10.blinkyblinky.me' => array(
             'ip'            => '162.218.139.219'
             , 'username'    => 'root'
