@@ -20,6 +20,7 @@ $delete_nonce = nonce::create( 'delete' );
 
                     <div class="form-group">
                         <textarea class="form-control" rows="5" placeholder="Your Message" name="content"></textarea>
+			<div class="" id="character-count">Characters:<span></span></div>
                     </div>
 
                     <div class="row">
