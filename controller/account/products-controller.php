@@ -2861,7 +2861,7 @@ class ProductsController extends BaseController {
             $product_import->name = ucwords( $pi['name'] );
             $product_import->slug = format::slug( $pi['name'] );
             $product_import->description = $pi['description'];
-            $product_import->status = $pi['status'];
+            $product_import->status = 'in-stock';
             $product_import->sku = $pi['sku'];
             $product_import->price_min = $pi['map price'];
             $product_import->price_wholesale = $pi['wholesale price'];
