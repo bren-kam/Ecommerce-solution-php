@@ -407,7 +407,14 @@
                                 <a href="/shopping-cart/remarketing/" class="<?php if ( $template->in_menu_item('shopping-cart/remarketing') ) echo 'active'?>">Remarketing</a>
                                 <ul class="sub">
                                     <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/">List</a></li>
-                                    <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/settings/">Settings</a></li>
+                                    <li class="submenu <?php if ( $template->in_menu_item('shopping-cart/remarketing/settings') ) echo 'active'?>">
+                                    <a href="/shopping-cart/remarketing/settings/"<?php if ( $template->in_menu_item('shopping-cart/remarketing/popup') || $template->in_menu_item('shopping-cart/remarketing/emails')  ) echo 'class="active"'?>  >Settings</a>
+                                    <ul class="sub">
+                                        <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/popup">Popup &amp; Coupon </a></li>
+                                        <li <?php if ( $template->in_menu_item('shopping-cart/remarketing/list') ) echo 'class="active"'?>><a href="/shopping-cart/remarketing/emails">Emails </a></li>                                    
+
+                                    </ul>
+                                    </li>
                                 </ul>
                             </li>
                         <?php endif; ?>
@@ -431,18 +438,10 @@
                     </a>
                     <ul class="sub">
                         <li <?php if ( $template->in_menu_item('sm/post') ) echo 'class="active"'?> ><a href="/sm/post/" <?php if ( $template->in_menu_item('sm/post') ) echo 'class="active"'?> >Posting</a></li>
-                        <li class="submenu" <?php if ( $template->in_menu_item('social-media/facebook') ) echo 'class="active"'?>>
-                            <a href="javascript:;" <?php if ( $template->in_menu_item('social-media/facebook') ) echo 'class="active"'?> >Facebook Apps</a>
-                            <ul class="sub">
-                                <li <?php if ( $template->in_menu_item('social-media/facebook/list') ) echo 'class="active"'?>><a href="/social-media/">List All</a></li>
-                                <li <?php if ( $template->in_menu_item('social-media/facebook/add') ) echo 'class="active"'?>><a href="/social-media/facebook/add-edit/">Add</a></li>
-                                <li <?php if ( $template->in_menu_item('social-media/facebook/settings') ) echo 'class="active"'?>><a href="/social-media/facebook/settings/">Settings</a></li>
-                            </ul>
-                        </li>
+
                     </ul>
                 </li>
             <?php endif; ?>
-
             <?php if ( $user->account->geo_marketing ): ?>
                 <li class="sub-menu">
                     <a href="javascript:;" <?php if ( $template->in_menu_item('geo-marketing') ) echo 'class="active"' ?>>
@@ -461,6 +460,7 @@
                     </ul>
                 </li>
             <?php endif; ?>
+
 
             <li class="sub-menu">
                 <a href="javascript:;" <?php if ( stristr( $_SERVER['REQUEST_URI'], '/settings/' ) ) echo 'class="active"'?>>
@@ -481,6 +481,8 @@
                     <?php endif; ?>
                 </ul>
             </li>
+
+         </ul>
 
         </ul>
         <!-- sidebar menu end-->

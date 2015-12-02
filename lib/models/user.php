@@ -362,4 +362,33 @@ class User extends ActiveRecordBase {
 
         return "{$prefix}`" . implode( "`, {$prefix}`", $this->_columns ) . '`';
     }
+
+    public function copyProperties(User $old_user) {
+        $this->company_id = $old_user->company_id;
+        $this->email = $old_user->email;
+        $this->password = $old_user->password;
+        $this->contact_name = $old_user->contact_name;
+        $this->store_name = $old_user->store_name;
+        $this->work_phone = $old_user->work_phone;
+        $this->cell_phone = $old_user->cell_phone;
+        $this->photo = $old_user->photo;
+        $this->billing_first_name = $old_user->billing_first_name;
+        $this->billing_last_name = $old_user->billing_last_name;
+        $this->billing_city = $old_user->billing_city;
+        $this->billing_state = $old_user->billing_state;
+        $this->billing_zip = $old_user->billing_zip;
+        $this->arb_subscription_id = $old_user->arb_subscription_id;
+        $this->role = $old_user->role;
+        $this->status = $old_user->status;
+        $this->email_signature = $old_user->email_signature;
+        $this->job_title = $old_user->job_title;
+        $this->last_login = $old_user->last_login;
+        $this->date_created = $old_user->date_created;
+        $this->date_updated = $old_user->date_updated;
+        $this->new_features_dismissed_at = $old_user->new_features_dismissed_at;
+        $this->jira_username = $old_user->jira_username;
+        $this->jira_password = $old_user->jira_password;
+
+        return true;
+    }
 }

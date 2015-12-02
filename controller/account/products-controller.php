@@ -2861,7 +2861,7 @@ class ProductsController extends BaseController {
             $product_import->name = ucwords( $pi['name'] );
             $product_import->slug = format::slug( $pi['name'] );
             $product_import->description = $pi['description'];
-            $product_import->status = $pi['status'];
+            $product_import->status = 'in-stock';
             $product_import->sku = $pi['sku'];
             $product_import->price_min = $pi['map price'];
             $product_import->price_wholesale = $pi['wholesale price'];
@@ -2909,6 +2909,8 @@ class ProductsController extends BaseController {
             $account_products[$account_product->product_id] = $account_product;
         }
 
+        $last_parent_product = null;
+
         foreach ( $products as $p ) {
             $product = new Product();
             $product->get_by_id_by_website( $p->product_id, $this->user->account->id );
@@ -2921,6 +2923,7 @@ class ProductsController extends BaseController {
             if ( 'option' == $p->type ) {
                 preg_match( '/(\[[^\]]+])(.+)/', $p->name, $product_option_matches );
                 $product->name =  $product_option_matches[2];
+                $product->parent_product_id = $last_parent_product->product_id;
             } else {
                 $product->name = $p->name;
             }
@@ -2993,11 +2996,21 @@ class ProductsController extends BaseController {
             foreach( $image_list as $k => $image ) {
                 $image = trim($image);
                 $slug = f::strip_extension( f::name( $image ) );
-                $image_name = $product->upload_image( $image, $slug, $industry );
+
+                try {
+                    $image_name = $product->upload_image( $image, $slug, $industry );
+                } catch (Exception $e) {
+                    $product->publish_visibility = Product::PUBLISH_VISIBILITY_PRIVATE;
+                    $product->save();
+                    continue 2;
+                }
                 $product_images[] = $image_name;
             }
             $product->add_images( $product_images );
             $product->save();
+
+            if ( 'product' == $p->type )
+                $last_parent_product = $product;
 
             $product_specifications = json_decode( $p->product_specifications, true );
             $product->delete_specifications(); // should I ?

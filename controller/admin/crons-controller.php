@@ -672,13 +672,14 @@ y
 
                 $is_enabled = (bool) $settings["remarketing-email{$email_number}-enabled"];
 
+
                 if ( !$is_enabled ) {
                     echo "> > Email #{$email_number} disabled. Skipping\n";
                     continue;
                 }
 
                 $email_delay = (int) $settings["remarketing-email{$email_number}-delay"];
-                echo "> > Ema   il Delay: {$email_delay} seconds.\n";
+                echo "> > Email Delay: {$email_delay} seconds.\n";
 
                 $time_elapsed = (new DateTime())->getTimestamp() - (new DateTime($website_cart['timestamp']))->getTimestamp();
 
@@ -697,6 +698,8 @@ y
                     , false
 
                 );
+
+
 
                 if ( $email_sent ) {
                     echo "> > Email #{$email_number} sent!\n";

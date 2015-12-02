@@ -159,7 +159,9 @@ class InstallService {
 
             if ( !in_array( $taa->key, array( 'email', 'search' ) ) ) {
                 try {
-                    $value = $file->copy_file( $account->id, $taa->value, 'websites' );
+                    if($taa->value != ""){
+                        $value = $file->copy_file( $account->id, $taa->value, 'websites' );
+                    }
                 } catch ( HelperException $e ) {
                     continue;
                 }

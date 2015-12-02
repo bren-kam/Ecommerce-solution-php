@@ -146,6 +146,7 @@ class RemarketingController extends BaseController {
             , 'remarketing-idle-seconds'
             , 'remarketing-notification-email'
             , 'remarketing-coupon'
+            , 'remarketing-autoresponder'            
             , 'remarketing-email1-enabled'
             , 'remarketing-email1-delay'
             , 'remarketing-email1-header'
@@ -183,6 +184,7 @@ class RemarketingController extends BaseController {
                 , 'remarketing-idle-seconds' => $_POST['idle-seconds']
                 , 'remarketing-notification-email' => $_POST['notification-email']
                 , 'remarketing-coupon' => $_POST['coupon-path']
+                , 'remarketing-autoresponder' => $_POST['autoresponder']                
                 , 'remarketing-email1-enabled' => isset($_POST['email1-enabled'])
                 , 'remarketing-email1-delay' => $_POST['email1-delay']
                 , 'remarketing-email1-header' => $_POST['email1-header']
@@ -254,6 +256,120 @@ class RemarketingController extends BaseController {
 
     }
 
+    public function popup(){
+
+        $form = new BootstrapForm('remarketing-settings');
+
+        $settings = $this->user->account->get_settings(
+            'remarketing-enabled'
+            , 'remarketing-popup-image'
+            , 'remarketing-title'
+            , 'remarketing-intro-text'
+            , 'remarketing-submit-color'
+            , 'remarketing-idle-seconds'
+            , 'remarketing-notification-email'
+            , 'remarketing-coupon'
+            , 'remarketing-autoresponder'            
+        );
+
+        // Some defaults
+        $set_defaults = [];
+        if( $set_defaults ){
+            $this->user->account->set_settings($set_defaults);
+        }
+
+        // Process POST/Submit
+        if ( $this->verified() ) {
+            $this->user->account->set_settings([
+                'remarketing-popup-image' => $_POST['popup-image']
+                , 'remarketing-title' => $_POST['title']
+                , 'remarketing-intro-text' => $_POST['intro-text']
+                , 'remarketing-submit-color' => $_POST['submit-color']
+                , 'remarketing-idle-seconds' => $_POST['idle-seconds']
+                , 'remarketing-notification-email' => $_POST['notification-email']
+                , 'remarketing-coupon' => $_POST['coupon-path']
+                , 'remarketing-autoresponder' => $_POST['autoresponder']                
+            ]);
+
+            $this->notify('Remarketing settings updated');
+            return new RedirectResponse('/shopping-cart/remarketing/settings/');
+        }
+
+        $this->resources->javascript('autosize.min', 'fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
+            ->css('media-manager', 'colpick', 'shopping-cart/remarketing/settings');
+
+        return $this->get_template_response('popup')
+            ->menu_item('shopping-cart/remarketing/popup')
+            ->add_title('Email popup box & coupon')
+            ->set(compact('form_html', 'settings'));
+    }
+
+    public function emails(){
+       $form = new BootstrapForm('remarketing-settings');
+
+        $settings = $this->user->account->get_settings(
+            'remarketing-enabled'
+            , 'remarketing-email1-enabled'
+            , 'remarketing-email1-delay'
+            , 'remarketing-email1-header'
+            , 'remarketing-email1-title'
+            , 'remarketing-email1-body'
+            , 'remarketing-email2-enabled'
+            , 'remarketing-email2-delay'
+            , 'remarketing-email2-header'
+            , 'remarketing-email2-title'
+            , 'remarketing-email2-body'
+            , 'remarketing-email3-enabled'
+            , 'remarketing-email3-delay'
+            , 'remarketing-email3-header'
+            , 'remarketing-email3-title'
+            , 'remarketing-email3-body'
+        );
+
+        // Some defaults
+        $set_defaults = [];
+        if ( !$settings['remarketing-idle-seconds'] )       $set_defaults['remarketing-idle-seconds'] = 60;
+        if ( !$settings['remarketing-email1-delay'] )       $set_defaults['remarketing-email1-delay'] = 3600;
+        if ( !$settings['remarketing-email2-delay'] )       $set_defaults['remarketing-email2-delay'] = 3600*24;
+        if ( !$settings['remarketing-email3-delay'] )       $set_defaults['remarketing-email3-delay'] = 3600*72;
+        if( $set_defaults ){
+            $this->user->account->set_settings($set_defaults);
+        }
+
+        // Process POST/Submit
+        if ( $this->verified() ) {
+            $this->user->account->set_settings([
+                  'remarketing-email1-enabled' => isset($_POST['email1-enabled'])
+                , 'remarketing-email1-delay' => $_POST['email1-delay']
+                , 'remarketing-email1-header' => $_POST['email1-header']
+                , 'remarketing-email1-title' => $_POST['email1-title']
+                , 'remarketing-email1-body' => $_POST['email1-body']
+                , 'remarketing-email2-enabled' => isset($_POST['email2-enabled'])
+                , 'remarketing-email2-delay' => $_POST['email2-delay']
+                , 'remarketing-email2-header' => $_POST['email2-header']
+                , 'remarketing-email2-title' => $_POST['email2-title']
+                , 'remarketing-email2-body' => $_POST['email2-body']
+                , 'remarketing-email3-enabled' => isset($_POST['email3-enabled'])
+                , 'remarketing-email3-delay' => $_POST['email3-delay']
+                , 'remarketing-email3-header' => $_POST['email3-header']
+                , 'remarketing-email3-title' => $_POST['email3-title']
+                , 'remarketing-email3-body' => $_POST['email3-body']
+            ]);
+
+            $this->notify('Remarketing settings updated');
+            return new RedirectResponse('/shopping-cart/remarketing/settings/');
+        }
+
+        $this->resources->javascript('autosize.min', 'fileuploader', 'media-manager', 'colpick', 'shopping-cart/remarketing/settings')
+            ->css('media-manager', 'colpick', 'shopping-cart/remarketing/settings');
+
+        return $this->get_template_response('emails')
+            ->menu_item('shopping-cart/remarketing/emails')
+            ->add_title('Abandoned Cart Emails')
+            ->set(compact('form_html', 'settings'));
+
+    }
+    
     /**
      * Enable
      * @return RedirectResponse
