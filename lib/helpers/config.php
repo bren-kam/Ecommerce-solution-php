@@ -59,8 +59,8 @@ class Config {
         // Encryption-Decryption
         , 'crypto-key'           => 'e4r+wYPQC4bQKikzN4ExKw=='
 
-        , 'stripe-client-id'    => 'ca_63df2cCDX4B8LDPihRd777FxJWCascHM'
-        , 'stripe-secret-key'   => 'sk_test_IPB2In890BQD893dJe46yoRh'
+        , 'stripe-client-id'    => 'ca_63dfQ551gl7HBd39hc1MMprTR2xkKoDy'
+        , 'stripe-secret-key'   => 'sk_live_SZRKYelDt1gYJ2SFamvoVBA4'
 	);
 
     /**
