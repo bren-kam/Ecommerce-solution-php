@@ -36,7 +36,7 @@ class Brand extends ActiveRecordBase {
      * @return Brand[]
      */
     public function get_all() {
-        return $this->get_results( 'SELECT * FROM `brands` ORDER BY `name`', PDO::FETCH_CLASS, 'Brand' );
+        return $this->get_results( "SELECT * FROM `brands` ORDER BY `name` WHERE `name` <> ''", PDO::FETCH_CLASS, 'Brand' );
     }
 
     /**
