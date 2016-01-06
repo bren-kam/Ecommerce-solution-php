@@ -1099,6 +1099,7 @@ class ProductsController extends BaseController {
         $product_count = $account_product->search_count( $this->user->account->id, $where );
 
         foreach ( $products as $product ) {
+            $product->name = utf8_encode($product->name);
             if ($this->user->account->is_new_template() ) {
                 $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
@@ -1634,7 +1635,7 @@ class ProductsController extends BaseController {
         	$actions = '<a href="javascript:;" class="add-product" data-id="'.$product->id.'" data-name="'.$product->name.'">Add Product</a>';
 
         	$data[] = array(
-        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
+        		$dialog . format::limit_chars( utf8_encode( $product->name ) ,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
         		, $product->brand
         		, $product->sku
         	);
@@ -1791,7 +1792,7 @@ class ProductsController extends BaseController {
         foreach ( $products as $product ) {
             $data[] = array(
                 $product->sku
-                , $product->name
+                , utf8_encode($product->name)
                 , '<input type="text" class="form-control" value="' . $product->alternate_price . '" data-product-id="'. $product->product_id .'" data-name="alternate_price" />'
                 , '<input type="text" class="form-control" value="' . $product->price . '" data-product-id="'. $product->product_id .'" data-name="price" />'
                 , '<input type="text" class="form-control" value="' . $product->sale_price . '" data-product-id="'. $product->product_id .'" data-name="sale_price" />'
