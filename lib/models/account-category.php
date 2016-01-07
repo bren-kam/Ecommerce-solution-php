@@ -279,7 +279,7 @@ class AccountCategory extends ActiveRecordBase {
 						// Assign the image
 						$image = $category_images[$cc->id];
 
-						// Don't need to loop any furhter
+						// Don't need to loop any further
 						break;
 					}
 				}
