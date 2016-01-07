@@ -161,7 +161,7 @@ class ProductBuilderController extends BaseController {
                 $attribute_item->add_relations( $product->id, $_POST['attributes'] );
 
 			if ( isset( $_POST['images'] ) ) {
-                $product->add_images( $_POST['images'] );
+                $product->add_images( $_POST['images'], true );
 
                 // What images do we need to remove
                 $remove_images = array_diff( $product_images, $_POST['images'] );
@@ -293,7 +293,7 @@ class ProductBuilderController extends BaseController {
             $actions .= ' | <a href="' . url::add_query_arg( array( 'pid' => $product->id, '_nonce' => $delete_nonce ), '/products/product-builder/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 
             $data[] = array(
-                $product->name . '<div class="actions">' . $actions . '</div>'
+                utf8_encode($product->name) . '<div class="actions">' . $actions . '</div>'
                 , $product->brand
                 , $product->sku
                 , $product->category

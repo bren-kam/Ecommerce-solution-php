@@ -60,6 +60,15 @@ class ProductOption extends ActiveRecordBase {
     }
 
     /**
+     * Get All
+     *
+     * @return array
+     */
+    public function get_all() {
+        return $this->get_results( 'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
+    }    
+    
+    /**
      * Get by product
      *
      * @param int $website_id

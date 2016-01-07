@@ -62,10 +62,13 @@ class ShippingController extends BaseController {
 
         $form->add_field( 'textarea', _('Zip Codes'), 'taZipCodes', $zip_codes );
 
+
+        
         if ( $form->posted() ) {
             $shipping_method->name = $_POST['tName'];
             $shipping_method->method = $_POST['sMethod'];
             $shipping_method->amount = $_POST['tAmount'];
+
             $shipping_method->zip_codes = serialize( format::trim_deep( explode( "\n", $_POST['taZipCodes'] ) ) );
 
             if ( $website_shipping_method_id ) {
@@ -161,13 +164,16 @@ class ShippingController extends BaseController {
 
         $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra['packaging_type'] )
             ->options( $packaging_types );
-
+        
+        $form->add_field( 'checkbox', _('Calculate the total weight of all packages for shipping charges:'), 'cbTotalWeight',  $shipping_method->extra['total-weight']);
+        
         if ( $form->posted() ) {
             $shipping_method->name = $_POST['sService'];
             $shipping_method->method = 'N/A';
             $shipping_method->extra = serialize( array(
                 'pickup_type' => $_POST['sPickupType']
                 , 'packaging_type' => $_POST['sPackagingType']
+                , 'total-weight' => $_POST['cbTotalWeight']                
             ));
 
             if ( $website_shipping_method_id ) {
@@ -268,12 +274,15 @@ class ShippingController extends BaseController {
         $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra['packaging_type'] )
             ->options( $packaging_types );
 
+        $form->add_field( 'checkbox', _('Calculate the total weight of all packages for shipping charges:'), 'cbTotalWeight',  $shipping_method->extra['total-weight']);
+        
         if ( $form->posted() ) {
             $shipping_method->name = $_POST['sService'];
             $shipping_method->method = 'N/A';
             $shipping_method->extra = serialize( array(
                 'pickup_type' => $_POST['sPickupType']
                 , 'packaging_type' => $_POST['sPackagingType']
+                , 'total-weight' => $_POST['cbTotalWeight']
             ));
 
             if ( $website_shipping_method_id ) {
@@ -389,6 +398,7 @@ class ShippingController extends BaseController {
             $shipping_method->extra = serialize( array(
                 'packaging_type' => $_POST['sPackagingType']
                 , 'ashley_distribution_center' => $_POST['sAshleyDistributionCenter']
+
             ));
 
             if ( $website_shipping_method_id ) {

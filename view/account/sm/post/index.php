@@ -20,6 +20,7 @@ $delete_nonce = nonce::create( 'delete' );
 
                     <div class="form-group">
                         <textarea class="form-control" rows="5" placeholder="Your Message" name="content"></textarea>
+			<div class="" id="character-count">Characters:<span></span></div>
                     </div>
 
                     <div class="row">
@@ -91,8 +92,9 @@ $delete_nonce = nonce::create( 'delete' );
                             <div class="col-lg-4">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>">
+                                        <input type="checkbox" data-social="<?php echo $website_sm_account->sm ?>" name="website_sm_accounts[<?php echo $website_sm_account->id ?>]" value="<?php echo $website_sm_account->id ?>">
                                         <i class="fa fa-<?php echo $website_sm_account->sm ?>"></i> <?php echo $website_sm_account->title ?>
+
                                     </label>
                                 </div>
                             </div>

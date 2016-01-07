@@ -112,7 +112,7 @@ class PostController extends BaseController {
         $website_sm_posts = $website_sm_post->list_all([
             " AND a.website_id = {$this->user->account->id} {$where}"
             , ""
-            , " ORDER BY p.post_at DESC "
+            , " ORDER BY p.post_at ASC "
             , 999999
         ]);
 

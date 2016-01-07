@@ -991,14 +991,14 @@ ProductsController extends BaseController {
             $account_product = new AccountProduct();
             $account_product->get( $product->id, $this->user->account->id );
 
-            $account_product->alternate_price = replace;
-            $account_product->price = replace;
-            $account_product->sale_price = replace;
-            $account_product->wholesale_price = replace;
-            $account_product->inventory = replace;
+            $account_product->alternate_price = $p->alternate_price;
+            $account_product->price = $p->price;
+            $account_product->sale_price = $p->sale_price;
+            $account_product->wholesale_price = $p->price_wholesale;
+            $account_product->inventory = $p->inventory;
             $account_product->active = AccountProduct::ACTIVE;
 
-            if ( $account_product->website_id ) {
+            if ( $account_product->product_id ) {
                 $account_product->save();
             } else {
                 $account_product->website_id = $this->user->account->id;

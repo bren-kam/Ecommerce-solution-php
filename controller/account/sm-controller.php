@@ -152,7 +152,7 @@ class SmController extends BaseController {
         $helper = new Facebook\FacebookRedirectLoginHelper( Config::key( 'facebook-redirect' ) );
         $this->log( 'request-facebook-connection', $this->user->contact_name . ' tried to connect to facebook on ' . $this->user->account->title );
 
-        url::redirect( $helper->getLoginUrl( ['publish_actions', 'manage_pages'] ) );
+        url::redirect( $helper->getLoginUrl( ['publish_actions', 'manage_pages', 'publish_pages'] ) );
     }
 
     /**

@@ -708,14 +708,9 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     protected function footer_navigation() {
-        if ( $this->verified() ) {
-            $footer_navigation = array();
 
-            foreach ( $_POST['footer-navigation'] as $page ) {
-                list( $url, $name ) = explode( '|', $page );
-                $name = htmlentities( $name );
-                $footer_navigation[] = compact( 'url', 'name' );
-            }
+        if ( $this->verified() ) {
+
 
             $this->user->account->set_settings( array( 'footer-navigation' => json_encode( $footer_navigation ) ) );
 
@@ -727,7 +722,33 @@ class WebsiteController extends BaseController {
                 $cloudflare = new CloudFlareAPI( $this->user->account );
                 $cloudflare->purge( $cloudflare_zone_id );
             }
+            
 
+            $tree = json_decode( $_POST['tree'], true );
+
+            $get_navigation = function($tree, $data) use (&$get_navigation){
+                $navigation = [];
+                foreach ( $tree as $tree_node ) {
+                    $page = $data[$tree_node['id']];
+                    list( $url, $name ) = explode( '|', $page );
+                    $name = htmlentities( $name );
+                    $navigation_node = compact( 'url', 'name' );
+
+                    if ( isset( $tree_node['children'] ) ) {
+                        $navigation_node['children'] = $get_navigation($tree_node['children'], $data);
+                    }
+
+                    $navigation[] = $navigation_node;
+                }
+                return $navigation;
+            };
+
+            if ( $tree ) {
+                $footer_navigation = $get_navigation($tree, $_POST['footer-navigation']);
+            }
+
+
+            $this->user->account->set_settings( array( 'footer-navigation' => json_encode( $footer_navigation ) ) );
             // Notification
             $this->notify('Your Footer Navigation settings have been saved!');
             $this->log( 'update-footer-navigation', $this->user->contact_name . ' updated the footer navigation on ' . $this->user->account->title, $footer_navigation );
@@ -737,6 +758,7 @@ class WebsiteController extends BaseController {
         $pages = $page->get_by_account( $this->user->account->id );
 
         $footer_navigation = $this->user->account->get_settings('footer-navigation');
+
         $footer_navigation = ( empty( $footer_navigation ) ) ? array() : json_decode( $footer_navigation );
 
         $this->resources
@@ -768,6 +790,7 @@ class WebsiteController extends BaseController {
             , 'page_sale-slug', 'page_sale-title', 'page_sale-description'
             ,'slideshow-fixed-width'
             , 'slideshow-categories'
+            , 'dropdown-hover'            
             , 'sidebar-left'
         );
 
@@ -906,6 +929,7 @@ class WebsiteController extends BaseController {
         $form->add_field( 'checkbox', _('Fixed-width Slideshow'), 'slideshow-fixed-width', $settings['slideshow-fixed-width'] );
         $form->add_field( 'checkbox', _('Slideshow w/ Categories'), 'slideshow-categories', $settings['slideshow-categories'] );
         $form->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'sidebar-left', $settings['sidebar-left'] );
+        $form->add_field( 'checkbox', _('Dropdown Hover'), 'dropdown-hover', $settings['dropdown-hover'] );
 
         if ( $form->posted() ) {
             $new_settings = array();
@@ -2845,6 +2869,7 @@ class WebsiteController extends BaseController {
 
         try {
             $css = $less->compile( $less_css );
+            echo $css;
         } catch (exception $e) {
             $response->notify( 'Error: ' . $e->getMessage(), false );
             return $response;

@@ -699,15 +699,7 @@ y
 
                 );
 
-                $email_sent = fn::mail(
-                    $website_cart['email']
-                    , "Your shopping cart is saved!"
-                    , $email['multipart']
-                    , "no-reply@blinkyblinky.me"
-                    , $reply_to->email
-                    , false
-                    , false
-                );
+
 
                 if ( $email_sent ) {
                     echo "> > Email #{$email_number} sent!\n";
