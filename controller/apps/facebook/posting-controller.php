@@ -20,7 +20,7 @@ class PostingController extends BaseController {
      * @return TemplateResponse|HtmlResponse
      */
     protected function index() {
-        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_actions' ) );
         $success = false;
         $options = array();
         $posting = new Posting();

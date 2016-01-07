@@ -41,9 +41,10 @@ class Config {
         , 'sendgrid-timezone'       => 'America/Chicago'
 
         // Facebook
-        , 'facebook-key'        => '1613357988885586'
-        , 'facebook-secret'     => 'e57ed9886666f429d358355b9be89b06'
-        , 'facebook-redirect'   => 'http://account.testing.greysuitretail.com/sm/facebook-callback/'
+
+        , 'facebook-key'        => '484616121701707'
+        , 'facebook-secret'     => 'ff73583d0f102b3a7131871e90712dda'
+        , 'facebook-redirect'   => 'http://account.greysuitretail.com/sm/facebook-callback/'
 
         // Twitter
         , 'twitter-key'         => 'bC39I7UBwjTfF7FBsg1NxF9GL'
@@ -58,8 +59,8 @@ class Config {
         // Encryption-Decryption
         , 'crypto-key'           => 'e4r+wYPQC4bQKikzN4ExKw=='
 
-        , 'stripe-client-id'    => 'ca_63df2cCDX4B8LDPihRd777FxJWCascHM'
-        , 'stripe-secret-key'   => 'sk_test_IPB2In890BQD893dJe46yoRh'
+        , 'stripe-client-id'    => 'ca_63dfQ551gl7HBd39hc1MMprTR2xkKoDy'
+        , 'stripe-secret-key'   => 'sk_live_SZRKYelDt1gYJ2SFamvoVBA4'
 	);
 
     /**
@@ -110,6 +111,12 @@ class Config {
             'ip'            => '172.24.32.132'
             , 'username'    => 'rpendery'
             , 'password'    => 'ZBqgaDxfkR2I'
+            , 'port'        => '22522'
+        )
+        , '207.97.247.134' => array(
+            'ip'            => '172.24.32.134'
+            , 'username'    => 'rpendery'
+            , 'password'    => 'j0ZnayQahKWx'
             , 'port'        => '22522'
         )
         , 'mail10.blinkyblinky.me' => array(

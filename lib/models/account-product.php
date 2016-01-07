@@ -44,7 +44,7 @@ class AccountProduct extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'product_id' => $this->product_note
+            , 'product_id' => $this->product_id
             , 'alternate_price' => $this->alternate_price
             , 'price' => $this->price
             , 'sale_price' => $this->sale_price

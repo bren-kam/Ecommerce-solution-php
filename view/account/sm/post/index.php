@@ -20,6 +20,7 @@ $delete_nonce = nonce::create( 'delete' );
 
                     <div class="form-group">
                         <textarea class="form-control" rows="5" placeholder="Your Message" name="content"></textarea>
+			<div class="" id="character-count">Characters:<span></span></div>
                     </div>
 
                     <div class="row">
@@ -135,8 +136,8 @@ $delete_nonce = nonce::create( 'delete' );
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="ddAddSMAccount">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="//account.testing.greysuitretail.com/sm/facebook-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-facebook"></i> Facebook</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="//account.testing.greysuitretail.com/sm/twitter-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-twitter"></i> Twitter</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/facebook-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-facebook"></i> Facebook</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/sm/twitter-connect/?website-id=<?php echo $user->account->id ?>&amp;user-id=<?php echo $user->id ?>"><i class="fa fa-twitter"></i> Twitter</a></li>
                             </ul>
                         </div>
                     </p>

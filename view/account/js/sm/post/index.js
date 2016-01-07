@@ -10,7 +10,10 @@ PostForm = {
         // Date Picker - No Conflict with jQueryUI
         var datepicker = $.fn.datepicker.noConflict();
         $.fn.bootstrapDatepicker = datepicker;
-
+	$('textarea[name="content"]').keyup(function(){
+	    $('#character-count span').html($(this).val().length);
+	});
+	    
         $('#post-at').bootstrapDatepicker({
             todayHighlight: true
             , format: 'm/d/yyyy'

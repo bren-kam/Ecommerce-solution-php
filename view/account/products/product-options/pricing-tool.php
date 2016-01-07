@@ -23,9 +23,9 @@
                                 <th>Product</th>
                                 <td>Wholesale Price</td>
                                 <td>MAP Price</td>
-                                <td>Price</td>
+                                <td>Everyday Price</td>
                                 <td>Sale Price</td>
-                                <td>Alternate Price</td>
+                                <td>MSRP</td>
                             </tr>
                         </thead>
                         <tbody>

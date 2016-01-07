@@ -66,6 +66,11 @@ class HomeController extends BaseController {
 
         $visitors_data = [];
         $visitors = [];
+        
+        if($this->user->account->geomarketing_only())
+            return new RedirectResponse('/geo-marketing/analytics');
+
+        
         if ( $this->user->account->live ) {
             try {
                 $analytics->setup( $this->user->account );
@@ -175,6 +180,10 @@ class HomeController extends BaseController {
                 break;
             }
         }
+        /* we determine which parts of the site the user is authorized to*/
+
+        if($account->geomarketing_only())
+            return new RedirectResponse('/geo-marketing/analytics');
 
         // Either redirect to home or logout if he's trying to control someone else's site
         return new RedirectResponse( '/' );
