@@ -40,7 +40,16 @@ var InboxNavigation = {
         var hashTicketId = window.location.hash;
         if (hashTicketId.indexOf('!tid=') >= 0 ) {
             ticketId = hashTicketId.substr(6);
-            Ticket.show(ticketId);
+	        Ticket.show(ticketId);
+        }
+	
+        // Refresh ticket on  back/forward buttons
+        window.onhashchange = function() {
+            if (hashTicketId.indexOf('!tid=') >= 0 ) {
+                // we retrieve the changed hash ticket again
+                ticketId = window.location.hash.substr(6);
+                Ticket.show(ticketId);
+            }
         }
     }
 
@@ -72,6 +81,7 @@ var InboxNavigation = {
                 item.find('.checkbox').val(ticket.id);
                 item.find('.email-name').text(ticket.user_name);
                 item.find('.email-address').text('<' + ticket.user_email + '>');
+                item.find('.from-address').text('<' + ticket.user_email + '>');		
                 item.find('.email-subject').text(ticket.summary);
                 item.find('.email-preview').text(ticket.intro_text);
                 item.find('.email-date').text(ticket.date_created);
@@ -205,6 +215,12 @@ var Ticket = {
                 Ticket.container.find('.assign-to-user').data('assign-to', currentTicket.user_id).removeAttr('style');
             }
             Ticket.container.find('.ticket-user-email').text('<' + currentTicket.email + '>');
+	    if(currentTicket.from_email_address != null ){
+		Ticket.container.find('.ticket-user-from-email-address').text('<' + currentTicket.from_email_address + '>');
+		Ticket.container.find('.ticket-user-from-email-address').parent().show();		
+	    } else {
+		Ticket.container.find('.ticket-user-from-email-address').parent().hide();		
+	    }
             Ticket.container.find('.ticket-user-edit').attr('href', '/users/add-edit/?uid=' + currentTicket.user_id);
             Ticket.container.find('.ticket-id').text(currentTicket.id);
             Ticket.container.find('.ticket-updated').text(currentTicket.updated_ago);
@@ -224,6 +240,9 @@ var Ticket = {
             }
 
             Ticket.container.find('.ticket-message').html(currentTicket.message);
+	    if(currentTicket.from_email_address){
+		Ticket.container.find('#to-address').val(currentTicket.from_email_address);
+	    }else {
 
             Ticket.container.find('#to-address').val(currentTicket.email);
 
