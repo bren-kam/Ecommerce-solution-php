@@ -328,7 +328,7 @@ var Ticket = {
             $('.inbox-nav').height(height > 700 ? height : 700);
         }
     }
-
+    }
     , assignTo: function() {
         var $this = $(this);
         var userId = $this.data('assign-to');
