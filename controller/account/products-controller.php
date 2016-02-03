@@ -1718,7 +1718,7 @@ class ProductsController extends BaseController {
         $ticket->priority = Ticket::PRIORITY_NORMAL;
         $ticket->create();
 
-        fn::mail(
+        library('sendgrid-api'); SendgridApi::send(
             $catalog_manager_user->email
             , 'New Ticket - ' . $ticket->summary
             , "Name: " . $this->user->contact_name
