@@ -178,7 +178,7 @@ class SettingsController extends BaseController {
                 $this->user->account->set_settings(array('arb-subscription-expiration', $_POST['ccexpm'] . '/' . $_POST['ccexpy']));
                 $subject = $this->user->account->title . ' Updated Billing Information';
                 $message = $this->user->contact_name . ' has updated the billing information for ' . $this->user->account->title . '.';
-                fn::mail('david@greysuitretail.com', $subject, $message, 'noreply@greysuitretail.com');
+                library('sendgrid-api'); SendgridApi::send('david@greysuitretail.com', $subject, $message, 'noreply@greysuitretail.com');
                 $this->notify('Your billing information has been successfully updated!');
                 $this->log( 'billing-information', $this->user->contact_name . ' updated their billing information on ' . $this->user->account->title );
             } else {
