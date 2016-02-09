@@ -70,7 +70,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
                             </div>
 
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-lg-6">
                                 <select class="form-control" name="idle-seconds">
