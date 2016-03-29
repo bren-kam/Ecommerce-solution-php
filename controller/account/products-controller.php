@@ -804,7 +804,7 @@ class ProductsController extends BaseController {
             $product_option_items[$product_option_item->parent_product_id][] = $product_option_item;
         }
 
-        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP' );
+        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP', 'Weight' );
 
         foreach ( $products as $product ) {
             $category->get( $product->category_id );
@@ -812,7 +812,7 @@ class ProductsController extends BaseController {
             $output[] = array( $product->product_id, 'product', $product->sku, $product->name
                 , trim(strip_tags($product->description)), $product->industry, $category->taxonomy(), $product->brand
                 , $product->image, $product->price_wholesale, $product->price_map, $product->price
-                , $product->price_msrp, $product->price_sale );
+                               , $product->price_msrp, $product->price_sale, $product->weight );
 
             if ( $product_option_items[$product->product_id] )
             foreach ( $product_option_items[$product->product_id] as $product_option_item ) {
