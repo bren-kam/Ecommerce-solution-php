@@ -2826,7 +2826,8 @@ class ProductsController extends BaseController {
             $product['image'] = $r['image'];
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
-
+            $product['weight'] = isset($r['weight']) ? (float) preg_replace( '/[^0-9.]/', '', $r['weight']) : '';
+            
             if ( 'option' == $product['type'] && $last_product['product_id'] ) {
                 $product['parent_product_id'] = $last_product['product_id'];
                 $product['category_id'] = $last_product['category_id'];
@@ -2864,6 +2865,7 @@ class ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = 'in-stock';
             $product_import->sku = $pi['sku'];
+            $product_import->weight = $pi['weight'];            
             $product_import->price_min = $pi['map price'];
             $product_import->price_wholesale = $pi['wholesale price'];
             $product_import->price = $pi['price'];
@@ -2936,7 +2938,7 @@ class ProductsController extends BaseController {
             $product->price = $p->price_wholesale;
             $product->price_min = $p->price_min;
             $product->user_id_modified = $this->user->id;
-            $product->weight = 0;
+            $product->weight = $p->weight;
 
             // a new product?
             if ( $product->id == null ) {
