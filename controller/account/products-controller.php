@@ -3032,6 +3032,7 @@ class ProductsController extends BaseController {
             $account_product->sale_price = $p->sale_price;
             $account_product->alternate_price = $p->alternate_price;
             $account_product->active = AccountProduct::ACTIVE;
+            $account_product->status = 1;            
             $account_product->save();
         }
 
