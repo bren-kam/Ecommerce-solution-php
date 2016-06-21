@@ -47,8 +47,8 @@ class Config {
         , 'facebook-redirect'   => 'http://account.greysuitretail.com/sm/facebook-callback/'
 
         // Twitter
-        , 'twitter-key'         => 'bC39I7UBwjTfF7FBsg1NxF9GL'
-        , 'twitter-secret'      => 'IZFZSKFQGPGw0vXa8MzV2vshmRWt2OQy2Sm4H7ayH5LJIUupiF'
+        , 'twitter-key'         => 'DhGZblkxRYuKxZFKv2BLmt5W7'
+        , 'twitter-secret'      => 'EBnAMPZUkUlr4HkKyEVi86AisvXXWCn6W84acjD6FcnxQI0hbY'
         , 'twitter-redirect'    => 'http://account.testing.greysuitretail.com/sm/twitter-callback/'
 
         // Foursquare
