@@ -792,6 +792,7 @@ class WebsiteController extends BaseController {
             , 'slideshow-categories'
             , 'dropdown-hover'            
             , 'sidebar-left'
+            , 'ssl-enabled-pages'            
         );
 
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
@@ -824,6 +825,8 @@ class WebsiteController extends BaseController {
             ->attribute( 'maxlength', '2' )
             ->add_validation( 'num', _('The "Banners - Speed" field may only contain a number') );
 
+
+        
         $effects = array(
             'random' => _('Random')
             , 'fade' => _('Fade')
@@ -909,6 +912,7 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'text', _('Meta Description'), 'page_sale-description', $settings['page_sale-description'] )
             ->attribute( 'maxlength', '250' );
+        
 
         // Next section
         $form->add_field( 'blank', '' );
@@ -919,6 +923,10 @@ class WebsiteController extends BaseController {
         //        ->options( data::timezones( false, false, true ) );
         //}
 
+        $form->add_field( 'text', _('SSL Enabled Pages'), 'ssl-enabled-pages', $settings['ssl-enabled-pages'] );
+
+
+        
         $form->add_field( 'text', _('Logo Link URL'), 'logo-link', $settings['logo-link'] )
             ->add_validation( 'url', _('The "Logo Link" must be a valid link') );
 
