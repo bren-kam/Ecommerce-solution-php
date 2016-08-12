@@ -44,6 +44,14 @@ class ResourcesController extends BaseController {
     }
 
     /**
+     * Handle single JSON
+     *
+     * @return JavascriptResponse
+     */
+    protected function json_single() {
+        return new JavascriptResponse( $this->resources->get_json_file( $_GET['f'] ) );
+    }
+    /**
      * Need different things for an image
      *
      * @return bool

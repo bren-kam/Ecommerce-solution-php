@@ -195,6 +195,68 @@ class Resources {
         foreach ( $javascript_files as $file ) {
             foreach ( $paths as $path ) {
                 $full_path = $path . $file . '.js';
+   
+                // Make sure it exists
+                if ( is_file( $full_path ) )
+                    $files[] = $full_path;
+            }
+        }
+
+        // Get the cache path
+        $cached_file = md5( implode( '|', $files ) ) . '.js';
+        $cached_file_path = CACHE_PATH . 'js/' . $cached_file;
+
+        // If a cache does not exist, create it, otherwise, read it
+        if ( !LIVE || !file_exists( $cached_file_path ) ) {
+            // Declare variables
+            $js = '';
+
+            // Combine the JS
+            foreach ( $files as $file ) {
+                $js .= file_get_contents( $file );
+            }
+
+            if ( $compression )
+                $js = compress::javascript( $js );
+
+            // Write to file
+            if ( $fh = fopen( $cached_file_path, 'w' ) ) {
+                fwrite( $fh, $js );
+                fclose( $fh );
+            }
+        }
+
+        return $cached_file;
+    }
+
+ /**
+     * Get the JSON File
+     *
+     * param string $arg1, $arg2.. [optional]
+     * @return string
+     */
+    public function get_json_file() {
+        // Compression is on by default
+        $compression = false; //true;
+
+        $paths = array( VIEW_PATH . 'js/', LIB_PATH . 'js/' );
+
+        // We can take adding random files if we need to
+        $javascript_files = func_get_args();
+
+    
+        if ( 0 == count( $javascript_files ) ) {
+            $javascript_files = $this->_javascript;
+        } else {
+            $compression = false;
+        }
+
+        $files = array();
+
+        // Find the CSS files and combine them
+        foreach ( $javascript_files as $file ) {
+            foreach ( $paths as $path ) {
+                $full_path = $path . $file . '.json';
 
                 // Make sure it exists
                 if ( is_file( $full_path ) )
