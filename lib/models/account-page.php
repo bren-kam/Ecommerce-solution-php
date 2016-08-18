@@ -1,6 +1,6 @@
 <?php
 class AccountPage extends ActiveRecordBase {
-    public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile, $status, $top, $header_script, $date_created, $date_updated;
+    public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile, $status, $top, $header_script, $date_created, $date_updated, $landing_page;
 
     // Artificial field
     public $products;
@@ -24,7 +24,7 @@ class AccountPage extends ActiveRecordBase {
      */
     public function get( $account_page_id, $account_id ) {
         $this->prepare(
-            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile`, `top`, `header_script` FROM `website_pages` WHERE `website_page_id` = :account_page_id AND `website_id` = :account_id'
+            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile`, `top`, `header_script`, `landing_page` FROM `website_pages` WHERE `website_page_id` = :account_page_id AND `website_id` = :account_id'
             , 'ii'
             , array( ':account_page_id' => $account_page_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -104,7 +104,8 @@ class AccountPage extends ActiveRecordBase {
             , 'status' => $this->status
             , 'top' => $this->top
             , 'date_created' => $this->date_created
-        ), 'isssis' );
+            , 'landing_page' => $this->landing_page
+        ), 'isssisi' );
 
         $this->id = $this->website_page_id = $this->get_insert_id();
     }
@@ -149,10 +150,11 @@ class AccountPage extends ActiveRecordBase {
             , 'meta_description' => strip_tags($this->meta_description)
             , 'meta_keywords' => strip_tags($this->meta_keywords)
             , 'mobile' => $this->mobile
-            , 'top' => $this->top
+            , 'top' => $this->tp
             , 'header_script' => $this->header_script
+            , 'landing_page' => $this->landing_page
         ), array( 'website_page_id' => $this->id )
-        , 'ssssssiis', 'i' );
+        , 'ssssssiisi', 'i' );
     }
 
     /**

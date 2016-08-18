@@ -11,10 +11,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
 		<!-- bootstrap magic -->
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="/resources/css_single/?f=PageBuilder/bootstrap/css/bootstrap" />
 		
         <!-- theme custom -->
-		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="/resources/css_single/?f=PageBuilder/css/style" />
 
 		<!-- fonts -->
 		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
@@ -133,13 +133,13 @@
 	
 	<!-- Jquery Libs -->
 	<!-- Latest Version Of Jquery -->
-	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/js/jquery-2.1.3.min"></script>
 	<!-- Bootstrap Jquery -->
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/SmoothScroll.js"></script>
-	<script type="text/javascript" src="js/jquery.sticky.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/js/bootstrap.min"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/js/SmoothScroll"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/js/jquery.sticky"></script>
 	<!-- Theme Custom -->
-	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/js/custom"></script>
 	
 	
 	</body>

@@ -48,12 +48,11 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
                     <p><strong>Link:</strong> http://<?php echo $user->account->domain ?>/<input type="text" id="tPageSlug" name="tPageSlug" value="<?php echo $page->slug ?>" placeholder="Slug" />/</p>
                     <p>
 			<button type="button" class="btn-sm btn-primary btn" data-toggle="modal" data-target="#pageBuilderModal">
-			    Launch demo modal
+			    Launch Landing Page Builder
 			</button>
                     </p>
 
 
-                        <input type="hidden"  name="taContent" id="taContent" rows="3" cols="60" rte="1" value="<?php echo $page->content ?>">
 
                     <p>
                         <button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>">Upload File</button>
@@ -82,14 +81,14 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
 </form>
 <!-- Modal -->
 <div class="modal fade" id="pageBuilderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" style="width:95%;" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel">Landing Page Builder</h4>
       </div>
       <div class="modal-body">
-        <p> <iframe style="width:100%;height:786px;border:0;" src="/website/landing-pages/builder/"></iframe>
+        <p> <iframe style="width:100%;height:786px;border:0;" src="/website/landing-pages/builder/?apid=<?php echo $page->id; ?>"></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

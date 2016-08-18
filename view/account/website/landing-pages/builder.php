@@ -13,7 +13,7 @@
     <!-- Custom styles for this template -->
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style" />
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style-responsive" />
-
+      <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
     <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
 
 
@@ -123,7 +123,6 @@
     	</header>
     	
     	<div class="screen" id="screen">
-    		
     		<div class="toolbar">
     		
     			<div class="buttons clearfix">
@@ -133,9 +132,9 @@
     			</div>
     			
     			<div class="title" id="pageTitle">
-    				<span><span>index</span>.html</span>
+    				<?php echo $account_page->title;?>
     			</div>
-    			
+                                            <input type="hidden" id="page-id" value="<?php echo $account_page->id; ?>" />
     		</div>
     		
     		<div id="frameWrapper" class="frameWrapper empty">
@@ -1911,7 +1910,7 @@
     </div><!-- /.styleEditor -->
     
     <div id="hidden">
-    	<iframe src="elements/skeleton.html" id="skeleton"></iframe>
+    	<iframe src="/website/landing-pages/elements/?f=skeleton" id="skeleton"></iframe>
     </div>
 
 	<!-- modals -->
@@ -1926,7 +1925,7 @@
 		
 		-->
 	
-		<form action="save.php" target="_blank" id="markupForm" method="post" class="form-horizontal">
+		<form action="/website/landing-pages/save/?apid=<?php echo $account_page->id; ?>" id="markupForm" method="post" class="form-horizontal">
 		
 		<input type="hidden" name="markup" value="" id="markupField">
 		
@@ -2119,8 +2118,7 @@
 
 	<div class="sandboxes" id="sandboxes" style="display: none"></div>
     <!-- Load JS here for greater good =============================-->
-    <script>
-    
+          <script type="text/javascript">
     jQuery(function(){
     
     	var ua = window.navigator.userAgent;

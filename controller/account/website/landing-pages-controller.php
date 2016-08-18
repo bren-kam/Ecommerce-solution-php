@@ -109,11 +109,10 @@ class LandingPagesController extends BaseController{
         $form->add_field( 'text', _('URL'), 'tSlug' )
             ->add_validation( 'req', _('The "URL" field is required') );
         
-        $form->add_field('hidden', 'hLandingPage', '1');
         
+        $form->add_field('hidden', 'hLandingPage', '1');
         if ( $form->posted() ) {
             $page = new AccountPage();
-    
             $page->website_id = $this->user->account->id;
             $page->title = $_POST['tTitle'];
             $page->slug = $_POST['tSlug'];
@@ -135,6 +134,12 @@ class LandingPagesController extends BaseController{
     }
 
     protected function builder(){
+        // Make sure they can be here
+        if ( !isset( $_GET['apid'] ) )
+            return new RedirectResponse('/website/');
+
+        $account_page = new AccountPage();
+        $account_page->get($_GET['apid'],$this->user->account->id );
         $this->resources
             ->javascript_url( 
 
@@ -165,17 +170,20 @@ class LandingPagesController extends BaseController{
             )
             ->css_url(
                 '/resources/css_single/?f=PageBuilder/js/redactor/redactor',
-
-//                '/resources/css_single/?f=PageBuilder/css/font-awesome',
-
+                
+                //                '/resources/css_single/?f=PageBuilder/css/font-awesome',
+                
                 '/resources/css_single/?f=PageBuilder/css/chosen',
                 '/resources/css_single/?f=PageBuilder/css/spectrum',
-               '/resources/css_single/?f=PageBuilder/css/style',
-//               '/resources/css_single/?f=PageBuilder/css/flat-ui',
-               '/resources/css_single/?f=PageBuilder/bootstrap/css/bootstrap'
+                '/resources/css_single/?f=PageBuilder/css/style',
+                '/resources/css_single/?f=PageBuilder/css/flat-ui',
+                '/resources/css_single/?f=PageBuilder/bootstrap/css/bootstrap'
             );
+        
         $response = new CustomResponse( $this->resources, 'website/landing-pages/builder' );
-    return $response;        
+        $response->set( compact( 'account_page' ) );
+
+        return $response;        
     }
 
     protected function elements(){
@@ -183,14 +191,23 @@ class LandingPagesController extends BaseController{
                 die();
 
             $page = $_GET['f'];
-            
-
                  
-            $response = new CustomResponse( $this->resources, 'website/landing-pages/builder/'. $page );
+            $response = new CustomResponse( $this->resources, 'website/landing-pages/builder/'. basename($page) );
             return $response;
     }
 
+    protected function get_content(){
+        if ( !isset( $_GET['apid'] ) )
+            return new RedirectResponse('/website/');
+        
+        $page = new AccountPage();
+        $page->get( $_GET['apid'], $this->user->account->id );
 
+        $response = new AjaxResponse( true );
+        $response->add_response( 'content', unserialize($page->content) );
+        return $response;
+
+    }
     /**
      * Edit Page
      *
@@ -433,7 +450,7 @@ class LandingPagesController extends BaseController{
 
         // Setup response
         $js_validation = $v->js_validation();
-
+        
         return $this->get_template_response( 'edit' )
             ->kb( 37 )
             ->menu_item('website/pages/add')
@@ -441,6 +458,17 @@ class LandingPagesController extends BaseController{
             ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title', 'product_count' ), $resources ) );
     }
 
+    protected function save(){
+        if ( !isset( $_GET['apid'] ) )
+            return new RedirectResponse('/website/');
+        
+        $page = new AccountPage();
+        $page->get( $_GET['apid'], $this->user->account->id );
+
+        $page->content = serialize($_POST);
+        $page->save();
+
+    }
 
 
 }

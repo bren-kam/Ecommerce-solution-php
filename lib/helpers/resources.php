@@ -291,6 +291,47 @@ class Resources {
         return $cached_file;
     }
 
+/**
+     * Get the JSON File
+     *
+     * param string $arg1, $arg2.. [optional]
+     * @return string
+     */
+    public function get_font_file() {
+        // Compression is on by default
+        $compression = false; //true;
+
+        $paths = array(  LIB_PATH . 'fonts/' );
+
+        // We can take adding random files if we need to
+        $javascript_files = func_get_args();
+        
+    
+        if ( 0 == count( $javascript_files ) ) {
+            $javascript_files = $this->_javascript;
+        } else {
+            $compression = false;
+        }
+
+        $files = array();
+
+        // Find the CSS files and combine them
+        foreach ( $javascript_files as $file ) {
+            foreach ( $paths as $path ) {
+                $full_path = $path . $file ;
+                // Make sure it exists
+                if ( is_file( $full_path ) )
+                    return 'lib/fonts/' . $file;
+            }
+        }
+
+
+        return false;
+    }
+
+
+
+    
     /**
      * Javascript URL
      *
