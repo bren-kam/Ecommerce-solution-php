@@ -14,6 +14,12 @@ class Registry {
     private static $pdo_slave;
 
     /**
+     * Hold the PDO object
+     * @var PDO
+     */
+    private static $pdo_imr;
+
+    /**
      * Get a preexisting object
      *
      * @static

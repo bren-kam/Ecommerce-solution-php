@@ -41,13 +41,14 @@ class Config {
         , 'sendgrid-timezone'       => 'America/Chicago'
 
         // Facebook
+
         , 'facebook-key'        => '484616121701707'
         , 'facebook-secret'     => 'ff73583d0f102b3a7131871e90712dda'
         , 'facebook-redirect'   => 'http://account.greysuitretail.com/sm/facebook-callback/'
 
         // Twitter
-        , 'twitter-key'         => 'bC39I7UBwjTfF7FBsg1NxF9GL'
-        , 'twitter-secret'      => 'IZFZSKFQGPGw0vXa8MzV2vshmRWt2OQy2Sm4H7ayH5LJIUupiF'
+        , 'twitter-key'         => 'DhGZblkxRYuKxZFKv2BLmt5W7'
+        , 'twitter-secret'      => 'EBnAMPZUkUlr4HkKyEVi86AisvXXWCn6W84acjD6FcnxQI0hbY'
         , 'twitter-redirect'    => 'http://account.testing.greysuitretail.com/sm/twitter-callback/'
 
         // Foursquare
@@ -58,8 +59,8 @@ class Config {
         // Encryption-Decryption
         , 'crypto-key'           => 'e4r+wYPQC4bQKikzN4ExKw=='
 
-        , 'stripe-client-id'    => 'ca_63df2cCDX4B8LDPihRd777FxJWCascHM'
-        , 'stripe-secret-key'   => 'sk_test_IPB2In890BQD893dJe46yoRh'
+        , 'stripe-client-id'    => 'ca_63dfQ551gl7HBd39hc1MMprTR2xkKoDy'
+        , 'stripe-secret-key'   => 'sk_live_SZRKYelDt1gYJ2SFamvoVBA4'
 	);
 
     /**
@@ -118,7 +119,6 @@ class Config {
             , 'password'    => 'j0ZnayQahKWx'
             , 'port'        => '22522'
         )
-
         , 'mail10.blinkyblinky.me' => array(
             'ip'            => '162.218.139.219'
             , 'username'    => 'root'
