@@ -1311,9 +1311,10 @@ class ProductsController extends BaseController {
         // Add to response
         $response = new CustomResponse( $this->resources, 'products/edit' );
         $response->set( array(
-            'product' => $account_product
+            'account_product' => $account_product
             , 'child_products' => $child_products
             , 'coupons' => $coupons
+            , 'product' => $product
         ) );
 
         return $response;
@@ -1339,6 +1340,7 @@ class ProductsController extends BaseController {
 
         // Initialize objects
         $account_product = new AccountProduct();
+        $product_amazon = new ProductAmazon();
         $website_coupon = new WebsiteCoupon();
         $account_product_option = new AccountProductOption();
 
@@ -1373,6 +1375,13 @@ class ProductsController extends BaseController {
             $account_product->additional_shipping_type = $_POST['rShippingMethod'];
             $account_product->ships_in = $_POST['tShipsIn'];
             $account_product->store_sku = $_POST['tStoreSKU'];
+
+            if($_POST['sAmazonFBA'] == 1) {
+                $product_amazon->product_id = $account_product->product_id;
+                $product_amazon->create();
+            } else {
+                $product_amazon->remove_by_product($account_product->product_id);
+            }
 
             $coupons = $_POST['hCoupons'];
         } else {

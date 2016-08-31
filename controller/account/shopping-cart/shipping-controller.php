@@ -563,7 +563,13 @@ class ShippingController extends BaseController {
             , 'meter_number' => ''
         );
 
-        $settings = $this->user->account->get_settings( 'shipping-settings', 'shipping-ups', 'shipping-fedex', 'taxable-shipping' );
+        $shipping_amazon = [
+            'amazon_aws_access_key_id' => ''
+            , 'amazon_aws_secret_access_key' => ''
+            , 'amazon_aws_merchant_id' => ''
+        ];
+
+        $settings = $this->user->account->get_settings( 'shipping-settings', 'shipping-ups', 'shipping-fedex', 'taxable-shipping', 'shipping-amazon' );
 
         if ( !empty( $settings['shipping-settings'] ) )
             $shipping_settings = unserialize( $settings['shipping-settings'] );
@@ -573,6 +579,9 @@ class ShippingController extends BaseController {
 
         if ( !empty( $settings['shipping-fedex'] ) )
             $shipping_fedex = unserialize( $settings['shipping-fedex'] );
+
+        if ( !empty( $settings['shipping-amazon'] ) )
+            $shipping_amazon = unserialize( $settings['shipping-amazon'] );
 
         // Create form
 
@@ -642,6 +651,22 @@ class ShippingController extends BaseController {
         $form->add_field( 'row', _('Length Unit:'), 'Inches' );
         $form->add_field( 'blank', '' );
 
+        // Amazon Settings
+        $form->add_field( 'title', _('Fulfillment By Amazon Settings') );
+
+        $form->add_field( 'text', _('AWS Access Key Id'), 'tAmazonAwsAccessKeyId', $shipping_amazon['aws_access_key_id'] )
+            ->attribute( 'maxlength', 32 );
+
+        $form->add_field( 'text', _('Aws Secret Access Key'), 'tAmazonAwsSecretAccessKey', $shipping_amazon['aws_secret_access_key'] )
+            ->attribute( 'maxlength', 64 );
+
+        $form->add_field( 'text', _('Merchant Id'), 'tAmazonMerchantId', $shipping_amazon['merchant_id'] )
+            ->attribute( 'maxlength', 32 );
+
+        $form->add_field( 'text', _('Marketplace Id'), 'tAmazonMarketplaceId', $shipping_amazon['marketplace_id'] )
+            ->attribute( 'maxlength', 32 );
+        $form->add_field( 'blank', '' );
+
         // Tax Settings
         $form->add_field( 'title', _('Tax Settings') );
 
@@ -671,6 +696,12 @@ class ShippingController extends BaseController {
                     , 'password' => $_POST['pFedExPassword']
                     , 'account_number' => $_POST['tFedExAccountNumber']
                     , 'meter_number' => $_POST['tFedExMeterNumber']
+                ) )
+                ,  'shipping-amazon' => serialize( array(
+                    'aws_access_key_id' => $_POST['tAmazonAwsAccessKeyId']
+                , 'aws_secret_access_key' => $_POST['tAmazonAwsSecretAccessKey']
+                , 'merchant_id' => $_POST['tAmazonMerchantId']
+                , 'marketplace_id' => $_POST['tAmazonMarketplaceId']
                 ) )
                 , 'taxable-shipping' => ( isset( $_POST['cbTaxableShipping'] ) ) ? '1' : '0'
             ));
