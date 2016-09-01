@@ -58,7 +58,7 @@ var ProductForm = {
 
         var searchType = $("#sAutoComplete").val();
         var nonce = $('#_autocomplete').val();
-
+/*
         var autocomplete = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value')
             , queryTokenizer: Bloodhound.tokenizers.whitespace
@@ -79,7 +79,7 @@ var ProductForm = {
             })
             .unbind('typeahead:selected')
             .on('typeahead:selected', ProductForm.search );
-
+*/
 
     }
     , refreshTable: function ( ) {

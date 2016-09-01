@@ -142,7 +142,7 @@ class LandingPagesController extends BaseController{
         $account_page->get($_GET['apid'],$this->user->account->id );
         $this->resources
             ->javascript_url( 
-
+                Config::resource('typeahead-js'),
                  '/resources/js_single/?f=PageBuilder/js/builder',
 
                 '/resources/json_single/?f=PageBuilder/elements',
@@ -164,6 +164,7 @@ class LandingPagesController extends BaseController{
                 '/resources/js_single/?f=PageBuilder/js/bootstrap-switch',
                 '/resources/js_single/?f=PageBuilder/js/bootstrap-select',
                 '/resources/js_single/?f=PageBuilder/js/bootstrap.min',
+                '/resources/js_single/?f=PageBuilder/js/jquery.autocomplete.min',
                 '/resources/js_single/?f=PageBuilder/js/jquery.ui.touch-punch.min',
                  '/resources/js_single/?f=PageBuilder/js/jquery-ui.min',
                 '/resources/js_single/?f=PageBuilder/js/jquery-1.8.3.min'
@@ -191,7 +192,9 @@ class LandingPagesController extends BaseController{
                 die();
 
             $page = $_GET['f'];
-                 
+
+
+            
             $response = new CustomResponse( $this->resources, 'website/landing-pages/builder/'. basename($page) );
             return $response;
     }
@@ -222,7 +225,7 @@ class LandingPagesController extends BaseController{
         $this->resources
             ->css_url( Config::resource( 'jquery-ui' ) )
             ->css( 'website/edit', 'media-manager' )
-            ->javascript_url( Config::resource( 'typeahead-js' ), Config::resource( 'jqueryui-js' ) )
+            ->javascript_url(  Config::resource( 'jqueryui-js' ) )
             ->javascript( 'fileuploader', 'media-manager', 'website/edit' );
 
         // Initialize variables

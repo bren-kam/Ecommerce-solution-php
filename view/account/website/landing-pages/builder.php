@@ -38,7 +38,11 @@
 
 
   	<div class="menu" id="menu">
-		
+		    <?php
+	    nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
+        nonce::field( 'get', '_get' );
+	    ?>
+	
   		<div class="main" id="main">
 			  		  			
   			<h3><span class="fui-list"></span> MEGA Blocks</h3>
@@ -96,9 +100,7 @@
     	
     		<a href="#" id="clearScreen" class="btn btn-danger btn-embossed pull-right disabled actionButtons"><span class="fui-trash"></span> Empty Page</a>
     	
-			<a href="#previewModal" id="preview" data-toggle="modal" class="btn btn-inverse btn-embossed pull-right disabled actionButtons" style="margin-right: 10px; display: none"><span class="fui-window"></span> Preview</a>
 		
-    		<a href="#exportModal" id="exportPage" data-toggle="modal" class="btn btn-info btn-embossed pull-right disabled actionButtons"><span class="fui-export"></span> Export</a>
 			
 			<a href="#" id="savePage" class="btn btn-primary btn-embossed pull-right disabled actionButtons"><span class="fui-check"></span> <span class="bLabel">Nothing new to save</span></a>
     	
@@ -1898,6 +1900,7 @@
     	<div class="sideButtons clearfix">
     		<button type="button" class="btn btn-inverse btn-embossed btn-xs" id="cloneElementButton"><span class="fui-windows"></span> Clone</button>
     		<button type="button" class="btn btn-warning btn-embossed btn-xs" id="resetStyleButton"><i class="fa fa-refresh"></i> Reset</button>
+
     		<button type="button" class="btn btn-danger btn-embossed btn-xs" id="removeElementButton"><span class="fui-cross-inverted"></span> Remove</button>
     	</div>
     	
@@ -2106,7 +2109,25 @@
 	  	</div><!-- /.modal-dialog -->
 	  		  	
 	</div><!-- /.modal -->
-	
+
+	<!-- edit content popup -->
+	<div class="modal fade" id="editProductsModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+	    	<div class="modal-content">
+	      		<div class="modal-body">
+	      		
+	        		<textarea id="productsHtml" style="display:none;"></textarea>
+	      		</div><!-- /.modal-body -->
+	      		<div class="modal-footer">
+	        		<button type="button" class="btn btn-default btn-embossed" data-dismiss="modal">Close</button>                                                                                                                     
+	        		<button type="button" type="button" class="btn btn-primary btn-embossed editSaveButton" >Save</button>
+	      		</div>
+	    	</div><!-- /.modal-content -->
+	  	</div><!-- /.modal-dialog -->
+	  		  	
+	</div><!-- /.modal -->
+
+                                                                                                                                              
 	<div id="loader">
 		<img src="images/loading.gif" alt="Loading...">
 		Loading elements...

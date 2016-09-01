@@ -29,6 +29,9 @@ var _Elements = {"elements": {
     	{"url":"/website/landing-pages/elements/?f=portfolio-2","height":799, "thumbnail":"/images/landing-page-builder/elements/thumbs/51.png"},
     	{"url":"/website/landing-pages/elements/?f=portfolio-3","height":516, "thumbnail":"/images/landing-page-builder/elements/thumbs/52.png"}
     ],
+    "Dynamic Content":[
+    	{"url":"/website/landing-pages/elements/?f=product","height":644, "thumbnail":"/images/landing-page-builder/elements/thumbs/product.png"},
+    ],
     "Blog":[
     	{"url":"/website/landing-pages/elements/?f=blog-1","height":644, "thumbnail":"/images/landing-page-builder/elements/thumbs/7.png"},
     	{"url":"/website/landing-pages/elements/?f=blog-2","height":810, "thumbnail":"/images/landing-page-builder/elements/thumbs/8.png"},

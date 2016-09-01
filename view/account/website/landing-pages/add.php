@@ -8,7 +8,6 @@
                 <h4 class="modal-title" id="modalLabel">Create new Landing Page</h4>
             </div>
             <div class="modal-body">
-
                 <?php echo $form ?>
 
             </div>

@@ -11,13 +11,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
 		<!-- bootstrap magic -->
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="/resources/css_single/?f=PageBuilder/css/bootstrap/css/bootstrap.min" />
 		
 		<!-- bootstrap datepicker -->
-		<link rel="stylesheet" type="text/css" href="css/bootstrap-datepicker.css" />
+		<link rel="stylesheet" type="text/css" href="/resources/css_single/?f=PageBuilder/css/bootstrap-datepicker" />
 		
         <!-- theme custom -->
-		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="/resources/css_single/?f=PageBuilder/elements/css/style" />
 
 		<!-- fonts -->
 		<link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
@@ -25,7 +25,7 @@
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 		
 		<!-- Font Awesome -->
-		<link rel="stylesheet" type="text/css" href="fonts/font-awesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="/resources/css_single/?f=PageBuildercss/font-awesome.min" />
 
 		<!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -49,40 +49,17 @@
 	
 	<!-- Jquery Libs -->
 	<!-- Latest Version Of Jquery -->
-	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/elements/js/jquery-2.1.3.min"></script>
 	<!-- Bootstrap Jquery -->
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/SmoothScroll.js"></script>
-	<script type="text/javascript" src="js/jquery.sticky.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/js/bootstrap.min"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/elements/js/SmoothScroll"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/elements/js/jquery.sticky"></script>
 	<!-- Bootstrap Datepicker -->
-	<script type="text/javascript" src="js/bootstrap-datepicker.min.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/elements/js/bootstrap-datepicker.min"></script>
 	<!-- Theme Custom -->
-	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="/resources/js_single/?f=PageBuilder/elements/js/custom"></script>
 	
 	<!-- Google Maps -->
-	<script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
-	<script type="text/javascript" src="js/gmap3.min.js"></script>
-	<script>
-		 /* ==============================================
-		Google Maps
-	=============================================== */
-	$('#test1').gmap3({
-          marker:{
-            address: "Mahilpur, Punjab, India",
-			options: {
-			 icon: new google.maps.MarkerImage(
-			   "http://gj-designs.in/effecty/marker.png",
-			   new google.maps.Size(32, 54, "px", "px")
-			 )
-			}
-          },
-          map:{
-            options:{
-              zoom: 12
-            }
-          }
-        });
-	</script>
 	
 	<script type="text/javascript">
 				function ajax()
