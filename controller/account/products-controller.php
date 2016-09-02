@@ -2833,6 +2833,7 @@ class ProductsController extends BaseController {
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
             $product['image'] = $r['image'];
+            $product['amazon_eligible'] = isset($r['amazon eligible']) ? $r['amazon eligible'] : null;
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
 
@@ -2881,6 +2882,7 @@ class ProductsController extends BaseController {
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
             $product_import->type = $pi['type'];
+            $product_import->amazon_eligible = $pi['amazon_eligible'];
             $product_import->create();
         }
 
@@ -3042,6 +3044,16 @@ class ProductsController extends BaseController {
             $account_product->alternate_price = $p->alternate_price;
             $account_product->active = AccountProduct::ACTIVE;
             $account_product->save();
+
+            // Check for Amazon Eligible Flag
+            if ( $p->amazon_eligible == 1 ) {
+                $productAmazon = new ProductAmazon();
+                $productAmazon->product_id = $p->product_id;
+                $productAmazon->create();
+            } elseif ( strtolower($p->amazon_eligible) == 'x') {
+                $productAmazon = new ProductAmazon();
+                $productAmazon->remove_by_product($p->product_id);
+            }
         }
 
         $product_import->delete_all( $this->user->account->id );
