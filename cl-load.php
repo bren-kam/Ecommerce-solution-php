@@ -70,7 +70,7 @@ require LIB_PATH . 'ext/s98lib/init.php';
 
 
 /** Dynamic definitions */
-define( 'DOMAIN', 'local-greysuitretail.com' );
+define( 'DOMAIN', 'greysuitretail.com' );
 define( 'SUBDOMAIN', 'admin' );
 
 // Define MVC paths

@@ -597,7 +597,7 @@ class GoogleOauthWeb extends GoogleOauth {
 	public function buildAuthUrl($params = array()) {
 
 		if (!$this->clientId || !$this->redirectUri) {
-            //		throw new Exception('You must provide the clientId and a redirectUri');
+			throw new Exception('You must provide the clientId and a redirectUri');
 		}
 
 		$defaults = array(

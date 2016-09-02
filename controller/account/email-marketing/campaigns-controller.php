@@ -78,7 +78,7 @@ class CampaignsController extends BaseController {
                 }
 
                 $data[] = array(
-                    format::limit_chars( $message->subject, 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>'
+                    format::limit_chars( utf8_encode($message->subject), 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>'
                     , $statuses[$message->status]
                     , $date_created->format( 'F jS, Y g:ia' )
                     , $date_sent->format( 'F jS, Y g:ia' )

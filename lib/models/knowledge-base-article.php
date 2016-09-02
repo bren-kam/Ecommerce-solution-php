@@ -82,7 +82,7 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
      */
     public function get_by_views( $section ) {
         return $this->prepare(
-            'SELECT kba.`id`, kba.`kb_category_id`, kba.`kb_page_id`, kba.`user_id`, kba.`title`, kba.`slug`, kba.`content`, kba.`status` FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_article_view` AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) WHERE kbc.`section` = :section AND kba.`status` <> :status GROUP BY kba.`id`  ORDER BY COUNT( kbav.`kb_article_id` ) DESC LIMIT 15'
+            'SELECT kba.`id`, kba.`kb_category_id`, kba.`kb_page_id`, kba.`user_id`, kba.`title`, kba.`slug`, kba.`content`, kba.`status` FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_article_view` AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) WHERE kbc.`section` = :section AND kba.`status` <> :status GROUP BY kba.`id` ORDER BY COUNT( kbav.`kb_article_id` ) DESC LIMIT 15'
             , 'si'
             , array( ':section' => $section, ':status' => self::STATUS_DELETED )
         )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );

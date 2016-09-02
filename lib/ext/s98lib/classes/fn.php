@@ -122,7 +122,7 @@ class fn extends Base_Class {
         }
 
 		return mail( $to_addresses, $subject, $message, $headers);
-    }
+}
 
 	/**
 	 * Figure out what browser is used, its version and the platform it is running on.

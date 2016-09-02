@@ -10,7 +10,16 @@ PostForm = {
         // Date Picker - No Conflict with jQueryUI
         var datepicker = $.fn.datepicker.noConflict();
         $.fn.bootstrapDatepicker = datepicker;
-
+	$('textarea[name="content"]').keydown(function(){
+	    $('#character-count span').html($(this).val().length);	    
+	    if($('[data-social="twitter"]').is(':checked')){
+		if($(this).val().length >= 140){
+		    alert("Your post exceeds 140 characters, you won't be able to Tweet this post");
+		}
+	    }
+					   
+	});
+	    
         $('#post-at').bootstrapDatepicker({
             todayHighlight: true
             , format: 'm/d/yyyy'

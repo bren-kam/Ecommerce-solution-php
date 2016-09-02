@@ -27,7 +27,7 @@ class RemarketingController extends BaseController {
         $website_cart = new WebsiteCart();
 
         $since = new DateTime();
-        $since->sub(new DateInterval('P1M'));
+        $since->sub(new DateInterval('P1Y'));
         $overview = $website_cart->get_remarketing_report( $this->user->account->id, $since );
 
         $this->resources->css('shopping-cart/remarketing/index');

@@ -35,9 +35,11 @@ class WebsiteYextAnalytics extends ActiveRecordBase {
 
         $this->begin_transaction();
         foreach ( $report as $row ) {
-            $this->query(
-                "REPLACE website_yext_analytics( `location_id`, `date`, `searches`, `profile_views`, `special_offer_clicks`, `foursquare_checkins`, `facebook_likes`, `facebook_talking_about`, `facebook_where_here`, `yelp_views` ) VALUES( {$row->location_id}, '{$row->day}', {$row->searches}, {$row->profile_views}, {$row->featured_message_clicks}, 0, 0, 0, 0, {$row->yelp_page_views} )"
-            );
+            if(isset($row->yelp_page_views)){
+                $this->query(
+                    "REPLACE website_yext_analytics( `location_id`, `date`, `searches`, `profile_views`, `special_offer_clicks`, `foursquare_checkins`, `facebook_likes`, `facebook_talking_about`, `facebook_where_here`, `yelp_views` ) VALUES( {$row->location_id}, '{$row->day}', {$row->searches}, {$row->profile_views}, {$row->featured_message_clicks}, 0, 0, 0, 0, {$row->yelp_page_views} )"
+                              );
+            }
         }
         $this->commit();
     }
