@@ -192,10 +192,10 @@ class LandingPagesController extends BaseController{
                 die();
 
             $page = $_GET['f'];
-
-
             
             $response = new CustomResponse( $this->resources, 'website/landing-pages/builder/'. basename($page) );
+            $response->set_custom_header('website/landing-pages/builder/header');
+            $response->set_custom_footer('website/landing-pages/builder/footer');
             return $response;
     }
 
