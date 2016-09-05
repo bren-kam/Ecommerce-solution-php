@@ -78,7 +78,7 @@ class CronsController extends BaseController {
 
                     $sm_errors[$post->id] = $error_message;
 
-                    fn::mail( $post->email, $post->company . ' - Unable to Post to Facebook', "We were unable to send the following post to Facebook:\n\n" . $post->post . "\n\nFor the following reason(s):\n\n" . $error_message . "\n\nTo fix this, please login to the dashboard, go to Social Media > Posting, then delete this post and recreate it following the rules above.\n\n" . $post->account . "\nhttp://admin." . $post->domain . "/accounts/control/?aid=" . $post->website_id . "\n\nHave a great day!", $post->company . ' <noreply@' . $post->domain . '>' );
+                    library('sendgrid-api'); SendgridApi::send( $post->email, $post->company . ' - Unable to Post to Facebook', "We were unable to send the following post to Facebook:\n\n" . $post->post . "\n\nFor the following reason(s):\n\n" . $error_message . "\n\nTo fix this, please login to the dashboard, go to Social Media > Posting, then delete this post and recreate it following the rules above.\n\n" . $post->account . "\nhttp://admin." . $post->domain . "/accounts/control/?aid=" . $post->website_id . "\n\nHave a great day!", $post->company . ' <noreply@' . $post->domain . '>' );
                     continue;
                 }
 
@@ -249,7 +249,7 @@ class CronsController extends BaseController {
             }
             $yesterday = new DateTime();
             $yesterday->sub( new DateInterval('P1D') );
-            fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com, gabriel@greysuitretail.com', 'Ashley Products - ' . $yesterday->format('Y-m-d'), $email_message );
+            library('sendgrid-api'); SendgridApi::send( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com, gabriel@greysuitretail.com', 'Ashley Products - ' . $yesterday->format('Y-m-d'), $email_message );
         }
     }
 
@@ -446,9 +446,10 @@ class CronsController extends BaseController {
                     $subject .= " on " . $review_date->format('D, n/j/y');
 
                     echo "\n $to...\n";
-                    $success = fn::mail( $to, $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
+library('sendgrid-api');                    
+                    $success =  SendgridApi::send( $to, $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
                     // Copy to Us
-                    $success = fn::mail( 'jack@greysuitretail.com', $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
+                    $success =  SendgridApi::send( 'jack@greysuitretail.com', $subject, $content, 'noreply@' . url::domain($user->domain, false), 'noreply@' . url::domain($review_account->domain, false), false);
                     var_dump($success);
 
                 } else {
@@ -688,7 +689,9 @@ y
                     continue;
                 }
                 
-                $email_sent = fn::mail(
+
+                library('sendgrid-api');
+                $email_sent =  SendgridApi::send(
                     $website_cart['email']
                     , "Your shopping cart is saved!"
                     , $email_body

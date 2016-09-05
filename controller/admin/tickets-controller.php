@@ -213,7 +213,7 @@ class TicketsController extends BaseController {
         $assigned_user = new User();
         $assigned_user->get( $assigned_to_user_id ); // Technical user
 
-        fn::mail(
+        library('sendgrid-api'); SendgridApi::send(
             $assigned_user->email
             , 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary
             , "Name: " . $this->user->contact_name
@@ -277,7 +277,7 @@ class TicketsController extends BaseController {
 
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && ( Ticket::STATUS_OPEN == $ticket->status || !$ticket_creator->has_permission( User::ROLE_ADMIN ) ) )
-            fn::mail(
+            library('sendgrid-api'); SendgridApi::send(
                 $ticket->email
                 , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
@@ -290,7 +290,7 @@ class TicketsController extends BaseController {
 
         // Send the assigned user an email if they are not submitting the comment
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != User::KERRY && $ticket->assigned_to_user_id != $ticket->user_id )
-            fn::mail(
+            library('sendgrid-api'); SendgridApi::send(
                 $assigned_user->email
                 , 'New Comment on Ticket #' . $ticket->id . $status .' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
@@ -568,7 +568,7 @@ class TicketsController extends BaseController {
         $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
-        fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@greysuitretail.com>' );
+        library('sendgrid-api'); SendgridApi::send( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@greysuitretail.com>' );
 
         // If assigned to Development, make sure it's on Jira
         if ( $assigned_user->id == User::DEVELOPMENT ) {
@@ -786,7 +786,7 @@ class TicketsController extends BaseController {
                 continue;
 
             // Send the assigned user an email if they are not submitting the comment
-            fn::mail(
+            library('sendgrid-api'); SendgridApi::send(
                 $ticket->email
                 , 'New Comment on Ticket #' . $ticket->id . ' (Closed) - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
