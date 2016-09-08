@@ -54,10 +54,6 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
 
 
 
-                    <p>
-                        <button type="button" class="btn btn-xs btn-default" title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>">Upload File</button>
-                    </p>
-
                     <p class="clearfix">
                         <?php nonce::field( 'edit' ) ?>
                         <button type="submit" class="btn btn-primary pull-right">Save</button>

@@ -6,6 +6,13 @@ var _Elements = {"elements": {
 	{"url":"/website/landing-pages/elements/?f=about-4","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/5.png"},
 	{"url":"/website/landing-pages/elements/?f=about-5","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/6.png"}
     ],
+    "Products Blocks":[
+	{"url":"/website/landing-pages/elements/?f=products-1","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/products-1.png"},
+	{"url":"/website/landing-pages/elements/?f=products-2","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/products-2.png"},
+	{"url":"/website/landing-pages/elements/?f=products-3","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/products-3.png"}
+
+    ],
+
     "Content Blocks":[
     	{"url":"/website/landing-pages/elements/?f=content-1","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/12.png"},
 	{"url":"/website/landing-pages/elements/?f=content-2","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/13.png"},
@@ -29,9 +36,6 @@ var _Elements = {"elements": {
     	{"url":"/website/landing-pages/elements/?f=portfolio-2","height":799, "thumbnail":"/images/landing-page-builder/elements/thumbs/51.png"},
     	{"url":"/website/landing-pages/elements/?f=portfolio-3","height":516, "thumbnail":"/images/landing-page-builder/elements/thumbs/52.png"}
     ],
-    "Dynamic Content":[
-    	{"url":"/website/landing-pages/elements/?f=product","height":644, "thumbnail":"/images/landing-page-builder/elements/thumbs/product.png"},
-    ],
     "Blog":[
     	{"url":"/website/landing-pages/elements/?f=blog-1","height":644, "thumbnail":"/images/landing-page-builder/elements/thumbs/7.png"},
     	{"url":"/website/landing-pages/elements/?f=blog-2","height":810, "thumbnail":"/images/landing-page-builder/elements/thumbs/8.png"},
@@ -47,11 +51,16 @@ var _Elements = {"elements": {
     	{"url":"/website/landing-pages/elements/?f=partners-1","height":628, "thumbnail":"/images/landing-page-builder/elements/thumbs/48.png"},
     	{"url":"/website/landing-pages/elements/?f=partners-2","height":750, "thumbnail":"/images/landing-page-builder/elements/thumbs/49.png"}
     ],
-    "Contact":[
+  /*  "Contact":[
     	{"url":"/website/landing-pages/elements/?f=contact-1","height":691, "thumbnail":"/images/landing-page-builder/elements/thumbs/9.png"},
     	{"url":"/website/landing-pages/elements/?f=contact-2","height":477, "thumbnail":"/images/landing-page-builder/elements/thumbs/10.png"},
 	{"url":"/website/landing-pages/elements/?f=contact-3","height":477, "thumbnail":"/images/landing-page-builder/elements/thumbs/11.png"}
+    ], */
+   "Forms":[
+	{"url":"/website/landing-pages/elements/?f=cognito","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/cognito.png"},
+
     ],
+
     "Basic Blocks":[
     	{"url":"/website/landing-pages/elements/?f=grid1","height":294, "thumbnail":"/images/landing-page-builder/elements/thumbs/31.png"},
     	{"url":"/website/landing-pages/elements/?f=grid2","height":107, "thumbnail":"/images/landing-page-builder/elements/thumbs/32.png"},

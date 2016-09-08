@@ -5,7 +5,7 @@
 	<div class="content-6">
 		<div class="row product">
 			<div class="col-md-4 product-img">
-				<img src="images/bg17.jpg" class="img-responsive" alt="" />
+				<img src="images/living2.jpg" class="img-responsive" alt="" />
 			</div>
 			
 			<div class="col-md-8 right">

@@ -1,4 +1,10 @@
+<?php
+$upload_url = '/website/upload-file/?_nonce=' . nonce::create( 'upload_file' );
+$search_url = '/website/get-files/?_nonce=' . nonce::create( 'get_files' );
+$delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
+nonce::field( 'set_pagemeta', '_set_pagemeta' );
 
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -74,12 +80,12 @@
   					</span>
   				</li>
   			</ul>
-  	
+  <!--	
   			<div class="sideButtons clearfix">
   				<a href="#" class="btn btn-primary btn-sm btn-embossed" id="addPage"><span class="fui-plus"></span> Add</a>
-  				<a href="#exportModal" data-toggle="modal" class="btn btn-info btn-sm btn-embossed disabled actionButtons"><span class="fui-export"></span> Export</a>
+  				<a href="#exportModal" data-toggle="modal" class="btn btn-info btn-sm btn-embossed disabled actionButtons"><span class="fui-export"></span> Export</a> 
   			</div>
-  	
+  	-->
   		</div><!-- /.main -->
   	
   		<div class="second" id="second">
@@ -224,8 +230,7 @@
    				<p class="text-center or">
    					<span>OR</span>
    				</p>
-   				
-   				<form id="imageUploadForm" action="iupload.php">
+   						<form id="imageUploadForm" action="iupload.php" style="display:none;">
    				
    					<label>Upload image:</label>
    				
@@ -244,8 +249,9 @@
    					</div>
    				
    				</form>
-   				
- 			</div><!-- /.tab-pane -->
+   				            <button type="button" class="btn btn-sm  btn-block btn-default" title="Open Media Manager" data-media-manager data-upload-url="<?php echo $upload_url ?>" data-search-url="<?php echo $search_url ?>" data-delete-url="<?php echo $delete_url ?>">Upload Image</button>
+
+    			</div><!-- /.tab-pane -->
  			
  			<!-- /tabs -->
  			<div class="tab-pane iconTab" id="icon_Tab">

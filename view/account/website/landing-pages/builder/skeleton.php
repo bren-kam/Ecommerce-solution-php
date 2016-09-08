@@ -25,7 +25,7 @@
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 		
 		<!-- Font Awesome -->
-		<link rel="stylesheet" type="text/css" href="/resources/css_single/?f=PageBuildercss/font-awesome.min" />
+		<link rel="stylesheet" type="text/css" href="/resources/css_single/?f=PageBuilder/css/font-awesome" />
 
 		<!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

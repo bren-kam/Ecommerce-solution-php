@@ -2505,7 +2505,8 @@ class ProductsController extends BaseController {
         $images = $product->get_images();
         $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
-
+        $account_product->description = $product->description;
+        
         // Get Category
         $category->get( $product->category_id );
 

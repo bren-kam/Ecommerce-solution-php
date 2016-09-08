@@ -179,8 +179,10 @@ class LandingPagesController extends BaseController{
                 '/resources/css_single/?f=PageBuilder/css/style',
                 '/resources/css_single/?f=PageBuilder/css/flat-ui',
                 '/resources/css_single/?f=PageBuilder/bootstrap/css/bootstrap'
-            );
-        
+            )
+            ->css( 'website/edit', 'media-manager' )
+            ->javascript( 'fileuploader', 'media-manager-builder', 'global');
+
         $response = new CustomResponse( $this->resources, 'website/landing-pages/builder' );
         $response->set( compact( 'account_page' ) );
 
@@ -224,9 +226,7 @@ class LandingPagesController extends BaseController{
         // Set resources
         $this->resources
             ->css_url( Config::resource( 'jquery-ui' ) )
-            ->css( 'website/edit', 'media-manager' )
-            ->javascript_url(  Config::resource( 'jqueryui-js' ) )
-            ->javascript( 'fileuploader', 'media-manager', 'website/edit' );
+            ->javascript_url(  Config::resource( 'jqueryui-js' ) );
 
         // Initialize variables
         $page = new AccountPage();
@@ -473,5 +473,62 @@ class LandingPagesController extends BaseController{
 
     }
 
+    /**
+     * Upload File
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['fn'] ), _('File failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'website' . Config::key('aws-bucket-domain') );
+        $account_file = new AccountFile();
+        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
+
+        // Change the name
+        $extension = strtolower( f::extension( $_GET['qqfile'] ) );
+        $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . $extension;
+
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
+        // Create the account file
+        $account_file->website_id = $this->user->account->id;
+        $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
+        $account_file->create();
+
+        $this->log( 'upload-media-manager-file', $this->user->contact_name . ' uploaded a file to the media manager on ' . $this->user->account->title, $file_name );
+
+        $response->add_response( 'id', $account_file->website_file_id );
+        $response->add_response( 'name', f::name( $account_file->file_path ) );
+        $response->add_response( 'url', $account_file->file_path );
+
+        return $response;
+    }
 
 }
