@@ -312,7 +312,6 @@ class UsersController extends BaseController {
 
         return new CsvResponse( $csv, 'shopping-cart-users-' . date('YmdHis') . '.csv' );
     }
-
 }
 
 

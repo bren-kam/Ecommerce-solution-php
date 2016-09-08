@@ -363,7 +363,9 @@ class CustomerSupportController extends BaseController {
 
         // If it's not private, send an email to the client
         if ( $send_email ) {
-            fn::mail(
+            library('sendgrid-api');
+
+            SendgridApi::send(
                 $ticket_comment->to_address
                 , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
                 , "{$ticket_comment->comment}"
@@ -380,7 +382,7 @@ class CustomerSupportController extends BaseController {
 
 //            // Send the assigned user an email if they are not submitting the comment
 //            if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id ) {
-//                fn::mail(
+//                library('sendgrid-api'); SendgridApi::send(
 //                    $assigned_user->email
 //                    , $ticket->summary . ' - Ticket #' . $ticket->id . ' ' . $status
 //                    , "{$ticket_comment->comment}"
@@ -494,7 +496,8 @@ class CustomerSupportController extends BaseController {
         $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
-        fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+        library('sendgrid-api');
+        SendgridApi::send( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
 
         // If assigned to Development, make sure it's on Jira
         if ( $assigned_user->id == User::DEVELOPMENT ) {

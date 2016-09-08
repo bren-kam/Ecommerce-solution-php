@@ -804,7 +804,7 @@ class ProductsController extends BaseController {
             $product_option_items[$product_option_item->parent_product_id][] = $product_option_item;
         }
 
-        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP' );
+        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP', 'Weight' );
 
         foreach ( $products as $product ) {
             $category->get( $product->category_id );
@@ -812,7 +812,7 @@ class ProductsController extends BaseController {
             $output[] = array( $product->product_id, 'product', $product->sku, $product->name
                 , trim(strip_tags($product->description)), $product->industry, $category->taxonomy(), $product->brand
                 , $product->image, $product->price_wholesale, $product->price_map, $product->price
-                , $product->price_msrp, $product->price_sale );
+                               , $product->price_msrp, $product->price_sale, $product->weight );
 
             if ( $product_option_items[$product->product_id] )
             foreach ( $product_option_items[$product->product_id] as $product_option_item ) {
@@ -1312,9 +1312,10 @@ class ProductsController extends BaseController {
         // Add to response
         $response = new CustomResponse( $this->resources, 'products/edit' );
         $response->set( array(
-            'product' => $account_product
+            'account_product' => $account_product
             , 'child_products' => $child_products
             , 'coupons' => $coupons
+            , 'product' => $product
         ) );
 
         return $response;
@@ -1340,6 +1341,7 @@ class ProductsController extends BaseController {
 
         // Initialize objects
         $account_product = new AccountProduct();
+        $product_amazon = new ProductAmazon();
         $website_coupon = new WebsiteCoupon();
         $account_product_option = new AccountProductOption();
 
@@ -1374,6 +1376,13 @@ class ProductsController extends BaseController {
             $account_product->additional_shipping_type = $_POST['rShippingMethod'];
             $account_product->ships_in = $_POST['tShipsIn'];
             $account_product->store_sku = $_POST['tStoreSKU'];
+
+            if($_POST['sAmazonFBA'] == 1) {
+                $product_amazon->product_id = $account_product->product_id;
+                $product_amazon->create();
+            } else {
+                $product_amazon->remove_by_product($account_product->product_id);
+            }
 
             $coupons = $_POST['hCoupons'];
         } else {
@@ -1718,7 +1727,7 @@ class ProductsController extends BaseController {
         $ticket->priority = Ticket::PRIORITY_NORMAL;
         $ticket->create();
 
-        fn::mail(
+        library('sendgrid-api'); SendgridApi::send(
             $catalog_manager_user->email
             , 'New Ticket - ' . $ticket->summary
             , "Name: " . $this->user->contact_name
@@ -2825,9 +2834,11 @@ class ProductsController extends BaseController {
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
             $product['image'] = $r['image'];
+            $product['amazon_eligible'] = isset($r['amazon eligible']) ? $r['amazon eligible'] : null;
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
-
+            $product['weight'] = isset($r['weight']) ? (float) preg_replace( '/[^0-9.]/', '', $r['weight']) : '';
+            
             if ( 'option' == $product['type'] && $last_product['product_id'] ) {
                 $product['parent_product_id'] = $last_product['product_id'];
                 $product['category_id'] = $last_product['category_id'];
@@ -2865,6 +2876,7 @@ class ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = 'in-stock';
             $product_import->sku = $pi['sku'];
+            $product_import->weight = $pi['weight'];            
             $product_import->price_min = $pi['map price'];
             $product_import->price_wholesale = $pi['wholesale price'];
             $product_import->price = $pi['price'];
@@ -2873,6 +2885,7 @@ class ProductsController extends BaseController {
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
             $product_import->type = $pi['type'];
+            $product_import->amazon_eligible = $pi['amazon_eligible'];
             $product_import->create();
         }
 
@@ -2937,7 +2950,7 @@ class ProductsController extends BaseController {
             $product->price = $p->price_wholesale;
             $product->price_min = $p->price_min;
             $product->user_id_modified = $this->user->id;
-            $product->weight = 0;
+            $product->weight = $p->weight;
 
             // a new product?
             if ( $product->id == null ) {
@@ -3033,7 +3046,18 @@ class ProductsController extends BaseController {
             $account_product->sale_price = $p->sale_price;
             $account_product->alternate_price = $p->alternate_price;
             $account_product->active = AccountProduct::ACTIVE;
+            $account_product->status = 1;            
             $account_product->save();
+
+            // Check for Amazon Eligible Flag
+            if ( $p->amazon_eligible == 1 ) {
+                $productAmazon = new ProductAmazon();
+                $productAmazon->product_id = $p->product_id;
+                $productAmazon->create();
+            } elseif ( strtolower($p->amazon_eligible) == 'x') {
+                $productAmazon = new ProductAmazon();
+                $productAmazon->remove_by_product($p->product_id);
+            }
         }
 
         $product_import->delete_all( $this->user->account->id );

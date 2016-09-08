@@ -50,7 +50,7 @@ class CategoriesController extends BaseController {
             $parents = $category->get_all_parents( $category->id );
 
             foreach ( $parents as $parent_category ) {
-                $category_string = $category->id . ' > ' . $parent_category->name . ' > ' . $category_string;
+                $category_string = $parent_category->name . ' > ' . $category_string;
             }
 
             $categories_list[] = $category_string;
