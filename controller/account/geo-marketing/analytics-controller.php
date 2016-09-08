@@ -18,7 +18,7 @@ class AnalyticsController extends BaseController {
 
         // Get analytics
         $start_date_str = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : '-6 week';
-        $end_date_str = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '-2 week';
+        $end_date_str = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '-17 day';
         $location_id = isset( $_GET['location_id'] ) ? $_GET['location_id'] : null;
 
         // Locations
@@ -30,7 +30,7 @@ class AnalyticsController extends BaseController {
         $end_date= new DateTime( $end_date_str );
 
         $analytics = new WebsiteYextAnalytics( $this->user->account );
-        // $analytics->fetch_analytics( $start_date, $end_date );
+        $analytics->fetch_analytics( $start_date, $end_date );
         $analytics_all = $analytics->get_sum( $location_id, $start_date, $end_date );
         $analytics_all = ar::assign_key( $analytics_all, 'date' );
 

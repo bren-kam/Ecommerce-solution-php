@@ -293,7 +293,7 @@ class ProductBuilderController extends BaseController {
             $actions .= ' | <a href="' . url::add_query_arg( array( 'pid' => $product->id, '_nonce' => $delete_nonce ), '/products/product-builder/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 
             $data[] = array(
-                $product->name . '<div class="actions">' . $actions . '</div>'
+                utf8_encode($product->name) . '<div class="actions">' . $actions . '</div>'
                 , $product->brand
                 , $product->sku
                 , $product->category

@@ -1099,6 +1099,7 @@ class ProductsController extends BaseController {
         $product_count = $account_product->search_count( $this->user->account->id, $where );
 
         foreach ( $products as $product ) {
+            $product->name = utf8_encode($product->name);
             if ($this->user->account->is_new_template() ) {
                 $product->link = 'http://' . $this->user->account->domain . '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
             } else {
@@ -1634,7 +1635,7 @@ class ProductsController extends BaseController {
         	$actions = '<a href="javascript:;" class="add-product" data-id="'.$product->id.'" data-name="'.$product->name.'">Add Product</a>';
 
         	$data[] = array(
-        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
+        		$dialog . format::limit_chars( utf8_encode( $product->name ) ,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
         		, $product->brand
         		, $product->sku
         	);
@@ -1791,7 +1792,7 @@ class ProductsController extends BaseController {
         foreach ( $products as $product ) {
             $data[] = array(
                 $product->sku
-                , $product->name
+                , utf8_encode($product->name)
                 , '<input type="text" class="form-control" value="' . $product->alternate_price . '" data-product-id="'. $product->product_id .'" data-name="alternate_price" />'
                 , '<input type="text" class="form-control" value="' . $product->price . '" data-product-id="'. $product->product_id .'" data-name="price" />'
                 , '<input type="text" class="form-control" value="' . $product->sale_price . '" data-product-id="'. $product->product_id .'" data-name="sale_price" />'
@@ -2504,7 +2505,8 @@ class ProductsController extends BaseController {
         $images = $product->get_images();
         $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
-
+        $account_product->description = $product->description;
+        
         // Get Category
         $category->get( $product->category_id );
 
@@ -2861,7 +2863,7 @@ class ProductsController extends BaseController {
             $product_import->name = ucwords( $pi['name'] );
             $product_import->slug = format::slug( $pi['name'] );
             $product_import->description = $pi['description'];
-            $product_import->status = $pi['status'];
+            $product_import->status = 'in-stock';
             $product_import->sku = $pi['sku'];
             $product_import->price_min = $pi['map price'];
             $product_import->price_wholesale = $pi['wholesale price'];
@@ -2909,6 +2911,8 @@ class ProductsController extends BaseController {
             $account_products[$account_product->product_id] = $account_product;
         }
 
+        $last_parent_product = null;
+
         foreach ( $products as $p ) {
             $product = new Product();
             $product->get_by_id_by_website( $p->product_id, $this->user->account->id );
@@ -2921,6 +2925,7 @@ class ProductsController extends BaseController {
             if ( 'option' == $p->type ) {
                 preg_match( '/(\[[^\]]+])(.+)/', $p->name, $product_option_matches );
                 $product->name =  $product_option_matches[2];
+                $product->parent_product_id = $last_parent_product->product_id;
             } else {
                 $product->name = $p->name;
             }
@@ -3005,6 +3010,9 @@ class ProductsController extends BaseController {
             }
             $product->add_images( $product_images );
             $product->save();
+
+            if ( 'product' == $p->type )
+                $last_parent_product = $product;
 
             $product_specifications = json_decode( $p->product_specifications, true );
             $product->delete_specifications(); // should I ?

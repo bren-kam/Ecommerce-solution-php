@@ -20,6 +20,7 @@ class SettingsController extends BaseController {
     protected function index() {
         $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed', 'authorize-net-id', 'authorize-net-authorize-only', 'terms-and-conditions', 'header-script' );
 
+
         $form = new BootstrapForm( 'fSettings' );
 
         $form->add_field( 'text', _('Email Receipt'), 'tReceipt', $settings['email-receipt'] )
@@ -39,6 +40,10 @@ class SettingsController extends BaseController {
             ->attribute( 'maxlength', 50 );
 
         $form->add_field( 'checkbox', _('Authorize.net - Authorize  Only'), 'authorize-net-authorize-only', $settings['authorize-net-authorize-only'] );
+        
+        $form->add_field( 'textarea', _('Terms and conditions text'), 'terms-and-conditions', $settings['terms-and-conditions'] )
+                ->attribute( 'rte', '1' );
+
 
         $form->add_field( 'textarea', _('Order Confirmation Page Header Script'), 'header-script', $settings['header-script'] );
         $form->add_field( 'row', _('If you use the tokens [ORDER_ID] and [AMOUNT] these will be replaced for the respective values of the orders'));
@@ -51,6 +56,7 @@ class SettingsController extends BaseController {
         
 
 
+
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'email-receipt' => $_POST['tReceipt']
@@ -61,7 +67,6 @@ class SettingsController extends BaseController {
                 , 'authorize-net-authorize-only' => $_POST['authorize-net-authorize-only']
                 , 'terms-and-conditions' => $_POST['terms-and-conditions']
                 , 'header-script' => $_POST['header-script']              
-                
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );

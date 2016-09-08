@@ -273,7 +273,7 @@ class CustomizeController extends BaseController {
 
         // Create account file
         $account_file->website_id = $account->id;
-        $account_file->file_path = $file_url;
+        $account_file->path = $file_url;
         $account_file->create();
 
         $account->set_settings( array( 'favicon' => $file_url ) );

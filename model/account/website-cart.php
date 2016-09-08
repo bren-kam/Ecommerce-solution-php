@@ -118,7 +118,7 @@ class WebsiteCart extends ActiveRecordBase {
 		list( $where, $values ) = $variables;
 
 		// Get the website count
-        return $this->prepare( "SELECT COUNT( `website_cart_id` )  FROM `website_carts` wc WHERE 1 $where"
+        return $this->prepare( "SELECT DISTINCT COUNT( `website_cart_id` )  FROM `website_carts` wc WHERE 1 $where GROUP BY `website_cart_id`"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

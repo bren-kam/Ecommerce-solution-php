@@ -20,6 +20,20 @@ class CustomResponse extends Response {
      */
     protected $variables = array( 'title' => '' );
 
+
+    /*
+     * Custom Header
+     * @var string
+     */
+
+    protected $custom_header;
+    /*
+     * Custom Header
+     * @var string
+     */
+
+    protected $custom_footer;
+
     /**
      * Pass in which file will be the View
      *
@@ -109,6 +123,14 @@ class CustomResponse extends Response {
         return $this->_errors;
     }
 
+    public function set_custom_header($header){
+        $this->custom_header = $header;
+    }
+
+    public function set_custom_footer($footer){
+        $this->custom_footer = $footer;
+    }
+    
     /**
      * Including the file
      */
@@ -121,6 +143,13 @@ class CustomResponse extends Response {
         // Create template function class
         $template = new Template( $this->variables );
 
+        if($this->custom_header)
+            require VIEW_PATH . $this->custom_header . '.php';
+        
         require VIEW_PATH . $this->_file_to_render . '.php';
+
+        if($this->custom_footer)
+            require VIEW_PATH . $this->custom_footer . '.php';
+        
     }
 }
