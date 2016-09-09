@@ -300,7 +300,6 @@ class LandingPagesController extends BaseController{
                 // Update the page
                 $page->slug = $slug;
                 $page->title = $title;
-                $page->content = $_POST['taContent'];
                 $page->meta_title = $_POST['tMetaTitle'];
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
@@ -310,61 +309,12 @@ class LandingPagesController extends BaseController{
 //                }
                 $page->save();
 
-                // Update custom meta
-                $pagemeta = array();
-                switch ( $page->slug ) {
-                    case 'current-offer':
-                        $pagemeta = array(
-                            'email' => $_POST['tEmail']
-                            , 'display-coupon' => $_POST['cbDisplayCoupon']
-                            , 'email-coupon' => ( isset( $_POST['cbEmailCoupon'] ) ) ? 'yes' : 'no'
-                        );
-                    break;
-
-                    case 'financing':
-                        $pagemeta = array( 'apply-now' => $_POST['tApplyNowLink'] );
-                    break;
-
-                    case 'products':
-                        $pagemeta = array(
-                            'top' => $_POST['sTop']
-                            , 'page-title' => $page->title
-                        );
-                    break;
-
-                    case 'contact-us':
-                        $pagemeta = array(
-                            'email' => $_POST['tEmail']
-                        );
-                    break;
-
-                    default:break;
-                }
-
-                if ( $page->slug != 'home' )
-                    $pagemeta['hide-sidebar'] = isset( $_POST['cbHideSidebar'] ) && $_POST['cbHideSidebar'] == 'yes';
-
-                // Set pagemeta
-                if ( !empty( $pagemeta ) )
-                    $account_pagemeta->add_bulk_by_page( $page->id, $pagemeta );
-
-                $page->delete_products();
-
-                if ( isset( $_POST['products'] ) ) {
-                    $product_add_limit = 100;
-
-                    // Make sure they can only add the right amount
-                    if ( count( $_POST['products'] ) > $product_add_limit )
-                        $_POST['products'] = array_slice( $_POST['products'], 0, $product_add_limit );
-
-                    $page->add_products( $_POST['products'] );
-                }
 
                 $this->notify( _('Your page has been successfully saved!') );
                 $this->log( 'update-website-page', $this->user->contact_name . ' updated a website page on ' . $this->user->account->title, $page->id );
                 
 
-                return new RedirectResponse('/website/');
+                return new RedirectResponse('/website/landing-pages/');
             }
         }
 
