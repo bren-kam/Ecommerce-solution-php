@@ -184,7 +184,6 @@
                             <a href="javascript:;" <?php if ( $template->in_menu_item('website/landing-pages/') ) echo 'class="active"' ?>>Landing Pages</a>
                             <ul class="sub">
                                 <li <?php if ( $template->in_menu_item('website/landing-pages/list') ) echo 'class="active"' ?>><a href="/website/landing-pages/">List</a></li>
-                                <li <?php if ( $template->in_menu_item('website/landing-pages/add-edit') ) echo 'class="active"' ?>><a href="/website/landing-pages/add-edit/">Add</a></li>
                             </ul>
                         </li>
                            <li class="submenu">
