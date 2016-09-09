@@ -23,7 +23,7 @@ $delete_url = '/website/delete-file/?_nonce=' . nonce::create( 'delete_file' );
 nonce::field( 'set_pagemeta', '_set_pagemeta' );
 ?>
 
-<form id="fEditPage" action="/website/edit/?apid=<?php echo $page->id ?>" method="post" role="form" data-account-page-id="<?php echo $page->id ?>">
+<form id="fEditPage" action="/website/landing-pages/edit/?apid=<?php echo $page->id ?>" method="post" role="form" data-account-page-id="<?php echo $page->id ?>">
 
     <div class="row-fluid">
         <div class="col-lg-12">
@@ -77,14 +77,10 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
 </form>
 <!-- Modal -->
 <div class="modal fade" id="pageBuilderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" style="width:95%;" role="document">
+  <div class="modal-dialog" style="width:100%;margin-top:0;margin-bottom:0;" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Landing Page Builder</h4>
-      </div>
-      <div class="modal-body">
-        <p> <iframe style="width:100%;height:786px;border:0;" src="/website/landing-pages/builder/?apid=<?php echo $page->id; ?>"></iframe>
+      <div class="modal-body" style="padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;">
+        <p> <iframe style="width:100%;height:860px;border:0;" src="/website/landing-pages/builder/?apid=<?php echo $page->id; ?>"></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
