@@ -199,22 +199,15 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
 			<!-- /tabs -->
  			<div class="tab-pane link_Tab" id="link_Tab">
    				
-   				<select id="internalLinksDropdown">
+   				<select id="internalLinksDropdown" style="display:none;>
    					<option value="#">Choose a page</option>
    					<option value="index.html">index</option>
    				</select>
    				
-   				<p class="text-center or">
-   					<span>OR</span>
-   				</p>
-   				
-   				<select id="pageLinksDropdown">
+   				<select id="pageLinksDropdown" style="display:none;">
    					<option value="#">Choose a block (one page sites)</option>
    				</select>
    				
-   				<p class="text-center or">
-   					<span>OR</span>
-   				</p>
    				
    				<input type="text" class="form-control" id="internalLinksCustom" placeholder="http://somewhere.com/somepage" value="">
    				
