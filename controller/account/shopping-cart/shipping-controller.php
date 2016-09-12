@@ -662,7 +662,10 @@ class ShippingController extends BaseController {
         $form->add_field( 'blank', '' );
 
         // Amazon Settings
-        $form->add_field( 'title', _('Fulfillment By Amazon Settings') );
+        // The following field adds a button with a onclick function that is located under view/account/js/shopping-cart/settings/settings.js
+        // Unfortunately, I'm not sure what would be the best practice to achieve this result using the $form object.
+        // The goal is to provide the user with a button that allows the complete removal of Amazon Settings from the database.
+        $form->add_field( 'title', _('Fulfillment By Amazon Settings - <a class="btn btn-warning" onclick="Settings.removeAmazon()">Remove</a>') );
 
         $form->add_field( 'text', _('AWS Access Key Id'), 'tAmazonAwsAccessKeyId', $shipping_amazon['aws_access_key_id'] )
             ->attribute( 'maxlength', 32 );
@@ -722,6 +725,8 @@ class ShippingController extends BaseController {
             // Simply refresh the page
             return new RedirectResponse( '/shopping-cart/shipping/settings/' );
         }
+
+        $this->resources->javascript( 'shopping-cart/settings/settings');
 
         return $this->get_template_response( 'settings' )
             ->kb( 128 )
@@ -883,6 +888,12 @@ class ShippingController extends BaseController {
         $this->log( 'delete-shipping-method', $this->user->contact_name . ' deleted a shipping method on ' . $this->user->account->title, $_GET['wsmid'] );
 
         return $response;
+    }
+
+
+    public function remove_amazon() {
+        $this->user->account->remove_setting( 'shipping-amazon' );
+        return new AjaxResponse(true);
     }
 }
 
