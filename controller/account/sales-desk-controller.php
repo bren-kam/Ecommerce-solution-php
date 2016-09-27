@@ -177,7 +177,7 @@ class SalesDeskController extends BaseController {
             $reach->waiting = 0;
             $reach->save();
 
-            fn::mail(
+            library('sendgrid-api'); SendgridApi::send(
                 $reach->email
                 , $reach->get_friendly_type() . ' #' . $reach->id . $status
                 , "******************* Reply Above This Line *******************\n\n{$comment}\n\n" . $reach->get_friendly_type() . "\n" . $reach->message
@@ -188,7 +188,7 @@ class SalesDeskController extends BaseController {
         // Send the assigned user an email if they are not submitting the comment
         if ( $reach->assigned_to_user_id != $this->user->id && 1 == $reach->status ) {
             $assigned_user->get( $reach->assigned_to_user_id );
-            fn::mail(
+            library('sendgrid-api'); SendgridApi::send(
                 $assigned_user->email
                 , 'New Comment on ' . $reach->get_friendly_type() . ' #' . $reach->id
                 , $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/sales-desk/reach/?wrid=" . $reach->id
@@ -283,7 +283,7 @@ class SalesDeskController extends BaseController {
         $message .= 'Priority: ' . $priorities[$reach->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
-        fn::mail( $assigned_user->email, 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ' (' . $priorities[$reach->priority] . ')', $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+        library('sendgrid-api'); SendgridApi::send( $assigned_user->email, 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ' (' . $priorities[$reach->priority] . ')', $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
 
         return $response;
     }

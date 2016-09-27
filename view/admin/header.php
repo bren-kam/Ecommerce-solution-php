@@ -150,8 +150,6 @@
                     <li <?php if ( $template->v('products/attributes/add') ) echo 'class="active"'?>><a href="/products/attributes/add-edit/">Add Attribute</a></li>
                     <li <?php if ( $template->v('products/brands') ) echo 'class="active"'?>><a href="/products/brands/">Brands</a></li>
                     <li <?php if ( $template->v('products/brands/add') ) echo 'class="active"'?>><a href="/products/brands/add-edit/">Add Brand</a></li>
-                    <li <?php if ( $template->v('products/product-options') ) echo 'class="active"'?>><a href="/products/product-options/">Product Options</a></li>
-                    <li <?php if ( $template->v('products/product-options/add') ) echo 'class="active"'?>><a href="/products/product-options/add-edit/">Add Product Option</a></li>
                 </ul>
             </li>
 

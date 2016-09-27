@@ -130,7 +130,11 @@ class PipeController extends BaseController {
         foreach ( $to_list as $to_address ) {
             $to_user->get_by_email( $to_address, false );
             if ( $to_user->id && $to_user->has_permission(User::ROLE_ONLINE_SPECIALIST)) {
-                $to = $to_address;
+                $to = $to_address;                
+                if ($to_user->from_email_address) 
+                    $to = $to_user->from_email_address;
+
+
                 break;
             }
         }
@@ -379,6 +383,14 @@ class PipeController extends BaseController {
         $reach_url = url::add_query_arg( 'wrid', $reach->id, 'http://account.' . $user->domain . '/products/reaches/reach/' );
         mail( $user->email, "New Response on Reach #{$reach_id}", "<p>A new response from the customer has been received. See message below:</p><p><strong>Original Message:</strong><br />" . $reach->message . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='{$reach_url}'>{$reach_url}</a></p>", $headers );
 
+        // Send account owner an email
+        $account = new Account();
+        $account->get( $reach->website_id );
+        $account_owner = new User();
+        $account_owner->get( $account->user_id );
+
+        mail( $account_owner->email, "New Response on Reach #{$reach_id}", "<p>A new response from the customer has been received. See message below:</p><p><strong>Original Message:</strong><br />" . $reach->message . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='{$reach_url}'>{$reach_url}</a></p>", $headers );
+
         // We don't want any response -- including headers, to be sent out
         exit;
 
@@ -421,7 +433,7 @@ class PipeController extends BaseController {
         list( $username, $domain ) = explode ( '@', $to );
         list ( $username, $tag_domain ) = explode( '+', $username );
 
-        fn::mail('gabriel@greysuitretail.com', 'Note PIPE', json_encode(array("from" => $from, "to" => $to, "subject" => $subject, "username" => $username, "domain" => $domain, "tag_domain" => $tag_domain)));
+        library('sendgrid-api'); SendgridApi::send('gabriel@greysuitretail.com', 'Note PIPE', json_encode(array("from" => $from, "to" => $to, "subject" => $subject, "username" => $username, "domain" => $domain, "tag_domain" => $tag_domain)));
 
         $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
         $length = strpos( $body, '>> ' );
