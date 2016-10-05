@@ -9,3 +9,8 @@ ADD COLUMN `website_amazon_shipping_method_id` INT(11) NULL DEFAULT NULL AFTER `
 
 ALTER TABLE `gsr_system`.`product_import`
 ADD COLUMN `amazon_eligible` VARCHAR(2) NULL DEFAULT NULL AFTER `type`;
+
+-- ------------------------------------------------------------------------------
+
+ALTER TABLE `gsr_system`.`website_pages`
+ADD COLUMN `landing_page` TINYINT(1) NULL AFTER `header_script`;
