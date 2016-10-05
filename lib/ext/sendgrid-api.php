@@ -325,6 +325,150 @@ class SendGridAPI {
         return $this->response;
     }
 
+
+ /*
+     * Send
+     * Sends email using sendgrid email API , replicates API of fn::email()
+     * @param string|array $to the addresses to send it to
+	 * @param string $subject the subject of the email
+	 * @param string $message the subject of the email
+	 * @param string $from (optional) the address that it's from. If left empty, uses defaults
+	 * @param string $reply_to (optional) the reply-to information. If left empty, uses $from
+     * @param bool $text (optional) whether to send text email
+     * @param bool $use_html_template (optional) whether to wrap the email message with a default template
+     * @param string $override_headers (optional) additional html headers for emails with attachments
+	 * @return bool
+	 */
+
+
+    public static function send( $to, $subject, $message, $from = '', $reply_to = '', $text = true, $use_html_template = true, $cc = null, $bcc = null, $override_headers = null ) {
+
+        // Find out if they passes a string or array, if they passed an array parse it
+        if (is_array($to)) {
+            $to_addresses = '';
+
+            foreach ($to as $name => $email_address) {
+                $to_addresses .= "&to[]=$email_address";
+                $to_name_addresses .= "&to_name[]=$name";                
+            }
+
+            $to_addresses = substr($to_addresses, 1);
+        } else {
+            $to_addresses = $to;
+        }
+        $to_addresses = html_entity_decode($to_addresses);
+
+        if (empty($from)) {
+            $from = (defined('FROM_NAME')) ? FROM_NAME . ' <' . FROM_EMAIL . '>' : FROM_EMAIL;
+        }
+        $from = html_entity_decode($from);
+
+        if (empty($reply_to))
+            $reply_to = $from;
+
+        $subject = html_entity_decode($subject);
+
+        $headers = array();
+        if($override_headers != null)
+            $headers = $override_headers;
+
+        if ( !$text ) {
+			// Headers for HTML emails
+
+            $headers['MIME-Version:'] = '1.0';
+            $headers['Content-type:'] = 'text/html; charset=iso-8859-1';
+
+            if ( $use_html_template ) {
+                $message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+				<html xmlns="http://www.w3.org/1999/xhtml">
+				<head>
+				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+				<title>[subject]</title>
+				<style type="text/css">
+				body { width: 800px; font-family:Arial, Helvetica, sans-serif; font-size:13px; margin: 15px auto; }
+				p { line-height: 21px; padding-bottom: 7px; }
+				h2{ padding:0; margin:0; }
+				td{ font-size: 13px; padding-right: 10px; }
+				li { padding-top: 7px; }
+				</style>
+				</head>
+				<body>
+				[message]
+				</body>
+				</html>' );
+            }
+		}
+
+        // Headers for Text emails
+        if ( $text ) {
+            $headers["X-Mailer:"] = "PHP/" . phpversion() . "\r\n";
+        }
+
+
+
+        
+        // Set Request Parameters
+        $request = array(
+                      'api_user' => self::API_USER
+                      , 'api_key' => self::API_KEY
+                      , 'from' => $from
+                      , 'reply_to' => $reply_to
+                      , 'subject' => $subject
+                      , 'cc' => $cc
+                      , 'headers' => json_encode($headers)
+                           );
+        if($text)
+            $request['text'] = $message;
+        else
+            $request['html'] = $message;
+
+
+        if(!is_array($to)) 
+            $request['to'] = $to;
+
+        $raw_request = http_build_query( $request )  ;        
+
+        if(is_array($to)) 
+            $raw_request .= $to_addresses . $to_name_addresses;
+        
+        // Set URL
+        $url = self::API_URL . 'mail.send.json';
+
+        // Initialize cURL and set options
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_HEADER, 0 );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array("Expect:") );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $raw_request );
+        curl_setopt( $ch, CURLOPT_URL, $url );
+
+        // Perform the request and get the response
+        $raw_response = curl_exec( $ch );
+
+        // Decode the response
+        $response = json_decode( $raw_response );
+
+        // Close cURL
+        curl_close($ch);
+
+
+        // If we're debugging lets give as much info as possible
+        if ( self::DEBUG ) {
+            echo "<h1>URL</h1>\n<p>", $url, "</p>\n<hr />\n<br /><br />\n";
+            echo "<h1>Raw Request</h1>\n<pre>", $raw_request, "</pre>\n<hr />\n<br /><br />\n";
+            echo "<h1>Request</h1>\n\n<pre>", var_export( $request, true ), "</pre>\n<hr />\n<br /><br />\n";
+            echo "<h1>Raw Response</h1>\n<pre>", $raw_response, "</pre>\n<hr />\n<br /><br />\n";
+            echo "<h1>Response</h1>\n<pre>", var_export( $response, true ), "</pre>\n<hr />\n<br /><br />\n";
+        }
+
+        return true;
+
+    }
+
+   
     /**
      * Setup a section
      *

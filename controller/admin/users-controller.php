@@ -82,6 +82,10 @@ class UsersController extends BaseController {
             ->attribute( 'maxlength', 80 )
             ->add_validation( 'req', _('The "Contact Name" field is required') );
 
+        $ft->add_field( 'text', _('From Email Address'), 'tFromEmailAddress', $user->from_email_address )
+            ->attribute( 'maxlength', 80 )
+            ->add_validation( 'email', _('The "Email" field must contain a valid email') );
+        
         $ft->add_field( 'text', _('Work Phone'), 'tWorkPhone', $user->work_phone )
             ->attribute( 'maxlength', 20 );
 //            ->add_validation( 'phone', _('The "Work Phone" field must contain a valid phone number') );
@@ -177,6 +181,7 @@ class UsersController extends BaseController {
             // Update all the fields
             $user->email = $_POST['tEmail'];
             $user->contact_name = $_POST['tContactName'];
+            $user->from_email_address = $_POST['tFromEmailAddress'];            
             $user->work_phone = $_POST['tWorkPhone'];
             $user->cell_phone = $_POST['tCellPhone'];
             $user->store_name = $_POST['tStoreName'];

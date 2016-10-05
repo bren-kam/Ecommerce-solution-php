@@ -1170,7 +1170,7 @@ class AccountsController extends BaseController {
             $message .= "\n\n";
             $message .= "-$company->name";
 
-            fn::mail( $company->email, $subject, $message );
+            library('sendgrid-api'); SendgridApi::send( $company->email, $subject, $message );
         }
 
         // Redirect them to accounts page

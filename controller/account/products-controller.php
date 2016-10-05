@@ -804,7 +804,7 @@ class ProductsController extends BaseController {
             $product_option_items[$product_option_item->parent_product_id][] = $product_option_item;
         }
 
-        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP' );
+        $output[]  = array( 'ProductID', 'Type', 'SKU', 'Name', 'Description', 'Industry', 'Category', 'Brand', 'Image', 'Wholesale Price', 'MAP Price', 'Price', 'Sale Price', 'MSRP', 'Weight' );
 
         foreach ( $products as $product ) {
             $category->get( $product->category_id );
@@ -812,7 +812,7 @@ class ProductsController extends BaseController {
             $output[] = array( $product->product_id, 'product', $product->sku, $product->name
                 , trim(strip_tags($product->description)), $product->industry, $category->taxonomy(), $product->brand
                 , $product->image, $product->price_wholesale, $product->price_map, $product->price
-                , $product->price_msrp, $product->price_sale );
+                               , $product->price_msrp, $product->price_sale, $product->weight );
 
             if ( $product_option_items[$product->product_id] )
             foreach ( $product_option_items[$product->product_id] as $product_option_item ) {
@@ -1718,7 +1718,7 @@ class ProductsController extends BaseController {
         $ticket->priority = Ticket::PRIORITY_NORMAL;
         $ticket->create();
 
-        fn::mail(
+        library('sendgrid-api'); SendgridApi::send(
             $catalog_manager_user->email
             , 'New Ticket - ' . $ticket->summary
             , "Name: " . $this->user->contact_name
@@ -2826,7 +2826,8 @@ class ProductsController extends BaseController {
             $product['image'] = $r['image'];
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
-
+            $product['weight'] = isset($r['weight']) ? (float) preg_replace( '/[^0-9.]/', '', $r['weight']) : '';
+            
             if ( 'option' == $product['type'] && $last_product['product_id'] ) {
                 $product['parent_product_id'] = $last_product['product_id'];
                 $product['category_id'] = $last_product['category_id'];
@@ -2864,6 +2865,7 @@ class ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = 'in-stock';
             $product_import->sku = $pi['sku'];
+            $product_import->weight = $pi['weight'];            
             $product_import->price_min = $pi['map price'];
             $product_import->price_wholesale = $pi['wholesale price'];
             $product_import->price = $pi['price'];
@@ -2936,7 +2938,7 @@ class ProductsController extends BaseController {
             $product->price = $p->price_wholesale;
             $product->price_min = $p->price_min;
             $product->user_id_modified = $this->user->id;
-            $product->weight = 0;
+            $product->weight = $p->weight;
 
             // a new product?
             if ( $product->id == null ) {
@@ -3032,6 +3034,7 @@ class ProductsController extends BaseController {
             $account_product->sale_price = $p->sale_price;
             $account_product->alternate_price = $p->alternate_price;
             $account_product->active = AccountProduct::ACTIVE;
+            $account_product->status = 1;            
             $account_product->save();
         }
 
