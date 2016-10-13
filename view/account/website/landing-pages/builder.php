@@ -9,7 +9,7 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>MEGA BLOCKS</title>
+    <title>BLOCKS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Loading Bootstrap -->
@@ -51,7 +51,7 @@ nonce::field( 'set_pagemeta', '_set_pagemeta' );
 	
   		<div class="main" id="main">
 			  		  			
-  			<h3><span class="fui-list"></span> MEGA Blocks</h3>
+  			<h3><span class="fui-list"></span> Blocks</h3>
   			
   			<ul id="elements">
   				<li><a href="#" id="all">All Blocks</a></li>
