@@ -351,7 +351,8 @@ class Email extends ActiveRecordBase {
         // Type Juggling
         $account_id = (int) $account_id;
 
-		return $this->get_col("SELECT `email` FROM `email_import_emails` WHERE `website_id` = $account_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = $account_id )" );
+//		return $this->get_col("SELECT `email` FROM `email_import_emails` WHERE `website_id` = $account_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = $account_id )" );
+        return $this->get_col("SELECT `email` FROM `email_import_emails` WHERE `website_id` = $account_id" );
     }
 
     /**
