@@ -2,6 +2,7 @@
 	
 	<div id="page" class="page">
 	
+		<div class="container">
 	<div class="content-6">
 		<div class="row product">
 			<div class="col-md-4 product-img">
@@ -18,6 +19,6 @@
 		</div>
 
 	</div>
-		
+	</div>	
 	</div>
 

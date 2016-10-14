@@ -2,6 +2,7 @@
 	
 	<div id="page" class="page">
 	
+		<div class="container">
 	<div class="about-5">
 		<div class="container">
 			<div class="col-md-12 heading">
@@ -57,6 +58,7 @@
 
 	</div>
 		
+	</div>
 	</div>
 	
 	

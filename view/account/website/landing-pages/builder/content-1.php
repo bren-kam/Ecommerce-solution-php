@@ -2,6 +2,8 @@
 	
 	<div id="page" class="page">
 	
+		<div class="container">
+	
 	<div class="content-1">
 		<div class="container product">
 			<div class="col-md-12">
@@ -66,7 +68,7 @@
 		</div>
 
 	</div>
-		
+</div>		
 	</div>
 	
 	
