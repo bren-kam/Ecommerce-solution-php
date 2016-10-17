@@ -405,7 +405,7 @@ class LandingPagesController extends BaseController{
         $js_validation = $v->js_validation();
         
         return $this->get_template_response( 'edit' )
-            ->kb( 37 )
+            ->kb( 159 )
             ->menu_item('website/pages/add')
             ->add_title( $page->title . ' | ' . _('Pages') )
             ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title', 'product_count' ), $resources ) );
