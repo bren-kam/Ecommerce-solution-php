@@ -988,7 +988,7 @@ class WebsiteController extends BaseController {
         $dt->order_by( '`title`', '`date_updated`' );
         $dt->search( array( '`title`' => false ) );
         $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
-        $dt->add_where( " AND `landing_page` <> 1 OR `landing_page` IS NULL " );
+        $dt->add_where( " AND (`landing_page` <> 1 OR `landing_page` IS NULL )" );
         
         // Get account pages
         $account_pages = $account_page->list_all( $dt->get_variables() );
