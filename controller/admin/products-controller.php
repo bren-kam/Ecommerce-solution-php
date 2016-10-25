@@ -646,7 +646,7 @@ ProductsController extends BaseController {
         $brands = $brand->get_all();
 
         return $this->get_template_response( 'import' )
-            ->kb( 0 )
+            ->kb( 53 )
             ->select( 'products', 'products/import' )
             ->add_title( _('Import') )
             ->set( compact( 'brands' ) );
