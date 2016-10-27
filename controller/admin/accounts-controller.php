@@ -181,6 +181,7 @@ class AccountsController extends BaseController {
                     $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                     $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+                    $account->remarketing = (int) isset( $_POST['cbRemarketing'] );                    
                     $account->geo_marketing = (int) isset( $_POST['cbGeoMarketing'] );
                     $account->user_id_updated = $this->user->id;
 
@@ -253,6 +254,7 @@ class AccountsController extends BaseController {
             , 'additional_email_addresses'
             , 'social_media'
             , 'geo_marketing'
+            , 'remarketing'
         );
 
         foreach ( $features as $feature ) {
