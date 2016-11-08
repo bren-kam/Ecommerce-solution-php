@@ -18,7 +18,7 @@ class CloudFlareAPI {
     const DEBUG = false;
     const URL = 'https://api.cloudflare.com/client/v4/';
     const API_KEY = '3ae56edd68513db53cdab4cb7e59f270df71c';
-    const EMAIL = 'technical@greysuitretail.com';
+    const EMAIL = 'jeff@greysuitretail.com';
 
     /**
      * @var Account
