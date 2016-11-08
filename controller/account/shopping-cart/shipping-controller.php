@@ -728,7 +728,7 @@ class ShippingController extends BaseController {
 
                 $website_shipping_methods = new WebsiteShippingMethod();
                 $website_shipping_amazon = $website_shipping_methods->get_by_type('amazon-outbound', $this->user->account->website_id);
-                if(!isset($website_shipping_amazon->website_shipping_method_id) || empty($website_shipping_amazon->website_shipping_method_id)) {
+                if( empty($website_shipping_amazon) ) {
                     $website_shipping_methods->type = 'amazon-outbound';
                     $website_shipping_methods->website_id = $this->user->account->website_id;
                     $website_shipping_methods->name = 'Fulfillment By Amazon';
