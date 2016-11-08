@@ -172,7 +172,7 @@ fieldset[disabled] .form-control {
   width: 210px;
   height: 100%;
   position: fixed;
-  background: #2a3542;
+  background: #252b33;
   overflow-y: auto;
 }
 #sidebar ul li {
@@ -4122,7 +4122,7 @@ tr.odd.gradeU td.sorting_1 {
 }
 /*footer*/
 .site-footer {
-  background: #5b6e84;
+  background: #4e5866;
   color: #fff;
   padding: 10px 0;
 }
@@ -4885,7 +4885,7 @@ a.guest-on i {
 a {
   text-decoration: none;
   outline: none;
-  color: #41cac0;
+  color: #46c8c7;
 }
 a:hover {
   color: #2a3542;

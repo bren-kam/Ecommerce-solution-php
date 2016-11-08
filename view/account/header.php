@@ -180,8 +180,29 @@
                                 <?php endif; ?>
                             </ul>
                         </li>
-                        <li <?php if ( $template->in_menu_item('website/sidebar') ) echo 'class="active"' ?>><a href="/website/sidebar/">Sidebar</a></li>
-                        <li <?php if ( $template->in_menu_item('website/banners') ) echo 'class="active"' ?>><a href="/website/banners/">Banners</a></li>
+                          <li class="submenu">
+                            <a href="javascript:;" <?php if ( $template->in_menu_item('website/landing-pages/') ) echo 'class="active"' ?>>Landing Pages</a>
+                            <ul class="sub">
+                                <li <?php if ( $template->in_menu_item('website/landing-pages/list') ) echo 'class="active"' ?>><a href="/website/landing-pages/">List</a></li>
+                            </ul>
+                        </li>
+                           <li class="submenu">
+                                <a href="javascript:;" <?php if ( $template->in_menu_item('website/banners') ) echo 'class="active"' ?>>Sidebar</a>
+                                <ul class="sub">
+                                  <li <?php if ( $template->in_menu_item('website/banners') ) echo 'class="active"' ?>><a href="/website/sidebar/">Main Sidebar</a></li>
+				  <li <?php if ( $template->in_menu_item('website/catalog_banners') ) echo 'class="active"' ?>><a href="/website/product-sidebar/">Product Sidebar</a></li>
+                                </ul>
+                            </li>
+                                                                                        
+                            <li class="submenu">
+                                <a href="javascript:;" <?php if ( $template->in_menu_item('website/banners') ) echo 'class="active"' ?>>Banners</a>
+                                <ul class="sub">
+                                  <li <?php if ( $template->in_menu_item('website/banners') ) echo 'class="active"' ?>><a href="/website/banners/">Home Banners</a></li>
+				  <li <?php if ( $template->in_menu_item('website/catalog_banners') ) echo 'class="active"' ?>><a href="/website/catalog-banner/">Catalog Banner</a></li>                                                                                        
+                                </ul>
+                            </li>
+                                                                                        
+
                         <?php if ( $user->account->is_new_template() ): ?>
                             <li class="submenu">
                                 <a href="javascript:;" <?php if ( $template->in_menu_item('website/navigation-menus') ) echo 'class="active"' ?>>Navigation Menus</a>

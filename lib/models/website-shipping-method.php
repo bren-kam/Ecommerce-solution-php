@@ -44,6 +44,21 @@ class WebsiteShippingMethod extends ActiveRecordBase {
     }
 
     /**
+     * Get By Type
+     *
+     * @param string $type
+     * @param int $account_id
+     * @return WebsiteShippingMethod
+     */
+    public function get_by_type($type, $account_id) {
+        return $this->prepare(
+            'SELECT `website_shipping_method_id`, `name`, `method`, `amount` FROM `website_shipping_methods` WHERE `website_id` = :account_id AND `type` = :shipping_type ORDER BY `date_created` ASC'
+            , 'is'
+            , array( ':account_id' => $account_id, ':shipping_type' => $type )
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteShippingMethod' );
+    }
+
+    /**
      * Create
      */
     public function create() {
@@ -84,6 +99,15 @@ class WebsiteShippingMethod extends ActiveRecordBase {
         $this->delete( array(
             'website_shipping_method_id' => $this->id
         ), 'i' );
+    }
+
+    /**
+     * Remove a specific record based on type.
+     * @param string $type
+     * @param int $website_id
+     */
+    public function remove_by_type($type, $website_id) {
+        $this->delete(['type' => $type, 'website_id' => $website_id], 'si');
     }
 
     /**

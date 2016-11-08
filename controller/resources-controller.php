@@ -44,6 +44,16 @@ class ResourcesController extends BaseController {
     }
 
     /**
+     * Handle single JSON
+     *
+     * @return JavascriptResponse
+     */
+    protected function json_single() {
+        return new JavascriptResponse( $this->resources->get_json_file( $_GET['f'] ) );
+    }
+
+
+    /**
      * Need different things for an image
      *
      * @return bool
@@ -52,6 +62,7 @@ class ResourcesController extends BaseController {
         return new ImageResponse( $_SERVER['REQUEST_URI'] );
     }
 
+
     /**
      * Need different things for media
      *
@@ -59,6 +70,10 @@ class ResourcesController extends BaseController {
      */
     protected function media() {
         return new MediaResponse( $_SERVER['REQUEST_URI'] );
+    }
+
+    protected function fonts(){
+        return new ExternalResponse( $this->resources->get_font_file($_GET['f']));
     }
 
     /**
