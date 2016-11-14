@@ -63,7 +63,7 @@ class ShippingController extends BaseController {
         $form->add_field( 'textarea', _('Zip Codes'), 'taZipCodes', $zip_codes );
 
 
-        
+
         if ( $form->posted() ) {
             $shipping_method->name = $_POST['tName'];
             $shipping_method->method = $_POST['sMethod'];
@@ -164,16 +164,16 @@ class ShippingController extends BaseController {
 
         $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra['packaging_type'] )
             ->options( $packaging_types );
-        
+
         $form->add_field( 'checkbox', _('Calculate the total weight of all packages for shipping charges:'), 'cbTotalWeight',  $shipping_method->extra['total-weight']);
-        
+
         if ( $form->posted() ) {
             $shipping_method->name = $_POST['sService'];
             $shipping_method->method = 'N/A';
             $shipping_method->extra = serialize( array(
                 'pickup_type' => $_POST['sPickupType']
                 , 'packaging_type' => $_POST['sPackagingType']
-                , 'total-weight' => $_POST['cbTotalWeight']                
+                , 'total-weight' => $_POST['cbTotalWeight']
             ));
 
             if ( $website_shipping_method_id ) {
@@ -275,7 +275,7 @@ class ShippingController extends BaseController {
             ->options( $packaging_types );
 
         $form->add_field( 'checkbox', _('Calculate the total weight of all packages for shipping charges:'), 'cbTotalWeight',  $shipping_method->extra['total-weight']);
-        
+
         if ( $form->posted() ) {
             $shipping_method->name = $_POST['sService'];
             $shipping_method->method = 'N/A';
@@ -573,7 +573,13 @@ class ShippingController extends BaseController {
             , 'meter_number' => ''
         );
 
-        $settings = $this->user->account->get_settings( 'shipping-settings', 'shipping-ups', 'shipping-fedex', 'taxable-shipping' );
+        $shipping_amazon = [
+            'amazon_aws_access_key_id' => ''
+            , 'amazon_aws_secret_access_key' => ''
+            , 'amazon_aws_merchant_id' => ''
+        ];
+
+        $settings = $this->user->account->get_settings( 'shipping-settings', 'shipping-ups', 'shipping-fedex', 'taxable-shipping', 'shipping-amazon' );
 
         if ( !empty( $settings['shipping-settings'] ) )
             $shipping_settings = unserialize( $settings['shipping-settings'] );
@@ -583,6 +589,9 @@ class ShippingController extends BaseController {
 
         if ( !empty( $settings['shipping-fedex'] ) )
             $shipping_fedex = unserialize( $settings['shipping-fedex'] );
+
+        if ( !empty( $settings['shipping-amazon'] ) )
+            $shipping_amazon = unserialize( $settings['shipping-amazon'] );
 
         // Create form
 
@@ -652,6 +661,25 @@ class ShippingController extends BaseController {
         $form->add_field( 'row', _('Length Unit:'), 'Inches' );
         $form->add_field( 'blank', '' );
 
+        // Amazon Settings
+        // The following field adds a button with a onclick function that is located under view/account/js/shopping-cart/settings/settings.js
+        // Unfortunately, I'm not sure what would be the best practice to achieve this result using the $form object.
+        // The goal is to provide the user with a button that allows the complete removal of Amazon Settings from the database.
+        $form->add_field( 'title', _('Fulfillment By Amazon Settings - <a class="btn btn-warning" onclick="Settings.removeAmazon()">Remove</a>') );
+
+        $form->add_field( 'text', _('AWS Access Key Id'), 'tAmazonAwsAccessKeyId', $shipping_amazon['aws_access_key_id'] )
+            ->attribute( 'maxlength', 32 );
+
+        $form->add_field( 'text', _('Aws Secret Access Key'), 'tAmazonAwsSecretAccessKey', $shipping_amazon['aws_secret_access_key'] )
+            ->attribute( 'maxlength', 64 );
+
+        $form->add_field( 'text', _('Merchant Id'), 'tAmazonMerchantId', $shipping_amazon['merchant_id'] )
+            ->attribute( 'maxlength', 32 );
+
+        $form->add_field( 'text', _('Marketplace Id'), 'tAmazonMarketplaceId', $shipping_amazon['marketplace_id'] )
+            ->attribute( 'maxlength', 32 );
+        $form->add_field( 'blank', '' );
+
         // Tax Settings
         $form->add_field( 'title', _('Tax Settings') );
 
@@ -660,7 +688,8 @@ class ShippingController extends BaseController {
         // Handle posting
 
         if ( $form->posted() ) {
-            $this->user->account->set_settings( array(
+
+            $website_settings = array(
                 'shipping-settings' => serialize( array(
                     'shipper_company' => $_POST['tShipperCompany']
                     , 'shipper_contact' => $_POST['tShipperContact']
@@ -675,15 +704,41 @@ class ShippingController extends BaseController {
                     , 'username' => $_POST['tUPSUsername']
                     , 'password' => $_POST['pUPSPassword']
                     , 'account_number' => $_POST['tUPSAccountNumber']
-                ) )
+            ) )
                 , 'shipping-fedex' => serialize( array(
                     'development_key' => $_POST['tFedExDevelopmentKey']
                     , 'password' => $_POST['pFedExPassword']
                     , 'account_number' => $_POST['tFedExAccountNumber']
                     , 'meter_number' => $_POST['tFedExMeterNumber']
-                ) )
+            ) )
                 , 'taxable-shipping' => ( isset( $_POST['cbTaxableShipping'] ) ) ? '1' : '0'
-            ));
+            );
+
+            if ( !empty($_POST['tAmazonAwsAccessKeyId']) ) {
+                $website_settings = array_merge($website_settings,
+                    [
+                        'shipping-amazon' => serialize(array(
+                            'aws_access_key_id' => $_POST['tAmazonAwsAccessKeyId']
+                            , 'aws_secret_access_key' => $_POST['tAmazonAwsSecretAccessKey']
+                            , 'merchant_id' => $_POST['tAmazonMerchantId']
+                            , 'marketplace_id' => $_POST['tAmazonMarketplaceId']
+                        )   )
+                    ]);
+
+
+                $website_shipping_methods = new WebsiteShippingMethod();
+                $website_shipping_amazon = $website_shipping_methods->get_by_type('amazon-outbound', $this->user->account->website_id);
+                if( empty($website_shipping_amazon) ) {
+                    $website_shipping_methods->type = 'amazon-outbound';
+                    $website_shipping_methods->website_id = $this->user->account->website_id;
+                    $website_shipping_methods->name = 'Fulfillment By Amazon';
+                    $website_shipping_methods->method = 'N/A';
+                    $website_shipping_methods->amount = 0;
+                    $website_shipping_methods->create();
+                }
+            }
+
+            $this->user->account->set_settings( $website_settings );
 
             $this->log( 'update-shipping-settings', $this->user->contact_name . ' updated shipping settings on ' . $this->user->account->title );
             $this->notify( _('Your settings have been successfully saved!') );
@@ -691,6 +746,8 @@ class ShippingController extends BaseController {
             // Simply refresh the page
             return new RedirectResponse( '/shopping-cart/shipping/settings/' );
         }
+
+        $this->resources->javascript( 'shopping-cart/settings/settings');
 
         return $this->get_template_response( 'settings' )
             ->kb( 128 )
@@ -852,6 +909,14 @@ class ShippingController extends BaseController {
         $this->log( 'delete-shipping-method', $this->user->contact_name . ' deleted a shipping method on ' . $this->user->account->title, $_GET['wsmid'] );
 
         return $response;
+    }
+
+
+    public function remove_amazon() {
+        $this->user->account->remove_setting( 'shipping-amazon' );
+        $website_shipping_method = new WebsiteShippingMethod();
+        $website_shipping_method->remove_by_type('amazon-outbound', $this->user->account->website_id);
+        return new AjaxResponse(true);
     }
 }
 

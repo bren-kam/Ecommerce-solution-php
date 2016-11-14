@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	   	<title>Mega Blocks</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta name="author" content="" />
+		
+		<!-- Mobile Specific Meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<!-- bootstrap magic -->
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+		
+        <!-- theme custom -->
+		<link rel="stylesheet" href="css/style.css" />
+
+		<!-- fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Font Awesome -->
+		<link rel="stylesheet" type="text/css" href="fonts/font-awesome/css/font-awesome.min.css" />
+
+		<!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <!--[if lt IE 9]>
+        <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+        <![endif]-->
+
+		
+	</head>
+	
+	
+	<body>
+	
+	<div id="page" class="page">
+	
+
+	<header class="header-2">
+	
+		<div class="top-bar">
+			<div class="container">
+			<div class="col-md-4 left">
+				<i class="fa fa-phone"></i> <span>+001 234 5678</span>
+				<span class="gap"><i class="fa fa-skype"></i> <span>gj-designs</span></span>
+			</div>
+			
+			<div class="col-md-8 right">
+				<ul class="top-socials pull-right">
+					<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="#"><i class="fa fa-skype"></i></a></li>
+					<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+					<li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+					<li><a href="#"><i class="fa fa-rss"></i></a></li>
+				</ul>
+			</div>
+			</div>
+		</div>
+		
+		<div class="search">
+		  <form class="container">
+			<input type="text" placeholder="Type here and press enter ...." name="q"/>
+		  </form>
+		</div>
+	
+		<nav class="navbar navbar-default">
+		  <div class="container container-fluid">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="#"><img src="images/logo.png" alt="" /></a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			  <ul class="nav navbar-nav navbar-right" >
+				<li class="active"><a href="#">Home</a></li>
+				<li><a href="#">About Us</a></li>
+				<li><a href="#">Services</a></li>
+				<li><a href="#">Pages</a></li>
+				<li><a href="#">Work</a></li>
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">Shop</a></li>
+				<li><a href="#">Contact Us</a></li>
+				<li><a href="#" id="search-toggle"><i class="fa fa-search"></i></a></li>
+			  </ul>
+
+			</div><!-- /.navbar-collapse -->
+		  </div><!-- /.container-fluid -->
+		</nav>
+		
+		
+		
+		<div class="welcome-1">
+			<div class="container">
+				<div class="col-md-12">
+					<h1>MEGA BLOCKS</h1>
+					<p class="p1">A BOOTSTRAP STARTER KIT FOR DESIGNERS AND DEVELOPERS</p>
+					<div class="buttons">
+						<a href="#" class="btn-1">Read More</a>
+						<a href="#" class="btn-1 btn-buy">Buy Now</a>
+					</div>
+				</div>
+				<img src="images/desk.png" class="desk" alt="" />
+				<img src="images/tree.png" class="tree" alt="" />
+			</div>
+		</div>
+		
+		</header>	
+		
+	</div>
+	
+	
+	
+	<!-- Jquery Libs -->
+	<!-- Latest Version Of Jquery -->
+	<script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+	<!-- Bootstrap Jquery -->
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/SmoothScroll.js"></script>
+	<script type="text/javascript" src="js/jquery.sticky.js"></script>
+	<!-- Theme Custom -->
+	<script type="text/javascript" src="js/custom.js"></script>
+	
+
+	
+	</body>
+	</html>

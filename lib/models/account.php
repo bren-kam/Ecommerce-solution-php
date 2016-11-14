@@ -331,6 +331,15 @@ class Account extends ActiveRecordBase {
         )->query();
     }
 
+
+    public function remove_setting( $setting ) {
+        $this->prepare(
+            'DELETE FROM `website_settings` WHERE website_id = :website_id AND `key` = :setting'
+            , 'is'
+            , array ( ':website_id' => $this->id, ':setting' => $setting)
+        )->query();
+    }
+
     /**
      * Get Industries by account
      *

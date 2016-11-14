@@ -564,6 +564,8 @@ class BootstrapForm_Radio extends BootstrapForm_Field {
 
         $checked = ( $_POST[$this->name] == $this->value ) ? ' checked="checked"' : '';
 
+        $checked = array_search( 'checked="checked"' , $this->attributes) !== FALSE ? ' checked="checked"' : $checked;
+
         $html .= '<input type="radio" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="' . $this->value . '" ' . $checked . ' />';
 
         $html .= $this->nice_name;
@@ -798,3 +800,34 @@ class BootstrapForm_Row extends BootstrapForm_Field {
         return '<p class="form-group"><strong>' . $this->name . '</strong>' . $this->value . '</p>';
     }
 }
+
+
+/**
+ * Blank Row
+ */
+class BootstrapForm_Button extends BootstrapForm_Field {
+    /**
+     * Constructor -- Create a row
+     *
+     * @param string $name
+     * @param string $value [optional] the preset value of the field (other than the post)
+     */
+    public function __construct( $name, $value = '' ) {
+        parent::__construct( '', $name, $value );
+
+        $this->type = 'file';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<button id="'. $this->value.'" name="'.$this->value.'" class="btn btn-md btn-primary">'.$this->name.'</button>';
+    }  
+
+   
+}
+

@@ -1,0 +1,73 @@
+var _Elements = {"elements": {
+    "About Us":[
+    	{"url":"/website/landing-pages/elements/?f=about-1","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/2.png"},
+	{"url":"/website/landing-pages/elements/?f=about-2","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/3.png"},
+	{"url":"/website/landing-pages/elements/?f=about-3","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/4.png"},
+	{"url":"/website/landing-pages/elements/?f=about-4","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/5.png"},
+	{"url":"/website/landing-pages/elements/?f=about-5","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/6.png"}
+    ],
+    "Products Blocks":[
+	{"url":"/website/landing-pages/elements/?f=products-1","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/products-1.png"},
+	{"url":"/website/landing-pages/elements/?f=products-2","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/products-2.png"},
+	{"url":"/website/landing-pages/elements/?f=products-3","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/products-3.png"}
+
+    ],
+
+    "Content Blocks":[
+    	{"url":"/website/landing-pages/elements/?f=content-1","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/12.png"},
+	{"url":"/website/landing-pages/elements/?f=content-2","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/13.png"},
+	{"url":"/website/landing-pages/elements/?f=content-3","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/14.png"},
+	{"url":"/website/landing-pages/elements/?f=content-4","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/15.png"},
+	{"url":"/website/landing-pages/elements/?f=content-5","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/16.png"},
+	{"url":"/website/landing-pages/elements/?f=content-6","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/17.png"},
+	{"url":"/website/landing-pages/elements/?f=content-7","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/18.png"},
+	{"url":"/website/landing-pages/elements/?f=content-8","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/19.png"},
+	{"url":"/website/landing-pages/elements/?f=content-9","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/20.png"},
+	{"url":"/website/landing-pages/elements/?f=content-10","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/21.png"},
+	{"url":"/website/landing-pages/elements/?f=content-11","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/22.png"},
+    ],
+    "Extra Pages":[
+    	{"url":"/website/landing-pages/elements/?f=login","height":701, "thumbnail":"/images/landing-page-builder/elements/thumbs/47.png"},
+    	{"url":"/website/landing-pages/elements/?f=register","height":799, "thumbnail":"/images/landing-page-builder/elements/thumbs/58.png"},
+    	{"url":"/website/landing-pages/elements/?f=404","height":516, "thumbnail":"/images/landing-page-builder/elements/thumbs/1.png"}
+    ],
+    "Portfolios":[
+    	{"url":"/website/landing-pages/elements/?f=portfolio-1","height":701, "thumbnail":"/images/landing-page-builder/elements/thumbs/50.png"},
+    	{"url":"/website/landing-pages/elements/?f=portfolio-2","height":799, "thumbnail":"/images/landing-page-builder/elements/thumbs/51.png"},
+    	{"url":"/website/landing-pages/elements/?f=portfolio-3","height":516, "thumbnail":"/images/landing-page-builder/elements/thumbs/52.png"}
+    ],
+    "Blog":[
+    	{"url":"/website/landing-pages/elements/?f=blog-1","height":644, "thumbnail":"/images/landing-page-builder/elements/thumbs/7.png"},
+    	{"url":"/website/landing-pages/elements/?f=blog-2","height":810, "thumbnail":"/images/landing-page-builder/elements/thumbs/8.png"},
+    	{"url":"/website/landing-pages/elements/?f=post-1","height":752, "thumbnail":"/images/landing-page-builder/elements/thumbs/53.png"}
+    ],
+    "Pricing Tables":[
+    	{"url":"/website/landing-pages/elements/?f=pricing-1","height":628, "thumbnail":"/images/landing-page-builder/elements/thumbs/54.png"},
+    	{"url":"/website/landing-pages/elements/?f=pricing-2","height":750, "thumbnail":"/images/landing-page-builder/elements/thumbs/55.png"},
+    	{"url":"/website/landing-pages/elements/?f=pricing-3","height":721, "thumbnail":"/images/landing-page-builder/elements/thumbs/56.png"},
+	{"url":"/website/landing-pages/elements/?f=pricing-4","height":721, "thumbnail":"/images/landing-page-builder/elements/thumbs/57.png"}
+    ],
+    "Partners":[
+    	{"url":"/website/landing-pages/elements/?f=partners-1","height":628, "thumbnail":"/images/landing-page-builder/elements/thumbs/48.png"},
+    	{"url":"/website/landing-pages/elements/?f=partners-2","height":750, "thumbnail":"/images/landing-page-builder/elements/thumbs/49.png"}
+    ],
+  /*  "Contact":[
+    	{"url":"/website/landing-pages/elements/?f=contact-1","height":691, "thumbnail":"/images/landing-page-builder/elements/thumbs/9.png"},
+    	{"url":"/website/landing-pages/elements/?f=contact-2","height":477, "thumbnail":"/images/landing-page-builder/elements/thumbs/10.png"},
+	{"url":"/website/landing-pages/elements/?f=contact-3","height":477, "thumbnail":"/images/landing-page-builder/elements/thumbs/11.png"}
+    ], */
+   "Forms":[
+	{"url":"/website/landing-pages/elements/?f=cognito","height":567, "thumbnail":"/images/landing-page-builder/elements/thumbs/cognito.png"},
+
+    ],
+
+    "Basic Blocks":[
+    	{"url":"/website/landing-pages/elements/?f=grid1","height":294, "thumbnail":"/images/landing-page-builder/elements/thumbs/31.png"},
+    	{"url":"/website/landing-pages/elements/?f=grid2","height":107, "thumbnail":"/images/landing-page-builder/elements/thumbs/32.png"},
+    	{"url":"/website/landing-pages/elements/?f=grid3","height":260, "thumbnail":"/images/landing-page-builder/elements/thumbs/33.png"},
+	{"url":"/website/landing-pages/elements/?f=grid4","height":260, "thumbnail":"/images/landing-page-builder/elements/thumbs/34.png"},
+	{"url":"/website/landing-pages/elements/?f=grid5","height":260, "thumbnail":"/images/landing-page-builder/elements/thumbs/35.png"},
+	{"url":"/website/landing-pages/elements/?f=grid6","height":260, "thumbnail":"/images/landing-page-builder/elements/thumbs/36.png"}
+    ]
+    }
+}

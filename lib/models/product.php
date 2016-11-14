@@ -439,6 +439,19 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * @return bool
+     */
+    public function is_amazon_eligible() {
+        $result = $this->prepare(
+            "SELECT 1 FROM products_amazon pa WHERE pa.`product_id` = :product_id"
+            , 'i'
+            , [':product_id' => $this->id]
+        )->get_var();
+
+        return $result == 1;
+    }
+
+    /**
 	 * Gets the data for an autocomplete request
 	 *
 	 * @param string $query

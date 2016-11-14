@@ -1312,9 +1312,10 @@ class ProductsController extends BaseController {
         // Add to response
         $response = new CustomResponse( $this->resources, 'products/edit' );
         $response->set( array(
-            'product' => $account_product
+            'account_product' => $account_product
             , 'child_products' => $child_products
             , 'coupons' => $coupons
+            , 'product' => $product
         ) );
 
         return $response;
@@ -1340,6 +1341,7 @@ class ProductsController extends BaseController {
 
         // Initialize objects
         $account_product = new AccountProduct();
+        $product_amazon = new ProductAmazon();
         $website_coupon = new WebsiteCoupon();
         $account_product_option = new AccountProductOption();
 
@@ -1374,6 +1376,13 @@ class ProductsController extends BaseController {
             $account_product->additional_shipping_type = $_POST['rShippingMethod'];
             $account_product->ships_in = $_POST['tShipsIn'];
             $account_product->store_sku = $_POST['tStoreSKU'];
+
+            if($_POST['sAmazonFBA'] == 1) {
+                $product_amazon->product_id = $account_product->product_id;
+                $product_amazon->create();
+            } else {
+                $product_amazon->remove_by_product($account_product->product_id);
+            }
 
             $coupons = $_POST['hCoupons'];
         } else {
@@ -2505,7 +2514,8 @@ class ProductsController extends BaseController {
         $images = $product->get_images();
         $account_product->image = $product->get_image_url( $images[0], 'small', $product->industry, $product->id );
         $account_product->name = $product->name;
-
+        $account_product->description = $product->description;
+        
         // Get Category
         $category->get( $product->category_id );
 
@@ -2824,6 +2834,7 @@ class ProductsController extends BaseController {
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
             $product['image'] = $r['image'];
+            $product['amazon_eligible'] = isset($r['amazon eligible']) ? $r['amazon eligible'] : null;
             $product['product_specifications'] = array();
             $product['product_id'] = $product['productid'];
             $product['weight'] = isset($r['weight']) ? (float) preg_replace( '/[^0-9.]/', '', $r['weight']) : '';
@@ -2874,6 +2885,7 @@ class ProductsController extends BaseController {
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
             $product_import->type = $pi['type'];
+            $product_import->amazon_eligible = $pi['amazon_eligible'];
             $product_import->create();
         }
 
@@ -3036,6 +3048,16 @@ class ProductsController extends BaseController {
             $account_product->active = AccountProduct::ACTIVE;
             $account_product->status = 1;            
             $account_product->save();
+
+            // Check for Amazon Eligible Flag
+            if ( $p->amazon_eligible == 1 ) {
+                $productAmazon = new ProductAmazon();
+                $productAmazon->product_id = $p->product_id;
+                $productAmazon->create();
+            } elseif ( strtolower($p->amazon_eligible) == 'x') {
+                $productAmazon = new ProductAmazon();
+                $productAmazon->remove_by_product($p->product_id);
+            }
         }
 
         $product_import->delete_all( $this->user->account->id );
