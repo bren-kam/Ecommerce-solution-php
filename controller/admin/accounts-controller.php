@@ -1427,13 +1427,9 @@ class AccountsController extends BaseController {
             $dt->search( array( 'a.`title`' => false, 'a.`domain`' => false, 'b.`contact_name`' => false, 'c.`contact_name`' => false ) );
         }
 
-        if ( User::KEVIN_DORAN == $this->user->id ) {
-            $dt->add_where( ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $this->user->company_id . ' )' );
-        } else {
-            // If they are below 8, that means they are a partner
-            if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
-                $dt->add_where( ' AND b.`company_id` = ' . $this->user->company_id );
-        }
+        // If they are below 8, that means they are a partner
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
+            $dt->add_where( ' AND b.`company_id` = ' . $this->user->company_id );
 
 		// What other sites we might need to omit
 		$omit_sites = ( !$this->user->has_permission( User::ROLE_ADMIN ) ) ? ', 96, 114, 115, 116' : '';
