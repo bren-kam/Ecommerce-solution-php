@@ -150,7 +150,7 @@ class AccountPage extends ActiveRecordBase {
             , 'meta_description' => strip_tags($this->meta_description)
             , 'meta_keywords' => strip_tags($this->meta_keywords)
             , 'mobile' => $this->mobile
-            , 'top' => $this->tp
+            , 'top' => $this->top
             , 'header_script' => $this->header_script
             , 'landing_page' => $this->landing_page
         ), array( 'website_page_id' => $this->id )
