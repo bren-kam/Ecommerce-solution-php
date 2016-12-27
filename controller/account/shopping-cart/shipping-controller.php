@@ -673,7 +673,7 @@ class ShippingController extends BaseController {
         $form->add_field( 'text', _('Aws Secret Access Key'), 'tAmazonAwsSecretAccessKey', $shipping_amazon['aws_secret_access_key'] )
             ->attribute( 'maxlength', 64 );
 
-        $form->add_field( 'text', _('Merchant Id'), 'tAmazonMerchantId', $shipping_amazon['merchant_id'] )
+        $form->add_field( 'text', _('Seller Id'), 'tAmazonMerchantId', $shipping_amazon['merchant_id'] )
             ->attribute( 'maxlength', 32 );
 
         $form->add_field( 'text', _('Marketplace Id'), 'tAmazonMarketplaceId', $shipping_amazon['marketplace_id'] )
