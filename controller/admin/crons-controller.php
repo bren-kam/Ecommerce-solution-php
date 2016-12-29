@@ -363,13 +363,16 @@ class CronsController extends BaseController {
         library('yext');
         $yext = new YEXT( $account );
 
-        $start_date = (new DateTime($argv[2]));
-        echo "Downloading reviews since " . $start_date->format('Y-m-d') . "...\n";
+        $params = [];
+        if (is_numeric($argv[2])) {
+            $params['locationId'] = $argv[2];
+            echo "Downloading reviews for location " . $params['locationId'] . "...\n";
+        } else {
+            $params['dateStart'] = (new DateTime($argv[2]))->format('Y-m-d');
+            echo "Downloading reviews since " . $params['dateStart'] . "...\n";
+        }
 
-        $reviews = $yext->get(
-            'reviews'
-            , [ 'dateStart' => $start_date->format('Y-m-d') ]
-        )->reviews;
+        $reviews = $yext->get( 'reviews' , $params )->reviews;
 
         if ( empty( $reviews ) ) {
             echo "No Reviews. Finished. \n";
