@@ -18,8 +18,8 @@ class ProductAmazon extends ActiveRecordBase {
      * @return int $product_amazon_id
      */
     public function create() {
-        $sql = 'INSERT INTO products_amazon (product_id) SELECT product_id FROM products WHERE parent_product_id = :product_id ON DUPLICATE KEY UPDATE product_id = product_id';
-        $this->prepare($sql, 'i', array( ':product_id' => $this->product_id ));
+        $sql = 'INSERT INTO products_amazon (products_amazon.product_id) SELECT products.product_id FROM products WHERE parent_product_id = :product_id ON DUPLICATE KEY UPDATE products_amazon.product_id = products_amazon.product_id';
+        $this->prepare($sql, 'i', array( ':product_id' => $this->product_id ))->query();
         return $this->insert(
             ['product_id' => $this->product_id]
             , 'i'

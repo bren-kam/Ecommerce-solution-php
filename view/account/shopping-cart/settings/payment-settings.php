@@ -155,9 +155,35 @@ $nonce = nonce::create('payment_settings');
                         </td>
                     </tr>
                     <!-- FlexShopper  -->
+
+                    <!-- Amazon Pay -->
+                    <tr>
+                        <td class="v-align text-center col-lg-3">
+                            <p><img src="/images/payment-logos/amazon.png"></p>
+                            <p><small><a target="_blank" href="/kb/article/?aid=266"><span class="glyphicon glyphicon-question-sign"></span> Get more Info</a></small></p>
+                        </td>
+                        <td class="v-align text-center col-lg-6">
+                            <ul>
+                                <li>No setup fee or monthly cost</li>
+                                <li>2.9% + 30c/transaction</li>
+                                <li>No application fees</li>
+                            </ul>
+                        </td>
+                        <td class="v-align text-center col-lg-3">
+                            <?php if( security::decrypt( base64_decode( $settings['amazon-pay-aws-key'] ), PAYMENT_DECRYPTION_KEY ) ): ?>
+                                <p class="connected">
+                                    <span><img src="/images/payment-logos/check.png"></span>
+                                </p>
+                                <p><a class="btn btn-default" href="javascript:;" data-toggle="modal" data-target="#modal-amazon">Settings</a></p>
+                            <?php else: ?>
+                                <p><a class="btn btn-primary" href="javascript:;" data-toggle="modal" data-target="#modal-amazon">Enable</a></p>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <!-- Amazon Pay -->
                 </table>
                 
-                <?php if(security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) || isset($stripe_account['stripe_user_id']) ) {?>
+                <?php if(security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) && isset($stripe_account['stripe_user_id']) ) {?>
                 <form action="" id="fPaymentSettings" method="post" name="fPaymentSettings">
                     <div class="row">
                         <div class="col-lg-12">
@@ -316,6 +342,61 @@ $nonce = nonce::create('payment_settings');
                         <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=<?php echo nonce::create('test_paypal') ?>" id="test-paypal" ajax="1">Test PayPal Credentials</a>
                         <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_get-api-signature&generic-flow=true">Click Here to Get Your PayPal API Credentials</a>
                     </p>
+
+                    <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="modal-amazon" tabindex="-1" role="dialog" aria-hidden="true" >
+    <form action="/shopping-cart/settings/payment-settings/" method="post" role="form">
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Amazon Pay</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="tAmazonAwsKey">Amazon AWS Key:</label>
+                        <input class="form-control" id="tAmazonAwsKey" maxlength="100" name="tAmazonAwsKey" type="text" value="<?php echo security::decrypt( base64_decode( $settings['amazon-pay-aws-key'] ), PAYMENT_DECRYPTION_KEY ) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tAmazonAwsSecretAccessKey">Aws Secret Access Key:</label>
+                        <input type="text" class="form-control" name="tAmazonAwsSecretAccessKey" id="tAmazonAwsSecretAccessKey" value="<?php echo security::decrypt( base64_decode( $settings['amazon-pay-aws-secret-key'] ), PAYMENT_DECRYPTION_KEY ) ?>" maxlength="64" data-bv-field="tAmazonAwsSecretAccessKey">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tAmazonMarketplaceId">Marketplace Id:</label>
+                        <input type="text" class="form-control" name="tAmazonMarketplaceId" id="tAmazonMarketplaceId" value="<?php echo security::decrypt( base64_decode( $settings['amazon-pay-aws-marketplace-id'] ), PAYMENT_DECRYPTION_KEY ) ?>" maxlength="64" data-bv-field="tAmazonMarketplaceId">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tAmazonMerchantId">Seller Id:</label>
+                        <input type="text" class="form-control" name="tAmazonMerchantId" id="tAmazonMerchantId" value="<?php echo security::decrypt( base64_decode( $settings['amazon-pay-aws-merchant-id'] ), PAYMENT_DECRYPTION_KEY ) ?>" maxlength="64" data-bv-field="tAmazonMerchantId">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tAmazonLwaClientId">Amazon LWA Client ID:</label>
+                        <input type="text" class="form-control" name="tAmazonLwaClientId" id="tAmazonLwaClientId" value="<?php echo security::decrypt( base64_decode( $settings['amazon-pay-lwa-client-id'] ), PAYMENT_DECRYPTION_KEY ) ?>" maxlength="128" data-bv-field="tAmazonLwaClientId">
+                    </div>
+
+
+
+<!--                    <p>-->
+<!--                        <a class="btn btn-primary" href="/shopping-cart/settings/test-paypal/?_nonce=--><?php //echo nonce::create('test_paypal') ?><!--" id="test-paypal" ajax="1">Test PayPal Credentials</a>-->
+<!--                        <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_get-api-signature&generic-flow=true">Click Here to Get Your PayPal API Credentials</a>-->
+<!--                    </p>-->
 
                     <input type="hidden" name="_nonce" value="<?php echo $nonce ?>">
 
