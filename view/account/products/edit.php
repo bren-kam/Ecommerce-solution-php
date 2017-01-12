@@ -27,7 +27,6 @@
                     <li class="<?php if (!$_GET['tab'] || $_GET['tab'] == 'product' ) echo 'active' ?>"><a href="#product" role="tab" data-toggle="tab">Product &amp; Pricing</a></li>
                     <li class="<?php if ($_GET['tab'] == 'options' ) echo 'active' ?>"><a href="#options" role="tab" data-toggle="tab">Product Options</a></li>
                     <li class="<?php if ($_GET['tab'] == 'shopping-cart' ) echo 'active' ?>"><a href="#shopping-cart" role="tab" data-toggle="tab">Shopping Cart</a></li>
-                    <li><a target="_blank" href="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=<?php echo $account_product->product_id ?>">Master Catalog</a></li>
                 </ul>
 
                 <br />
