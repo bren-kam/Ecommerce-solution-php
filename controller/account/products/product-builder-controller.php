@@ -138,6 +138,7 @@ class ProductBuilderController extends BaseController {
             $product->description = $_POST['taDescription'];
             $product->sku = $_POST['tSKU'];
             $product->weight = $_POST['tWeight'];
+            $product->price = $_POST['tPrice'];
             $product->status = $_POST['sProductStatus'];
             $product->publish_date = $_POST['hPublishDate'];
             $product->publish_visibility = $_POST['sStatus'];
