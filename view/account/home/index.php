@@ -74,7 +74,7 @@
                                 <?php if ($online_specialist->work_phone): ?>
                                     <p><span class="purple">P.</span> <?php echo $online_specialist->work_phone ?></p>
                                 <?php endif; ?>
-                                <p><span class="purple">E.</span> <a href="mailto:<?php echo str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email );  ?>"><?php echo str_replace( strstr( $online_specialist->email, '@'), '@' . DOMAIN, $online_specialist->email );  ?></a></p>
+                                <p><span class="purple">E.</span> <a href="mailto:<?php echo $online_specialist->email ?>"><?php echo $online_specialist->email ?></a></p>
                             </div>
                         </section>
                     </div>
